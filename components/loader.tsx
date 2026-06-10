@@ -16,11 +16,13 @@ import {
 
 const DOT_D = 10;
 const DOT_R = DOT_D / 2;
-const STAGGER = 160;
+const STAGGER = 90;
 const WORDS = ["XUYUAN", "LIU"];
 const TOTAL = WORDS.join("").length;
 const I_IDX = WORDS[0].length + 1;
+const LETTER_DELAY_MS = 180;
 const BROADCAST_DELAY_MS = 450;
+const EXIT_FALLBACK_MS = 2700;
 
 const containerStyle: CSSProperties = {
   position: "fixed",
@@ -141,7 +143,7 @@ export function Loader() {
       timersRef.current.push(id);
     };
 
-    const revealLetter = (idx: number, duration = 0.42) => {
+    const revealLetter = (idx: number, duration = 0.52) => {
       const el = letterRefs.current[idx];
       if (!el) return;
 
@@ -170,7 +172,7 @@ export function Loader() {
       if (i === I_IDX) continue;
 
       const { dx, dy } = arcOffsets[i];
-      const t = i * STAGGER + 60;
+      const t = i * STAGGER + LETTER_DELAY_MS;
 
       if (i === 0) {
         addTimer(() => {
@@ -214,7 +216,7 @@ export function Loader() {
             y: { type: "spring", stiffness: 560, damping: 30 },
           } as AnimationOptions,
         );
-      }, t + 90);
+      }, t + 55);
     }
 
     addTimer(async () => {
@@ -286,9 +288,9 @@ export function Loader() {
       if (abortRef.current) return;
 
       exitLoader();
-    }, TOTAL * STAGGER + 260);
+    }, TOTAL * STAGGER + LETTER_DELAY_MS + 80);
 
-    addTimer(exitLoader, 5500);
+    addTimer(exitLoader, EXIT_FALLBACK_MS);
 
     return () => {
       abortRef.current = true;
@@ -377,7 +379,7 @@ export function Loader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            transition={{ delay: 1.5 }}
+            transition={{ delay: 1 }}
             style={hintStyle}
           >
             CLICK OR ESC TO SKIP

@@ -98,8 +98,9 @@
   --nav-h: 60px;
   --radius-card: 12px;
 
-  --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-default: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer base {
@@ -253,8 +254,8 @@
   position: relative;
   text-transform: uppercase;
   transition:
-    background-color 0.2s,
-    color 0.2s;
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 .nav-links a::after {
   display: none;
@@ -583,8 +584,8 @@
   display: flex;
   flex-direction: column;
   transition:
-    border-color 0.22s,
-    transform 0.28s var(--ease-default);
+    border-color 0.5s ease,
+    transform 0.55s var(--ease-default);
 }
 .project-card:hover {
   border-color: #c8c8c8;
@@ -930,8 +931,8 @@
   overflow: hidden;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.25);
   transition:
-    box-shadow 0.28s var(--ease-default),
-    transform 0.28s var(--ease-default);
+    box-shadow 0.5s ease,
+    transform 0.55s var(--ease-default);
 }
 .work-feature-card:hover {
   transform: translateY(-2px);
@@ -951,7 +952,7 @@
   object-position: center;
   filter: brightness(1);
   transition:
-    filter 0.32s var(--ease-default),
+    filter 0.3s ease,
     transform 0.55s var(--ease-default);
 }
 .work-feature-card:hover .project-cover img {
@@ -971,8 +972,8 @@
   opacity: 1;
   pointer-events: none;
   transition:
-    background 0.28s var(--ease-default),
-    opacity 0.28s var(--ease-default);
+    background 0.5s ease,
+    opacity 0.5s ease;
 }
 .work-feature-card:hover .work-card-shade {
   background:
@@ -1053,8 +1054,8 @@
   letter-spacing: 0.02em;
   text-transform: uppercase;
   transition:
-    background 0.2s var(--ease-default),
-    color 0.2s var(--ease-default),
+    background 0.2s ease,
+    color 0.2s ease,
     transform 0.2s var(--ease-default);
 }
 .work-feature-card:hover .work-card-button {
@@ -3647,22 +3648,77 @@
    ============================================================ */
 @keyframes fadeUp {
   from {
-    opacity: 0;
-    transform: translateY(18px);
+    opacity: 0.001;
+    transform: translateY(150px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-.fade-up {
+
+@keyframes appleReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.fade-up,
+[data-fade] {
+  opacity: 0.001;
+  transform: translateY(150px);
+  will-change: transform, opacity;
+}
+
+.fade-up.is-visible,
+[data-fade].is-visible {
+  animation: fadeUp 0.5s var(--ease-default) forwards;
+}
+
+.reveal .word,
+.reveal .letter,
+.word-reveal,
+.letter-reveal {
+  display: inline-block;
   opacity: 0;
-  animation: fadeUp 0.65s var(--ease-out) forwards;
+  transform: translateY(10px) scale(0.96);
+  filter: blur(6px);
+  will-change: transform, opacity, filter;
+}
+
+.reveal.is-visible .word,
+.reveal.is-visible .letter,
+.word-reveal.is-visible,
+.letter-reveal.is-visible {
+  animation: appleReveal 0.85s var(--ease-default) forwards;
+}
+
+.reveal.is-visible .word:nth-child(1),
+.reveal.is-visible .letter:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.reveal.is-visible .word:nth-child(2),
+.reveal.is-visible .letter:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.reveal.is-visible .word:nth-child(3),
+.reveal.is-visible .letter:nth-child(3) {
+  animation-delay: 0.22s;
 }
 @media (prefers-reduced-motion: reduce) {
-  .fade-up {
+  .fade-up,
+  [data-fade],
+  .reveal .word,
+  .reveal .letter,
+  .word-reveal,
+  .letter-reveal {
     animation: none;
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }
