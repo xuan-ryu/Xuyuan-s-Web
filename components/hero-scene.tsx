@@ -1664,7 +1664,7 @@ export default function DigitalLandscape(props: Props) {
                 opacity: 0; transform: translateY(7px); filter: blur(4px);
                 will-change: transform, opacity, filter;
             }
-            .scene-loaded .framer-xy-sub { opacity: 0; }
+            .scene-loaded .framer-xy-sub { animation: appleRevealSub 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards; }
 
             @keyframes appleRevealSub {
                 to { opacity: 1; transform: translateY(0); filter: blur(0px); }
@@ -1864,6 +1864,9 @@ export default function DigitalLandscape(props: Props) {
             .ink-fg   { animation: inkRise 12s ease-in-out infinite alternate; }
 
             @media (max-width: 768px) {
+              /* live mobile: greeting wraps inside the viewport (one phrase per
+                 row-ish), container must not exceed the screen */
+              .framer-xy-hero { max-width: 86vw !important; }
               .framer-xy-hero h1 { font-size: clamp(28px, 9vw, 42px); gap: 10px; margin: 0 0 14px 0; }
               .framer-xy-sub { font-size: 13px; line-height: 1.7; }
               .hero-quote { font-size: 13px; max-width: 88vw; }

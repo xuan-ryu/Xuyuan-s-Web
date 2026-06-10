@@ -3020,7 +3020,7 @@
 .home-how {
   position: relative;
   max-width: 1440px;
-  height: 1840px;
+  height: 1735px;
   margin: 0 auto;
   background: #fff;
   color: #050505;
@@ -3209,7 +3209,7 @@
 }
 
 .home-featured-live {
-  min-height: 3350px;
+  min-height: 3467px;
   padding: 0;
   position: relative;
   overflow: hidden;
@@ -3221,7 +3221,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 138px;
+  bottom: 255px;
   height: 11px;
   background: linear-gradient(#a7a7a7 0 5px, transparent 5px 100%);
   box-shadow: 0 104px 0 #a7a7a7;
@@ -3237,7 +3237,7 @@
 }
 .home-featured-shell {
   width: 100%;
-  height: 3350px;
+  height: 3467px;
   position: relative;
   z-index: 1;
 }
@@ -3989,10 +3989,13 @@
 /* ============================================================
    Animations
    ============================================================ */
+/* 60px travel: anything larger pushes short overflow-hidden headers' children
+   fully outside their clip rect, so IntersectionObserver never sees them
+   (the mobile MY WORK title bug) */
 @keyframes fadeUp {
   from {
     opacity: 0.001;
-    transform: translateY(150px);
+    transform: translateY(60px);
   }
   to {
     opacity: 1;
@@ -4011,7 +4014,7 @@
 .fade-up,
 [data-fade] {
   opacity: 0.001;
-  transform: translateY(150px);
+  transform: translateY(60px);
   will-change: transform, opacity;
 }
 

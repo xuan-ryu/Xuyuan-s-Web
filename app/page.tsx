@@ -14,6 +14,7 @@ export default function Home() {
       <Loader />
 
       <HeroScene
+        mobileBgUrl="/assets/framerusercontent.com/images/oOEkORPGPOFnemDEDLO72iBOZKU.png"
         heroWord1={site.greeting[0]}
         heroWord2={site.greeting[1]}
         heroWord3={site.greeting[2]}
