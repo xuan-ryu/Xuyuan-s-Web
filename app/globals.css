@@ -2337,18 +2337,22 @@
   object-fit: contain;
 }
 .about-essay-closing {
-  margin-top: 72px;
+  margin-top: 152px;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: clamp(20px, 1.95vw, 28px);
   text-align: center;
   color: #0a0a0a;
 }
-/* dark band: Before the Shutter Closes + How I Work + dojo wall */
+/* live: Shutter section spans doc 4381-5600 (white) */
+.about-shutter {
+  padding: 171px 0 245px;
+}
+/* dark band: How I Work + dojo wall (live: doc 5610-7143) */
 .about-dark {
   background: #050505;
   color: #fff;
-  padding: clamp(90px, 9vw, 140px) 0;
+  padding: 98px 0;
 }
 .about-dark .container {
   max-width: 1420px;
@@ -2486,7 +2490,8 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
-  max-width: 1420px;
+  /* live: 369px cards spanning 1151px centered */
+  max-width: 1211px;
   padding: 0 30px;
 }
 .about-testimonial-photo {
