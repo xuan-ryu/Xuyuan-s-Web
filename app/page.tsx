@@ -6,6 +6,7 @@ import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond";
 import { FeaturedWindows } from "@/components/featured-windows";
+import { CtaBlock } from "@/components/cta-block";
 
 export default function Home() {
   return (
@@ -27,27 +28,36 @@ export default function Home() {
         photoUrl="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
       />
 
+      {/* live composition: two roof artworks, each rendered twice — an upper
+          pair at the black/white boundary and a lower pair shifted 352px down */}
       <section className="home-roof-transition" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png"
+          alt=""
+          width={1928}
+          height={1076}
+          className="roof roof-a"
+        />
         <Image
           src="/assets/framerusercontent.com/images/6abw1vzYpd5VHb7WZncQkASt2ag.png"
           alt=""
-          width={2500}
-          height={900}
-          className="roof roof-a"
+          width={1928}
+          height={1076}
+          className="roof roof-b"
         />
         <Image
           src="/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png"
           alt=""
-          width={2400}
-          height={800}
-          className="roof roof-b"
+          width={1903}
+          height={1062}
+          className="roof roof-c"
         />
         <Image
-          src="/assets/framerusercontent.com/images/wgP2v6bRLltf0I89tfuRuq6sUhQ.png"
+          src="/assets/framerusercontent.com/images/6abw1vzYpd5VHb7WZncQkASt2ag.png"
           alt=""
-          width={1200}
-          height={260}
-          className="roof roof-c"
+          width={1902}
+          height={1062}
+          className="roof roof-d"
         />
       </section>
 
@@ -83,13 +93,16 @@ export default function Home() {
         </div>
       </section>
 
+      {/* live layout: 96px title right-of-center, antique-screen decor on both
+          edges, three glassy method cards staggered left/right/left with ink
+          brush strokes behind them; geometry measured from the live site */}
       <section id="value" className="home-how">
         <div className="how-decor how-screen" aria-hidden="true">
           <Image
             src="/assets/framerusercontent.com/images/YLXrjVSbjpbSEr6VDxoQlckuA4E.png"
             alt=""
             fill
-            sizes="430px"
+            sizes="608px"
           />
         </div>
         <div className="how-decor how-vase" aria-hidden="true">
@@ -97,7 +110,7 @@ export default function Home() {
             src="/assets/framerusercontent.com/images/ZDxCTcmPVVb0cfyh5FFNd4dj1NA.png"
             alt=""
             fill
-            sizes="220px"
+            sizes="376px"
           />
         </div>
         <div className="how-decor how-bamboo-screen" aria-hidden="true">
@@ -105,7 +118,7 @@ export default function Home() {
             src="/assets/framerusercontent.com/images/lwMaDnjXri23sjZmiuTe7sT1Q.png"
             alt=""
             fill
-            sizes="420px"
+            sizes="881px"
           />
         </div>
         <div className="how-decor how-lotus" aria-hidden="true">
@@ -113,36 +126,48 @@ export default function Home() {
             src="/assets/framerusercontent.com/images/GuVBPaGjujlgeSpfvNyLP3YczDs.png"
             alt=""
             fill
-            sizes="360px"
+            sizes="597px"
           />
         </div>
-        <div className="home-how-title">
-          <h2>How I Work</h2>
+        <div className="how-decor how-gold-screen" aria-hidden="true">
+          <Image
+            src="/assets/framerusercontent.com/images/j6sQpno4wHi7mS5QGmU6grlMWI.png"
+            alt=""
+            fill
+            sizes="947px"
+          />
         </div>
-        <div className="how-method-card">
-          <article>
-            <span>{site.workMethods[0].title}</span>
-            <h3>{site.workMethods[0].heading}</h3>
-            <p>{site.workMethods[0].body}</p>
+        <div className="how-decor how-dark-screen" aria-hidden="true">
+          <Image
+            src="/assets/framerusercontent.com/images/WpBupAnkoyx461zF3yJoLAf86VQ.png"
+            alt=""
+            fill
+            sizes="385px"
+          />
+        </div>
+        {["how-brush-a", "how-brush-b", "how-brush-c"].map((cls) => (
+          <div key={cls} className={`how-decor how-brush ${cls}`} aria-hidden="true">
+            <Image
+              src="/assets/framerusercontent.com/images/RJnh8cLkwy27PD5vycbXZbYjcQA.png"
+              alt=""
+              fill
+              sizes="800px"
+            />
+          </div>
+        ))}
+
+        <h2 className="home-how-title">How I Work</h2>
+
+        {site.workMethods.map((method, i) => (
+          <article key={method.title} className={`how-card how-card-${i + 1}`}>
+            <h3>{method.title}</h3>
+            <span>{method.heading}</span>
+            <p>{method.body}</p>
           </article>
-        </div>
-        <div className="how-method-list">
-          {site.workMethods.slice(1).map((method) => (
-            <article key={method.title}>
-              <span>{method.title}</span>
-              <h3>{method.heading}</h3>
-              <p>{method.body}</p>
-            </article>
-          ))}
-        </div>
+        ))}
       </section>
 
-      <section className="home-live-cta">
-        <div>
-          <h2>Let&apos;s Work Together</h2>
-          <Link href="/contact">get in touch</Link>
-        </div>
-      </section>
+      <CtaBlock />
     </>
   );
 }
