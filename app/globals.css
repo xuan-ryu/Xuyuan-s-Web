@@ -890,7 +890,8 @@
 .work-index-page .work-header {
   width: 100%;
   max-width: 1440px;
-  padding: 184px 72px 96px;
+  /* live: title at doc y245, first card at ~y430 */
+  padding: 245px 72px 51px;
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -1253,7 +1254,8 @@
 }
 .proj-summary {
   margin: 0 20px;
-  padding: 20px clamp(40px, 10.4vw, 150px) 100px 40px;
+  /* live: labels at x108, body 22px x1210 wide */
+  padding: 20px clamp(40px, 10.4vw, 150px) 100px 88px;
   border-radius: 0 0 8px 8px;
   background: #050505;
   color: #fff;
@@ -1281,25 +1283,17 @@
   text-transform: uppercase;
   margin-bottom: 80px;
 }
+/* live: compact label/value rows (34px pitch), no borders */
 .proj-summary-meta {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
+  display: block;
   width: 100%;
-  margin-bottom: 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.32);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+  margin-bottom: 32px;
 }
 .proj-summary-cell {
-  min-height: 118px;
-  padding: 20px 22px 22px;
   display: grid;
-  align-content: start;
-  gap: 14px;
-  border-left: 1px solid rgba(255, 255, 255, 0.28);
-}
-.proj-summary-cell:first-child {
-  border-left: 0;
+  grid-template-columns: 120px 1fr;
+  align-items: baseline;
+  padding: 5px 0;
 }
 .proj-summary-meta span,
 .proj-summary-meta strong {
@@ -1308,23 +1302,22 @@
   color: #fff;
 }
 .proj-summary-meta span {
-  font-size: clamp(16px, 1.4vw, 20px);
+  font-size: 20px;
   font-weight: 400;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
 .proj-summary-meta strong {
-  align-self: end;
-  font-size: clamp(22px, 2.35vw, 34px);
-  font-weight: 500;
-  line-height: 1.08;
-  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(250, 250, 250, 0.96);
+  text-align: left;
 }
 .proj-summary p {
-  max-width: 1288px;
+  max-width: 1210px;
   font-family: var(--font-serif);
-  font-size: clamp(24px, 2.1vw, 31px);
-  line-height: 1.45;
+  font-size: 22px;
+  line-height: 1.5;
   color: #fff;
 }
 .proj-solution-heading {
@@ -1481,7 +1474,8 @@
   color: #0a0a0a;
 }
 .poster-hero {
-  padding: clamp(90px, 11vw, 160px) 24px clamp(40px, 4.5vw, 64px);
+  /* live: title at doc y235, lede at y369 */
+  padding: 235px 24px clamp(40px, 4.5vw, 64px);
   text-align: center;
 }
 .poster-hero h1 {
@@ -1489,14 +1483,15 @@
   font-size: clamp(52px, 6.7vw, 96px);
   font-weight: 500;
   line-height: 1.05;
-  margin-bottom: 22px;
+  margin-bottom: 32px;
 }
 .poster-hero p {
-  max-width: 560px;
+  max-width: 500px;
   margin: 0 auto;
   font-family: var(--font-serif);
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.5;
+  text-align: justify;
   color: rgba(10, 10, 10, 0.85);
 }
 .poster-image {
@@ -1684,12 +1679,12 @@
     grid-template-columns: 92px 1fr;
     gap: 18px;
     align-items: start;
-    padding: 13px 0;
+    padding: 7px 0;
     border-left: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.28);
+    border-top: 0;
   }
   .proj-summary-cell:first-child {
-    border-top: 1px solid rgba(255, 255, 255, 0.28);
+    border-top: 0;
   }
   .proj-summary-meta span,
   .proj-summary-meta strong {
@@ -1733,6 +1728,9 @@
   }
   .case-section-tags {
     font-size: 26px;
+  }
+  .poster-hero {
+    padding-top: 130px;
   }
   .poster-hero h1 {
     font-size: 46px;
@@ -2154,7 +2152,8 @@
 
 /* Round 6 Framer alignment: about + contact */
 .about-header {
-  padding: 180px 0 100px;
+  /* 130px lands the meeting photo at live doc y2134 */
+  padding: 130px 0 100px;
   border-bottom: 0;
   background: #fff;
   overflow: hidden;
@@ -2614,7 +2613,8 @@
   min-height: 760px;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 200px 48px 96px;
+  /* live: form labels start at doc y~928 (39px higher than before) */
+  padding: 200px 48px 57px;
   overflow: visible;
 }
 .contact-title {
