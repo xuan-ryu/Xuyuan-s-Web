@@ -86,7 +86,16 @@ export function FeaturedWindows({ projects }: { projects: FeaturedProject[] }) {
           src="/assets/framerusercontent.com/images/wgP2v6bRLltf0I89tfuRuq6sUhQ.png"
           alt=""
           fill
-          sizes="100vw"
+          sizes="1679px"
+        />
+      </div>
+
+      <div className="featured-roof-line-b" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/DlntvmdLuvnadF0mbuSCTYQOyAM.png"
+          alt=""
+          fill
+          sizes="1071px"
         />
       </div>
 
@@ -95,7 +104,16 @@ export function FeaturedWindows({ projects }: { projects: FeaturedProject[] }) {
           src="/assets/framerusercontent.com/images/L1vpdZpPpmGxuSapa0YWEYsqI.png"
           alt=""
           fill
-          sizes="520px"
+          sizes="548px"
+        />
+      </div>
+
+      <div className="featured-bamboo-b" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/L1vpdZpPpmGxuSapa0YWEYsqI.png"
+          alt=""
+          fill
+          sizes="497px"
         />
       </div>
 
@@ -135,7 +153,43 @@ export function FeaturedWindows({ projects }: { projects: FeaturedProject[] }) {
           src="/assets/framerusercontent.com/images/3GdEAzchhqqng8XQl1Obd6fHMUk.png"
           alt=""
           fill
-          sizes="320px"
+          sizes="239px"
+        />
+      </div>
+
+      <div className="featured-garden-rock-b" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/3GdEAzchhqqng8XQl1Obd6fHMUk.png"
+          alt=""
+          fill
+          sizes="412px"
+        />
+      </div>
+
+      <div className="featured-garden-rock-c" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/3GdEAzchhqqng8XQl1Obd6fHMUk.png"
+          alt=""
+          fill
+          sizes="488px"
+        />
+      </div>
+
+      <div className="featured-grass-a" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/gT0TX29AChIWMAkjdSzpoPI6cE.png"
+          alt=""
+          fill
+          sizes="112px"
+        />
+      </div>
+
+      <div className="featured-grass-b" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/gT0TX29AChIWMAkjdSzpoPI6cE.png"
+          alt=""
+          fill
+          sizes="118px"
         />
       </div>
 

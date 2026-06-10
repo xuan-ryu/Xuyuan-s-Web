@@ -1,91 +1,12 @@
-import { Fragment } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { about } from "@/data/about";
 import { CtaBlock } from "@/components/cta-block";
 import HongyadongScene from "@/components/hongyadong";
-import KoiPondScene from "@/components/koi-pond";
-
-const BIO = [
-  "Hi, I'm Xuyuan Liu, a product designer and creative developer based in New York, by way of Cornell.",
-  "My work sits between product, humanities, and code. Sometimes it starts as research, sometimes as an interface, and sometimes as a prototype that becomes the research itself.",
-  "Most of what I make returns to one small question: what would this be like if it were actually good?",
-  "My resume tells you what I've done. This is what's in my head while I'm doing it.",
-] as const;
-
-const KOAN = {
-  zh: "好雪片々，不落别处",
-  en: "Good snow, flake by flake, falls only here.",
-  caption: "Zen koan on full presence",
-} as const;
-
-const ARCHETYPES = [
-  {
-    index: "01",
-    title: "Firefighter",
-    body: "I move fast when it matters. When projects hit turbulence, I find clarity under pressure, turning constraint into creative momentum.",
-  },
-  {
-    index: "02",
-    title: "Owl",
-    body: "I observe before I act. Deep research and careful synthesis are my foundation. I question surface assumptions and ask what nobody thought to ask.",
-  },
-  {
-    index: "03",
-    title: "Tree",
-    body: "I build for the long run. Strong roots in research and relationships, adaptable above ground, growing in whichever direction the work needs.",
-  },
-] as const;
-
-const ESSAYS = [
-  {
-    title: "What Changed",
-    body: [
-      "These days, I'm watching two things happen at once.",
-      "Technology is becoming genuinely more open. Tools are cheaper, faster, and kinder to beginners than they have ever been. More people can now make, write, design, build, and say what they mean in forms that used to require entire teams or years of training.",
-      "At the same time, that openness is reshaping the world I was trained to enter. The research habits, the design craft, the code I taught myself after midnight, none of that disappears. But it is being asked to do new work, in new shapes, at a different speed.",
-      "I don't think the honest response is nostalgia. I also don't think it is blind excitement. The harder thing is to keep moving without becoming careless, to use new tools without forgetting what craft was trying to teach me.",
-      "I learned a lot. The era keeps moving. So do I.",
-    ],
-  },
-  {
-    title: "Before the Shutter Closes",
-    body: [
-      "The feeling is close to what those darkroom photographers must have had when the first digital cameras hit the shelves. Glad, of course, the craft was reaching more hands. But quieter than glad, somewhere underneath.",
-      "You can spend forty years over a tray of developer, learning by feel alone when a print has been in the bath long enough, and then one morning that knowledge has nowhere left to go.",
-      "I shoot a little myself. Digital generation, obviously. But I'd rather come home with thirty frames I actually remember taking than two thousand I'll be meeting for the first time in Lightroom.",
-      "So I keep going back to film. Film makes you decide what the photograph is before the shutter closes: no preview, no second take, just whether you read the light correctly the first time.",
-      "My friends and I have a Zen phrase for the kind of moment we're after: 恰好, QiaHao. Not perfect; not excessive; right. The light isn't flawless but it's enough.",
-      "That's what I still trust about the older tools. Not slowness as virtue, but the way the constraint sharpens what you pay attention to.",
-    ],
-    caption: "01/25/2023 / Kinkakuji, Kyoto, Japan",
-  },
-  {
-    title: "How I Work",
-    body: [
-      "Thinking and making have never quite lived in separate rooms for me. Research starts to matter only when it changes the shape of the thing.",
-      "A sketch turns out to be less an idea presented than an idea tested. Sometimes the test is what tells me the idea wasn't any good to begin with.",
-      "A prototype that works isn't a demo bolted on at the end of the thinking; it's where the thinking finally gets caught in the act.",
-      "There's a phrase from the dojo: 心・技・体, mind, technique, body. The intuition it points to, that surfaces under pressure in both design and budo, isn't mystical.",
-      "It's what's left after years of designs that failed for reasons I couldn't yet see, and after a sensei broke and rebuilt my technique with a bokken that didn't care how I felt about it.",
-      "The best interfaces I've used have that quality: they don't announce themselves, they just arrive where your thought was already going.",
-    ],
-    caption: "心・技・体 / mind, skill, body / Aikido / Kendo / Iaido",
-  },
-] as const;
-
-const ACTIVITIES = [
-  {
-    date: "2024 / 2025",
-    title: "Cornell Chinese Drama Club",
-    org: "Publicity Department Chair",
-    desc: "Operated the WeChat public account, published performance announcements for an audience of 300+ users, and developed promotional materials including posters and event advertising.",
-  },
-] as const;
 
 export const metadata: Metadata = {
   title: "About",
-  description: BIO[0],
+  description: about.heroIntro,
 };
 
 export default function About() {
@@ -116,14 +37,14 @@ export default function About() {
 
           <div className="about-quote-wrap">
             <blockquote className="about-quote" data-fade>
-              <span className="zh">{KOAN.zh}</span>
-              <span className="en">{KOAN.en}</span>
-              <cite>{KOAN.caption}</cite>
+              <span className="zh">{about.koan.zh}</span>
+              <span className="en">{about.koan.en}</span>
+              <cite>{about.koan.caption}</cite>
             </blockquote>
           </div>
 
           <div className="about-text about-bio">
-            {BIO.slice(0, 2).map((p) => (
+            {about.bio.map((p) => (
               <p key={p} data-fade>
                 {p}
               </p>
@@ -133,7 +54,7 @@ export default function About() {
           <div className="about-divider" aria-hidden="true" />
 
           <div className="about-resume-note" data-fade>
-            <h2>{BIO.slice(2).join(" ")}</h2>
+            <h2>{about.resumeNote}</h2>
             <a
               className="about-resume-link"
               href="/assets/framerusercontent.com/assets/VXxmU8xrCkbdBVKix29pBF2kVeY.pdf"
@@ -146,97 +67,156 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section archetypes-section">
+      <section className="section about-essay">
         <div className="container">
           <div className="section-intro" data-fade>
-            <p className="label">Value archetypes</p>
-            <h2>How I show up</h2>
+            <h2>{about.whatChanged.title}</h2>
           </div>
-          <div className="grid-divider archetypes-grid">
-            {ARCHETYPES.map((a) => (
-              <div key={a.title} className="archetype-cell" data-fade>
-                <div className="archetype-icon">{a.index}</div>
-                <h3>{a.title}</h3>
-                <p>{a.body}</p>
-              </div>
+          <div className="about-text about-essay-text">
+            {about.whatChanged.body.map((p, i) => (
+              <p key={i} data-fade>
+                {p}
+              </p>
             ))}
           </div>
+
+          <div className="about-logo-wall" data-fade>
+            {about.whatChanged.logos.map((src) => (
+              <span key={src} className="about-logo-cell">
+                <Image src={src} alt="" fill sizes="100px" />
+              </span>
+            ))}
+          </div>
+
+          <p className="about-essay-closing" data-fade>
+            {about.whatChanged.closing}
+          </p>
         </div>
       </section>
 
-      {ESSAYS.map((essay, idx) => (
-        <Fragment key={essay.title}>
-          <section className="section about-essay">
-            <div className="container">
+      <section className="section about-dark">
+        <div className="container">
+          <div className="about-shutter-grid">
+            <div>
               <div className="section-intro" data-fade>
-                <h2>{essay.title}</h2>
+                <h2>{about.shutter.title}</h2>
               </div>
-              <div className="about-text">
-                {essay.body.map((p, i) => (
+              <div className="about-text about-essay-text">
+                {about.shutter.body.map((p, i) => (
                   <p key={i} data-fade>
                     {p}
                   </p>
                 ))}
-                {"caption" in essay && essay.caption ? (
-                  <p className="about-caption" data-fade>
-                    {essay.caption}
-                  </p>
-                ) : null}
               </div>
             </div>
-          </section>
-          {idx === 0 && (
-            <section>
-              <KoiPondScene
-                eyebrow="INTERLUDE / INK ECOSYSTEM"
-                titleMain="A small pond"
-                titleSub="for the wandering eye"
-                tag="MOVE THE CURSOR. FEED THE FISH."
-                feedText="Why not feed the fish?"
-                showScrollTip={false}
-                introDurationMs={800}
-                heroBoxXvw={50}
+            <figure className="about-kyoto" data-fade>
+              <video
+                src={about.shutter.video}
+                autoPlay
+                muted
+                loop
+                playsInline
               />
-            </section>
-          )}
-        </Fragment>
-      ))}
-
-      <section className="section about-timeline-section">
-        <div className="container">
-          <div className="section-intro" data-fade>
-            <p className="label">Practice / mind, technique, body</p>
-            <h2>Dojos</h2>
+              <figcaption>{about.shutter.caption}</figcaption>
+            </figure>
           </div>
-          <div className="timeline-list">
-            {about.dojos.map((d) => (
-              <div key={d.title} className="timeline-item" data-fade>
-                <div className="timeline-date">{d.date}</div>
-                <div>
-                  <div className="timeline-title">{d.title}</div>
-                  <div className="timeline-org">{d.org}</div>
-                </div>
-              </div>
+
+          <div className="about-howiwork">
+            <div className="section-intro" data-fade>
+              <h2>{about.howIWork.title}</h2>
+            </div>
+            <div className="about-text about-essay-text">
+              {about.howIWork.body.map((p, i) => (
+                <p key={i} data-fade>
+                  {p}
+                </p>
+              ))}
+              <p className="about-caption" data-fade>
+                {about.howIWork.caption}
+              </p>
+            </div>
+          </div>
+
+          <div className="about-dojo-wall" data-fade>
+            {about.dojoWall.map((photo) => (
+              <figure
+                key={photo.src}
+                className="about-dojo-item"
+                style={{
+                  left: `${(photo.x / 1420) * 100}%`,
+                  top: photo.y,
+                }}
+              >
+                <Image
+                  src={photo.src}
+                  alt=""
+                  width={154}
+                  height={photo.h}
+                  sizes="154px"
+                  style={{ height: photo.h }}
+                />
+                {"caption" in photo && photo.caption ? (
+                  <figcaption>{photo.caption}</figcaption>
+                ) : null}
+              </figure>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section about-timeline-section">
+      <section className="section about-activities">
         <div className="container">
-          <div className="section-intro" data-fade>
-            <p className="label">Activities & Leadership</p>
-          </div>
-          <div className="timeline-list">
-            {ACTIVITIES.map((a) => (
-              <div key={a.title} className="timeline-item" data-fade>
-                <div className="timeline-date">{a.date}</div>
-                <div>
-                  <div className="timeline-title">{a.title}</div>
-                  <div className="timeline-org">{a.org}</div>
-                  <p className="timeline-desc">{a.desc}</p>
-                </div>
-              </div>
+          <h2 className="about-activities-title" data-fade>
+            Activities&amp;Leadership
+          </h2>
+          {about.activities.map((a) => (
+            <div key={a.org + a.role} className="about-activity" data-fade>
+              <h3>{a.org}</h3>
+              <p className="about-activity-role">{a.role}</p>
+              <p className="about-activity-date">{a.date}</p>
+              <ul>
+                {a.bullets.map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section about-testimonials">
+        <div className="container about-testimonial-grid">
+          {about.testimonials.map((t) => (
+            <figure key={t.name} className="about-testimonial" data-fade>
+              <span className="about-testimonial-photo">
+                <Image src={t.photo} alt={t.name} fill sizes="369px" />
+              </span>
+              <figcaption>
+                <h3>{t.name}</h3>
+                <p className="about-testimonial-role">{t.role}</p>
+                <blockquote>{t.quote}</blockquote>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className="section about-habits">
+        <div className="container">
+          <h2 className="about-habits-title" data-fade>
+            My Habits
+          </h2>
+          <div className="about-habits-grid">
+            {about.habits.map((h) => (
+              <figure key={h.label} className="about-habit" data-fade>
+                <span className="about-habit-photo">
+                  <Image src={h.photo} alt={h.label} fill sizes="240px" />
+                </span>
+                <figcaption>
+                  <p className="about-habit-label">{h.label}</p>
+                  <p className="about-habit-sub">{h.sub}</p>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
