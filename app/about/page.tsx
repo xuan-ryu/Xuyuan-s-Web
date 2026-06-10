@@ -67,7 +67,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section about-essay">
+      <section className="section about-essay about-essay-right">
         <div className="container">
           <div className="section-intro" data-fade>
             <h2>{about.whatChanged.title}</h2>
@@ -94,7 +94,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section about-dark">
+      <section className="section about-essay about-shutter">
         <div className="container">
           <div className="about-shutter-grid">
             <div>
@@ -120,7 +120,11 @@ export default function About() {
               <figcaption>{about.shutter.caption}</figcaption>
             </figure>
           </div>
+        </div>
+      </section>
 
+      <section className="section about-dark">
+        <div className="container">
           <div className="about-howiwork">
             <div className="section-intro" data-fade>
               <h2>{about.howIWork.title}</h2>

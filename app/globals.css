@@ -2299,8 +2299,21 @@
   font-weight: 500;
   line-height: 1.15;
   text-transform: capitalize;
+  /* live: white-section essay titles carry a black side bar; the bar
+     alternates sides (What Changed right, Shutter left) */
+  border-left: 4px solid #0a0a0a;
+  padding-left: clamp(16px, 1.8vw, 26px);
+}
+.about-essay-right .section-intro h2 {
+  border-left: 0;
+  border-right: 4px solid #0a0a0a;
+  padding-left: 0;
+  padding-right: clamp(16px, 1.8vw, 26px);
+  text-align: right;
 }
 .about-essay-text p {
+  /* full container width like live (override .about-text's 920px cap) */
+  max-width: none;
   font-family: var(--font-serif);
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.62;
@@ -2352,6 +2365,8 @@
   line-height: 1.15;
   color: #fff;
   text-transform: capitalize;
+  /* live: the dark-band title sits right-aligned */
+  text-align: right;
 }
 .about-dark .about-essay-text p {
   color: rgba(255, 255, 255, 0.92);
@@ -2379,10 +2394,10 @@
   font-style: italic;
   font-size: 15px;
   text-align: right;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(10, 10, 10, 0.55);
 }
 .about-howiwork {
-  margin-top: clamp(90px, 10vw, 150px);
+  margin-top: 0;
 }
 /* dojo photo wall — absolute stagger measured from the live site */
 .about-dojo-wall {
