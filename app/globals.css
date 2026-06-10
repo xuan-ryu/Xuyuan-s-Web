@@ -448,19 +448,22 @@
 }
 @media (max-width: 600px) {
   .site-footer {
-    padding: 0;
+    padding: 0 10px;
   }
   .footer-inner {
-    min-height: 340px;
-    gap: 26px;
-    padding: 110px 28px 40px;
-    border-radius: 24px 24px 0 0;
+    min-height: 261px;
+    gap: 18px;
+    padding: 64px 20px 26px;
+    border-radius: 18px 18px 0 0;
     text-align: center;
   }
   .footer-socials-row {
-    top: 48px;
-    left: 28px;
-    right: 28px;
+    top: 26px;
+    left: 20px;
+    right: 20px;
+  }
+  .footer-mark {
+    width: 29px;
   }
   .footer-nav {
     gap: 18px;
@@ -3680,27 +3683,36 @@
 }
 
 @media (max-width: 740px) {
+  /* live mobile (390w): roof section runs 1848→3301, pieces at rel y 339/500 */
   .home-roof-transition {
-    height: 980px;
+    height: 1453px;
   }
   .home-roof-transition::before {
     height: 220px;
   }
   .roof-a {
-    left: -139px;
-    top: 0;
-    width: 522px;
-    height: 291px;
+    left: -516px;
+    top: 339px;
+    width: 742px;
+    height: 414px;
   }
-  .roof-b,
+  .roof-b {
+    left: 226px;
+    top: 339px;
+    width: 742px;
+    height: 414px;
+  }
   .roof-c {
-    display: none;
+    left: -27px;
+    top: 500px;
+    width: 817px;
+    height: 456px;
   }
   .roof-d {
-    left: 15px;
-    top: 95px;
-    width: 515px;
-    height: 288px;
+    left: 790px;
+    top: 500px;
+    width: 816px;
+    height: 455px;
   }
   .home-section-shell {
     width: calc(100vw - 42px);
@@ -3709,7 +3721,7 @@
     padding: 64px 0 52px;
   }
   .home-featured-live {
-    min-height: 3000px;
+    min-height: 3327px;
     padding: 0;
     overflow: hidden;
   }
@@ -3723,7 +3735,7 @@
     height: 160px;
   }
   .home-featured-shell {
-    height: 3000px;
+    height: 3327px;
   }
   .home-featured-head {
     align-items: flex-start;
@@ -3761,15 +3773,21 @@
     top: 86px;
     transform: translateX(-50%);
   }
+  /* live mobile keeps unit B near desktop scale, pinned past the left edge */
   .window-unit-b {
-    left: 50%;
-    top: 1280px;
-    transform: translateX(-50%);
+    left: -120px;
+    top: 1807px;
+    transform: none;
+    width: 430px;
   }
   .window-shape {
     width: min(320px, calc(100vw - 42px));
     height: 196px;
     gap: 7px;
+  }
+  .window-unit-b .window-shape {
+    width: 430px;
+    height: 253px;
   }
   .window-pane-left {
     border-top-left-radius: 196px;
@@ -3777,8 +3795,17 @@
   .window-pane-right {
     border-top-right-radius: 196px;
   }
+  .window-unit-b .window-pane-left {
+    border-top-left-radius: 253px;
+  }
+  .window-unit-b .window-pane-right {
+    border-top-right-radius: 253px;
+  }
   .window-pane-number {
-    font-size: 54px;
+    font-size: 60px;
+  }
+  .window-unit-b .window-pane-number {
+    font-size: 80px;
   }
   .window-pane-preview {
     inset: 28px 14px 20px;
@@ -3801,7 +3828,7 @@
     top: 352px;
   }
   .preview-group-b {
-    top: 1548px;
+    top: 2075px;
   }
   .featured-preview-media {
     height: 300px;
@@ -3830,34 +3857,57 @@
     margin-top: 22px;
     margin-bottom: 0;
   }
+  /* live mobile garden decor — desktop-size art, repositioned (rel stage top) */
   .featured-roof-line {
-    left: -300px;
-    top: 1060px;
-    width: 1050px;
-    height: 350px;
+    left: -1218px;
+    top: 1101px;
+    width: 1679px;
+    height: 488px;
+  }
+  .featured-roof-line-b {
+    left: 461px;
+    top: 1097px;
+    width: 1071px;
+    height: 494px;
   }
   .featured-bamboo {
-    right: -58px;
-    top: 860px;
-    width: 260px;
-    height: 470px;
+    right: auto;
+    left: -147px;
+    top: 972px;
+    width: 548px;
+    height: 982px;
+  }
+  .featured-bamboo-b {
+    right: auto;
+    left: -378px;
+    top: 1319px;
+    width: 497px;
+    height: 891px;
   }
   .featured-garden-tree {
-    left: -128px;
-    top: 2100px;
-    width: 250px;
-    height: 448px;
+    left: -58px;
+    top: 2120px;
+    width: 541px;
+    height: 886px;
   }
   .featured-garden-rock {
-    left: -34px;
-    top: 2460px;
-    width: 210px;
-    height: 376px;
+    left: 273px;
+    top: 2604px;
+    width: 219px;
+    height: 350px;
   }
-  .featured-roof-line-b,
-  .featured-bamboo-b,
-  .featured-garden-rock-b,
-  .featured-garden-rock-c,
+  .featured-garden-rock-b {
+    left: -74px;
+    top: 2698px;
+    width: 360px;
+    height: 439px;
+  }
+  .featured-garden-rock-c {
+    left: 54px;
+    top: 2693px;
+    width: 470px;
+    height: 286px;
+  }
   .featured-grass-a,
   .featured-grass-b {
     display: none;
@@ -3885,15 +3935,16 @@
     height: 42px;
     font-size: 14px;
   }
+  /* live mobile: koi frame 303x809 inset 45/42, how section starts 972 below */
   .home-koi-section {
-    height: 1180px;
-    min-height: 980px;
+    height: 972px;
+    min-height: 900px;
   }
   .home-koi-frame {
-    left: 10px;
-    right: 10px;
+    left: 44px;
+    right: 43px;
     top: 24px;
-    height: 980px;
+    height: 809px;
   }
   .home-koi-frame::before {
     height: 54px;
@@ -3908,68 +3959,101 @@
   .home-koi-frame-shadow {
     width: 36px;
   }
+  /* live mobile How-I-Work: same absolute collage, scaled (rel section top) */
   .home-how {
-    height: auto;
-    padding: 76px 22px 120px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+    height: 1643px;
   }
   .home-how-title {
-    position: static;
-    font-size: 48px;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 44px;
     line-height: 1.12;
     white-space: normal;
-    margin-bottom: 28px;
   }
   .how-screen {
-    left: -36px;
-    top: 178px;
-    width: 252px;
-    height: 276px;
+    left: -107px;
+    top: 238px;
+    width: 347px;
+    height: 383px;
   }
   .how-vase {
-    left: -22px;
-    top: 342px;
-    width: 104px;
-    height: 156px;
+    left: -86px;
+    top: 175px;
+    width: 205px;
+    height: 474px;
   }
   .how-bamboo-screen {
-    left: auto;
-    right: -126px;
-    top: auto;
-    bottom: 88px;
-    width: 298px;
-    height: 284px;
+    left: 143px;
+    top: 569px;
+    width: 361px;
+    height: 588px;
   }
   .how-lotus {
-    left: auto;
-    right: -54px;
-    bottom: 72px;
-    top: auto;
-    width: 222px;
-    height: 148px;
+    left: 17px;
+    top: 707px;
+    width: 603px;
+    height: 395px;
   }
-  .how-gold-screen,
-  .how-dark-screen,
-  .how-brush {
-    display: none;
+  .how-gold-screen {
+    left: -360px;
+    top: 1102px;
+    width: 638px;
+    height: 458px;
   }
-  .how-card,
-  .how-card-1,
-  .how-card-2,
-  .how-card-3 {
-    position: static;
+  .how-dark-screen {
+    left: -124px;
+    top: 1083px;
+    width: 386px;
+    height: 495px;
+  }
+  .how-brush-a {
+    left: -384px;
+    top: 606px;
+    width: 920px;
+    height: 79px;
+  }
+  .how-brush-b {
+    left: -124px;
+    top: 996px;
+    width: 890px;
+    height: 146px;
+  }
+  .how-brush-c {
+    left: -225px;
+    top: 1467px;
+    width: 890px;
+    height: 120px;
+  }
+  .how-card {
     width: 100%;
-    min-height: 330px;
-    padding: 36px 26px;
-    border-radius: 24px;
+    padding: 32px 24px;
+    border-radius: 0;
+  }
+  .how-card-1 {
+    left: 0;
+    top: 392px;
+    min-height: 299px;
+  }
+  .how-card-2 {
+    left: 0;
+    top: 869px;
+    min-height: 271px;
+  }
+  .how-card-3 {
+    left: 0;
+    top: 1318px;
+    min-height: 271px;
   }
   .how-card h3 {
     font-size: 32px;
+    margin-bottom: 22px;
   }
   .how-card p {
-    font-size: 17px;
+    font-size: 16px;
+    max-width: 100%;
   }
   .proj-summary {
     display: block;

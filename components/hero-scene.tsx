@@ -1867,6 +1867,10 @@ export default function DigitalLandscape(props: Props) {
               /* live mobile: greeting wraps inside the viewport (one phrase per
                  row-ish), container must not exceed the screen */
               .framer-xy-hero { max-width: 86vw !important; }
+              /* live mobile: roof section starts at doc y1848 —
+                 spacer 186 + zone 1662 keeps the flow tight like desktop */
+              .hero-spacer { height: 22vh !important; }
+              .profile-zone { height: 1662px !important; }
               .framer-xy-hero h1 { font-size: clamp(28px, 9vw, 42px); gap: 10px; margin: 0 0 14px 0; }
               .framer-xy-sub { font-size: 13px; line-height: 1.7; }
               .hero-quote { font-size: 13px; max-width: 88vw; }
@@ -2078,10 +2082,16 @@ export default function DigitalLandscape(props: Props) {
             </div>
 
             {/* Hero spacer: align the Framer transition timing in the Next page. */}
-            <div style={{ height: "45vh", pointerEvents: "none" }} />
+            <div
+                className="hero-spacer"
+                style={{ height: "45vh", pointerEvents: "none" }}
+            />
 
             {/* Profile zone: exits early enough for the roof transition to match live. */}
-            <div style={{ position: "relative", height: "164vh", zIndex: 10 }}>
+            <div
+                className="profile-zone"
+                style={{ position: "relative", height: "164vh", zIndex: 10 }}
+            >
                 <div
                     ref={blackPageRef}
                     className="profile-sticky"
@@ -2097,6 +2107,9 @@ export default function DigitalLandscape(props: Props) {
                         opacity: 0,
                         pointerEvents: "none",
                         willChange: "opacity",
+                        // the nowrap brand row is wider than small screens —
+                        // without clipping it inflates the mobile layout viewport
+                        overflow: "hidden",
                     }}
                 >
                     <div className="page2-sky-wash" />
