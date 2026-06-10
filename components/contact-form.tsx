@@ -5,7 +5,7 @@ import { site } from "@/data/site";
 
 const SERVICES = [
   "Branding",
-  "Website & App Design",
+  "Website and App Design",
   "Design & Marketing",
 ];
 
@@ -70,7 +70,7 @@ export function ContactForm() {
           required
         />
       </div>
-      <button type="submit" className="btn">
+      <button type="submit" className="btn contact-submit">
         {sent ? "Opening email..." : "Submit"}
       </button>
     </form>
