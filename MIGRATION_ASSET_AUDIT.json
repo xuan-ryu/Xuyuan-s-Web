@@ -1,0 +1,21 @@
+{
+  "htmlFiles": 9,
+  "referencedAssets": 438,
+  "sourceMissing": 1,
+  "targetMissing": 0,
+  "covered": 437,
+  "missingTargetSample": [],
+  "sourceMissingSample": [
+    {
+      "ref": "/assets/framerusercontent.com/assets/VXxmU8xrCkbdBVKix29pBF2kVeY.pdf",
+      "pages": [
+        "about/index.html"
+      ],
+      "sourceExists": false,
+      "sourceSize": 0,
+      "targetExists": false,
+      "targetPath": null
+    }
+  ],
+  "largestMissingTarget": []
+}

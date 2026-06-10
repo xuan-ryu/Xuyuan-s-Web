@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { site } from "@/data/site";
 
 const nav = [
+  { href: "/", label: "home" },
   { href: "/work", label: "work" },
   { href: "/about", label: "about" },
   { href: "/contact", label: "contact" },
@@ -34,11 +36,15 @@ export function Header() {
       >
         <div className="content-nav-inner">
           <Link href="/" className="nav-logo">
-            XUYUAN
+            <span className="nav-logo-en">XUYUAN LIU</span>
+            <span className="nav-logo-zh">{site.nameZh}</span>
           </Link>
           <div className="nav-links">
             {nav.map((item) => {
-              const active = pathname.startsWith(item.href);
+              const active =
+                item.href === "/"
+                  ? false
+                  : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}

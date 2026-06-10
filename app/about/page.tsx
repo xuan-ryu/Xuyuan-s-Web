@@ -20,7 +20,7 @@ export default function About() {
         titleLine1="About"
         titleLine2="Me."
         titleZh="刘 栩源"
-        subtitle={about.bio[0]}
+        subtitle={about.heroIntro}
         signatureNote={about.hometown}
         scrollDemo={0}
       />

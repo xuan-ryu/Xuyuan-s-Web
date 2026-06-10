@@ -4,10 +4,9 @@ import { useState } from "react";
 import { site } from "@/data/site";
 
 const SERVICES = [
-  "Product / UX Design",
-  "Research",
-  "Creative Development",
-  "Collaboration / Other",
+  "Branding",
+  "Website & App Design",
+  "Design & Marketing",
 ];
 
 export function ContactForm() {
@@ -30,18 +29,30 @@ export function ContactForm() {
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="name">Name</label>
-          <input id="name" name="name" type="text" required />
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Jane Smith"
+            required
+          />
         </div>
         <div className="form-group">
           <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" required />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="jane@smith.com"
+            required
+          />
         </div>
       </div>
       <div className="form-group">
         <label htmlFor="service">Service</label>
         <select id="service" name="service" defaultValue="">
           <option value="" disabled>
-            Select…
+            Select...
           </option>
           {SERVICES.map((s) => (
             <option key={s} value={s}>
@@ -52,10 +63,15 @@ export function ContactForm() {
       </div>
       <div className="form-group">
         <label htmlFor="message">Message</label>
-        <textarea id="message" name="message" required />
+        <textarea
+          id="message"
+          name="message"
+          placeholder="Your  Message"
+          required
+        />
       </div>
-      <button type="submit" className="btn" style={{ alignSelf: "flex-start" }}>
-        {sent ? "Opening email…" : "Submit"}
+      <button type="submit" className="btn">
+        {sent ? "Opening email..." : "Submit"}
       </button>
     </form>
   );

@@ -6,7 +6,7 @@ export function WorkCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/work/${project.slug}`}
-      className="project-card fade-up"
+      className="project-card work-feature-card fade-up"
       data-fade
     >
       <div className={`project-cover ${project.coverClass ?? ""}`.trim()}>
@@ -15,27 +15,22 @@ export function WorkCard({ project }: { project: Project }) {
             src={project.cover}
             alt={project.title}
             fill
-            sizes="(max-width: 680px) 100vw, 540px"
+            sizes="100vw"
             style={{ objectFit: "cover" }}
           />
         ) : (
           <span className="cover-label">{project.title}</span>
         )}
       </div>
-      <div className="project-body">
-        <div className="project-tags">
-          {project.tags.map((t) => (
-            <span key={t} className="pill">
-              {t}
-            </span>
-          ))}
-        </div>
-        <h3 className="project-title">{project.title}</h3>
-        <p className="project-oneliner">{project.oneliner}</p>
-        <span className="text-link" style={{ marginTop: "8px" }}>
-          View project
-        </span>
+
+      <div className="work-card-shade" />
+      <div className="work-card-title">{project.title}</div>
+      <div className="work-card-copy">
+        {project.blurb.split("\n\n").map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
       </div>
+      <span className="work-card-button">View Project</span>
     </Link>
   );
 }

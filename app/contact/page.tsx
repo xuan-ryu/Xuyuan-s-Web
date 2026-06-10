@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { site } from "@/data/site";
 import { ContactForm } from "@/components/contact-form";
 
@@ -9,59 +10,49 @@ export const metadata: Metadata = {
 
 export default function Contact() {
   return (
-    <>
-      <section className="contact-header">
-        <div className="container">
-          <p className="label" data-fade>
-            Get in touch
-          </p>
-          <h1 data-fade>Contact Me</h1>
-          <p data-fade>
-            For collaboration, freelance work, or just a hello — I&apos;m happy
-            to hear from you.
-          </p>
-        </div>
-      </section>
+    <div className="contact-page">
+      <section className="contact-hero" id="header">
+        <h1 className="contact-title" data-fade>
+          Contact Me
+        </h1>
 
-      <section>
-        <div className="container">
-          <div className="contact-layout">
-            <aside className="contact-info">
-              <h2>Direct contact</h2>
-              <div className="contact-item">
-                <div className="contact-item-label">Email</div>
-                <a href={`mailto:${site.email}`}>{site.email}</a>
-              </div>
-              <div className="contact-item">
-                <div className="contact-item-label">Phone</div>
-                <span>{site.phone}</span>
-              </div>
-              <div className="contact-item">
-                <div className="contact-item-label">Based in</div>
-                <span>{site.location}</span>
-              </div>
-              <div className="social-links">
-                <a
-                  href={site.socials.linkedin}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  linkedin
-                </a>
-                <a
-                  href={site.socials.instagram}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  instagram
-                </a>
-              </div>
-            </aside>
+        <div className="contact-hero-grid">
+          <p className="contact-intro" data-fade>
+            With a focus on innovation, storytelling, and user-centered design,
+            I create immersive experiences that captivate and engage. Let&apos;s
+            collaborate to bring your vision to life and craft digital solutions
+            that leave a lasting impact.
+          </p>
 
-            <ContactForm />
+          <aside className="contact-card" aria-label="Contact information">
+            <Image
+              src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+              alt=""
+              width={304}
+              height={641}
+              className="contact-card-mark"
+            />
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+            <a href={`tel:${site.phone.replace(/\s+/g, "")}`}>
+              {site.phone}
+            </a>
+          </aside>
+
+          <div className="contact-portrait">
+            <Image
+              src="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
+              alt="Xuyuan Liu"
+              fill
+              sizes="(max-width: 809px) calc(100vw - 48px), 310px"
+              priority
+            />
           </div>
         </div>
       </section>
-    </>
+
+      <section className="contact-form-section">
+        <ContactForm />
+      </section>
+    </div>
   );
 }

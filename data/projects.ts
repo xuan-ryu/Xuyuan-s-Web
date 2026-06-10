@@ -31,13 +31,13 @@ export const projects: Project[] = [
   {
     slug: "vicino-ai",
     title: "Vicino AI",
-    cover: "/media/CSMKvZFRUZIIYznbJxUXsf58M.png",
+    cover: "/assets/framerusercontent.com/images/CSMKvZFRUZIIYznbJxUXsf58M.png",
     coverClass: "cover-vicino",
     tags: ["Product Design", "PM", "AI"],
     oneliner:
       "Finding the structure underneath a creation chain that spans 3D, image, prompt, and video — so the seams stop being where users get lost.",
     blurb:
-      "When I joined Vicino AI, the product was expanding quickly across 3D, image generation, video generation, editing tools, and higher-level workflows. My focus became finding the structure underneath all of it — where complexity should live, and where the interaction model needed to stay quiet.",
+      "When I joined Vicino AI, the product was expanding quickly across 3D, image generation, video generation, editing tools, and higher-level workflow features. What it still lacked was a shared interaction model that could make those capabilities feel like one product instead of a growing collection of experiments. Prompts, reference assets, editors, and generated outputs all existed, but the logic connecting them was still unclear. As the product grew, so did a more important question: how do you turn fast-moving capabilities into a workflow people can actually understand, control, and build on?\n\nMy role quickly became much broader than designing individual screens. I worked closely with PMs, other designers, SDEs, frontend engineers, the founding engineer, and ML engineers to help turn those moving pieces into a more coherent product structure. I contributed to workflow design, node responsibilities, editor logic, interaction layers like sidebars and sliding panels, and the design system behind all of it. More importantly, this project changed how I think about these tools. I became much more aware of what the models could realistically support, where automation helped, where it broke down, and how a new workflow had to be designed around those limits. The goal was never to automate everything away. It was to make complex creation easier to begin, while still leaving people enough control to revise, refine, and make detailed decisions when the work demanded more precision.",
     role: "Product Designer / PM",
     duration: "2025 – present",
     type: "Intern",
@@ -57,7 +57,7 @@ export const projects: Project[] = [
   {
     slug: "froghire-ai",
     title: "FrogHire.ai",
-    cover: "/media/J7KSTcOXT9GD7Wi9y09C1kQVpRY.png",
+    cover: "/assets/framerusercontent.com/images/J7KSTcOXT9GD7Wi9y09C1kQVpRY.png",
     coverClass: "cover-froghire",
     tags: ["UX Design", "Research", "AI"],
     oneliner:
@@ -83,7 +83,7 @@ export const projects: Project[] = [
   {
     slug: "roper-center",
     title: "Roper Center",
-    cover: "/media/hnG0x6uWkJJVksmxu5u2OIc1PkI.png",
+    cover: "/assets/framerusercontent.com/images/hnG0x6uWkJJVksmxu5u2OIc1PkI.png",
     coverClass: "cover-roper",
     tags: ["UX Design", "Data Viz"],
     oneliner:
@@ -108,7 +108,7 @@ export const projects: Project[] = [
   {
     slug: "hunger1942",
     title: "Hunger 1942",
-    cover: "/media/5zyKNfQwTPjb8k4yiVdDHojwG4.png",
+    cover: "/assets/framerusercontent.com/images/5zyKNfQwTPjb8k4yiVdDHojwG4.png",
     coverClass: "cover-hunger",
     tags: ["Game Design", "History"],
     oneliner:
@@ -133,7 +133,7 @@ export const projects: Project[] = [
   {
     slug: "vr-education",
     title: "VR Monarch Butterfly",
-    cover: "/media/NwtTH2DNikT8udqd6SMqzccrHc.png",
+    cover: "/assets/framerusercontent.com/images/NwtTH2DNikT8udqd6SMqzccrHc.png",
     coverClass: "cover-vr-monarch",
     tags: ["VR Design", "Unity"],
     oneliner:

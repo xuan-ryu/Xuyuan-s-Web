@@ -1,7 +1,7 @@
 export const site = {
   name: "Xuyuan Liu",
   nameZh: "刘 栩源",
-  brandmark: "XUYUAN",
+  brandmark: "Hi, I'm Xuyuan. I design for intuition.",
   title: "Xuyuan Liu — Product Designer & Creative Developer",
   description:
     "Interactive Design & Creative Development. Crafting digital experiences with an oriental aesthetic and modern engineering.",
@@ -12,18 +12,19 @@ export const site = {
     linkedin: "https://www.linkedin.com/",
     instagram: "https://www.instagram.com/",
   },
-  greeting: ["Hello,", "你好,", "こんにちは"],
+  greeting: ["Welcome,", "欢迎,", "ようこそ。"],
   heroSub:
-    "Interactive Design & Creative Development.\nCrafting digital experiences with an oriental aesthetic and modern engineering.",
+    "Product Designer & Creative Development.\nCrafting digital experiences with an aesthetic and modern design.",
   brandCorner: {
-    zh: "气韵生动",
-    en: "Foreground Bank & Distant Peaks · Mist · Birds · Moss",
+    zh: "Foreground bank, distant peaks, mist breathes, birds stitch the hush, and moss remembers the ink.",
+    en: "GAWAIN · UX STRATEGY × VIBE CODING",
   },
-  sideText: "会 当 凌 绝 顶",
-  scrollHint: "向下滚动 / Scroll to explore",
+  sideText: "先行先聽 萬縷歸心",
+  scrollHint: "Scroll down to explore",
   blackPage: {
     zh: "深 邃",
-    body: "当数字水墨褪去，我们在黑暗中聚焦设计的本质。\nScroll to enter.",
+    body: "Trained in research, pulled toward making things.\nI use AI the way a craftsman uses good tools — to think faster, not think less",
+    line: "YES — TECH GIVES IT STRUCTURE, AND AESTHETICS GIVES IT SOUL.",
   },
   archetypes: [
     {
@@ -40,6 +41,23 @@ export const site = {
       icon: "🌳",
       title: "Tree",
       body: "I build for the long run. Strong roots in research and relationships. Adaptable above ground — growing in whichever direction the work genuinely needs, not just what's comfortable.",
+    },
+  ],
+  workMethods: [
+    {
+      title: "Observe",
+      heading: "See what others settle for",
+      body: "I look past surface-level feedback to find the friction people have learned to live with. Precision starts with attention — UX audits, pain-point mapping, and sitting with ambiguity before jumping to solutions.",
+    },
+    {
+      title: "Build",
+      heading: "Prototype before certainty",
+      body: "I use prototypes and code as thinking tools, not deliverables. Building early exposes what's missing, sharpens priorities, and turns abstract direction into something a team can react to.",
+    },
+    {
+      title: "Align",
+      heading: "Connect vision, logic, and execution",
+      body: "I work in the spaces between product, design, and engineering — aligning priorities, negotiating trade-offs, and helping scattered input become coherent momentum.",
     },
   ],
   quotes: [

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "audit:screenshots": "node scripts/capture-migration-matrix.mjs"
   },
   "dependencies": {
     "@types/three": "^0.184.1",

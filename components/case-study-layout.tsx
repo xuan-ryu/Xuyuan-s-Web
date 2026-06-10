@@ -6,64 +6,61 @@ export function CaseStudyLayout({ project }: { project: Project }) {
   const { prev, next } = adjacent(project.slug);
 
   return (
-    <article>
+    <article className="case-study-page">
+      <section className="case-study-hero" id="header">
+        <h1>{project.title}</h1>
+      </section>
+      <div className="case-study-rule" />
+
       <div className={`proj-hero ${project.coverClass ?? ""}`.trim()}>
-        {project.cover ? (
-          <Image
-            src={project.cover}
-            alt={project.title}
-            fill
-            sizes="100vw"
-            priority
-            style={{ objectFit: "cover" }}
-          />
-        ) : (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span className="cover-label" style={{ position: "static" }}>
-              {project.title}
-            </span>
-          </div>
-        )}
+        <div className="proj-hero-frame">
+          {project.cover ? (
+            <Image
+              src={project.cover}
+              alt={project.title}
+              fill
+              sizes="100vw"
+              priority
+              style={{ objectFit: "cover" }}
+            />
+          ) : (
+            <div className="proj-hero-placeholder">
+              <span className="cover-label" style={{ position: "static" }}>
+                {project.title}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
-      <section className="proj-intro">
-        <div className="container">
-          <p className="proj-eyebrow label">
-            Project · {String(project.order).padStart(2, "0")}
-          </p>
-          <h1 className="proj-title">{project.title}</h1>
-          <p className="proj-oneliner">{project.blurb}</p>
+      <section className="proj-summary">
+        <h2>Project Summary</h2>
+        <div className="proj-summary-meta">
+          <div>
+            <span>Role</span>
+            <strong>{project.role}</strong>
+          </div>
+          <div>
+            <span>Duration</span>
+            <strong>{project.duration}</strong>
+          </div>
+          <div>
+            <span>Type</span>
+            <strong>{project.type}</strong>
+          </div>
+          <div>
+            <span>Teams</span>
+            <strong>{project.teams}</strong>
+          </div>
         </div>
+        <p>{project.blurb}</p>
       </section>
 
-      <div className="container">
-        <div className="proj-meta">
-          <div className="meta-cell">
-            <div className="meta-label">Role</div>
-            <div className="meta-value">{project.role}</div>
-          </div>
-          <div className="meta-cell">
-            <div className="meta-label">Duration</div>
-            <div className="meta-value">{project.duration}</div>
-          </div>
-          <div className="meta-cell">
-            <div className="meta-label">Type</div>
-            <div className="meta-value">{project.type}</div>
-          </div>
-          <div className="meta-cell">
-            <div className="meta-label">Teams</div>
-            <div className="meta-value">{project.teams}</div>
-          </div>
-        </div>
+      <section className="proj-solution-heading">
+        <h2>Solution</h2>
+      </section>
 
+      <div className="container proj-content-container">
         <div className="proj-layout">
           <aside className="proj-sidebar">
             <nav>
@@ -134,11 +131,11 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                   className="proj-nav-item prev"
                 >
                   <span className="proj-nav-label">Previous</span>
-                  <span className="proj-nav-title">← {prev.title}</span>
+                  <span className="proj-nav-title">{"<-"} {prev.title}</span>
                 </Link>
               ) : (
                 <div className="proj-nav-item">
-                  <span className="proj-nav-label">—</span>
+                  <span className="proj-nav-label">-</span>
                 </div>
               )}
               {next ? (
@@ -147,11 +144,11 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                   className="proj-nav-item next"
                 >
                   <span className="proj-nav-label">Next</span>
-                  <span className="proj-nav-title">{next.title} →</span>
+                  <span className="proj-nav-title">{next.title} {"->"}</span>
                 </Link>
               ) : (
                 <div className="proj-nav-item next">
-                  <span className="proj-nav-label">—</span>
+                  <span className="proj-nav-label">-</span>
                 </div>
               )}
             </div>

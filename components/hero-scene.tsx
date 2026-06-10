@@ -489,13 +489,21 @@ export default function DigitalLandscape(props: Props) {
                 uiRef.current?.classList.add("scene-loaded")
             }
         }
+        const fontRevealFallback = window.setTimeout(() => {
+            if (!isMounted || fontsReadyRef.current) return
+            fontsReadyRef.current = true
+            tryReveal()
+        }, 1200)
+
         if (document.fonts) {
             document.fonts.ready.then(() => {
                 if (!isMounted) return
+                window.clearTimeout(fontRevealFallback)
                 fontsReadyRef.current = true
                 tryReveal()
             })
         } else {
+            window.clearTimeout(fontRevealFallback)
             fontsReadyRef.current = true
         }
 
@@ -629,7 +637,7 @@ export default function DigitalLandscape(props: Props) {
                 0,
                 Math.min(
                     1,
-                    (currentScrollY - winHeight * 0.8) / (winHeight * 0.2)
+                    (currentScrollY - winHeight * 0.82) / (winHeight * 0.22)
                 )
             )
             if (blackPageEl) {
@@ -655,8 +663,8 @@ export default function DigitalLandscape(props: Props) {
                     // 组件完全在视口下方（尚未滚动到），隐藏 fixed canvas 避免叠在其他页面内容上
                     setInlineStyle(wrapperEl, "opacity", "0")
                 } else {
-                    const canvasFadeStart = winHeight * 2.2
-                    const canvasFadeEnd = winHeight * 2.4
+                    const canvasFadeStart = winHeight * 1.55
+                    const canvasFadeEnd = winHeight * 1.9
                     const canvasFade =
                         currentScrollY <= canvasFadeStart
                             ? 1
@@ -813,6 +821,7 @@ export default function DigitalLandscape(props: Props) {
                     window.removeEventListener("mouseleave", handleMouseLeave)
                 }
                 window.removeEventListener("loaderFinished", onLoaderDone)
+                window.clearTimeout(fontRevealFallback)
             }
         }
 
@@ -1598,7 +1607,7 @@ export default function DigitalLandscape(props: Props) {
                 // Flow-based height: 100vh (p1 spacer) + 170vh (p2 zone) = 270vh total
                 // maxScrollY = 170vh → progress = 170/165 = 1.03, safely reaches 1.0
                 position: "relative",
-                minHeight: "260vh",
+                minHeight: "209vh",
                 backgroundColor: "#FFFFFF",
             }}
         >
@@ -1647,7 +1656,7 @@ export default function DigitalLandscape(props: Props) {
                 opacity: 0; transform: translateY(7px); filter: blur(4px);
                 will-change: transform, opacity, filter;
             }
-            .scene-loaded .framer-xy-sub { animation: appleRevealSub 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.55s; }
+            .scene-loaded .framer-xy-sub { opacity: 0; }
 
             @keyframes appleRevealSub {
                 to { opacity: 1; transform: translateY(0); filter: blur(0px); }
@@ -1655,9 +1664,9 @@ export default function DigitalLandscape(props: Props) {
 
             /* Quote, scroll-hint, right vertical — gated the same way */
             .hero-quote { opacity: 0; transform: translateY(6px); filter: blur(3px); }
-            .scene-loaded .hero-quote { animation: appleRevealSub 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.80s; }
+            .scene-loaded .hero-quote { opacity: 0; }
             .hero-scroll-hint { opacity: 0; transform: translateY(4px); }
-            .scene-loaded .hero-scroll-hint { animation: appleRevealHint 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 1.00s; }
+            .scene-loaded .hero-scroll-hint { opacity: 0; }
             @keyframes appleRevealHint {
                 to { opacity: 1; transform: translateY(0); }
             }
@@ -1675,7 +1684,7 @@ export default function DigitalLandscape(props: Props) {
                 width: 100%;
                 max-width: 960px;
                 margin: 0 auto;
-                transform: translateY(0);
+                transform: translateY(-110px);
             }
 
             /* Sky wash — 全屏氛围光晕染，真实星星由 WebGL canvas 提供 */
@@ -1711,7 +1720,7 @@ export default function DigitalLandscape(props: Props) {
             .delay-6 { transition-delay: 0.46s; }
 
             /* Profile sticky — padding-top pulled out of inline style for responsive control */
-            .profile-sticky { padding-top: 22vh; }
+            .profile-sticky { padding-top: 0; }
 
             /* Avatar wrapper */
             .page2-photo-wrapper {
@@ -1739,7 +1748,7 @@ export default function DigitalLandscape(props: Props) {
 
             /* Photo — lift & glow on hover */
             .page2-photo {
-                width: clamp(140px, min(26vw, 28vh), 260px); height: clamp(140px, min(26vw, 28vh), 260px);
+                width: clamp(160px, min(28vw, 30vh), 280px); height: clamp(160px, min(28vw, 30vh), 280px);
                 overflow: hidden; position: relative; border-radius: 50%;
                 box-shadow: 0 16px 50px rgba(0,0,0,0.65);
                 filter: grayscale(10%) contrast(1.06);
@@ -1947,7 +1956,7 @@ export default function DigitalLandscape(props: Props) {
                         style={{
                             position: "absolute",
                             left: "6vw",
-                            top: "50%",
+                            top: "calc(50% + 80px)",
                             transform: "translateY(-50%)",
                             maxWidth: "520px",
                         }}
@@ -2050,11 +2059,11 @@ export default function DigitalLandscape(props: Props) {
                 </div>
             </div>
 
-            {/* Hero spacer — 80vh：让 profile zone 在滚动 80vh 时入场，配合 p2 fade 创造可见渐入 */}
-            <div style={{ height: "80vh", pointerEvents: "none" }} />
+            {/* Hero spacer: align the Framer transition timing in the Next page. */}
+            <div style={{ height: "45vh", pointerEvents: "none" }} />
 
-            {/* Profile zone — 180vh，星空固定 canvas 为背景 */}
-            <div style={{ position: "relative", height: "180vh", zIndex: 10 }}>
+            {/* Profile zone: exits early enough for the roof transition to match live. */}
+            <div style={{ position: "relative", height: "164vh", zIndex: 10 }}>
                 <div
                     ref={blackPageRef}
                     className="profile-sticky"
