@@ -4,11 +4,10 @@ import { projects } from "@/data/projects";
 import { WorkCard } from "@/components/work-card";
 import { CtaBlock } from "@/components/cta-block";
 import { Loader } from "@/components/loader";
-import { ValueCard } from "@/components/value-card";
 import HeroScene from "@/components/hero-scene";
 
 export default function Home() {
-  const featured = projects.slice(0, 2);
+  const featured = projects.filter((p) => p.featured);
 
   return (
     <>
@@ -18,45 +17,75 @@ export default function Home() {
         heroWord1={site.greeting[0]}
         heroWord2={site.greeting[1]}
         heroWord3={site.greeting[2]}
-        heroSubtitle="Product designer & creative developer.\nBetween product, humanities, and code."
-        rightVerticalText="PORTFOLIO · 2026"
-        quoteLine="Good snow, flake by flake, falls only here."
-        scrollHint="Scroll"
-        page2Title={site.name}
-        page2Subtitle="Curious generalist with too many tabs open.\nNew York, by way of Cornell."
-        page2BrandLine="XUYUAN LIU · 刘 栩源"
-        page2Footer="© 2026 Xuyuan Liu"
-        photoUrl="/media/zoVy03Z9HQEJ1PpuQ0q2P8S8mdA.png"
+        heroSubtitle={site.heroSub}
+        rightVerticalText={site.sideText}
+        quoteLine={site.brandCorner.zh}
+        scrollHint={site.scrollHint}
+        page2Title={site.brandmark}
+        page2Subtitle={site.blackPage.body}
+        page2BrandLine={site.brandCorner.en}
+        page2Footer={`© ${new Date().getFullYear()} XUYUAN`}
       />
 
-      <section className="px-6 md:px-10 py-20 border-t border-rule">
-        <div className="flex items-baseline justify-between mb-12">
-          <span className="text-eyebrow">Featured Project</span>
-          <Link
-            href="/work"
-            className="text-eyebrow text-ink hover:underline underline-offset-4"
-          >
-            View all projects →
-          </Link>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8">
-          {featured.map((p) => (
-            <WorkCard key={p.slug} project={p} />
-          ))}
+      <section id="featured" className="section featured-section">
+        <div className="container">
+          <div className="section-intro-row section-intro">
+            <div>
+              <p className="label" data-fade>
+                Selected Work
+              </p>
+              <h2 data-fade>Featured projects</h2>
+            </div>
+            <Link href="/work" className="text-link" data-fade>
+              View all projects
+            </Link>
+          </div>
+          <div className="featured-grid">
+            {featured.map((p) => (
+              <WorkCard key={p.slug} project={p} />
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="px-6 md:px-10 py-24 md:py-32 border-t border-rule">
-        <span className="text-eyebrow">How I Work</span>
-        <div className="mt-12 grid md:grid-cols-3 gap-8">
-          {site.howIWork.map((step) => (
-            <ValueCard
-              key={step.title}
-              title={step.title}
-              subtitle={step.subtitle}
-              bodyText={step.body}
-            />
-          ))}
+      <section id="value" className="section value-section">
+        <div className="container">
+          <div className="section-intro" data-fade>
+            <p className="label">My Value</p>
+            <h2>How I work</h2>
+          </div>
+          <div className="grid-divider value-grid">
+            {site.archetypes.map((a) => (
+              <div key={a.title} className="value-cell" data-fade>
+                <div className="value-icon">{a.icon}</div>
+                <h3>{a.title}</h3>
+                <p>{a.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="quotes" className="section quotes-section">
+        <div className="container">
+          <p
+            className="label"
+            style={{ marginBottom: "40px" }}
+            data-fade
+          >
+            What people say
+          </p>
+          <div className="grid-divider quotes-grid">
+            {site.quotes.map((q) => (
+              <div key={q.author} className="quote-cell" data-fade>
+                <p className="quote-text">{q.text}</p>
+                <div className="quote-author">
+                  <strong>{q.author}</strong>
+                  <span>{q.role}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

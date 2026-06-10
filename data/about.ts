@@ -1,9 +1,6 @@
 export const about = {
   heading: "About Me.",
-  intro:
-    "I'm a curious generalist with too many tabs open. I know a little about a lot, chase odd possibilities for fun, and lately I've been building at the seams between product, design, and code.",
-  hometown:
-    "My hometown, Chongqing, China — a city that grounded me with people.",
+  hometown: "My hometown — Chongqing, China",
   koan: {
     zh: "好雪片々，不落别處",
     en: "Good snow, flake by flake, falls only here.",
@@ -14,7 +11,24 @@ export const about = {
     "My work sits between product, humanities, and code. Sometimes it starts as research, sometimes as an interface, and sometimes as a prototype that argues with itself until it becomes the thing.",
     "My resume tells you what I've done. This is what's in my head while I'm doing it.",
   ],
-  sections: [
+  archetypes: [
+    {
+      icon: "🔥",
+      title: "Firefighter",
+      body: "I move fast when it matters. When projects hit turbulence, I find clarity under pressure — turning constraint into creative momentum.",
+    },
+    {
+      icon: "🦉",
+      title: "Owl",
+      body: "I observe before I act. Deep research and careful synthesis are my foundation. I question surface assumptions and ask the question nobody thought to ask.",
+    },
+    {
+      icon: "🌳",
+      title: "Tree",
+      body: "I build for the long run. Strong roots in research and relationships. Adaptable above ground — growing in whichever direction the work genuinely needs.",
+    },
+  ],
+  essays: [
     {
       title: "What Changed",
       body: [
@@ -31,33 +45,36 @@ export const about = {
         "The feeling is close to what those darkroom photographers must have had when the first digital cameras hit the shelves. Glad, of course — there is freedom in the new tool. But also a little careful about what gets lost when every frame is cheap.",
         "I shoot a little myself. Digital generation, obviously. But I'd rather come home with thirty frames I actually remember taking than two thousand I'll never look at.",
         "My friends and I have a “Zen” phrase for the kind of moment we're after: 恰好, QiaHao. Not perfect; not excessive; right. The light isn't flawless. The composition isn't textbook. It's just exactly what was there.",
-        "That's what I still trust about the older tools. Not slowness as virtue — slowness has nothing to do with it — but the way the constraint sharpens attention.",
-        "Same with the AI era. You can generate a hundred prototypes before lunch; that doesn't make 恰好 cheaper, only rarer.",
       ],
       caption: "01/25/2023 — Kinkakuji, Kyoto, Japan",
     },
     {
-      title: "How I Work",
+      title: "How I Work — 心・技・体",
       body: [
         "Thinking and making have never quite lived in separate rooms for me. Research starts to matter only when it changes the shape of the thing. The thing starts to matter only when it survives contact with someone else's attention.",
         "There's a phrase from the dōjō — 心・技・体, mind, technique, body. The intuition it points to, that surfaces under pressure in both design and budō, is the same one I try to bring to product work.",
         "Later, under pressure, that work returns as a faster kind of seeing — an eye and a body that can tell good from bad before the conscious mind catches up.",
-        "A client doesn't always give you a second draft. Neither does the bokken. All you can do is own the wrong call afterward — sit with it, study it, and let the next call carry the correction.",
         "That's the kind of design I'm after — not impressive in the abstract, and not just polished at the surface, but something handled and tested enough that, when it ships, you trust the shape it has.",
       ],
-      caption: "心・技・体 / mind, skill, body / Aikido · Kendo · Iaido",
+      caption: "Aikido · Kendo · Iaido",
     },
   ],
   dojos: [
-    "Oberlin Aikikai, OH, 2022",
-    "Ikazuchi Dojo, CA, 2023",
-    "Chongqing JiangBei Kendo Dojo, China, 2024",
-    "Kyoto Hokenkai, Japan, 2024",
+    { date: "2022", title: "Oberlin Aikikai", org: "Oberlin, OH" },
+    { date: "2023", title: "Ikazuchi Dojo", org: "California" },
+    {
+      date: "2024",
+      title: "Chongqing JiangBei Kendo Dojo",
+      org: "Chongqing, China",
+    },
+    { date: "2024", title: "Kyoto Hokenkai", org: "Kyoto, Japan" },
   ],
   activities: [
     {
-      role: "Cornell Chinese Drama Club — Publicity Department Chair",
-      time: "September 2024 – December 2025",
+      date: "2024 – 2025",
+      title: "Cornell Chinese Drama Club",
+      org: "Publicity Department Chair",
+      desc: "September 2024 – December 2025. Led visual identity and event publicity for performances.",
     },
   ],
 } as const;

@@ -13,22 +13,31 @@ export default function WorkIndex() {
 
   return (
     <>
-      <section className="px-6 md:px-10 pt-40 pb-16 md:pb-24">
-        <span className="text-eyebrow">Selected · 2022 – 2026</span>
-        <h1 className="mt-4 text-display text-[clamp(3rem,10vw,9rem)] leading-[0.95]">
-          My Work
-        </h1>
-        <p className="mt-8 max-w-2xl text-ink-muted text-lg leading-relaxed">
-          Five projects across product design, education, games, and immersive
-          media. Each one is a short study in what changes when constraints
-          shift — team size, timeline, audience, or the tools available.
-        </p>
+      <section className="work-header">
+        <div className="container">
+          <p className="label" data-fade>
+            Portfolio · 2022 – 2026
+          </p>
+          <h1 data-fade>My Work</h1>
+          <p data-fade>
+            Five projects across product, education, games, and immersive
+            media — each a short study in what shifts when the constraints
+            change.
+          </p>
+          <p className="work-count">
+            {String(sorted.length).padStart(2, "0")} projects
+          </p>
+        </div>
       </section>
 
-      <section className="px-6 md:px-10 pb-24 grid md:grid-cols-2 gap-8">
-        {sorted.map((p) => (
-          <WorkCard key={p.slug} project={p} />
-        ))}
+      <section>
+        <div className="container">
+          <div className="work-grid">
+            {sorted.map((p) => (
+              <WorkCard key={p.slug} project={p} />
+            ))}
+          </div>
+        </div>
       </section>
 
       <CtaBlock />

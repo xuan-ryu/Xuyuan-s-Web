@@ -6,31 +6,34 @@ export function WorkCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/work/${project.slug}`}
-      className="group block border border-rule overflow-hidden bg-bg-elev"
+      className="project-card fade-up"
+      data-fade
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-bg">
-        <Image
-          src={project.cover}
-          alt={project.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-        />
+      <div className={`project-cover ${project.coverClass ?? ""}`.trim()}>
+        {project.cover ? (
+          <Image
+            src={project.cover}
+            alt={project.title}
+            fill
+            sizes="(max-width: 680px) 100vw, 540px"
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <span className="cover-label">{project.title}</span>
+        )}
       </div>
-      <div className="p-6 md:p-8 space-y-4">
-        <div className="flex items-baseline justify-between gap-4">
-          <h3 className="text-display text-2xl md:text-3xl uppercase tracking-wide">
-            {project.title}
-          </h3>
-          <span className="text-eyebrow shrink-0">
-            {String(project.order).padStart(2, "0")}
-          </span>
+      <div className="project-body">
+        <div className="project-tags">
+          {project.tags.map((t) => (
+            <span key={t} className="pill">
+              {t}
+            </span>
+          ))}
         </div>
-        <p className="text-ink-muted text-sm leading-relaxed line-clamp-3">
-          {project.blurb}
-        </p>
-        <span className="inline-flex items-center gap-2 text-eyebrow text-ink group-hover:gap-3 transition-all">
-          View project <span aria-hidden>→</span>
+        <h3 className="project-title">{project.title}</h3>
+        <p className="project-oneliner">{project.oneliner}</p>
+        <span className="text-link" style={{ marginTop: "8px" }}>
+          View project
         </span>
       </div>
     </Link>

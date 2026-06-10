@@ -7,7 +7,7 @@ import KoiPondScene from "@/components/koi-pond";
 
 export const metadata: Metadata = {
   title: "About",
-  description: about.intro,
+  description: about.bio[0],
 };
 
 export default function About() {
@@ -16,56 +16,88 @@ export default function About() {
       <HongyadongScene
         imageSrc="/media/hongyadong.png"
         profilePhoto=""
-        eyebrow="Profile"
+        eyebrow="Profile · 介绍"
         titleLine1="About"
         titleLine2="Me."
         titleZh="刘 栩源"
-        subtitle={about.intro}
-        signatureNote="This nightscape is my hometown, Chongqing."
+        subtitle={about.bio[0]}
+        signatureNote={about.hometown}
         scrollDemo={0}
       />
 
-      <section className="px-6 md:px-10 py-20 border-t border-rule">
-        <p className="text-eyebrow">{about.hometown}</p>
-        <figure className="mt-12 max-w-3xl mx-auto text-center">
-          <blockquote
-            className="text-display text-4xl md:text-6xl leading-tight"
-            style={{ fontFamily: "var(--font-brush)" }}
-          >
-            {about.koan.zh}
-          </blockquote>
-          <figcaption className="mt-6 italic text-ink-muted">
-            {about.koan.en}
-          </figcaption>
-          <p className="mt-3 text-eyebrow">{about.koan.caption}</p>
-        </figure>
-      </section>
-
-      <section className="px-6 md:px-10 py-20 max-w-3xl space-y-6 text-lg leading-relaxed text-ink-muted">
-        {about.bio.map((p, i) => (
-          <p key={i} className={i === 0 ? "text-ink" : undefined}>
-            {p}
+      <section className="about-header">
+        <div className="container">
+          <p className="label" data-fade>
+            About
           </p>
-        ))}
+          <h1 data-fade>{about.heading}</h1>
+        </div>
       </section>
 
-      {about.sections.map((sec, idx) => (
-        <Fragment key={sec.title}>
-          <section className="px-6 md:px-10 py-20 md:py-28 border-t border-rule max-w-3xl">
-            <h2 className="text-display text-3xl md:text-5xl leading-tight">
-              {sec.title}
-            </h2>
-            <div className="mt-10 space-y-5 text-ink-muted leading-relaxed text-lg">
-              {sec.body.map((p, i) => (
-                <p key={i}>{p}</p>
+      <section>
+        <div className="container">
+          <div className="about-layout">
+            <div className="about-text">
+              {about.bio.map((p, i) => (
+                <p key={i} data-fade>
+                  {p}
+                </p>
               ))}
+              <blockquote className="about-quote" data-fade>
+                <span className="zh">{about.koan.zh}</span>
+                <span className="en">{about.koan.en}</span>
+              </blockquote>
             </div>
-            {"caption" in sec && sec.caption && (
-              <p className="mt-10 text-eyebrow">{sec.caption}</p>
-            )}
+            <div className="about-photo" data-fade>
+              <span className="cover-label" style={{ position: "static" }}>
+                Portrait
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section archetypes-section">
+        <div className="container">
+          <div className="section-intro" data-fade>
+            <p className="label">Value archetypes</p>
+            <h2>How I show up</h2>
+          </div>
+          <div className="grid-divider archetypes-grid">
+            {about.archetypes.map((a) => (
+              <div key={a.title} className="archetype-cell" data-fade>
+                <div className="archetype-icon">{a.icon}</div>
+                <h3>{a.title}</h3>
+                <p>{a.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {about.essays.map((essay, idx) => (
+        <Fragment key={essay.title}>
+          <section className="section">
+            <div className="container">
+              <div className="section-intro" data-fade>
+                <p className="label">{essay.title}</p>
+              </div>
+              <div className="about-text" style={{ maxWidth: 720 }}>
+                {essay.body.map((p, i) => (
+                  <p key={i} data-fade>
+                    {p}
+                  </p>
+                ))}
+                {"caption" in essay && essay.caption && (
+                  <p className="label" style={{ marginTop: 16 }}>
+                    {essay.caption}
+                  </p>
+                )}
+              </div>
+            </div>
           </section>
           {idx === 0 && (
-            <section className="px-6 md:px-10 py-10 border-t border-rule">
+            <section>
               <KoiPondScene
                 eyebrow="INTERLUDE · INK ECOSYSTEM"
                 titleMain="A small pond"
@@ -81,25 +113,43 @@ export default function About() {
         </Fragment>
       ))}
 
-      <section className="px-6 md:px-10 py-20 border-t border-rule grid md:grid-cols-2 gap-12">
-        <div>
-          <h3 className="text-eyebrow mb-6">Dojos</h3>
-          <ul className="space-y-3 text-ink-muted">
+      <section className="section">
+        <div className="container">
+          <div className="section-intro" data-fade>
+            <p className="label">Practice — 心・技・体</p>
+            <h2>Dojos</h2>
+          </div>
+          <div>
             {about.dojos.map((d) => (
-              <li key={d}>{d}</li>
+              <div key={d.title} className="timeline-item" data-fade>
+                <div className="timeline-date">{d.date}</div>
+                <div>
+                  <div className="timeline-title">{d.title}</div>
+                  <div className="timeline-org">{d.org}</div>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
-        <div>
-          <h3 className="text-eyebrow mb-6">Activities & Leadership</h3>
-          <ul className="space-y-4 text-ink-muted">
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-intro" data-fade>
+            <p className="label">Activities & Leadership</p>
+          </div>
+          <div>
             {about.activities.map((a) => (
-              <li key={a.role}>
-                <p className="text-ink">{a.role}</p>
-                <p className="text-eyebrow mt-1">{a.time}</p>
-              </li>
+              <div key={a.title} className="timeline-item" data-fade>
+                <div className="timeline-date">{a.date}</div>
+                <div>
+                  <div className="timeline-title">{a.title}</div>
+                  <div className="timeline-org">{a.org}</div>
+                  <p className="timeline-desc">{a.desc}</p>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 

@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Marcellus, Murecho } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Murecho,
+  Noto_Serif_SC,
+} from "next/font/google";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { site } from "@/data/site";
 import "./globals.css";
+
+const murecho = Murecho({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-murecho",
+});
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -12,27 +22,17 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
 });
 
-const marcellus = Marcellus({
+const notoSerifSc = Noto_Serif_SC({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-marcellus",
-});
-
-const murecho = Murecho({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-murecho",
+  weight: ["400", "500"],
+  variable: "--font-noto-serif-sc",
+  preload: false,
 });
 
 export const metadata: Metadata = {
-  title: { default: site.title, template: "%s — Xuyuan Liu" },
+  title: { default: site.title, template: "%s — XUYUAN" },
   description: site.description,
   metadataBase: new URL("https://xuyuan.liu"),
-  openGraph: {
-    type: "website",
-    title: site.title,
-    description: site.description,
-  },
 };
 
 export default function RootLayout({
@@ -41,12 +41,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${marcellus.variable} ${murecho.variable}`}
+      className={`${murecho.variable} ${cormorant.variable} ${notoSerifSc.variable}`}
     >
-      <body className="min-h-screen bg-bg text-ink antialiased flex flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body>
+        <div id="page-root">
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
