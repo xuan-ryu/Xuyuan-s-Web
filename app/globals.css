@@ -2858,7 +2858,9 @@
 
 /* Live Framer home sections */
 .home-roof-transition {
-  height: 1287px;
+  /* live: 1287px at a 1000px viewport, growing as the viewport shrinks
+     (measured 1387 at 750) — a −40vh linear term */
+  height: calc(1687px - 40vh);
   position: relative;
   background: #fff;
   overflow: hidden;
@@ -2867,40 +2869,41 @@
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 350px;
+  /* the roof artwork has a transparent sky and an opaque-white lower fill:
+     this black backdrop must reach below the deepest roofline (~rel 900px)
+     so the eaves carve the black region, exactly as on the live site */
+  height: 900px;
   background: #050505;
 }
 .home-roof-transition .roof {
   position: absolute;
   max-width: none;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.08);
   pointer-events: none;
 }
-/* boxes measured from the live site at 1440w (section top = doc y2090);
-   the composition is pinned to the viewport CENTER on the live site, so
-   left offsets are expressed from 50% (offset = x@1440 - 720) */
+/* center-pinned mid-view geometry (live position when the section center
+   crosses the viewport center); RoofTransition adds the scroll parallax */
 .roof-a {
-  left: calc(50% - 1233px);
-  top: -1px;
+  left: calc(50% - 1481px);
+  top: 17px;
   width: 1928px;
   height: 1076px;
 }
 .roof-b {
-  left: calc(50% + 695px);
-  top: -1px;
+  left: calc(50% + 447px);
+  top: 17px;
   width: 1928px;
   height: 1076px;
 }
 .roof-c {
-  left: calc(50% - 2569px);
-  top: 352px;
+  left: calc(50% - 2320px);
+  top: 370px;
   width: 1903px;
   height: 1062px;
 }
 .roof-d {
-  left: calc(50% - 666px);
-  top: 352px;
+  left: calc(50% - 418px);
+  top: 369px;
   width: 1902px;
   height: 1062px;
 }
@@ -3688,7 +3691,7 @@
     height: 1453px;
   }
   .home-roof-transition::before {
-    height: 220px;
+    height: 740px;
   }
   .roof-a {
     left: -516px;

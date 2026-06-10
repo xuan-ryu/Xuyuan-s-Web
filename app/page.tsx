@@ -6,6 +6,7 @@ import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond";
 import { FeaturedWindows } from "@/components/featured-windows";
+import { RoofTransition } from "@/components/roof-transition";
 import { CtaBlock } from "@/components/cta-block";
 
 export default function Home() {
@@ -29,38 +30,7 @@ export default function Home() {
         photoUrl="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
       />
 
-      {/* live composition: two roof artworks, each rendered twice — an upper
-          pair at the black/white boundary and a lower pair shifted 352px down */}
-      <section className="home-roof-transition" aria-hidden="true">
-        <Image
-          src="/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png"
-          alt=""
-          width={1928}
-          height={1076}
-          className="roof roof-a"
-        />
-        <Image
-          src="/assets/framerusercontent.com/images/6abw1vzYpd5VHb7WZncQkASt2ag.png"
-          alt=""
-          width={1928}
-          height={1076}
-          className="roof roof-b"
-        />
-        <Image
-          src="/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png"
-          alt=""
-          width={1903}
-          height={1062}
-          className="roof roof-c"
-        />
-        <Image
-          src="/assets/framerusercontent.com/images/6abw1vzYpd5VHb7WZncQkASt2ag.png"
-          alt=""
-          width={1902}
-          height={1062}
-          className="roof roof-d"
-        />
-      </section>
+      <RoofTransition />
 
       <section id="featured" className="home-featured home-featured-live">
         <div className="home-featured-shell">

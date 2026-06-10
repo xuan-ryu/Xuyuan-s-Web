@@ -1612,10 +1612,10 @@ export default function DigitalLandscape(props: Props) {
             ref={backgroundRef}
             style={{
                 width: "100%",
-                // Flow-based height: 100vh (p1 spacer) + 170vh (p2 zone) = 270vh total
-                // maxScrollY = 170vh → progress = 170/165 = 1.03, safely reaches 1.0
+                // live: hero+page2 flow = 300vh − 911px (measured at viewport
+                // heights 1000 and 750; only coincides with 209vh at 1000)
                 position: "relative",
-                minHeight: "209vh",
+                minHeight: "calc(300vh - 911px)",
                 backgroundColor: "#FFFFFF",
             }}
         >
@@ -2081,10 +2081,14 @@ export default function DigitalLandscape(props: Props) {
                 </div>
             </div>
 
-            {/* Hero spacer: align the Framer transition timing in the Next page. */}
+            {/* Hero spacer: with the 164vh profile zone this sums to the live
+                flow height 300vh − 911px (45vh at a 1000px-tall viewport). */}
             <div
                 className="hero-spacer"
-                style={{ height: "45vh", pointerEvents: "none" }}
+                style={{
+                    height: "calc(136vh - 911px)",
+                    pointerEvents: "none",
+                }}
             />
 
             {/* Profile zone: exits early enough for the roof transition to match live. */}
