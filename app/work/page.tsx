@@ -16,12 +16,18 @@ export default function WorkIndex() {
         <h1 data-fade>My Work</h1>
         <div className="work-view-controls" aria-hidden="true">
           <span className="work-list-icon">
-            <span />
-            <span />
-            <span />
+            <svg viewBox="0 0 28 28" focusable="false">
+              <path d="M4.5 7.5h19" />
+              <path d="M4.5 14h19" />
+              <path d="M4.5 20.5h19" />
+            </svg>
           </span>
           <span className="work-card-icon">
-            <span />
+            <svg viewBox="0 0 44 44" focusable="false">
+              <rect className="work-card-icon-shell" width="44" height="44" rx="22" />
+              <rect className="work-card-icon-window" x="11" y="12" width="22" height="18" rx="2" />
+              <path className="work-card-icon-line" d="M15 18h14M15 24h10" />
+            </svg>
           </span>
         </div>
       </section>

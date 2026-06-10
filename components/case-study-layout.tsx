@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
+import { CaseStudySidebar } from "@/components/case-study-sidebar";
 
 export function CaseStudyLayout({ project }: { project: Project }) {
   const { prev, next } = adjacent(project.slug);
@@ -9,6 +10,15 @@ export function CaseStudyLayout({ project }: { project: Project }) {
     ["Duration", project.duration],
     ["Type", project.type],
     ["Teams", project.teams],
+  ];
+  const sidebarItems = [
+    { href: "#overview", label: "Overview" },
+    ...(project.memorableMoment ? [{ href: "#moment", label: "Moment" }] : []),
+    ...(project.chapters?.map((ch, i) => ({
+      href: `#ch-${i + 1}`,
+      label: ch.number ?? `Ch ${i + 1}`,
+    })) ?? []),
+    ...(project.livePreview ? [{ href: "#live", label: "Live" }] : []),
   ];
 
   return (
@@ -59,20 +69,7 @@ export function CaseStudyLayout({ project }: { project: Project }) {
 
       <div className="container proj-content-container">
         <div className="proj-layout">
-          <aside className="proj-sidebar">
-            <nav>
-              <a href="#overview">Overview</a>
-              {project.memorableMoment && (
-                <a href="#moment">Moment</a>
-              )}
-              {project.chapters?.map((ch, i) => (
-                <a key={i} href={`#ch-${i + 1}`}>
-                  {ch.number ?? `Ch ${i + 1}`}
-                </a>
-              ))}
-              {project.livePreview && <a href="#live">Live</a>}
-            </nav>
-          </aside>
+          <CaseStudySidebar items={sidebarItems} />
 
           <div>
             <section id="overview" className="proj-section">

@@ -32,10 +32,12 @@ export default function Contact() {
               height={641}
               className="contact-card-mark"
             />
-            <a href={`mailto:${site.email}`}>{site.email}</a>
-            <a href={`tel:${site.phone.replace(/\s+/g, "")}`}>
-              {site.phone}
-            </a>
+            <div className="contact-card-links">
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+              <a href={`tel:${site.phone.replace(/\s+/g, "")}`}>
+                {site.phone}
+              </a>
+            </div>
           </aside>
 
           <div className="contact-portrait">
