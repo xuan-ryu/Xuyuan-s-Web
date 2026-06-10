@@ -43,7 +43,7 @@ export function Header() {
             {nav.map((item) => {
               const active =
                 item.href === "/"
-                  ? false
+                  ? pathname === "/"
                   : pathname.startsWith(item.href);
               return (
                 <Link
