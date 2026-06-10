@@ -681,12 +681,20 @@ export default function DigitalLandscape(props: Props) {
                     )
                 }
             }
-            if (uiEl)
+            if (uiEl) {
                 setInlineStyle(
                     uiEl,
                     "opacity",
-                    String(round3(Math.max(1 - progress * 1.8, 0)))
+                    String(round3(Math.max(1 - progress * 1.55, 0)))
                 )
+                // live: hero copy scrolls away with the page (no pinning),
+                // fading as it goes — translate the fixed UI back by scrollY
+                setInlineStyle(
+                    uiEl,
+                    "transform",
+                    `translateY(${-Math.round(currentScrollY)}px)`
+                )
+            }
 
             // Smooth day→night — opacity overlay（compositor-only，不触发 repaint）
             const nightT = smoothstepF(0.65, 0.85, progress)
@@ -1664,11 +1672,11 @@ export default function DigitalLandscape(props: Props) {
 
             /* Quote, scroll-hint, right vertical — gated the same way */
             .hero-quote { opacity: 0; transform: translateY(6px); filter: blur(3px); }
-            .scene-loaded .hero-quote { opacity: 0; }
+            .scene-loaded .hero-quote { animation: appleRevealHint 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards; }
             .hero-scroll-hint { opacity: 0; transform: translateY(4px); }
-            .scene-loaded .hero-scroll-hint { opacity: 0; }
+            .scene-loaded .hero-scroll-hint { animation: appleRevealHint 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
             @keyframes appleRevealHint {
-                to { opacity: 1; transform: translateY(0); }
+                to { opacity: 1; transform: translateY(0); filter: blur(0); }
             }
             .hero-right-vertical { opacity: 0; transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.30s; }
             .scene-loaded .hero-right-vertical { opacity: 0.9; }
@@ -1802,6 +1810,11 @@ export default function DigitalLandscape(props: Props) {
                 font-size: clamp(17px, 2vw, 22px); font-weight: 300; font-style: italic;
                 letter-spacing: 0.015em; line-height: 1.6; color: rgba(255,255,255,0.65);
                 white-space: pre-line;
+                /* live: paragraph box is ~940px wide so neither line wraps */
+                width: max-content;
+                max-width: min(940px, 92vw);
+                margin-left: auto;
+                margin-right: auto;
             }
 
             /* Brand row */
@@ -2008,7 +2021,9 @@ export default function DigitalLandscape(props: Props) {
                         style={{
                             position: "absolute",
                             left: "6vw",
-                            bottom: "36px",
+                            // live: the quote hugs the fold (top edge at y≈963)
+                            // and the scroll hint sits below the first viewport
+                            bottom: "-52px",
                             display: "flex",
                             flexDirection: "column",
                             gap: "20px",

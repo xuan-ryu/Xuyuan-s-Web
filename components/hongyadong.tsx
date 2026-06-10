@@ -187,6 +187,7 @@ export default function HongyadongFramer(props: Props) {
     const titleRef = useRef<HTMLHeadingElement>(null)
     const zhRef = useRef<HTMLDivElement>(null)
     const subRef = useRef<HTMLParagraphElement>(null)
+    const heroRef = useRef<HTMLDivElement>(null)
     const scrollDemoRef = useRef(scrollDemo)
 
     useEffect(() => {
@@ -346,7 +347,8 @@ export default function HongyadongFramer(props: Props) {
 
         const syncUIText = (progress: number) => {
             const textT = smoothstep(0.12, 0.48, progress)
-            const signatureReady = progress >= 0.58
+            // live: signature reveal kicks in around scrollY≈480 (progress≈0.7)
+            const signatureReady = progress >= 0.7
             setStyleIfChanged(
                 topRef.current,
                 "color",
@@ -890,6 +892,12 @@ export default function HongyadongFramer(props: Props) {
                 : clamp(-rootEl.getBoundingClientRect().top, 0, scrollMax)
             const progress = clamp(rawScroll / (scrollMax * 0.72), 0, 1)
             currentScrollPx = rawScroll
+            // live: title block starts 124px lower and slides up 144px during
+            // the first 200px of scroll, settling 20px above its base
+            if (heroRef.current) {
+                const slide = 124 - 144 * clamp(rawScroll / 200, 0, 1)
+                heroRef.current.style.transform = `translateY(${slide.toFixed(1)}px)`
+            }
             syncUIText(progress)
         }
 
@@ -1051,7 +1059,8 @@ export default function HongyadongFramer(props: Props) {
                 position: "relative",
                 width: "100%",
                 height: "100%",
-                minHeight: 1800,
+                // live: root is 1944px tall — sticky stage releases at scrollY≈944
+                minHeight: 1944,
                 overflow: "visible",
                 background: "#fff",
                 color: "#000",
@@ -1527,7 +1536,11 @@ export default function HongyadongFramer(props: Props) {
                         </div>
                     </div>
 
-                    <div className="hyf-hero">
+                    <div
+                        ref={heroRef}
+                        className="hyf-hero"
+                        style={{ transform: "translateY(124px)" }}
+                    >
                         {profilePhoto && (
                             <div ref={avatarRef} className="hyf-avatar hyf-reveal-copy">
                                 <img src={profilePhoto} alt="" />
