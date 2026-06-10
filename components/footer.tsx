@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/data/site";
 
@@ -13,10 +14,18 @@ export function Footer() {
     <footer className="site-footer">
       <div className="footer-inner">
         <div className="footer-left">
-          <div className="footer-logo">XUYUAN</div>
+          <div className="footer-logo">XUYUAN LIU</div>
           <p className="footer-copy">
-            © {new Date().getFullYear()} XUYUAN. All rights reserved.
+            &copy; {new Date().getFullYear()} XUYUAN LIU
           </p>
+        </div>
+        <div className="footer-mark" aria-hidden="true">
+          <Image
+            src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+            alt=""
+            width={304}
+            height={641}
+          />
         </div>
         <nav className="footer-nav" aria-label="Footer navigation">
           {nav.map((item) => (
