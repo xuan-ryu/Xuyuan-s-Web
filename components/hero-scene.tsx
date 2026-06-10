@@ -456,7 +456,7 @@ export default function DigitalLandscape(props: Props) {
             if (blackPageRef.current) {
                 const p2Opacity = Math.max(
                     0,
-                    Math.min(1, (scrollY - winH * 0.8) / (winH * 0.2))
+                    Math.min(1, (scrollY - (winH * 0.28 + 590)) / 350)
                 )
                 setInlineStyle(
                     blackPageRef.current,
@@ -633,11 +633,12 @@ export default function DigitalLandscape(props: Props) {
             const blackPageEl = blackPageRef.current
 
             // page2: fade in profile once stars are mostly formed
+            // live window fitted at two viewport heights: start = 0.28h + 590
             const p2Opacity = Math.max(
                 0,
                 Math.min(
                     1,
-                    (currentScrollY - winHeight * 0.82) / (winHeight * 0.22)
+                    (currentScrollY - (winHeight * 0.28 + 590)) / 350
                 )
             )
             if (blackPageEl) {
@@ -1810,9 +1811,9 @@ export default function DigitalLandscape(props: Props) {
                 font-size: clamp(17px, 2vw, 22px); font-weight: 300; font-style: italic;
                 letter-spacing: 0.015em; line-height: 1.6; color: rgba(255,255,255,0.65);
                 white-space: pre-line;
-                /* live: paragraph box is ~940px wide so neither line wraps */
-                width: max-content;
-                max-width: min(940px, 92vw);
+                /* live: 940px box, text left-aligned inside */
+                width: min(940px, 92vw);
+                text-align: left;
                 margin-left: auto;
                 margin-right: auto;
             }
@@ -2100,13 +2101,18 @@ export default function DigitalLandscape(props: Props) {
                     ref={blackPageRef}
                     className="profile-sticky"
                     style={{
-                        position: "sticky",
-                        top: 0,
+                        // live: page-2 copy sits at a FIXED document position
+                        // (~doc y1100 content top) regardless of viewport
+                        // height — not pinned. zone top = 136vh - 911px, so
+                        // an absolute top of 2011px - 136vh lands there.
+                        position: "absolute",
+                        top: "calc(2152px - 136vh)",
+                        left: 0,
                         width: "100%",
                         height: "100vh",
                         display: "flex",
                         justifyContent: "center",
-                        alignItems: "center",
+                        alignItems: "flex-start",
                         color: "#F5F5F5",
                         opacity: 0,
                         pointerEvents: "none",
