@@ -2874,27 +2874,29 @@
   filter: grayscale(1) contrast(1.08);
   pointer-events: none;
 }
-/* boxes measured from the live site at 1440w (section top = doc y2090) */
+/* boxes measured from the live site at 1440w (section top = doc y2090);
+   the composition is pinned to the viewport CENTER on the live site, so
+   left offsets are expressed from 50% (offset = x@1440 - 720) */
 .roof-a {
-  left: -513px;
+  left: calc(50% - 1233px);
   top: -1px;
   width: 1928px;
   height: 1076px;
 }
 .roof-b {
-  left: 1415px;
+  left: calc(50% + 695px);
   top: -1px;
   width: 1928px;
   height: 1076px;
 }
 .roof-c {
-  left: -1849px;
+  left: calc(50% - 2569px);
   top: 352px;
   width: 1903px;
   height: 1062px;
 }
 .roof-d {
-  left: 54px;
+  left: calc(50% - 666px);
   top: 352px;
   width: 1902px;
   height: 1062px;
@@ -3305,12 +3307,16 @@
   color: #050505;
   z-index: 3;
 }
+/* Framer pins these by fraction of the free space (left:% with a matching
+   self-translate), verified against the live site at 1440w and 1920w */
 .window-unit-a {
-  right: 158px;
+  left: 83.63%;
+  transform: translateX(-83.63%);
   top: 40px;
 }
 .window-unit-b {
-  left: 157px;
+  left: 16.27%;
+  transform: translateX(-16.27%);
   top: 1450px;
 }
 .window-shape {
@@ -3552,7 +3558,7 @@
 }
 .featured-bamboo-b {
   position: absolute;
-  left: 672px;
+  right: 271px;
   top: 1203px;
   width: 497px;
   height: 891px;

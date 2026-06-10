@@ -20,12 +20,13 @@ async function loadPlaywright() {
 }
 
 const { chromium } = await loadPlaywright();
-const [, , url, yMinArg, yMaxArg] = process.argv;
+const [, , url, yMinArg, yMaxArg, widthArg] = process.argv;
 const yMin = Number(yMinArg);
 const yMax = Number(yMaxArg);
+const vpWidth = Number(widthArg) || 1440;
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.addInitScript(() => {
   try {
     sessionStorage.setItem("loader-shown", "1");
