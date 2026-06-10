@@ -4,10 +4,17 @@ import { adjacent, type Project } from "@/data/projects";
 
 export function CaseStudyLayout({ project }: { project: Project }) {
   const { prev, next } = adjacent(project.slug);
+  const meta = [
+    ["Role", project.role],
+    ["Duration", project.duration],
+    ["Type", project.type],
+    ["Teams", project.teams],
+  ];
 
   return (
     <article className="case-study-page">
       <section className="case-study-hero" id="header">
+        <p className="case-study-kicker">Case Study</p>
         <h1>{project.title}</h1>
       </section>
       <div className="case-study-rule" />
@@ -36,22 +43,12 @@ export function CaseStudyLayout({ project }: { project: Project }) {
       <section className="proj-summary">
         <h2>Project Summary</h2>
         <div className="proj-summary-meta">
-          <div>
-            <span>Role</span>
-            <strong>{project.role}</strong>
-          </div>
-          <div>
-            <span>Duration</span>
-            <strong>{project.duration}</strong>
-          </div>
-          <div>
-            <span>Type</span>
-            <strong>{project.type}</strong>
-          </div>
-          <div>
-            <span>Teams</span>
-            <strong>{project.teams}</strong>
-          </div>
+          {meta.map(([label, value]) => (
+            <div key={label} className="proj-summary-cell">
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </div>
+          ))}
         </div>
         <p>{project.blurb}</p>
       </section>
@@ -80,16 +77,21 @@ export function CaseStudyLayout({ project }: { project: Project }) {
           <div>
             <section id="overview" className="proj-section">
               <p className="proj-section-title">Overview</p>
-              <p>{project.blurb}</p>
+              <div className="proj-section-copy">
+                <h4>{project.oneliner}</h4>
+                <p>{project.blurb}</p>
+              </div>
             </section>
 
             {project.memorableMoment && (
               <section id="moment" className="proj-section">
                 <p className="proj-section-title">Most Memorable Moment</p>
-                <h4>{project.memorableMoment.title}</h4>
-                {project.memorableMoment.body.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                <div className="proj-section-copy">
+                  <h4>{project.memorableMoment.title}</h4>
+                  {project.memorableMoment.body.map((p, i) => (
+                    <p key={i}>{p}</p>
+                  ))}
+                </div>
               </section>
             )}
 
@@ -103,17 +105,19 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                   {ch.number ?? `Chapter ${i + 1}`}
                   {ch.tags ? ` · ${ch.tags}` : ""}
                 </p>
-                <h4>{ch.title}</h4>
-                {ch.body.map((p, j) => (
-                  <p key={j}>{p}</p>
-                ))}
+                <div className="proj-section-copy">
+                  <h4>{ch.title}</h4>
+                  {ch.body.map((p, j) => (
+                    <p key={j}>{p}</p>
+                  ))}
+                </div>
               </section>
             ))}
 
             {project.livePreview && (
               <section id="live" className="proj-section">
                 <p className="proj-section-title">Live Preview</p>
-                <p>
+                <p className="proj-section-copy">
                   <a
                     href={project.livePreview.href}
                     className="text-link"
@@ -131,7 +135,7 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                   className="proj-nav-item prev"
                 >
                   <span className="proj-nav-label">Previous</span>
-                  <span className="proj-nav-title">{"<-"} {prev.title}</span>
+                  <span className="proj-nav-title">&larr; {prev.title}</span>
                 </Link>
               ) : (
                 <div className="proj-nav-item">
@@ -144,7 +148,7 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                   className="proj-nav-item next"
                 >
                   <span className="proj-nav-label">Next</span>
-                  <span className="proj-nav-title">{next.title} {"->"}</span>
+                  <span className="proj-nav-title">{next.title} &rarr;</span>
                 </Link>
               ) : (
                 <div className="proj-nav-item next">
