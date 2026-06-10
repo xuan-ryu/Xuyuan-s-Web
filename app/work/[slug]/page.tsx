@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { projects, projectsBySlug } from "@/data/projects";
 import { CaseStudyLayout } from "@/components/case-study-layout";
-import { CtaBlock } from "@/components/cta-block";
+import { PosterLayout } from "@/components/poster-layout";
 
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -16,7 +16,7 @@ export async function generateMetadata(
   if (!project) return {};
   return {
     title: project.title,
-    description: project.blurb,
+    description: project.blurb.split("\n\n")[0],
   };
 }
 
@@ -25,10 +25,9 @@ export default async function CaseStudy(props: PageProps<"/work/[slug]">) {
   const project = projectsBySlug[slug];
   if (!project) notFound();
 
-  return (
-    <>
-      <CaseStudyLayout project={project} />
-      <CtaBlock />
-    </>
+  return project.template === "poster" ? (
+    <PosterLayout project={project} />
+  ) : (
+    <CaseStudyLayout project={project} />
   );
 }

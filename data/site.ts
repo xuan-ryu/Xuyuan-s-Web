@@ -9,8 +9,8 @@ export const site = {
   phone: "+1 4405813229",
   location: "New York, NY",
   socials: {
-    linkedin: "https://www.linkedin.com/",
-    instagram: "https://www.instagram.com/",
+    linkedin: "https://www.linkedin.com/in/xuyuan-liu-0b589b252",
+    instagram: "https://www.instagram.com/_xuan_liu_/",
   },
   greeting: ["Welcome,", "欢迎,", "ようこそ。"],
   heroSub:

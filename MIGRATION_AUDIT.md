@@ -86,7 +86,41 @@ React target:
   - Mobile `390x844`.
   - `/`, `/about`, `/work`, `/contact`, and all 5 project detail routes.
 
-## Completed This Pass
+## Completed This Pass (2026-06-10, detail-page deep content)
+
+- Confirmed the live site uses two distinct detail templates and rebuilt both:
+  - "Case" template (vicino-ai, froghire-ai, roper-center): title band → cover
+    → black Project Summary → SOLUTION banner → Most Memorable Moment (full
+    source copy + prototype videos) → CHAPTER banners (right-aligned number,
+    full-width rule, italic subtitle) → tagged two-column sections, each with a
+    full-width figure. No sidebar, no overview block, no prev/next (matches live).
+  - "Poster" template (hunger1942, vr-education): centered title + lede → tall
+    poster image → black about/details section (red seal, PROJECT/CLIENT/YEAR/
+    SERVICES/LIVE PREVIEW rows) → justified essay paragraphs → tall gallery →
+    previous/next thumbnails.
+- Restructured `data/projects.ts` around those templates; all copy is now
+  verbatim from the export HTML (extracted via `scripts/extract-export-text.mjs`),
+  including longer Memorable Moment bodies, chapter banner titles, and the
+  source's quirks. Media mapped per section from live DOM order
+  (`scripts/extract-live-outline.mjs` → `audit-screenshots/outline-*.txt`).
+- Embedded the 7 prototype mp4s (autoplay/muted/loop) and all 16 section
+  images + 8 gallery images from the local asset mirror.
+- Removed the "CASE STUDY" kicker (live has none), the case-study sidebar
+  component, and the CTA block on detail pages (live detail pages end at the
+  prev/next + footer).
+- Fixed real social URLs (LinkedIn `/in/xuyuan-liu-0b589b252`, Instagram
+  `_xuan_liu_`) found in the export, replacing placeholders.
+- Found hunger1942 live preview link: `https://youtu.be/TUj10C2kW38`
+  (vr-education's is literally `https://example.com` in the source; kept).
+- Added scripts: `capture-live-vs-react.mjs` (live vs local matrix, scroll
+  offsets), `capture-one.mjs`, `extract-live-outline.mjs`, `measure-page.mjs`.
+- Verified hunger1942 height ≈ live (11552 vs 11632 pre-lazy-load), production
+  build passes, all 5 detail routes return 200.
+- Note: dev server instances on port 4000 had piled up and one had a corrupted
+  Turbopack cache (serving stale HTML where the hero never revealed). Killed
+  them; screenshot audits now run against `next start`.
+
+## Completed Earlier
 
 - Pivoted migration baseline from the local export alone to the live/rehosted Framer site.
 - Captured live baselines under `audit-screenshots/live-baseline/`.
@@ -150,6 +184,5 @@ React target:
   - Mobile Featured is now readable and contained, but still needs source mobile checkpoint matching.
 - Contact first viewport is structurally close, but the local brush logo font still differs from the Framer-export font metrics.
 - Work first viewport is structurally close, but remaining differences include exact title font metrics, overlay text weight, and subsequent project cards.
-- Project detail first viewports are structurally close on desktop and mobile for the shared layout.
-- Remaining detail-page work is deeper page content: section order, embedded media, long-form copy, and per-project custom assets below the first viewport.
+- Project detail pages now carry full deep content (both templates, all copy, section media, videos, galleries, prev/next). Remaining detail-page gaps are typographic fine-tuning (exact font metrics, spacing rhythm) against the live pages.
 - Mobile header is structurally aligned with the source black pill, but the local brush/font metrics still differ from the Framer export.
