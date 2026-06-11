@@ -47,8 +47,6 @@ export default function Home() {
 
       <section className="home-koi-section" aria-label="Interactive koi pond">
         <div className="home-koi-frame">
-          <div className="home-koi-frame-shadow home-koi-frame-shadow-left" />
-          <div className="home-koi-frame-shadow home-koi-frame-shadow-right" />
           <div className="home-koi-inner">
             <KoiPondScene
               eyebrow="INTERLUDE / INK ECOSYSTEM"

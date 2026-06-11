@@ -814,6 +814,18 @@
   padding: 16px 30px;
   transition: background 0.2s;
 }
+/* live: the button carries a wide backdrop-blur halo over the marquee */
+.cta-marquee-button::before {
+  content: "";
+  position: absolute;
+  inset: -34px -70px;
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  mask: radial-gradient(ellipse at center, #000 40%, transparent 75%);
+  -webkit-mask: radial-gradient(ellipse at center, #000 40%, transparent 75%);
+  z-index: -1;
+  pointer-events: none;
+}
 .cta-marquee-button:hover {
   background: #fe8411;
 }
@@ -3154,7 +3166,8 @@
   padding: 44px 42px;
   border-radius: 18px;
   color: #fff;
-  background: rgba(16, 16, 16, 0.84);
+  /* live glass: black at ~47% over a 28px blur (reads as #888 on white) */
+  background: rgba(10, 10, 10, 0.47);
   backdrop-filter: blur(28px) saturate(130%) contrast(1.1);
   -webkit-backdrop-filter: blur(28px) saturate(130%) contrast(1.1);
   box-shadow:
@@ -3662,54 +3675,23 @@
   min-height: 1180px;
   position: relative;
   background: #fff;
-  overflow: hidden;
 }
+/* live construction: a #fafafa card with 141px side insets and the pond
+   canvas inset 52px uniformly — the pond's own frame/pinstripe is drawn
+   inside the canvas component */
 .home-koi-frame {
   position: absolute;
-  left: 30px;
-  right: 30px;
-  top: 34px;
-  height: 1214px;
-  background: #fff;
-  box-shadow:
-    0 20px 42px rgba(0, 0, 0, 0.28),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-}
-.home-koi-frame::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 78px;
-  background: #050505;
-  z-index: 1;
-}
-.home-koi-frame-shadow {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 112px;
-  z-index: 2;
-  pointer-events: none;
-}
-.home-koi-frame-shadow-left {
-  left: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
-}
-.home-koi-frame-shadow-right {
-  right: 0;
-  background: linear-gradient(270deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
+  left: 141px;
+  right: 141px;
+  top: -19px;
+  height: 1318px;
+  background: #fafafa;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
 }
 .home-koi-inner {
   position: absolute;
-  left: 152px;
-  right: 152px;
-  top: 110px;
-  bottom: 92px;
-  border: 8px solid #202020;
+  inset: 52px;
   background: #020305;
-  z-index: 3;
   overflow: hidden;
 }
 
@@ -3966,29 +3948,19 @@
     height: 42px;
     font-size: 14px;
   }
-  /* live mobile: koi frame 303x809 inset 45/42, how section starts 972 below */
+  /* live mobile: pond canvas 303x809 at x45 — card inset 25px, pond 20px */
   .home-koi-section {
     height: 972px;
     min-height: 900px;
   }
   .home-koi-frame {
-    left: 44px;
-    right: 43px;
-    top: 24px;
-    height: 809px;
-  }
-  .home-koi-frame::before {
-    height: 54px;
+    left: 25px;
+    right: 25px;
+    top: 4px;
+    height: 849px;
   }
   .home-koi-inner {
-    left: 22px;
-    right: 22px;
-    top: 72px;
-    bottom: 52px;
-    border-width: 5px;
-  }
-  .home-koi-frame-shadow {
-    width: 36px;
+    inset: 20px;
   }
   /* live mobile How-I-Work: same absolute collage, scaled (rel section top) */
   .home-how {
