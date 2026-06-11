@@ -7,6 +7,7 @@ import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond";
 import { FeaturedWindows } from "@/components/featured-windows";
 import { RoofTransition } from "@/components/roof-transition";
+import { HowDecorParallax } from "@/components/how-decor-parallax";
 import { CtaBlock } from "@/components/cta-block";
 
 export default function Home() {
@@ -66,6 +67,7 @@ export default function Home() {
           edges, three glassy method cards staggered left/right/left with ink
           brush strokes behind them; geometry measured from the live site */}
       <section id="value" className="home-how">
+        <HowDecorParallax />
         <div className="how-decor how-screen" aria-hidden="true">
           <Image
             src="/assets/framerusercontent.com/images/YLXrjVSbjpbSEr6VDxoQlckuA4E.png"

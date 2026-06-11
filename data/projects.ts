@@ -51,6 +51,8 @@ export type Project = {
   title: string;
   template: "case" | "poster";
   cover?: string;
+  /** video shown in the home Featured hover preview */
+  previewVideo?: string;
   coverClass?: string;
   tags: string[];
   oneliner: string;
@@ -73,6 +75,7 @@ export const projects: Project[] = [
     title: "Vicino AI",
     template: "case",
     cover: `${IMG}/CSMKvZFRUZIIYznbJxUXsf58M.png`,
+    previewVideo: `${MEDIA}/2sxQz0YH0U9dhtJQiQQ0plKSR8U.mp4`,
     coverClass: "cover-vicino",
     tags: ["Product Design", "PM", "AI"],
     oneliner:
@@ -204,6 +207,7 @@ export const projects: Project[] = [
     title: "FrogHire.ai",
     template: "case",
     cover: `${IMG}/J7KSTcOXT9GD7Wi9y09C1kQVpRY.png`,
+    previewVideo: `${MEDIA}/lX87zncxlP75HPjOuxEBjrAIMI.mp4`,
     coverClass: "cover-froghire",
     tags: ["UX Design", "Research", "AI"],
     oneliner:
@@ -331,6 +335,7 @@ export const projects: Project[] = [
     title: "Roper Center",
     template: "case",
     cover: `${IMG}/hnG0x6uWkJJVksmxu5u2OIc1PkI.png`,
+    previewVideo: `${MEDIA}/0YUwmf39zv2LOjK87mSkDqwMhs.mp4`,
     coverClass: "cover-roper",
     tags: ["UX Design", "Data Viz"],
     oneliner:
@@ -440,6 +445,7 @@ export const projects: Project[] = [
     title: "Hunger 1942",
     template: "poster",
     cover: `${IMG}/5zyKNfQwTPjb8k4yiVdDHojwG4.png`,
+    previewVideo: `${MEDIA}/LiqN5ECGam7fIY6OPiBOTMKHOU.mp4`,
     coverClass: "cover-hunger",
     tags: ["Game Design", "History"],
     oneliner:

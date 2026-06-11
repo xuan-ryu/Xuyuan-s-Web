@@ -8,6 +8,7 @@ type FeaturedProject = {
   slug: string;
   title: string;
   cover?: string;
+  previewVideo?: string;
   blurb: string;
 };
 
@@ -91,6 +92,16 @@ export function FeaturedWindows({ projects }: { projects: FeaturedProject[] }) {
       </div>
 
       <div className="featured-roof-line-b" aria-hidden="true">
+        <Image
+          src="/assets/framerusercontent.com/images/DlntvmdLuvnadF0mbuSCTYQOyAM.png"
+          alt=""
+          fill
+          sizes="1071px"
+        />
+      </div>
+
+      {/* third strip segment — keeps the eave continuous on wide screens */}
+      <div className="featured-roof-line-c" aria-hidden="true">
         <Image
           src="/assets/framerusercontent.com/images/DlntvmdLuvnadF0mbuSCTYQOyAM.png"
           alt=""
@@ -199,7 +210,16 @@ export function FeaturedWindows({ projects }: { projects: FeaturedProject[] }) {
           className={`featured-project-preview preview-group-${active.group}`}
         >
           <span className="featured-preview-media">
-            {active.project.cover ? (
+            {active.project.previewVideo ? (
+              // live: the hover panel plays the project's prototype video
+              <video
+                src={active.project.previewVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : active.project.cover ? (
               <Image
                 src={active.project.cover}
                 alt=""

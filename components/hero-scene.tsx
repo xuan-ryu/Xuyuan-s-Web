@@ -2118,8 +2118,9 @@ export default function DigitalLandscape(props: Props) {
                         pointerEvents: "none",
                         willChange: "opacity",
                         // the nowrap brand row is wider than small screens —
-                        // without clipping it inflates the mobile layout viewport
-                        overflow: "hidden",
+                        // clip horizontally only (vertical clip cuts the photo)
+                        overflowX: "clip",
+                        overflowY: "visible",
                     }}
                 >
                     <div className="page2-sky-wash" />

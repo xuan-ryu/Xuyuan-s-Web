@@ -6,6 +6,40 @@
   font-display: swap;
 }
 
+/* live body-copy serif (300 for long-form, 400 for meta values) */
+@font-face {
+  font-family: "Newsreader";
+  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/newsreader-300.woff2")
+    format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/newsreader-400.woff2")
+    format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Newsreader";
+  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/newsreader-500.woff2")
+    format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* live koan brush font (Chinese 行草 with Latin glyphs) */
+@font-face {
+  font-family: "CloudXingCaoGBK";
+  src: url("/assets/framerusercontent.com/assets/imUjwEtsUuwif5zrT6p44rQetdM.woff2")
+    format("woff2");
+  font-display: swap;
+}
+
 @font-face {
   font-family: "Cormorant Garamond";
   src: url("/assets/fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2")
@@ -1325,6 +1359,7 @@
   text-transform: uppercase;
 }
 .proj-summary-meta strong {
+  font-family: var(--font-newsreader);
   font-size: 14px;
   font-weight: 400;
   color: rgba(250, 250, 250, 0.96);
@@ -1332,9 +1367,11 @@
 }
 .proj-summary p {
   max-width: 1210px;
-  font-family: var(--font-serif);
+  font-family: var(--font-newsreader);
+  font-weight: 300;
   font-size: 22px;
   line-height: 1.5;
+  text-align: justify;
   color: #fff;
 }
 .proj-solution-heading {
@@ -1386,7 +1423,8 @@
   align-items: start;
 }
 .case-moment-body p {
-  font-family: var(--font-serif);
+  font-family: var(--font-newsreader);
+  font-weight: 300;
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.6;
   text-align: justify;
@@ -1471,7 +1509,8 @@
   margin-bottom: 24px;
 }
 .case-section-copy p:not(.case-section-heading) {
-  font-family: var(--font-serif);
+  font-family: var(--font-newsreader);
+  font-weight: 300;
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.58;
   text-align: justify;
@@ -1513,7 +1552,8 @@
 .poster-hero p {
   max-width: 500px;
   margin: 0 auto;
-  font-family: var(--font-serif);
+  font-family: var(--font-newsreader);
+  font-weight: 300;
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.5;
   text-align: justify;
@@ -1607,7 +1647,8 @@
   padding: clamp(64px, 7vw, 100px) 16px clamp(40px, 4vw, 56px);
 }
 .poster-body p {
-  font-family: var(--font-serif);
+  font-family: var(--font-newsreader);
+  font-weight: 300;
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.6;
   text-align: justify;
@@ -2231,19 +2272,20 @@
 }
 .about-quote .zh {
   margin-bottom: 10px;
-  font-family: var(--font-brush);
-  font-size: clamp(48px, 5.8vw, 64px);
+  /* live: CloudXingCaoGBK 行草, 50px */
+  font-family: "CloudXingCaoGBK", var(--font-brush);
+  font-size: 50px;
   font-weight: 400;
-  line-height: 1.06;
+  line-height: 1.2;
   letter-spacing: 0;
 }
 .about-quote .en,
 .about-quote cite {
   display: block;
-  font-family: var(--font-brush);
-  font-size: clamp(21px, 2.4vw, 26px);
+  font-family: "CloudXingCaoGBK", var(--font-brush);
+  font-size: 20px;
   font-style: normal;
-  line-height: 1.38;
+  line-height: 1.5;
   color: #0a0a0a;
 }
 .about-quote cite {
@@ -2342,7 +2384,8 @@
 .about-essay-text p {
   /* full container width like live (override .about-text's 920px cap) */
   max-width: none;
-  font-family: var(--font-serif);
+  font-family: var(--font-newsreader);
+  font-weight: 300;
   font-size: clamp(18px, 1.55vw, 22px);
   line-height: 1.62;
   color: rgba(10, 10, 10, 0.88);
@@ -3107,7 +3150,8 @@
   object-fit: cover;
 }
 .how-screen {
-  left: -153px;
+  /* mid-view base; HowDecorParallax adds the scroll drift */
+  left: -177px;
   top: 95px;
   width: 608px;
   height: 607px;
@@ -3121,7 +3165,7 @@
   z-index: 2;
 }
 .how-bamboo-screen {
-  left: 822px;
+  left: 872px;
   top: 553px;
   width: 881px;
   height: 630px;
@@ -3141,7 +3185,7 @@
   z-index: 2;
 }
 .how-gold-screen {
-  left: -383px;
+  left: -448px;
   top: 1101px;
   width: 947px;
   height: 613px;
@@ -3493,14 +3537,16 @@
   line-height: 1.1;
   text-align: center;
 }
+/* live panel: translucent white card (1035x780, r26) holding the project
+   video (1015x760, r26), copy column at the right */
 .featured-project-preview {
   position: absolute;
-  left: 30px;
-  width: calc(100% - 60px);
-  min-height: 720px;
+  left: 20px;
+  width: calc(100% - 40px);
+  min-height: 780px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 312px;
-  gap: 50px;
+  grid-template-columns: minmax(0, 1fr) 325px;
+  gap: 40px;
   color: #050505;
   z-index: 4;
   opacity: 0;
@@ -3508,10 +3554,10 @@
   animation: featuredPreviewIn 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .preview-group-a {
-  top: 458px;
+  top: 468px;
 }
 .preview-group-b {
-  top: 1865px;
+  top: 1875px;
 }
 @keyframes featuredPreviewIn {
   to {
@@ -3520,27 +3566,29 @@
   }
 }
 .featured-preview-media {
-  height: 720px;
+  height: 780px;
   position: relative;
   display: block;
   overflow: hidden;
-  background: #fff;
-  border-radius: 28px 28px 0 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 26px;
+  padding: 10px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
-}
-.featured-preview-media::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 86px;
-  border-radius: 28px 28px 0 0;
-  background: #050505;
-  z-index: 2;
 }
 .featured-preview-media img {
   object-fit: cover;
   object-position: top center;
-  padding-top: 86px;
+  border-radius: 26px;
+}
+.featured-preview-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  border-radius: 26px;
 }
 .featured-preview-copy {
   padding-top: 3px;
@@ -3597,14 +3645,24 @@
 }
 .featured-roof-line-b {
   position: absolute;
-  left: 830px;
+  /* overlaps the first strip by 40px so the junction shows no seam */
+  left: 790px;
+  top: 1021px;
+  width: 1071px;
+  height: 494px;
+  z-index: 2;
+}
+.featured-roof-line-c {
+  position: absolute;
+  left: 1821px;
   top: 1021px;
   width: 1071px;
   height: 494px;
   z-index: 2;
 }
 .featured-roof-line img,
-.featured-roof-line-b img {
+.featured-roof-line-b img,
+.featured-roof-line-c img {
   object-fit: cover;
   filter: grayscale(1) contrast(1.08);
 }
@@ -3622,7 +3680,8 @@
   top: 1203px;
   width: 497px;
   height: 891px;
-  z-index: 3;
+  /* live: the eave strip paints OVER both bamboos (bamboo hides behind) */
+  z-index: 1;
 }
 .featured-bamboo img,
 .featured-bamboo-b img,
@@ -3858,14 +3917,12 @@
   }
   .featured-preview-media {
     height: 300px;
-    border-radius: 18px 18px 0 0;
+    border-radius: 18px;
+    padding: 6px;
   }
-  .featured-preview-media::before {
-    height: 54px;
-    border-radius: 18px 18px 0 0;
-  }
-  .featured-preview-media img {
-    padding-top: 54px;
+  .featured-preview-media img,
+  .featured-preview-media video {
+    border-radius: 14px;
   }
   .featured-preview-copy {
     padding: 0 2px 0;
@@ -3935,7 +3992,8 @@
     height: 286px;
   }
   .featured-grass-a,
-  .featured-grass-b {
+  .featured-grass-b,
+  .featured-roof-line-c {
     display: none;
   }
   .home-project-grid {
