@@ -772,6 +772,10 @@
   background: #fff;
   overflow: hidden;
 }
+/* live: the about page runs the marquee tighter under My Habits */
+.about-habits + .cta-marquee-section {
+  padding-top: 129px;
+}
 .cta-marquee {
   overflow: hidden;
   white-space: nowrap;
@@ -2431,10 +2435,11 @@
   padding: 96px 20px;
 }
 .about-activities .container {
-  max-width: 1356px;
+  /* live: 1376px card at x32, 1023px tall */
+  max-width: 1376px;
   background: #fafaf8;
   border-radius: 22px;
-  padding: clamp(70px, 8vw, 120px) 24px;
+  padding: 154px 24px;
   text-align: center;
 }
 .about-activities-title {
@@ -2484,7 +2489,7 @@
 }
 /* testimonials */
 .about-testimonials {
-  padding: 60px 0 40px;
+  padding: 91px 0 40px;
 }
 .about-testimonial-grid {
   display: grid;
@@ -2526,7 +2531,7 @@
 }
 /* my habits */
 .about-habits {
-  padding: 80px 0 40px;
+  padding: 131px 0 0;
 }
 .about-habits-title {
   font-family: var(--font-serif);
@@ -2910,10 +2915,13 @@
   height: 1076px;
 }
 .roof-b {
-  left: calc(50% + 447px);
+  /* shifted 2px under piece A and left edge clipped: hides the scaled
+     image-border seam where the two pieces meet */
+  left: calc(50% + 445px);
   top: 17px;
   width: 1928px;
   height: 1076px;
+  clip-path: inset(0 0 0 2px);
 }
 .roof-c {
   left: calc(50% - 2320px);
