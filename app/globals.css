@@ -906,8 +906,8 @@
 .work-index-page .work-header {
   width: 100%;
   max-width: 1440px;
-  /* live: title at doc y245, first card at ~y430 */
-  padding: 245px 72px 51px;
+  /* live: title at doc y245, first card at y443 */
+  padding: 245px 72px 64px;
   border-bottom: none;
   display: flex;
   align-items: center;
@@ -967,7 +967,8 @@
 .work-list {
   width: 100%;
   max-width: 1440px;
-  padding: 0 72px 256px;
+  /* live: 526px below the last card before the footer */
+  padding: 0 72px 526px;
 }
 .work-index-page .work-grid {
   display: flex;
@@ -1377,6 +1378,13 @@
   color: #0a0a0a;
   margin-bottom: clamp(40px, 4.5vw, 72px);
 }
+/* live: copy left (660), the two half videos stacked right with a 40px gap */
+.case-moment-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 5vw, 70px);
+  align-items: start;
+}
 .case-moment-body p {
   font-family: var(--font-serif);
   font-size: clamp(18px, 1.55vw, 22px);
@@ -1385,13 +1393,14 @@
   color: rgba(10, 10, 10, 0.88);
   margin-bottom: 26px;
 }
-.case-videos {
+.case-moment-videos {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(20px, 4vw, 60px);
-  margin-top: clamp(36px, 4vw, 60px);
+  gap: 40px;
+  /* live: the video stack starts ~300px below the column top */
+  margin-top: 300px;
 }
-.case-videos video {
+.case-moment-videos video,
+.case-video-wide {
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
@@ -1400,7 +1409,7 @@
   background: #0a0a0a;
 }
 .case-video-wide {
-  grid-column: 1 / -1;
+  margin-top: clamp(36px, 4vw, 64px);
 }
 
 /* --- Case template: chapters & sections --- */
@@ -1725,9 +1734,13 @@
   .case-moment-label {
     font-size: 26px;
   }
-  .case-videos {
+  .case-moment-grid {
     grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .case-moment-videos {
     gap: 18px;
+    margin-top: 0;
   }
   .case-chapter-head {
     padding-top: 110px;

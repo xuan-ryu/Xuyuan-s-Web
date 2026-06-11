@@ -42,8 +42,8 @@ export function CaseStudyLayout({ project }: { project: Project }) {
       </div>
 
       <section className="proj-summary">
-        <h2>Project Summary</h2>
-        <div className="proj-summary-meta">
+        <h2 data-fade>Project Summary</h2>
+        <div className="proj-summary-meta" data-fade>
           {meta.map(([label, value]) => (
             <div key={label} className="proj-summary-cell">
               <span>{label}</span>
@@ -52,7 +52,9 @@ export function CaseStudyLayout({ project }: { project: Project }) {
           ))}
         </div>
         {(project.summary ?? [project.blurb]).map((p, i) => (
-          <p key={i}>{p}</p>
+          <p key={i} data-fade>
+            {p}
+          </p>
         ))}
       </section>
 
@@ -62,38 +64,55 @@ export function CaseStudyLayout({ project }: { project: Project }) {
 
       {project.moment && (
         <section className="case-moment">
-          <h2 className="case-moment-label">
+          <h2 className="case-moment-label" data-fade>
             Most
             <br />
             Memorable Moment
           </h2>
-          <div className="case-moment-body">
-            <h3>{project.moment.title}</h3>
-            {project.moment.body.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
-          {project.moment.videos && project.moment.videos.length > 0 && (
-            <div className="case-videos">
-              {project.moment.videos.map((v) => (
-                <video
-                  key={v.src}
-                  className={v.wide ? "case-video-wide" : "case-video-half"}
-                  src={v.src}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
+          {/* live: copy in the left column, the half videos stacked in the
+              right column, the wide video full-width below */}
+          <div className="case-moment-grid">
+            <div className="case-moment-body" data-fade>
+              <h3>{project.moment.title}</h3>
+              {project.moment.body.map((p, i) => (
+                <p key={i}>{p}</p>
               ))}
             </div>
-          )}
+            <div className="case-moment-videos" data-fade>
+              {project.moment.videos
+                ?.filter((v) => !v.wide)
+                .map((v) => (
+                  <video
+                    key={v.src}
+                    src={v.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                ))}
+            </div>
+          </div>
+          {project.moment.videos
+            ?.filter((v) => v.wide)
+            .map((v) => (
+              <video
+                key={v.src}
+                className="case-video-wide"
+                src={v.src}
+                autoPlay
+                muted
+                loop
+                playsInline
+                data-fade
+              />
+            ))}
         </section>
       )}
 
       {project.chapters?.map((chapter) => (
         <section key={chapter.number} className="case-chapter">
-          <header className="case-chapter-head">
+          <header className="case-chapter-head" data-fade>
             <h2 className="case-chapter-no">{chapter.number}</h2>
             <div className="case-chapter-rule" />
             <p className="case-chapter-sub">{chapter.title}</p>
@@ -102,8 +121,10 @@ export function CaseStudyLayout({ project }: { project: Project }) {
           {chapter.sections.map((section) => (
             <div key={section.tags} className="case-section">
               <div className="case-section-grid">
-                <h3 className="case-section-tags">{section.tags}</h3>
-                <div className="case-section-copy">
+                <h3 className="case-section-tags" data-fade>
+                  {section.tags}
+                </h3>
+                <div className="case-section-copy" data-fade>
                   <p className="case-section-heading">{section.heading}</p>
                   {section.body.map((p, i) => (
                     <p key={i}>{p}</p>
@@ -111,7 +132,7 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                 </div>
               </div>
               {section.image && (
-                <figure className="case-section-figure">
+                <figure className="case-section-figure" data-fade>
                   <Image
                     src={section.image}
                     alt=""

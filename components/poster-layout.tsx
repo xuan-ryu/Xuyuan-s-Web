@@ -20,11 +20,11 @@ export function PosterLayout({ project }: { project: Project }) {
   return (
     <article className="poster-page">
       <section className="poster-hero" id="header">
-        <h1>{project.title}</h1>
-        <p>{poster.lede}</p>
+        <h1 data-fade>{project.title}</h1>
+        <p data-fade>{poster.lede}</p>
       </section>
 
-      <div className="poster-image">
+      <div className="poster-image" data-fade>
         <Image
           src={poster.image}
           alt={project.title}
@@ -80,20 +80,23 @@ export function PosterLayout({ project }: { project: Project }) {
 
       <section className="poster-body">
         {poster.body.map((p, i) => (
-          <p key={i}>{p}</p>
+          <p key={i} data-fade>
+            {p}
+          </p>
         ))}
       </section>
 
       <section className="poster-gallery">
         {poster.gallery.map((src) => (
-          <Image
-            key={src}
-            src={src}
-            alt=""
-            width={1376}
-            height={1607}
-            sizes="(max-width: 809px) 100vw, 1376px"
-          />
+          <div key={src} data-fade>
+            <Image
+              src={src}
+              alt=""
+              width={1376}
+              height={1607}
+              sizes="(max-width: 809px) 100vw, 1376px"
+            />
+          </div>
         ))}
       </section>
 
