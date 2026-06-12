@@ -1,6 +1,7 @@
 "use client";
 
 import gsap from "gsap";
+import { CustomEase } from "gsap/CustomEase";
 import {
   useState,
   useEffect,
@@ -8,6 +9,10 @@ import {
   useRef,
   type CSSProperties,
 } from "react";
+
+// the site's signature ease (--ease-silk, docs/design-system.md)
+gsap.registerPlugin(CustomEase);
+CustomEase.create("silk", "0.16,1,0.3,1");
 
 const DOT_D = 10;
 const DOT_R = DOT_D / 2;
@@ -39,15 +44,41 @@ const containerStyle: CSSProperties = {
 };
 
 const textContainerStyle: CSSProperties = {
-  fontSize: "min(8vw, 56px)",
+  fontSize: "min(9vw, 64px)",
   fontWeight: 300,
   color: "#fff",
   display: "flex",
-  gap: "1.2rem",
-  fontFamily: "var(--font-murecho), 'Murecho', sans-serif",
-  letterSpacing: "0.4em",
+  gap: "1.1rem",
+  fontFamily: "var(--font-serif)",
+  letterSpacing: "0.3em",
   textTransform: "uppercase",
   userSelect: "none",
+};
+
+const signatureStyle: CSSProperties = {
+  marginTop: "22px",
+  fontFamily: "var(--font-brush)",
+  fontSize: "30px",
+  letterSpacing: "0.2em",
+  color: "rgba(255,255,255,0.55)",
+  opacity: 0,
+  userSelect: "none",
+};
+
+// soft ink-wash blooms behind the landing point — organic, heavily blurred
+const inkStyle: CSSProperties = {
+  position: "absolute",
+  left: 0,
+  top: 0,
+  width: 140,
+  height: 140,
+  borderRadius: "50%",
+  background:
+    "radial-gradient(circle, rgba(255,255,255,0.16), rgba(255,255,255,0.05) 55%, transparent 72%)",
+  filter: "blur(22px)",
+  opacity: 0,
+  pointerEvents: "none",
+  willChange: "transform, opacity",
 };
 
 const letterStyle: CSSProperties = {
@@ -103,6 +134,8 @@ export function Loader() {
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
   const finalRingRef = useRef<HTMLDivElement | null>(null);
+  const inkRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const signatureRef = useRef<HTMLDivElement | null>(null);
   const textWrapRef = useRef<HTMLDivElement | null>(null);
   const hintRef = useRef<HTMLDivElement | null>(null);
   const introTlRef = useRef<gsap.core.Timeline | null>(null);
@@ -156,6 +189,13 @@ export function Loader() {
         textWrapRef.current,
         { opacity: 0, y: -20, filter: "blur(6px)", duration: 0.45 },
         0,
+      );
+    }
+    if (signatureRef.current) {
+      exit.to(
+        signatureRef.current,
+        { opacity: 0, y: -14, duration: 0.4 },
+        0.05,
       );
     }
     if (hintRef.current) {
@@ -233,7 +273,8 @@ export function Loader() {
       const rings = ringRefs.current.filter(Boolean) as HTMLElement[];
       const finalRing = finalRingRef.current;
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const inks = inkRefs.current.filter(Boolean) as HTMLElement[];
+      const tl = gsap.timeline({ defaults: { ease: "silk" } });
       tl.set(dot, { x: c.x - DOT_R, y: c.y - 180, opacity: 0 })
         .set([...rings, finalRing].filter(Boolean), {
           x: c.x - RING_D / 2,
@@ -241,6 +282,7 @@ export function Loader() {
           opacity: 0,
           scale: 0.3,
         })
+        .set(inks, { x: c.x - 70, y: c.y - 70, opacity: 0, scale: 0.5 })
         // the ink dot drifts in and falls, stretching slightly as it drops
         .to(dot, { opacity: 1, duration: 0.2 }, DROP_DELAY_S)
         .to(
@@ -251,6 +293,23 @@ export function Loader() {
         .addLabel("land")
         // absorbed on landing
         .to(dot, { scale: 0.2, opacity: 0, duration: 0.28 }, "land");
+
+      // ink wash seeps out under everything — organic, asymmetric blooms
+      inks.forEach((ink, i) => {
+        tl.to(
+          ink,
+          {
+            scaleX: 3.6 + i * 2.4,
+            scaleY: 2.6 + i * 1.7,
+            rotation: i ? -14 : 9,
+            duration: 1.8 + i * 0.5,
+            ease: "power2.out",
+          },
+          `land+=${i * 0.18}`,
+        )
+          .to(ink, { opacity: 0.5 - i * 0.16, duration: 0.4 }, "<")
+          .to(ink, { opacity: 0, duration: 1.1 }, ">0.15");
+      });
 
       // ripples bloom outward, each softer and slower than the last
       rings.forEach((ring, i) => {
@@ -289,6 +348,16 @@ export function Loader() {
         );
       }
 
+      // brush signature lands beneath the name — the inkstone's mark
+      if (signatureRef.current) {
+        tl.fromTo(
+          signatureRef.current,
+          { opacity: 0, y: 14, filter: "blur(6px)" },
+          { opacity: 0.85, y: 0, filter: "blur(0px)", duration: 0.9 },
+          "land+=0.55",
+        );
+      }
+
       // the skip hint eases in once the bloom is underway
       if (hintRef.current) {
         tl.to(hintRef.current, { opacity: 1, duration: 0.6 }, "land+=0.3");
@@ -303,12 +372,12 @@ export function Loader() {
             duration: 0.85,
             ease: "power2.inOut",
           },
-          "land+=1.05",
+          "land+=1.35",
         )
           .to(finalRing, { opacity: 0.4, duration: 0.25 }, "<")
           .to(finalRing, { opacity: 0, duration: 0.55 }, ">");
       }
-      tl.call(exitLoader, [], "land+=1.4");
+      tl.call(exitLoader, [], "land+=1.7");
       introTlRef.current = tl;
     }
 
@@ -341,6 +410,16 @@ export function Loader() {
     >
       <div ref={dotRef} style={dotStyle} />
 
+      {[0, 1].map((i) => (
+        <div
+          key={`ink-${i}`}
+          ref={(el: HTMLDivElement | null) => {
+            inkRefs.current[i] = el;
+          }}
+          style={inkStyle}
+        />
+      ))}
+
       {[0, 1, 2].map((i) => (
         <div
           key={i}
@@ -371,6 +450,10 @@ export function Loader() {
             </span>
           );
         })}
+      </div>
+
+      <div ref={signatureRef} style={signatureStyle}>
+        刘 栩源
       </div>
 
       <div ref={hintRef} style={hintStyle}>

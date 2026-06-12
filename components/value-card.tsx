@@ -240,7 +240,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
           <h3
             style={{
               margin: 0,
-              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', serif",
+              fontFamily: "var(--font-serif)",
               fontSize: "clamp(32px, 5.8vw, 44px)",
               fontWeight: 400,
               letterSpacing: "0.06em",
@@ -255,7 +255,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
             <span className="vibe-sub-bar" />
             <span
               style={{
-                fontFamily: "var(--font-murecho), serif",
+                fontFamily: "var(--font-newsreader)",
                 fontSize: "clamp(12px, 1.3vw, 14px)",
                 fontWeight: 400,
                 letterSpacing: "0.15em",
@@ -271,7 +271,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
             className="text-bloom"
             style={{
               margin: 0,
-              fontFamily: "var(--font-cormorant), serif",
+              fontFamily: "var(--font-newsreader)",
               fontSize: "clamp(17px, 2.8vw, 20px)",
               fontWeight: 300,
               lineHeight: 1.7,

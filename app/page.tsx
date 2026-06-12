@@ -10,6 +10,7 @@ import { RoofTransition } from "@/components/roof-transition";
 import { HowDecorParallax } from "@/components/how-decor-parallax";
 import { CtaBlock } from "@/components/cta-block";
 import { RevealFx } from "@/components/reveal-fx";
+import { ValueCard } from "@/components/value-card";
 
 export default function Home() {
   return (
@@ -135,11 +136,16 @@ export default function Home() {
         <h2 className="home-how-title fx-rise">How I Work</h2>
 
         {site.workMethods.map((method, i) => (
-          <article key={method.title} className={`how-card how-card-${i + 1}`}>
-            <h3>{method.title}</h3>
-            <span>{method.heading}</span>
-            <p>{method.body}</p>
-          </article>
+          <div
+            key={method.title}
+            className={`how-card-pos how-card-pos-${i + 1}`}
+          >
+            <ValueCard
+              title={method.title}
+              subtitle={method.heading}
+              bodyText={method.body}
+            />
+          </div>
         ))}
         </div>
       </section>
