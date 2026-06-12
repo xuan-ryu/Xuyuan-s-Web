@@ -5,7 +5,7 @@
 import * as React from "react"
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
-import { RenderTarget, addPropertyControls, ControlType } from "framer"
+
 
 type BirdDatum = {
     baseX: number
@@ -365,7 +365,8 @@ function getTerrainData(
 }
 
 export default function DigitalLandscape(props: Props) {
-    const isCanvas = RenderTarget.current() === RenderTarget.canvas
+    // de-framered: this never runs inside the Framer canvas anymore
+    const isCanvas = false
     const enableMouseSpotlight = true
     const {
         sealComponent,
@@ -1712,8 +1713,10 @@ export default function DigitalLandscape(props: Props) {
             if (resizeRaf) cancelAnimationFrame(resizeRaf)
             cancelAnimationFrame(animationFrameId)
             cleanupAnimation?.()
-            if (renderer && mountRef.current?.contains(renderer.domElement))
-                mountRef.current.removeChild(renderer.domElement)
+            // mountRef.current is already null during unmount cleanup (React
+            // detaches refs first) — remove via the canvas itself, or stale
+            // canvases pile up in the mount and push the live one out of view
+            renderer?.domElement?.remove()
             mountain?.geometry.dispose()
             mountain?.material.dispose()
             starMesh?.geometry.dispose()
@@ -2372,80 +2375,3 @@ export default function DigitalLandscape(props: Props) {
         </div>
     )
 }
-
-DigitalLandscape.defaultProps = {
-    heroWord1: "Welcome,",
-    heroWord2: "歡迎,",
-    heroWord3: "こんにちは",
-    heroSubtitle:
-        "Product Designer & Creative Development.\nCrafting digital experiences with an aesthetic and modern design.",
-    rightVerticalText: "先行先聽 萬縷歸心",
-    quoteLine:
-        "Foreground bank, distant peaks, mist breathes, birds stitch the hush, and moss remembers the ink.",
-    scrollHint: "Scroll down to explore",
-    page2Title: "Hi, I'm Xuyuan. I design for intuition.",
-    page2Subtitle:
-        "Building at the intersection of humanities and creative engineering.\nI partner with AI through Vibe Coding to shape digital spaces that breathe.",
-    page2BrandLine: "GAWAIN · UX STRATEGY × VIBE CODING",
-    page2Footer: "Keep scrolling. The true craft lives in the transitions.",
-}
-
-addPropertyControls(DigitalLandscape, {
-    mobileBgUrl: { type: ControlType.Image, title: "Mobile BG" },
-    sealComponent: { type: ControlType.ComponentInstance, title: "Seal" },
-    photoComponent: {
-        type: ControlType.ComponentInstance,
-        title: "Photo Comp",
-    },
-    photoUrl: { type: ControlType.Image, title: "Photo URL" },
-    page2Title: {
-        type: ControlType.String,
-        title: "P2 Title",
-        displayTextArea: true,
-    },
-    page2Subtitle: {
-        type: ControlType.String,
-        title: "P2 Sub",
-        displayTextArea: true,
-    },
-    page2BrandLine: { type: ControlType.String, title: "P2 Brand" },
-    page2Footer: {
-        type: ControlType.String,
-        title: "P2 Footer",
-        displayTextArea: true,
-    },
-    heroWord1: { type: ControlType.String, title: "Hero 1" },
-    heroWord2: { type: ControlType.String, title: "Hero 2" },
-    heroWord3: { type: ControlType.String, title: "Hero 3" },
-    heroSubtitle: {
-        type: ControlType.String,
-        title: "Hero Sub",
-        displayTextArea: true,
-    },
-    rightVerticalText: {
-        type: ControlType.String,
-        title: "Vertical",
-        displayTextArea: true,
-    },
-    quoteLine: {
-        type: ControlType.String,
-        title: "Quote",
-        displayTextArea: true,
-    },
-    scrollHint: { type: ControlType.String, title: "Scroll Hint" },
-    isLoaded: {
-        type: ControlType.Boolean,
-        title: "Is Loaded",
-        defaultValue: true,
-    },
-    scrollDemo: {
-        type: ControlType.Number,
-        title: "Preview Scroll",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        defaultValue: 0,
-        description:
-            "Drag to preview scroll animation in canvas (0=start, 1=end)",
-    },
-})

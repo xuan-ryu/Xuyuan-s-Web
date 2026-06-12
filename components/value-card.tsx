@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { RenderTarget } from "framer";
 
 type Props = {
   title: string;
@@ -12,7 +11,6 @@ type Props = {
 
 export function ValueCard({ title, subtitle, bodyText }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const isCanvas = RenderTarget.current() === "canvas";
 
   useEffect(() => {
     const el = cardRef.current;
@@ -140,9 +138,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
           WebkitTransformStyle: "preserve-3d",
           transform:
             "translateX(var(--tx)) translateY(var(--ty)) rotateX(var(--rotX)) rotateY(var(--rotY)) scale(calc(1 + var(--active) * 0.02 - var(--pressed) * 0.03))",
-          transition: isCanvas
-            ? "none"
-            : "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          transition: "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "transform",
           ...({
             "--x": "50%",

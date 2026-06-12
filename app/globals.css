@@ -3695,9 +3695,16 @@
   object-fit: cover;
   object-position: center;
 }
+.featured-garden-tree img,
+.featured-garden-rock img,
+.featured-garden-rock-b img,
+.featured-garden-rock-c img {
+  object-fit: contain;
+  object-position: center bottom;
+}
 .featured-garden-tree {
   position: absolute;
-  left: -374px;
+  left: 56px;
   top: 1896px;
   width: 571px;
   height: 1023px;
@@ -3706,7 +3713,7 @@
 }
 .featured-garden-rock {
   position: absolute;
-  left: -32px;
+  left: 398px;
   top: 2453px;
   width: 239px;
   height: 428px;
@@ -3714,7 +3721,7 @@
 }
 .featured-garden-rock-b {
   position: absolute;
-  left: -414px;
+  left: 16px;
   top: 2554px;
   width: 412px;
   height: 495px;
@@ -3722,7 +3729,7 @@
 }
 .featured-garden-rock-c {
   position: absolute;
-  left: -258px;
+  left: 172px;
   top: 2577px;
   width: 488px;
   height: 316px;
@@ -3744,6 +3751,26 @@
   height: 100px;
   z-index: 2;
 }
+
+@media (min-width: 741px) and (max-width: 1100px) {
+  .featured-garden-tree {
+    left: 118px;
+    top: 1640px;
+    width: 560px;
+    height: 1004px;
+  }
+  .featured-garden-rock {
+    left: 196px;
+    top: 2052px;
+    width: 520px;
+    height: 933px;
+  }
+  .featured-garden-rock-b,
+  .featured-garden-rock-c {
+    display: none;
+  }
+}
+
 /* wide screens: cap the featured CONTENT (head, window units, hover panel)
    at the 1440 canvas; eaves/bamboo/wall/garden stay viewport-anchored.
    The calc() values reproduce the 1440w positions of the old %-based rules

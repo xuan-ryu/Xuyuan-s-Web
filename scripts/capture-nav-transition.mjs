@@ -38,7 +38,7 @@ await page.waitForTimeout(2000);
 
 const link = page.locator(`a:has-text("${linkText}")`).first();
 await link.click({ noWaitAfter: true });
-const marks = [100, 250, 400, 550, 800, 1100, 1700, 2400, 3000];
+const marks = [300, 600, 900, 1300, 1900];
 const t0 = Date.now();
 for (const t of marks) {
   const wait = t - (Date.now() - t0);

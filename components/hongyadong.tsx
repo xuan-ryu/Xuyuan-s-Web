@@ -4,7 +4,7 @@
 
 import * as React from "react"
 import { useEffect, useRef } from "react"
-import { addPropertyControls, ControlType, RenderTarget } from "framer"
+
 
 type Props = {
     imageSrc: string
@@ -225,7 +225,7 @@ export default function HongyadongFramer(props: Props) {
         let pxImgData: ImageData | null = null
         let pxPixels: Uint8ClampedArray | null = null
 
-        const isCanvas = RenderTarget.current() === RenderTarget.canvas
+        const isCanvas = false // de-framered: never inside the Framer canvas
         const touchCapable = "ontouchstart" in window
         const cores = navigator.hardwareConcurrency || 2
         const mem = (navigator as any).deviceMemory || 4
@@ -1589,62 +1589,3 @@ export default function HongyadongFramer(props: Props) {
         </div>
     )
 }
-
-HongyadongFramer.defaultProps = {
-    width: 1200,
-    height: 2400,
-    imageSrc: "hero.png",
-    profilePhoto: "",
-    eyebrow: "Profile",
-    titleLine1: "About",
-    titleLine2: "Me.",
-    titleZh: "",
-    subtitle:
-        "I'm a curious generalist with too many tabs open.\nI know a little about a lot, chase odd possibilities for fun, and lately I've been building with AI to see which ideas deserve to become real.",
-    signatureNote: "This nightscape is my hometown, Chongqing.",
-    scrollDemo: 0,
-}
-
-addPropertyControls(HongyadongFramer, {
-    imageSrc: {
-        type: ControlType.Image,
-        title: "Particle Src",
-    },
-    profilePhoto: {
-        type: ControlType.Image,
-        title: "Profile Photo",
-    },
-    eyebrow: {
-        type: ControlType.String,
-        title: "Eyebrow",
-    },
-    titleLine1: {
-        type: ControlType.String,
-        title: "Title 1",
-    },
-    titleLine2: {
-        type: ControlType.String,
-        title: "Title 2",
-    },
-    titleZh: {
-        type: ControlType.String,
-        title: "Subhead",
-    },
-    subtitle: {
-        type: ControlType.String,
-        title: "Body",
-        displayTextArea: true,
-    },
-    signatureNote: {
-        type: ControlType.String,
-        title: "Note",
-    },
-    scrollDemo: {
-        type: ControlType.Number,
-        title: "Scroll",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        defaultValue: 0,
-    },
-})

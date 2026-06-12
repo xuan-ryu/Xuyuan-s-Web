@@ -4,7 +4,7 @@
 
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
-import { addPropertyControls, ControlType } from "framer"
+
 
 type Props = {
     eyebrow: string
@@ -2086,37 +2086,3 @@ drawBody() {
         </div>
     )
 }
-
-InkKoiEcosystem.defaultProps = {
-    eyebrow: "SYS.ROLE // UX_DESIGNER",
-    titleMain: "PM-minded",
-    titleSub: "Product Designer",
-    tag: "先聽後行 · 以終為始",
-    feedText: "Why not feed the fish?",
-    showScrollTip: true,
-    introDurationMs: 800, // ✨ 将默认时间稍微缩短了
-    heroBoxXvw: 6,
-}
-
-addPropertyControls(InkKoiEcosystem, {
-    eyebrow: { type: ControlType.String, title: "Eyebrow" },
-    titleMain: { type: ControlType.String, title: "Title" },
-    titleSub: { type: ControlType.String, title: "Sub" },
-    tag: { type: ControlType.String, title: "Tag" },
-    feedText: { type: ControlType.String, title: "Feed Text" },
-    showScrollTip: { type: ControlType.Boolean, title: "Scroll Tip" },
-    heroBoxXvw: {
-        type: ControlType.Number,
-        title: "Hero X",
-        min: 0,
-        max: 20,
-        step: 0.5,
-    },
-    introDurationMs: {
-        type: ControlType.Number,
-        title: "Intro (ms)",
-        min: 300,
-        max: 4000,
-        step: 50,
-    },
-})
