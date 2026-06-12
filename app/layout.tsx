@@ -3,6 +3,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { FadeReveal } from "@/components/fade-reveal";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { PageTransition } from "@/components/page-transition";
 import { site } from "@/data/site";
 import "./globals.css";
 
@@ -16,11 +17,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <div id="page-root">
           <SmoothScroll />
           <FadeReveal />
+          <PageTransition />
           <Header />
           <main>{children}</main>
           <Footer />
