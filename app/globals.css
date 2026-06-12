@@ -2955,18 +2955,12 @@
      (measured 1387 at 750) — a −40vh linear term */
   height: calc(1687px - 40vh);
   position: relative;
-  background: #fff;
+  /* Sky stays transparent: the fixed night overlay (hero) shows through, so
+     the pinned avatar/moon is occluded by the eave line, not a black band.
+     z above the hero's night card (z10) so the roof slides over it. */
+  background: transparent;
   overflow: hidden;
-}
-.home-roof-transition::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  /* the roof artwork has a transparent sky and an opaque-white lower fill:
-     this black backdrop must reach below the deepest roofline (~rel 900px)
-     so the eaves carve the black region, exactly as on the live site */
-  height: 900px;
-  background: #050505;
+  z-index: 11;
 }
 .home-roof-transition .roof {
   position: absolute;
@@ -2974,8 +2968,11 @@
   object-fit: cover;
   pointer-events: none;
 }
-/* center-pinned mid-view geometry (live position when the section center
-   crosses the viewport center); RoofTransition adds the scroll parallax */
+/* Original live collage (center-pinned, layered, staggered tiers). The
+   artworks' inter-tier white fills — which used to punch white holes into
+   the black sky and forced earlier merge/patch workarounds — are cleared
+   to transparent in the PNGs themselves (originals in assets-backup/), so
+   the eaves float on sky and keep their layered depth. */
 .roof-a {
   left: calc(50% - 1481px);
   top: 17px;
@@ -2983,9 +2980,9 @@
   height: 1076px;
 }
 .roof-b {
-  /* shifted 2px under piece A and left edge clipped: hides the scaled
-     image-border seam where the two pieces meet */
-  left: calc(50% + 445px);
+  /* overlaps piece A by 2px: any seam gap lets the fixed night overlay
+     show through as a vertical hairline below the eaves */
+  left: calc(50% + 443px);
   top: 17px;
   width: 1928px;
   height: 1076px;
@@ -3002,6 +2999,35 @@
   top: 369px;
   width: 1902px;
   height: 1062px;
+}
+/* scroll-appear text entrances — ported from the live Framer appear
+   effects (heading rises ~52px, the button ~104px, fading in) */
+.fx-rise,
+.fx-rise-big {
+  opacity: 0;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.fx-rise {
+  transform: translateY(52px);
+}
+.fx-rise-big {
+  transform: translateY(104px);
+}
+.fx-rise.fx-revealed,
+.fx-rise-big.fx-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-rise,
+  .fx-rise-big {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 .home-section-shell {
   width: min(1024px, calc(100vw - 48px));
@@ -3121,12 +3147,18 @@
    cards staggered left/right/left, ink brush strokes behind them. */
 .home-how {
   position: relative;
-  max-width: 1440px;
   height: 1735px;
-  margin: 0 auto;
   background: #fff;
   color: #050505;
+  /* clip the decor bleed at the viewport, not at the 1440 canvas — on wide
+     screens the screens/floors overflow the canvas like on the live site */
   overflow-x: clip;
+}
+.home-how-canvas {
+  position: relative;
+  max-width: 1440px;
+  height: 100%;
+  margin: 0 auto;
 }
 .home-how-title {
   position: absolute;
@@ -3166,7 +3198,9 @@
 }
 .how-bamboo-screen {
   left: 872px;
-  top: 553px;
+  /* live keeps a ~20px white sliver between the screen's wavy bottom edge
+     and the floor strip; nudged down so the screen stands on the floor */
+  top: 577px;
   width: 881px;
   height: 630px;
   filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25));
@@ -3319,6 +3353,8 @@
   overflow: hidden;
   background: #fff;
   color: #050505;
+  /* opaque above the fixed night overlay while it fades out */
+  z-index: 1;
 }
 .home-featured-live::before {
   content: "";
@@ -3641,7 +3677,8 @@
   top: 1025px;
   width: 1679px;
   height: 488px;
-  z-index: 2;
+  z-index: 3;
+  pointer-events: none;
 }
 .featured-roof-line-b {
   position: absolute;
@@ -3650,7 +3687,8 @@
   top: 1021px;
   width: 1071px;
   height: 494px;
-  z-index: 2;
+  z-index: 3;
+  pointer-events: none;
 }
 .featured-roof-line-c {
   position: absolute;
@@ -3658,7 +3696,8 @@
   top: 1021px;
   width: 1071px;
   height: 494px;
-  z-index: 2;
+  z-index: 3;
+  pointer-events: none;
 }
 .featured-roof-line img,
 .featured-roof-line-b img,
@@ -3683,6 +3722,18 @@
   /* live: the eave strip paints OVER both bamboos (bamboo hides behind) */
   z-index: 1;
 }
+/* live: a full-bleed white wall hangs from the eave's tile edge (stage 1368)
+   and hides both bamboos' stems below the roof line */
+.featured-eave-wall {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1368px;
+  height: 1310px;
+  background: #fff;
+  z-index: 2;
+  pointer-events: none;
+}
 .featured-bamboo img,
 .featured-bamboo-b img,
 .featured-garden-tree img,
@@ -3700,7 +3751,8 @@
   top: 1896px;
   width: 571px;
   height: 1023px;
-  z-index: 1;
+  /* above the eave wall (same z, later in DOM) */
+  z-index: 2;
 }
 .featured-garden-rock {
   position: absolute;
@@ -3708,7 +3760,7 @@
   top: 2453px;
   width: 239px;
   height: 428px;
-  z-index: 1;
+  z-index: 2;
 }
 .featured-garden-rock-b {
   position: absolute;
@@ -3716,7 +3768,7 @@
   top: 2554px;
   width: 412px;
   height: 495px;
-  z-index: 1;
+  z-index: 2;
 }
 .featured-garden-rock-c {
   position: absolute;
@@ -3724,7 +3776,7 @@
   top: 2577px;
   width: 488px;
   height: 316px;
-  z-index: 1;
+  z-index: 2;
 }
 .featured-grass-a {
   position: absolute;
@@ -3741,6 +3793,28 @@
   width: 118px;
   height: 100px;
   z-index: 2;
+}
+/* wide screens: cap the featured CONTENT (head, window units, hover panel)
+   at the 1440 canvas; eaves/bamboo/wall/garden stay viewport-anchored.
+   The calc() values reproduce the 1440w positions of the old %-based rules
+   (unit-a 807px, unit-b 157px, panel 20px on a 1440 canvas). */
+@media (min-width: 1440px) {
+  .home-featured-live .home-featured-head {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .window-unit-a {
+    left: calc(50% + 87px);
+    transform: none;
+  }
+  .window-unit-b {
+    left: calc(50% - 563px);
+    transform: none;
+  }
+  .featured-project-preview {
+    left: calc(50% - 700px);
+    width: 1400px;
+  }
 }
 .home-koi-section {
   height: 1555px;
@@ -3771,9 +3845,6 @@
   /* live mobile (390w): roof section runs 1848→3301, pieces at rel y 339/500 */
   .home-roof-transition {
     height: 1453px;
-  }
-  .home-roof-transition::before {
-    height: 740px;
   }
   .roof-a {
     left: -516px;
@@ -3952,6 +4023,9 @@
     top: 1097px;
     width: 1071px;
     height: 494px;
+  }
+  .featured-eave-wall {
+    top: 1444px;
   }
   .featured-bamboo {
     right: auto;

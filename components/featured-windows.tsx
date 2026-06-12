@@ -128,6 +128,9 @@ export function FeaturedWindows({ projects }: { projects: FeaturedProject[] }) {
         />
       </div>
 
+      {/* white wall below the eave tiles — bamboo stems hide behind it */}
+      <div className="featured-eave-wall" aria-hidden="true" />
+
       <div className="home-window-unit window-unit-b">
         <div className="window-shape" aria-label="Featured projects 03 and 04">
           <WindowPane

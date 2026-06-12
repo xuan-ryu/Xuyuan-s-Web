@@ -1,4 +1,4 @@
-// Capture live + react at an arbitrary viewport for the main routes.
+﻿// Capture live + react at an arbitrary viewport for the main routes.
 // Usage: node scripts/capture-viewport-pair.mjs <outDir> <width> <height> "<route1,route2>" "<y1,y2,...>"
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -48,7 +48,7 @@ try {
     });
     await context.addInitScript(() => {
       try {
-        sessionStorage.setItem("loader-shown", "1");
+        sessionStorage.setItem("skip-loader", "1");
       } catch {}
     });
     for (const route of routes) {
@@ -59,6 +59,15 @@ try {
           timeout: 60000,
         });
         await page.waitForTimeout(2500);
+        // progressive pre-scroll: loads lazy media and settles appear effects
+        await page.evaluate(async () => {
+          for (let y = 0; y < document.body.scrollHeight; y += 500) {
+            window.scrollTo(0, y);
+            await new Promise((r) => setTimeout(r, 120));
+          }
+          window.scrollTo(0, 0);
+        });
+        await page.waitForTimeout(800);
         for (const y of offsets) {
           await page.evaluate((top) => window.scrollTo(0, top), y);
           await page.waitForTimeout(1200);

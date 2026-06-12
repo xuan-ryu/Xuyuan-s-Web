@@ -1,4 +1,4 @@
-// List every visible <img> whose document-Y intersects a range.
+﻿// List every visible <img> whose document-Y intersects a range.
 // Usage: node scripts/list-imgs-range.mjs <url> <yMin> <yMax>
 import path from "node:path";
 import os from "node:os";
@@ -29,7 +29,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.addInitScript(() => {
   try {
-    sessionStorage.setItem("loader-shown", "1");
+    sessionStorage.setItem("skip-loader", "1");
   } catch {}
 });
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });

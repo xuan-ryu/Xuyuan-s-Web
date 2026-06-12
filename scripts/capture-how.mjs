@@ -1,5 +1,5 @@
-﻿// Capture one URL at several scroll offsets.
-// Usage: node scripts/capture-one.mjs <url> <outPrefix> <y1,y2,...> [width] [height]
+﻿// Screenshot the home How-I-Work section at a given viewport width.
+// Usage: node scripts/capture-how.mjs <url> <outPrefix> [width]
 import path from "node:path";
 import os from "node:os";
 import { pathToFileURL } from "node:url";
@@ -20,13 +20,11 @@ async function loadPlaywright() {
 }
 
 const { chromium } = await loadPlaywright();
-const [, , url, outPrefix, offsetsArg, widthArg, heightArg] = process.argv;
-const offsets = (offsetsArg || "0").split(",").map(Number);
+const [, , url, outPrefix, widthArg] = process.argv;
 const vpWidth = Number(widthArg) || 1440;
-const vpHeight = Number(heightArg) || 1000;
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: vpWidth, height: vpHeight } });
+const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.addInitScript(() => {
   try {
     sessionStorage.setItem("skip-loader", "1");
@@ -34,10 +32,26 @@ await page.addInitScript(() => {
 });
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
 await page.waitForTimeout(2500);
-for (const y of offsets) {
-  await page.evaluate((top) => window.scrollTo(0, top), y);
+
+const top = await page.evaluate(() => {
+  const el = document.querySelector(".home-how");
+  if (!el) return null;
+  return el.getBoundingClientRect().top + window.scrollY;
+});
+if (top == null) {
+  console.error("no .home-how found");
+  await browser.close();
+  process.exit(1);
+}
+console.log(`.home-how top = ${Math.round(top)}`);
+for (const [label, y] of [
+  ["top", top],
+  ["mid", top + 600],
+  ["bottom", top + 1200],
+]) {
+  await page.evaluate((t) => window.scrollTo(0, t), y);
   await page.waitForTimeout(1300);
-  const file = `${outPrefix}__y${y}.png`;
+  const file = `${outPrefix}__${label}.png`;
   await page.screenshot({ path: file });
   console.log(`captured ${file}`);
 }

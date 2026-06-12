@@ -1,4 +1,4 @@
-// Full-page screenshot after a progressive pre-scroll (loads lazy content).
+﻿// Full-page screenshot after a progressive pre-scroll (loads lazy content).
 // Usage: node scripts/capture-fullpage.mjs <url> <outFile> [width]
 import path from "node:path";
 import os from "node:os";
@@ -27,7 +27,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.addInitScript(() => {
   try {
-    sessionStorage.setItem("loader-shown", "1");
+    sessionStorage.setItem("skip-loader", "1");
   } catch {}
 });
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });

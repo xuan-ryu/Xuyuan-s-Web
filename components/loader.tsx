@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  motion,
-  AnimatePresence,
-  useAnimate,
-  type AnimationOptions,
-} from "framer-motion";
+import gsap from "gsap";
 import {
   useState,
   useEffect,
@@ -16,13 +11,18 @@ import {
 
 const DOT_D = 10;
 const DOT_R = DOT_D / 2;
-const STAGGER = 90;
+const RING_D = 16;
 const WORDS = ["XUYUAN", "LIU"];
-const TOTAL = WORDS.join("").length;
-const I_IDX = WORDS[0].length + 1;
-const LETTER_DELAY_MS = 180;
-const BROADCAST_DELAY_MS = 450;
-const EXIT_FALLBACK_MS = 2700;
+
+// ink-drop timeline: the dot falls once, blooms like ink in water, letters
+// seep outward from the landing point, a last ripple wipes the screen
+const DROP_DELAY_S = 0.15;
+const BROADCAST_DELAY_MS = 750;
+const EXIT_FALLBACK_MS = 3200;
+
+// module-scope: survives client-side route changes / tab switches, but
+// resets on a full page refresh — so the loader replays on every reload
+let hasShownThisLoad = false;
 
 const containerStyle: CSSProperties = {
   position: "fixed",
@@ -50,19 +50,63 @@ const textContainerStyle: CSSProperties = {
   userSelect: "none",
 };
 
+const letterStyle: CSSProperties = {
+  display: "inline-block",
+  opacity: 0,
+  willChange: "transform, filter, opacity",
+};
+
+const ringStyle: CSSProperties = {
+  position: "absolute",
+  left: 0,
+  top: 0,
+  width: RING_D,
+  height: RING_D,
+  borderRadius: "50%",
+  border: "1.5px solid rgba(255,255,255,0.75)",
+  boxShadow:
+    "0 0 24px rgba(255,255,255,0.35), inset 0 0 10px rgba(255,255,255,0.18)",
+  opacity: 0,
+  pointerEvents: "none",
+  willChange: "transform, opacity",
+};
+
+const dotStyle: CSSProperties = {
+  position: "absolute",
+  left: 0,
+  top: 0,
+  width: DOT_D,
+  height: DOT_D,
+  borderRadius: "50%",
+  background: "#fff",
+  boxShadow:
+    "0 0 16px rgba(255,255,255,0.85), 0 0 40px rgba(255,255,255,0.35)",
+  opacity: 0,
+  pointerEvents: "none",
+  zIndex: 10,
+};
+
 const hintStyle: CSSProperties = {
   position: "absolute",
   bottom: "40px",
   fontSize: "10px",
   color: "rgba(255,255,255,0.3)",
   letterSpacing: "0.1em",
+  opacity: 0,
 };
 
 export function Loader() {
   const [shouldRun, setShouldRun] = useState<boolean | null>(null);
-  const [isVisible, setIsVisible] = useState(true);
-  const [dotRef, animateDot] = useAnimate();
+  const [gone, setGone] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const dotRef = useRef<HTMLDivElement | null>(null);
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const finalRingRef = useRef<HTMLDivElement | null>(null);
+  const textWrapRef = useRef<HTMLDivElement | null>(null);
+  const hintRef = useRef<HTMLDivElement | null>(null);
+  const introTlRef = useRef<gsap.core.Timeline | null>(null);
+  const exitTlRef = useRef<gsap.core.Timeline | null>(null);
   const abortRef = useRef(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const broadcastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -70,7 +114,10 @@ export function Loader() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setShouldRun(!sessionStorage.getItem("loader-shown"));
+    // sessionStorage flag = escape hatch for capture/measure tooling.
+    // NOTE: key is "skip-loader" — the old "loader-shown" key lingers in
+    // long-lived tabs from before the replay-on-refresh behavior.
+    setShouldRun(!hasShownThisLoad && !sessionStorage.getItem("skip-loader"));
   }, []);
 
   const unlockBody = useCallback(() => {
@@ -83,19 +130,44 @@ export function Loader() {
     abortRef.current = true;
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
+    hasShownThisLoad = true;
+    introTlRef.current?.kill();
 
-    if (broadcastTimerRef.current) {
-      clearTimeout(broadcastTimerRef.current);
-    }
-
-    sessionStorage.setItem("loader-shown", "1");
-    setIsVisible(false);
-
+    if (broadcastTimerRef.current) clearTimeout(broadcastTimerRef.current);
     broadcastTimerRef.current = setTimeout(() => {
       window.dispatchEvent(new CustomEvent("loaderFinished"));
       broadcastTimerRef.current = null;
     }, BROADCAST_DELAY_MS);
-  }, []);
+
+    const container = containerRef.current;
+    if (!container) {
+      unlockBody();
+      setGone(true);
+      return;
+    }
+    const exit = gsap.timeline({
+      onComplete: () => {
+        unlockBody();
+        setGone(true);
+      },
+    });
+    if (textWrapRef.current) {
+      exit.to(
+        textWrapRef.current,
+        { opacity: 0, y: -20, filter: "blur(6px)", duration: 0.45 },
+        0,
+      );
+    }
+    if (hintRef.current) {
+      exit.to(hintRef.current, { opacity: 0, duration: 0.2 }, 0);
+    }
+    exit.to(
+      container,
+      { yPercent: -100, duration: 0.9, ease: "power4.inOut" },
+      0,
+    );
+    exitTlRef.current = exit;
+  }, [unlockBody]);
 
   useEffect(() => {
     if (!shouldRun) return;
@@ -122,178 +194,132 @@ export function Loader() {
     return unlockBody;
   }, [unlockBody, shouldRun]);
 
-  const getLetterCenter = useCallback((idx: number) => {
-    const el = letterRefs.current[idx];
-    if (!el) return null;
-
-    const rect = el.getBoundingClientRect();
-    const letterSpacing =
-      parseFloat(window.getComputedStyle(el).letterSpacing) || 0;
-
-    return {
-      x: rect.left + (rect.width - letterSpacing) / 2 - DOT_R,
-      y: rect.top - DOT_D - 6,
-    };
-  }, []);
-
   useEffect(() => {
     if (!shouldRun) return;
+    // StrictMode double-mount sets abortRef in the first cleanup — reset so
+    // the second run's exit path still works
+    abortRef.current = false;
     const addTimer = (fn: () => void, ms: number) => {
       const id = setTimeout(fn, ms);
       timersRef.current.push(id);
     };
 
-    const revealLetter = (idx: number, duration = 0.52) => {
-      const el = letterRefs.current[idx];
-      if (!el) return;
-
-      animateDot(
-        el,
-        {
-          opacity: [0, 0.5, 1],
-          y: [-32, 4, 0],
-          filter: ["blur(12px)", "blur(5px)", "blur(0px)"],
-          scale: [0.98, 1],
-        },
-        {
-          duration,
-          times: [0, 0.65, 1],
-          ease: [0.22, 1, 0.36, 1],
-        } as AnimationOptions,
-      );
+    // landing point: true visual center between first/last letters
+    // (the container rect is skewed right by trailing letter-spacing)
+    const getCenter = () => {
+      const letters = letterRefs.current.filter(Boolean) as HTMLElement[];
+      const el = textWrapRef.current;
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      if (letters.length >= 2) {
+        const a = letters[0].getBoundingClientRect();
+        const b = letters[letters.length - 1].getBoundingClientRect();
+        return { x: (a.left + b.right) / 2, y: r.top + r.height / 2 };
+      }
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     };
 
-    const arcOffsets = Array.from({ length: TOTAL }, () => ({
-      dx: (Math.random() - 0.5) * 280,
-      dy: 120 + Math.random() * 80,
-    }));
+    const c = getCenter();
+    const dot = dotRef.current;
+    const letters = letterRefs.current.filter(Boolean) as HTMLElement[];
 
-    for (let i = 0; i < TOTAL; i++) {
-      if (i === I_IDX) continue;
+    if (c && dot) {
+      const maxDist = Math.max(
+        Math.hypot(c.x, c.y),
+        Math.hypot(window.innerWidth - c.x, c.y),
+        Math.hypot(c.x, window.innerHeight - c.y),
+        Math.hypot(window.innerWidth - c.x, window.innerHeight - c.y),
+      );
+      const rings = ringRefs.current.filter(Boolean) as HTMLElement[];
+      const finalRing = finalRingRef.current;
 
-      const { dx, dy } = arcOffsets[i];
-      const t = i * STAGGER + LETTER_DELAY_MS;
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.set(dot, { x: c.x - DOT_R, y: c.y - 180, opacity: 0 })
+        .set([...rings, finalRing].filter(Boolean), {
+          x: c.x - RING_D / 2,
+          y: c.y - RING_D / 2,
+          opacity: 0,
+          scale: 0.3,
+        })
+        // the ink dot drifts in and falls, stretching slightly as it drops
+        .to(dot, { opacity: 1, duration: 0.2 }, DROP_DELAY_S)
+        .to(
+          dot,
+          { y: c.y - DOT_R, scaleY: 1.18, duration: 0.55, ease: "power2.in" },
+          "<",
+        )
+        .addLabel("land")
+        // absorbed on landing
+        .to(dot, { scale: 0.2, opacity: 0, duration: 0.28 }, "land");
 
-      if (i === 0) {
-        addTimer(() => {
-          if (abortRef.current) return;
-          const p = getLetterCenter(0);
-          if (!p) return;
+      // ripples bloom outward, each softer and slower than the last
+      rings.forEach((ring, i) => {
+        tl.to(
+          ring,
+          { scale: 7 + i * 5.5, duration: 0.95 + i * 0.3, ease: "expo.out" },
+          `land+=${i * 0.12}`,
+        )
+          .to(ring, { opacity: 0.55 - i * 0.14, duration: 0.18 }, "<")
+          .to(ring, { opacity: 0, duration: 0.75 + i * 0.25 }, ">");
+      });
 
-          animateDot(
-            dotRef.current,
-            { x: p.x, y: p.y, opacity: 1 },
-            { duration: 0.01 },
-          );
-          revealLetter(0);
-        }, t);
-        continue;
+      // letters seep outward from the landing point
+      tl.fromTo(
+        letters,
+        { opacity: 0, y: 10, scale: 1.04, filter: "blur(10px)" },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          filter: "blur(0px)",
+          duration: 0.7,
+          ease: "power4.out",
+          stagger: { each: 0.045, from: "center" },
+        },
+        "land",
+      );
+
+      // the whole name settles inward — cinematic tracking tighten
+      if (textWrapRef.current) {
+        tl.fromTo(
+          textWrapRef.current,
+          { letterSpacing: "0.58em" },
+          { letterSpacing: "0.4em", duration: 1.3, ease: "power3.out" },
+          "land",
+        );
       }
 
-      addTimer(() => {
-        if (abortRef.current) return;
-        const p = getLetterCenter(i);
-        if (!p) return;
+      // the skip hint eases in once the bloom is underway
+      if (hintRef.current) {
+        tl.to(hintRef.current, { opacity: 1, duration: 0.6 }, "land+=0.3");
+      }
 
-        animateDot(
-          dotRef.current,
-          { x: p.x + dx, y: p.y - dy },
-          { type: "spring", stiffness: 420, damping: 16 } as AnimationOptions,
-        );
-        revealLetter(i);
-      }, t);
-
-      addTimer(() => {
-        if (abortRef.current) return;
-        const p = getLetterCenter(i);
-        if (!p) return;
-
-        animateDot(
-          dotRef.current,
-          { x: p.x, y: p.y },
+      // one last ripple swells past the edges, then the page slides in
+      if (finalRing) {
+        tl.to(
+          finalRing,
           {
-            x: { type: "spring", stiffness: 720, damping: 36 },
-            y: { type: "spring", stiffness: 560, damping: 30 },
-          } as AnimationOptions,
-        );
-      }, t + 55);
+            scale: (maxDist * 2) / RING_D,
+            duration: 0.85,
+            ease: "power2.inOut",
+          },
+          "land+=1.05",
+        )
+          .to(finalRing, { opacity: 0.4, duration: 0.25 }, "<")
+          .to(finalRing, { opacity: 0, duration: 0.55 }, ">");
+      }
+      tl.call(exitLoader, [], "land+=1.4");
+      introTlRef.current = tl;
     }
-
-    addTimer(async () => {
-      if (abortRef.current) return;
-
-      revealLetter(I_IDX, 0.5);
-
-      await new Promise<void>((resolve) => {
-        const waitId = setTimeout(resolve, 60);
-        timersRef.current.push(waitId);
-      });
-      if (abortRef.current) return;
-
-      const p = getLetterCenter(I_IDX);
-      if (!p) return;
-
-      await animateDot(
-        dotRef.current,
-        { x: p.x, y: p.y - 110 },
-        { type: "spring", stiffness: 560, damping: 22 } as AnimationOptions,
-      );
-      if (abortRef.current) return;
-
-      const p2 = getLetterCenter(I_IDX) ?? p;
-
-      await animateDot(
-        dotRef.current,
-        { y: p2.y },
-        { type: "spring", stiffness: 680, damping: 18 } as AnimationOptions,
-      );
-      if (abortRef.current) return;
-
-      await animateDot(
-        dotRef.current,
-        { scaleX: 1.35, scaleY: 0.68 },
-        { duration: 0.07 },
-      );
-      await animateDot(
-        dotRef.current,
-        { scaleX: 1, scaleY: 1 },
-        { duration: 0.14, ease: "easeOut" },
-      );
-      if (abortRef.current) return;
-
-      await new Promise<void>((resolve) => {
-        const waitId = setTimeout(resolve, 380);
-        timersRef.current.push(waitId);
-      });
-      if (abortRef.current) return;
-
-      const el = dotRef.current;
-      if (!el) return;
-
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + DOT_R;
-      const cy = rect.top + DOT_R;
-      const maxDist = Math.max(
-        Math.hypot(cx, cy),
-        Math.hypot(window.innerWidth - cx, cy),
-        Math.hypot(cx, window.innerHeight - cy),
-        Math.hypot(window.innerWidth - cx, window.innerHeight - cy),
-      );
-
-      await animateDot(
-        el,
-        { scale: (maxDist / DOT_R) * 1.15 },
-        { duration: 0.55, ease: [0.55, 0, 0.45, 1] },
-      );
-      if (abortRef.current) return;
-
-      exitLoader();
-    }, TOTAL * STAGGER + LETTER_DELAY_MS + 80);
 
     addTimer(exitLoader, EXIT_FALLBACK_MS);
 
     return () => {
       abortRef.current = true;
+      introTlRef.current?.kill();
+      introTlRef.current = null;
+      exitTlRef.current?.kill();
+      exitTlRef.current = null;
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
 
@@ -302,90 +328,54 @@ export function Loader() {
         broadcastTimerRef.current = null;
       }
     };
-  }, [animateDot, dotRef, exitLoader, getLetterCenter, shouldRun]);
+  }, [exitLoader, shouldRun]);
 
-  if (shouldRun === null || shouldRun === false) return null;
-
-  let ci = 0;
+  if (shouldRun !== true || gone) return null;
 
   return (
-    <AnimatePresence onExitComplete={unlockBody}>
-      {isVisible && (
-        <motion.div
-          key="loader-container"
-          initial={{ y: 0 }}
-          exit={{
-            y: "-100%",
-            transition: { duration: 0.9, ease: [0.82, 0, 0.18, 1] },
+    <div
+      ref={containerRef}
+      data-app-loader=""
+      style={containerStyle}
+      onClick={exitLoader}
+    >
+      <div ref={dotRef} style={dotStyle} />
+
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          ref={(el: HTMLDivElement | null) => {
+            ringRefs.current[i] = el;
           }}
-          style={containerStyle}
-          onClick={exitLoader}
-        >
-          <div
-            ref={dotRef}
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: DOT_D,
-              height: DOT_D,
-              borderRadius: "50%",
-              background: "#fff",
-              opacity: 0,
-              pointerEvents: "none",
-              zIndex: 10,
-            }}
-          />
+          style={ringStyle}
+        />
+      ))}
+      <div ref={finalRingRef} style={ringStyle} />
 
-          <motion.div
-            style={textContainerStyle}
-            exit={{
-              opacity: 0,
-              y: -20,
-              filter: "blur(6px)",
-              transition: { duration: 0.45 },
-            }}
-          >
-            {WORDS.map((word, wIdx) => (
-              <span key={wIdx} style={{ display: "flex" }}>
-                {word.split("").map((char) => {
-                  const idx = ci++;
-                  return (
-                    <motion.span
-                      key={idx}
-                      ref={(el: HTMLSpanElement | null) => {
-                        letterRefs.current[idx] = el;
-                      }}
-                      initial={{
-                        opacity: 0,
-                        y: -32,
-                        scale: 0.98,
-                        filter: "blur(12px)",
-                      }}
-                      style={{
-                        display: "inline-block",
-                        willChange: "transform, filter, opacity",
-                      }}
-                    >
-                      {char}
-                    </motion.span>
-                  );
-                })}
-              </span>
-            ))}
-          </motion.div>
+      <div ref={textWrapRef} style={textContainerStyle}>
+        {WORDS.map((word, wIdx) => {
+          const offset = WORDS.slice(0, wIdx).join("").length;
+          return (
+            <span key={wIdx} style={{ display: "flex" }}>
+              {word.split("").map((char, i) => (
+                <span
+                  key={i}
+                  ref={(el: HTMLSpanElement | null) => {
+                    letterRefs.current[offset + i] = el;
+                  }}
+                  style={letterStyle}
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
+          );
+        })}
+      </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.2 } }}
-            transition={{ delay: 1 }}
-            style={hintStyle}
-          >
-            CLICK OR ESC TO SKIP
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <div ref={hintRef} style={hintStyle}>
+        CLICK OR ESC TO SKIP
+      </div>
+    </div>
   );
 }

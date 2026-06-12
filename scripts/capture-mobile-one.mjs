@@ -1,4 +1,4 @@
-// Capture one URL at mobile width at several scroll offsets.
+﻿// Capture one URL at mobile width at several scroll offsets.
 // Usage: node scripts/capture-mobile-one.mjs <url> <outPrefix> <y1,y2,...>
 import path from "node:path";
 import os from "node:os";
@@ -32,7 +32,7 @@ const context = await browser.newContext({
 });
 await context.addInitScript(() => {
   try {
-    sessionStorage.setItem("loader-shown", "1");
+    sessionStorage.setItem("skip-loader", "1");
   } catch {}
 });
 const page = await context.newPage();

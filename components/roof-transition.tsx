@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-const D6NZ = "/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png";
-const ABW = "/assets/framerusercontent.com/images/6abw1vzYpd5VHb7WZncQkASt2ag.png";
+const D6NZ =
+  "/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png";
+const ABW =
+  "/assets/framerusercontent.com/images/6abw1vzYpd5VHb7WZncQkASt2ag.png";
 
 // Live composition: two roof artworks, each rendered twice. The pieces drift
 // as you scroll — the upper pair slides right (+0.0317 px per scrolled px),
@@ -73,6 +75,7 @@ export function RoofTransition() {
           width={p.w}
           height={p.h}
           className={`roof ${p.cls}`}
+          unoptimized
         />
       ))}
     </section>

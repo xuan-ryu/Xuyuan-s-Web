@@ -9,11 +9,13 @@ import { FeaturedWindows } from "@/components/featured-windows";
 import { RoofTransition } from "@/components/roof-transition";
 import { HowDecorParallax } from "@/components/how-decor-parallax";
 import { CtaBlock } from "@/components/cta-block";
+import { RevealFx } from "@/components/reveal-fx";
 
 export default function Home() {
   return (
     <>
       <Loader />
+      <RevealFx />
 
       <HeroScene
         mobileBgUrl="/assets/framerusercontent.com/images/oOEkORPGPOFnemDEDLO72iBOZKU.png"
@@ -36,8 +38,10 @@ export default function Home() {
       <section id="featured" className="home-featured home-featured-live">
         <div className="home-featured-shell">
           <div className="home-featured-head">
-            <h2>Featured Project</h2>
-            <Link href="/work">view all projects</Link>
+            <h2 className="fx-rise">Featured Project</h2>
+            <Link href="/work" className="fx-rise-big">
+              view all projects
+            </Link>
           </div>
 
           <div className="home-featured-rule" />
@@ -67,6 +71,7 @@ export default function Home() {
           edges, three glassy method cards staggered left/right/left with ink
           brush strokes behind them; geometry measured from the live site */}
       <section id="value" className="home-how">
+        <div className="home-how-canvas">
         <HowDecorParallax />
         <div className="how-decor how-screen" aria-hidden="true">
           <Image
@@ -127,7 +132,7 @@ export default function Home() {
           </div>
         ))}
 
-        <h2 className="home-how-title">How I Work</h2>
+        <h2 className="home-how-title fx-rise">How I Work</h2>
 
         {site.workMethods.map((method, i) => (
           <article key={method.title} className={`how-card how-card-${i + 1}`}>
@@ -136,6 +141,7 @@ export default function Home() {
             <p>{method.body}</p>
           </article>
         ))}
+        </div>
       </section>
 
       <CtaBlock />

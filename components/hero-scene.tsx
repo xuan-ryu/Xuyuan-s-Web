@@ -161,7 +161,9 @@ const mountainFrag = `
     float a = clamp(vAlpha * shape + vSpotlight * 0.45 * shape, 0.0, 1.0);
     if (a < 0.02) discard;
 
-    float colorMix = smoothstep(0.40, 0.65, uScroll);
+    // keep the dissolving particles inky until the sky darkens, so the
+    // collapse stays visible against the still-light background
+    float colorMix = smoothstep(0.55, 0.80, uScroll);
     // 纯白星光色 — 散射粒子过渡到星星外观
     vec3 targetColor = vec3(1.0, 1.0, 1.0);
     vec3 finalColor = mix(uColor, targetColor, colorMix) + vSpotlight * 0.08;
@@ -224,7 +226,8 @@ const starVert = `
     gl_Position = projectionMatrix * mvPosition;
     // 固定像素大小：星星不随距离缩放（天体效果）
     gl_PointSize = clamp(aSize * twinkle, 1.0, 8.0);
-    float starT = smoothstep(0.65, 0.82, uScroll);
+    // gated behind the night overlay (0.65-0.85): stars only on a dark sky
+    float starT = smoothstep(0.85, 0.97, uScroll);
     vStarA = starT * twinkle;
   }
 `
@@ -394,6 +397,7 @@ export default function DigitalLandscape(props: Props) {
     const blackPageRef = useRef<HTMLDivElement | null>(null)
     const page2ActiveRef = useRef(false)
     const photoWrapperRef = useRef<HTMLDivElement | null>(null)
+    const page2TextRef = useRef<HTMLDivElement | null>(null)
     const sceneReadyRef = useRef(false)
     const isLoadedRef = useRef(isLoaded !== false)
     const fontsReadyRef = useRef(false)
@@ -486,6 +490,16 @@ export default function DigitalLandscape(props: Props) {
                 isLoadedRef.current &&
                 fontsReadyRef.current
             ) {
+                // the session loader replays on every refresh: while it still
+                // covers the screen, hold the text entrance until it leaves
+                if (document.querySelector("[data-app-loader]")) {
+                    window.addEventListener(
+                        "loaderFinished",
+                        () => uiRef.current?.classList.add("scene-loaded"),
+                        { once: true }
+                    )
+                    return
+                }
                 uiRef.current?.classList.add("scene-loaded")
             }
         }
@@ -612,6 +626,25 @@ export default function DigitalLandscape(props: Props) {
             return 0
         }
 
+        // The night card sits at a fixed doc position: spacer(136vh−911px)
+        // + card top within the zone (2152px−136vh) — the vh terms cancel.
+        const PAGE2_DOC_TOP = 1241
+
+        // All late-scroll timing (pin, fades, release) anchors to the roof
+        // transition's actual doc position — pure viewport-height multiples
+        // break on short (~750) and tall (1300+) windows.
+        let roofSectionEl: HTMLElement | null = null
+        const getRoofTop = () => {
+            if (!roofSectionEl || !roofSectionEl.isConnected) {
+                roofSectionEl = document.querySelector(".home-roof-transition")
+            }
+            return roofSectionEl
+                ? roofSectionEl.offsetTop
+                : winHeight * 3 -
+                      911 +
+                      Math.max(0, 2152 - winHeight * 1.55)
+        }
+
         const handleScroll = () => {
             if (!isMounted) return
             const componentTop =
@@ -631,15 +664,37 @@ export default function DigitalLandscape(props: Props) {
             const uiEl = uiRef.current
             const overlayEl = nightOverlayRef.current
             const blackPageEl = blackPageRef.current
+            const roofTop = getRoofTop()
 
             // page2: fade in profile once stars are mostly formed
             // live window fitted at two viewport heights: start = 0.28h + 590
-            const p2Opacity = Math.max(
+            const p2Reveal = Math.max(
                 0,
                 Math.min(
                     1,
                     (currentScrollY - (winHeight * 0.28 + 590)) / 350
                 )
+            )
+            // safety fade once the card is fully behind the roof wall
+            const p2LateFade =
+                1 -
+                smoothstepF(
+                    roofTop + winHeight * 0.3,
+                    roofTop + winHeight * 0.45,
+                    currentScrollY
+                )
+            const p2Opacity = p2Reveal * p2LateFade
+            // moonset: pin the night card so the AVATAR hangs at ~12% viewport
+            // height (the card content is shifted up by the CSS translateY on
+            // .page2-center-container — compensate or the avatar hits the top
+            // edge on tall screens), then the rising roof transition slides
+            // over it and the content sets behind the eave line like a moon
+            const pinShift = winHeight > 850 ? 110 : 30
+            const moonPin = clampF(
+                currentScrollY -
+                    (PAGE2_DOC_TOP - winHeight * 0.12 - pinShift),
+                0,
+                Math.max(0, roofTop + 500 - PAGE2_DOC_TOP)
             )
             if (blackPageEl) {
                 setInlineStyle(
@@ -649,8 +704,29 @@ export default function DigitalLandscape(props: Props) {
                 )
                 setInlineStyle(
                     blackPageEl,
+                    "transform",
+                    `translateY(${Math.round(moonPin)}px)`
+                )
+                setInlineStyle(
+                    blackPageEl,
                     "pointer-events",
                     p2Opacity > 0.01 ? "auto" : "none"
+                )
+            }
+            // name/intro copy bows out before the roofline reaches it —
+            // otherwise fragments peek through the sky gaps between roofs
+            if (page2TextRef.current) {
+                const textFade =
+                    1 -
+                    smoothstepF(
+                        roofTop - winHeight * 0.55,
+                        roofTop - winHeight * 0.15,
+                        currentScrollY
+                    )
+                setInlineStyle(
+                    page2TextRef.current,
+                    "opacity",
+                    String(round3(textFade))
                 )
             }
             if (!page2ActiveRef.current && p2Opacity > 0) {
@@ -664,8 +740,10 @@ export default function DigitalLandscape(props: Props) {
                     // 组件完全在视口下方（尚未滚动到），隐藏 fixed canvas 避免叠在其他页面内容上
                     setInlineStyle(wrapperEl, "opacity", "0")
                 } else {
-                    const canvasFadeStart = winHeight * 1.55
-                    const canvasFadeEnd = winHeight * 1.9
+                    // keep the starfield up through the moonset — it dims
+                    // away as the roofline takes over the viewport
+                    const canvasFadeStart = roofTop - winHeight * 0.3
+                    const canvasFadeEnd = roofTop + winHeight * 0.3
                     const canvasFade =
                         currentScrollY <= canvasFadeStart
                             ? 1
@@ -698,12 +776,25 @@ export default function DigitalLandscape(props: Props) {
             }
 
             // Smooth day→night — opacity overlay（compositor-only，不触发 repaint）
+            // fades back out once the roof transition's white wall owns the
+            // viewport (the overlay is fixed and would otherwise linger)
             const nightT = smoothstepF(0.65, 0.85, progress)
+            const nightRelease =
+                1 -
+                smoothstepF(
+                    roofTop + 900,
+                    roofTop + 900 + winHeight * 0.35,
+                    currentScrollY
+                )
             if (overlayEl)
-                setInlineStyle(overlayEl, "opacity", String(round3(nightT)))
+                setInlineStyle(
+                    overlayEl,
+                    "opacity",
+                    String(round3(nightT * nightRelease))
+                )
 
             const wasSceneVisible = isSceneVisible
-            isSceneVisible = currentScrollY < winHeight * 2.5
+            isSceneVisible = currentScrollY < roofTop + winHeight * 0.5
             if (isSceneVisible && !wasSceneVisible) {
                 resumeSceneAnimation?.()
             }
@@ -1299,10 +1390,20 @@ export default function DigitalLandscape(props: Props) {
                     animationFrameId = 0
                 }
             }
+            // returning to the tab: don't trust the old RAF state — a hidden
+            // tab can kill the loop silently (GPU context loss, throttling),
+            // leaving isRunning=true with no live frame callback
+            const hardRekick = () => {
+                cancelAnimationFrame(animationFrameId)
+                animationFrameId = 0
+                isRunning = false
+                updateState()
+            }
             const onVisChange = () => {
                 isPageVisible =
                     !document.hidden && document.visibilityState === "visible"
-                updateState()
+                if (isPageVisible) hardRekick()
+                else updateState()
             }
             const onBlur = () => {
                 isPageVisible = false
@@ -1311,7 +1412,8 @@ export default function DigitalLandscape(props: Props) {
             const onFocus = () => {
                 isPageVisible =
                     !document.hidden && document.visibilityState === "visible"
-                updateState()
+                if (isPageVisible) hardRekick()
+                else updateState()
             }
             const onPageHide = () => {
                 isPageVisible = false
@@ -1327,6 +1429,18 @@ export default function DigitalLandscape(props: Props) {
             window.addEventListener("focus", onFocus, { passive: true })
             window.addEventListener("pagehide", onPageHide, { passive: true })
             window.addEventListener("pageshow", onPageShow, { passive: true })
+
+            // background tabs can lose the WebGL context entirely; without
+            // preventDefault the browser never restores it → blank hero
+            const canvasEl = rendererArg.domElement as HTMLCanvasElement
+            const onCtxLost = (e: Event) => {
+                e.preventDefault()
+            }
+            const onCtxRestored = () => {
+                hardRekick()
+            }
+            canvasEl.addEventListener("webglcontextlost", onCtxLost)
+            canvasEl.addEventListener("webglcontextrestored", onCtxRestored)
 
             let io: IntersectionObserver | null = null
             if (
@@ -1553,6 +1667,8 @@ export default function DigitalLandscape(props: Props) {
                 window.removeEventListener("focus", onFocus)
                 window.removeEventListener("pagehide", onPageHide)
                 window.removeEventListener("pageshow", onPageShow)
+                canvasEl.removeEventListener("webglcontextlost", onCtxLost)
+                canvasEl.removeEventListener("webglcontextrestored", onCtxRestored)
                 io?.disconnect()
                 if (resumeSceneAnimation === ensureRunning) {
                     resumeSceneAnimation = null
@@ -1694,6 +1810,11 @@ export default function DigitalLandscape(props: Props) {
                 max-width: 960px;
                 margin: 0 auto;
                 transform: translateY(-110px);
+            }
+            /* short windows: the card pins near the viewport top — the big
+               upward shift would clip the avatar above the screen */
+            @media (max-height: 850px) {
+                .page2-center-container { transform: translateY(-30px); }
             }
 
             /* Sky wash — 全屏氛围光晕染，真实星星由 WebGL canvas 提供 */
@@ -1914,11 +2035,13 @@ export default function DigitalLandscape(props: Props) {
                 }}
             />
 
-            {/* Night overlay — opacity 0→1，只走 Compositor，替代 backgroundColor repaint */}
+            {/* Night overlay — opacity 0→1，只走 Compositor，替代 backgroundColor repaint
+                fixed: doubles as the night-sky backdrop behind the roof
+                transition's transparent sky, so the moon sets BEHIND the eaves */}
             <div
                 ref={nightOverlayRef}
                 style={{
-                    position: "absolute",
+                    position: "fixed",
                     inset: 0,
                     background: "#000",
                     opacity: 0,
@@ -2092,10 +2215,16 @@ export default function DigitalLandscape(props: Props) {
                 }}
             />
 
-            {/* Profile zone: exits early enough for the roof transition to match live. */}
+            {/* Profile zone: the max() bonus keeps enough night-sky runway
+                between the card reveal and the roof's arrival on short
+                windows (flow 300vh−911px collapses below ~800px height). */}
             <div
                 className="profile-zone"
-                style={{ position: "relative", height: "164vh", zIndex: 10 }}
+                style={{
+                    position: "relative",
+                    height: "calc(164vh + max(0px, 2152px - 155vh))",
+                    zIndex: 10,
+                }}
             >
                 <div
                     ref={blackPageRef}
@@ -2183,6 +2312,19 @@ export default function DigitalLandscape(props: Props) {
                                 </div>
                             </div>
                         )}
+                    {/* fades out ahead of the rising roofline so no text
+                        fragments peek through the sky gaps — only the
+                        avatar/moon plays the occlusion exit */}
+                    <div
+                        ref={page2TextRef}
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            width: "100%",
+                            willChange: "opacity",
+                        }}
+                    >
                         <div className="page2-name-block p2-fade delay-3">
                             <div className="page2-title">
                                 {page2Title.split(" ").map((word, i) => (
@@ -2223,6 +2365,7 @@ export default function DigitalLandscape(props: Props) {
                         <div className="page2-footer p2-fade delay-6">
                             {page2Footer}
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

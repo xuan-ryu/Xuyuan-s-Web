@@ -1,4 +1,4 @@
-import fs from "node:fs/promises";
+﻿import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import { pathToFileURL } from "node:url";
@@ -54,7 +54,7 @@ try {
     // skip the intro loader on the react build
     await context.addInitScript(() => {
       try {
-        sessionStorage.setItem("loader-shown", "1");
+        sessionStorage.setItem("skip-loader", "1");
       } catch {}
     });
 

@@ -1,4 +1,4 @@
-// Capture live + react at mobile width for the main routes.
+﻿// Capture live + react at mobile width for the main routes.
 // Usage: node scripts/capture-mobile-pair.mjs <outDirName>
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -60,7 +60,7 @@ try {
     });
     await context.addInitScript(() => {
       try {
-        sessionStorage.setItem("loader-shown", "1");
+        sessionStorage.setItem("skip-loader", "1");
       } catch {}
     });
     for (const [route, offsets] of Object.entries(plan)) {

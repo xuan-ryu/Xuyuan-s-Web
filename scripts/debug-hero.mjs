@@ -1,4 +1,4 @@
-import path from "node:path";
+﻿import path from "node:path";
 import os from "node:os";
 import { pathToFileURL } from "node:url";
 
@@ -24,7 +24,7 @@ page.on("console", (msg) => console.log(`[${msg.type()}] ${msg.text().slice(0, 3
 page.on("pageerror", (err) => console.log(`[pageerror] ${err.message.slice(0, 500)}`));
 await page.addInitScript(() => {
   try {
-    sessionStorage.setItem("loader-shown", "1");
+    sessionStorage.setItem("skip-loader", "1");
   } catch {}
 });
 await page.goto("http://127.0.0.1:4000/", { waitUntil: "networkidle", timeout: 60000 });

@@ -1,4 +1,4 @@
-// Sample the state of key text elements at a series of scroll positions.
+﻿// Sample the state of key text elements at a series of scroll positions.
 // For each tracked snippet, report viewport-Y, opacity, and transform so the
 // scroll choreography of the live site can be transcribed.
 // Usage: node scripts/probe-scroll.mjs <url> "<text1>|<text2>|..." "<y1,y2,...>" [width]
@@ -31,7 +31,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.addInitScript(() => {
   try {
-    sessionStorage.setItem("loader-shown", "1");
+    sessionStorage.setItem("skip-loader", "1");
   } catch {}
 });
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });

@@ -1,4 +1,4 @@
-// Measure bounding boxes of the Featured-section decor on a page.
+﻿// Measure bounding boxes of the Featured-section decor on a page.
 // Usage: node scripts/measure-featured.mjs <url>
 import path from "node:path";
 import os from "node:os";
@@ -25,7 +25,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.addInitScript(() => {
   try {
-    sessionStorage.setItem("loader-shown", "1");
+    sessionStorage.setItem("skip-loader", "1");
   } catch {}
 });
 await page.goto(process.argv[2], { waitUntil: "networkidle", timeout: 60000 });
