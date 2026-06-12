@@ -9,14 +9,12 @@ import { FeaturedWindows } from "@/components/featured-windows";
 import { RoofTransition } from "@/components/roof-transition";
 import { HowDecorParallax } from "@/components/how-decor-parallax";
 import { CtaBlock } from "@/components/cta-block";
-import { RevealFx } from "@/components/reveal-fx";
 import { ValueCard } from "@/components/value-card";
 
 export default function Home() {
   return (
     <>
       <Loader />
-      <RevealFx />
 
       <HeroScene
         mobileBgUrl="/assets/framerusercontent.com/images/oOEkORPGPOFnemDEDLO72iBOZKU.png"

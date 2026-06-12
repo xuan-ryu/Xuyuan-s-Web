@@ -18,6 +18,24 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        {/* consolidated from the hero/koi runtime injectors — same families
+            and weights, loaded once and early */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Newsreader:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&display=swap"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Murecho:wght@300;400;500&family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
+        />
+      </head>
       <body>
         <div id="page-root">
           <SmoothScroll />

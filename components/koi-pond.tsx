@@ -28,23 +28,7 @@ export default function InkKoiEcosystem(props: Props) {
     const feedCursorRef = useRef<HTMLDivElement | null>(null)
     const feedBtnRef = useRef<HTMLDivElement | null>(null)
 
-    // 🌟 统一引入字体库
-    const fontHref = useMemo(
-        () =>
-            "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Murecho:wght@300;400;500&family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap",
-        []
-    )
-
-    useEffect(() => {
-        const id = "ink-koi-fonts"
-        if (!document.getElementById(id)) {
-            const link = document.createElement("link")
-            link.id = id
-            link.rel = "stylesheet"
-            link.href = fontHref
-            document.head.appendChild(link)
-        }
-    }, [fontHref])
+    // fonts are loaded once in app/layout.tsx (consolidated injector)
 
     useEffect(() => {
         const container = containerRef.current

@@ -404,25 +404,7 @@ export default function DigitalLandscape(props: Props) {
     const fontsReadyRef = useRef(false)
     const mobileBgRef = useRef(mobileBgUrl)
 
-    useEffect(() => {
-        if (typeof document === "undefined") return
-        if (document.querySelector("[data-xy-fonts]")) return
-        const frag = document.createDocumentFragment()
-        const pc1 = document.createElement("link")
-        pc1.rel = "preconnect"
-        pc1.href = "https://fonts.googleapis.com"
-        const pc2 = document.createElement("link")
-        pc2.rel = "preconnect"
-        pc2.href = "https://fonts.gstatic.com"
-        ;(pc2 as any).crossOrigin = ""
-        const lk = document.createElement("link")
-        lk.rel = "stylesheet"
-        lk.href =
-            "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Newsreader:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&display=swap"
-        lk.setAttribute("data-xy-fonts", "1")
-        frag.append(pc1, pc2, lk)
-        document.head.appendChild(frag)
-    }, [])
+    // fonts are loaded once in app/layout.tsx (consolidated injector)
 
     useEffect(() => {
         isLoadedRef.current = isLoaded !== false
