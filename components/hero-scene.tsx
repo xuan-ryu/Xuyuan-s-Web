@@ -970,6 +970,11 @@ export default function DigitalLandscape(props: Props) {
                 )
                 renderer.setSize(containerW, window.innerHeight)
                 renderer.setClearColor(0xffffff, 0)
+                // defensive sweep: any stale canvas (HMR ghosts, interrupted
+                // unmounts) would push the live one below the fold
+                mountRef.current
+                    ?.querySelectorAll("canvas")
+                    .forEach((c) => c.remove())
                 mountRef.current?.appendChild(renderer.domElement)
 
                 // 响应式地形：X 范围跟视口宽高比，粒子上限跟分辨率
@@ -1443,6 +1448,13 @@ export default function DigitalLandscape(props: Props) {
             canvasEl.addEventListener("webglcontextlost", onCtxLost)
             canvasEl.addEventListener("webglcontextrestored", onCtxRestored)
 
+            // watchdog: if the loop should be running but hasn't ticked in
+            // 3s (silent death of any kind), restart it
+            const watchdogId = window.setInterval(() => {
+                if (!isPageVisible || !isInViewport || !getVisible()) return
+                if (performance.now() - lastTime > 3000) hardRekick()
+            }, 2500)
+
             let io: IntersectionObserver | null = null
             if (
                 !forceVisible &&
@@ -1670,6 +1682,7 @@ export default function DigitalLandscape(props: Props) {
                 window.removeEventListener("pageshow", onPageShow)
                 canvasEl.removeEventListener("webglcontextlost", onCtxLost)
                 canvasEl.removeEventListener("webglcontextrestored", onCtxRestored)
+                window.clearInterval(watchdogId)
                 io?.disconnect()
                 if (resumeSceneAnimation === ensureRunning) {
                     resumeSceneAnimation = null
