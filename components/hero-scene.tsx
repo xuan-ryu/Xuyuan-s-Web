@@ -980,12 +980,18 @@ export default function DigitalLandscape(props: Props) {
                     qualityTier === 0 ? 40.0 : qualityTier === 1 ? 22.0 : 15.0
                 const density =
                     qualityTier === 0 ? 3.0 : qualityTier === 1 ? 16.0 : 30.0
+                // measured demand (uncapped): ~280k at tier 2 across common
+                // viewports — demand does NOT scale with pixel area (terrain
+                // width grows as windows get SHORTER), so an area-scaled cap
+                // silently truncated the last-generated columns: the bottom-
+                // right foreground bank appeared or vanished depending on
+                // window chrome. Flat caps with headroom instead.
                 const maxPoints =
                     qualityTier === 0
                         ? 8000
                         : qualityTier === 1
-                          ? Math.round(80000 * pixelAreaRatio)
-                          : Math.round(180000 * pixelAreaRatio)
+                          ? 120000
+                          : 360000
                 const yieldInterval =
                     qualityTier === 0 ? 14 : qualityTier === 1 ? 24 : 40
                 const positions = new Float32Array(maxPoints * 3)
