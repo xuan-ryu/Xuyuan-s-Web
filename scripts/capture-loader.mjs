@@ -1,4 +1,4 @@
-// Capture the session loader animation frames (does NOT skip the loader).
+﻿// Capture the session loader animation frames (does NOT skip the loader).
 // Usage: node scripts/capture-loader.mjs <url> <outPrefix> [width]
 import path from "node:path";
 import os from "node:os";
@@ -27,7 +27,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
 
-const marks = [400, 950, 1400, 1900, 2500, 3200];
+const marks = [700, 1500, 2600, 3600, 4200, 5000];
 const start = Date.now();
 for (const t of marks) {
   const wait = t - (Date.now() - start);

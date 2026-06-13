@@ -10,75 +10,75 @@ import {
   type CSSProperties,
 } from "react";
 
-// the site's signature ease (--ease-silk, docs/design-system.md)
 gsap.registerPlugin(CustomEase);
-CustomEase.create("silk", "0.16,1,0.3,1");
+CustomEase.create("inkSoft", "0.25,1,0.5,1");
+CustomEase.create("doors", "0.76,0,0.24,1");
 
-const DOT_D = 10;
-const DOT_R = DOT_D / 2;
-const RING_D = 16;
 const WORDS = ["XUYUAN", "LIU"];
+const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
-// ink-drop timeline: the dot falls once, blooms like ink in water, letters
-// seep outward from the landing point, a last ripple wipes the screen
-const DROP_DELAY_S = 0.15;
 const BROADCAST_DELAY_MS = 750;
-const EXIT_FALLBACK_MS = 3200;
+const EXIT_FALLBACK_MS = 5200;
 
 // module-scope: survives client-side route changes / tab switches, but
 // resets on a full page refresh — so the loader replays on every reload
 let hasShownThisLoad = false;
 
-const containerStyle: CSSProperties = {
+const GRAIN_URL =
+  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+const rootStyle: CSSProperties = {
   position: "fixed",
   inset: 0,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  backgroundColor: "#000",
   zIndex: 9999,
   cursor: "pointer",
-  pointerEvents: "all",
   overflow: "hidden",
+  userSelect: "none",
 };
 
-const textContainerStyle: CSSProperties = {
-  fontSize: "min(9vw, 64px)",
-  fontWeight: 300,
-  color: "#fff",
+const doorStyle: CSSProperties = {
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  width: "50.2vw",
+  background: "var(--ink-950, #050505)",
+  overflow: "hidden",
+  willChange: "transform",
+};
+
+const grainStyle: CSSProperties = {
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  width: "100vw",
+  backgroundImage: GRAIN_URL,
+  opacity: 0.035,
+  mixBlendMode: "overlay",
+  pointerEvents: "none",
+};
+
+const contentStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  zIndex: 10,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "clamp(20px, 3vw, 40px)",
+  pointerEvents: "none",
+  willChange: "transform, opacity, filter",
+};
+
+const nameStyle: CSSProperties = {
   display: "flex",
   gap: "1.1rem",
   fontFamily: "var(--font-serif)",
-  letterSpacing: "0.3em",
+  fontSize: "min(7vw, 52px)",
+  fontWeight: 300,
+  letterSpacing: "0.35em",
   textTransform: "uppercase",
-  userSelect: "none",
-};
-
-const signatureStyle: CSSProperties = {
-  marginTop: "22px",
-  fontFamily: "var(--font-brush)",
-  fontSize: "30px",
-  letterSpacing: "0.2em",
-  color: "rgba(255,255,255,0.55)",
-  opacity: 0,
-  userSelect: "none",
-};
-
-// soft ink-wash blooms behind the landing point — organic, heavily blurred
-const inkStyle: CSSProperties = {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  width: 140,
-  height: 140,
-  borderRadius: "50%",
-  background:
-    "radial-gradient(circle, rgba(255,255,255,0.16), rgba(255,255,255,0.05) 55%, transparent 72%)",
-  filter: "blur(22px)",
-  opacity: 0,
-  pointerEvents: "none",
-  willChange: "transform, opacity",
+  color: "#e8e6e3",
+  whiteSpace: "nowrap",
 };
 
 const letterStyle: CSSProperties = {
@@ -87,56 +87,37 @@ const letterStyle: CSSProperties = {
   willChange: "transform, filter, opacity",
 };
 
-const ringStyle: CSSProperties = {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  width: RING_D,
-  height: RING_D,
-  borderRadius: "50%",
-  border: "1.5px solid rgba(255,255,255,0.75)",
-  boxShadow:
-    "0 0 24px rgba(255,255,255,0.35), inset 0 0 10px rgba(255,255,255,0.18)",
+const sealStyle: CSSProperties = {
+  width: "clamp(30px, 3vw, 42px)",
+  height: "auto",
+  flexShrink: 0,
   opacity: 0,
-  pointerEvents: "none",
-  willChange: "transform, opacity",
-};
-
-const dotStyle: CSSProperties = {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  width: DOT_D,
-  height: DOT_D,
-  borderRadius: "50%",
-  background: "#fff",
-  boxShadow:
-    "0 0 16px rgba(255,255,255,0.85), 0 0 40px rgba(255,255,255,0.35)",
-  opacity: 0,
-  pointerEvents: "none",
-  zIndex: 10,
+  willChange: "transform, filter, opacity",
 };
 
 const hintStyle: CSSProperties = {
   position: "absolute",
   bottom: "40px",
-  fontSize: "10px",
-  color: "rgba(255,255,255,0.3)",
-  letterSpacing: "0.1em",
+  left: "50%",
+  transform: "translateX(-50%)",
+  zIndex: 10,
+  fontFamily: "var(--font-mono)",
+  fontSize: "9px",
+  letterSpacing: "0.25em",
+  textTransform: "uppercase",
+  color: "rgba(232,230,227,0.45)",
   opacity: 0,
+  pointerEvents: "none",
 };
 
 export function Loader() {
   const [shouldRun, setShouldRun] = useState<boolean | null>(null);
   const [gone, setGone] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const dotRef = useRef<HTMLDivElement | null>(null);
+  const leftDoorRef = useRef<HTMLDivElement | null>(null);
+  const rightDoorRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const ringRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const finalRingRef = useRef<HTMLDivElement | null>(null);
-  const inkRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const signatureRef = useRef<HTMLDivElement | null>(null);
-  const textWrapRef = useRef<HTMLDivElement | null>(null);
+  const sealRef = useRef<HTMLImageElement | null>(null);
   const hintRef = useRef<HTMLDivElement | null>(null);
   const introTlRef = useRef<gsap.core.Timeline | null>(null);
   const exitTlRef = useRef<gsap.core.Timeline | null>(null);
@@ -147,9 +128,7 @@ export function Loader() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // sessionStorage flag = escape hatch for capture/measure tooling.
-    // NOTE: key is "skip-loader" — the old "loader-shown" key lingers in
-    // long-lived tabs from before the replay-on-refresh behavior.
+    // sessionStorage flag = escape hatch for capture/measure tooling
     setShouldRun(!hasShownThisLoad && !sessionStorage.getItem("skip-loader"));
   }, []);
 
@@ -172,8 +151,9 @@ export function Loader() {
       broadcastTimerRef.current = null;
     }, BROADCAST_DELAY_MS);
 
-    const container = containerRef.current;
-    if (!container) {
+    const left = leftDoorRef.current;
+    const right = rightDoorRef.current;
+    if (!left || !right) {
       unlockBody();
       setGone(true);
       return;
@@ -184,28 +164,20 @@ export function Loader() {
         setGone(true);
       },
     });
-    if (textWrapRef.current) {
+    if (contentRef.current) {
       exit.to(
-        textWrapRef.current,
-        { opacity: 0, y: -20, filter: "blur(6px)", duration: 0.45 },
+        contentRef.current,
+        { opacity: 0, scale: 0.95, filter: "blur(12px)", duration: 0.45 },
         0,
       );
     }
-    if (signatureRef.current) {
-      exit.to(
-        signatureRef.current,
-        { opacity: 0, y: -14, duration: 0.4 },
-        0.05,
-      );
-    }
     if (hintRef.current) {
-      exit.to(hintRef.current, { opacity: 0, duration: 0.2 }, 0);
+      exit.to(hintRef.current, { opacity: 0, duration: 0.3 }, 0);
     }
-    exit.to(
-      container,
-      { yPercent: -100, duration: 0.9, ease: "power4.inOut" },
-      0,
-    );
+    // the shoji doors slide apart, revealing the page
+    exit
+      .to(left, { xPercent: -100, duration: 1.15, ease: "doors" }, 0.12)
+      .to(right, { xPercent: 100, duration: 1.15, ease: "doors" }, 0.12);
     exitTlRef.current = exit;
   }, [unlockBody]);
 
@@ -222,164 +194,73 @@ export function Loader() {
     if (!shouldRun) return;
     const originalOverflow = document.body.style.overflow;
     const originalTouchAction = document.body.style.touchAction;
-
     document.body.style.overflow = "hidden";
     document.body.style.touchAction = "none";
-
     restoreBodyRef.current = () => {
       document.body.style.overflow = originalOverflow;
       document.body.style.touchAction = originalTouchAction;
     };
-
     return unlockBody;
   }, [unlockBody, shouldRun]);
 
   useEffect(() => {
     if (!shouldRun) return;
-    // StrictMode double-mount sets abortRef in the first cleanup — reset so
-    // the second run's exit path still works
+    // StrictMode double-mount sets abortRef in the first cleanup
     abortRef.current = false;
     const addTimer = (fn: () => void, ms: number) => {
       const id = setTimeout(fn, ms);
       timersRef.current.push(id);
     };
 
-    // landing point: true visual center between first/last letters
-    // (the container rect is skewed right by trailing letter-spacing)
-    const getCenter = () => {
-      const letters = letterRefs.current.filter(Boolean) as HTMLElement[];
-      const el = textWrapRef.current;
-      if (!el) return null;
-      const r = el.getBoundingClientRect();
-      if (letters.length >= 2) {
-        const a = letters[0].getBoundingClientRect();
-        const b = letters[letters.length - 1].getBoundingClientRect();
-        return { x: (a.left + b.right) / 2, y: r.top + r.height / 2 };
-      }
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-    };
-
-    const c = getCenter();
-    const dot = dotRef.current;
     const letters = letterRefs.current.filter(Boolean) as HTMLElement[];
+    const tl = gsap.timeline();
 
-    if (c && dot) {
-      const maxDist = Math.max(
-        Math.hypot(c.x, c.y),
-        Math.hypot(window.innerWidth - c.x, c.y),
-        Math.hypot(c.x, window.innerHeight - c.y),
-        Math.hypot(window.innerWidth - c.x, window.innerHeight - c.y),
-      );
-      const rings = ringRefs.current.filter(Boolean) as HTMLElement[];
-      const finalRing = finalRingRef.current;
+    // letters surface out of the ink — slow, viscous
+    tl.fromTo(
+      letters,
+      { opacity: 0, filter: "blur(24px)", scale: 0.95 },
+      {
+        opacity: 1,
+        filter: "blur(0px)",
+        scale: 1,
+        duration: 1.8,
+        ease: "inkSoft",
+        stagger: 0.07,
+      },
+      0.1,
+    );
 
-      const inks = inkRefs.current.filter(Boolean) as HTMLElement[];
-      const tl = gsap.timeline({ defaults: { ease: "silk" } });
-      tl.set(dot, { x: c.x - DOT_R, y: c.y - 180, opacity: 0 })
-        .set([...rings, finalRing].filter(Boolean), {
-          x: c.x - RING_D / 2,
-          y: c.y - RING_D / 2,
-          opacity: 0,
-          scale: 0.3,
-        })
-        .set(inks, { x: c.x - 70, y: c.y - 70, opacity: 0, scale: 0.5 })
-        // the ink dot drifts in and falls, stretching slightly as it drops
-        .to(dot, { opacity: 1, duration: 0.2 }, DROP_DELAY_S)
-        .to(
-          dot,
-          { y: c.y - DOT_R, scaleY: 1.18, duration: 0.55, ease: "power2.in" },
-          "<",
-        )
-        .addLabel("land")
-        // absorbed on landing
-        .to(dot, { scale: 0.2, opacity: 0, duration: 0.28 }, "land");
-
-      // ink wash seeps out under everything — organic, asymmetric blooms
-      inks.forEach((ink, i) => {
-        tl.to(
-          ink,
-          {
-            scaleX: 3.6 + i * 2.4,
-            scaleY: 2.6 + i * 1.7,
-            rotation: i ? -14 : 9,
-            duration: 1.8 + i * 0.5,
-            ease: "power2.out",
-          },
-          `land+=${i * 0.18}`,
-        )
-          .to(ink, { opacity: 0.5 - i * 0.16, duration: 0.4 }, "<")
-          .to(ink, { opacity: 0, duration: 1.1 }, ">0.15");
-      });
-
-      // ripples bloom outward, each softer and slower than the last
-      rings.forEach((ring, i) => {
-        tl.to(
-          ring,
-          { scale: 7 + i * 5.5, duration: 0.95 + i * 0.3, ease: "expo.out" },
-          `land+=${i * 0.12}`,
-        )
-          .to(ring, { opacity: 0.55 - i * 0.14, duration: 0.18 }, "<")
-          .to(ring, { opacity: 0, duration: 0.75 + i * 0.25 }, ">");
-      });
-
-      // letters seep outward from the landing point
+    // the red seal presses in beside the name
+    if (sealRef.current) {
       tl.fromTo(
-        letters,
-        { opacity: 0, y: 10, scale: 1.04, filter: "blur(10px)" },
+        sealRef.current,
+        { opacity: 0, x: -12, filter: "blur(8px)" },
         {
-          opacity: 1,
-          y: 0,
-          scale: 1,
+          opacity: 0.9,
+          x: 0,
           filter: "blur(0px)",
-          duration: 0.7,
-          ease: "power4.out",
-          stagger: { each: 0.045, from: "center" },
+          duration: 1.6,
+          ease: "inkSoft",
         },
-        "land",
+        1.1,
       );
-
-      // the whole name settles inward — cinematic tracking tighten
-      if (textWrapRef.current) {
-        tl.fromTo(
-          textWrapRef.current,
-          { letterSpacing: "0.58em" },
-          { letterSpacing: "0.4em", duration: 1.3, ease: "power3.out" },
-          "land",
-        );
-      }
-
-      // brush signature lands beneath the name — the inkstone's mark
-      if (signatureRef.current) {
-        tl.fromTo(
-          signatureRef.current,
-          { opacity: 0, y: 14, filter: "blur(6px)" },
-          { opacity: 0.85, y: 0, filter: "blur(0px)", duration: 0.9 },
-          "land+=0.55",
-        );
-      }
-
-      // the skip hint eases in once the bloom is underway
-      if (hintRef.current) {
-        tl.to(hintRef.current, { opacity: 1, duration: 0.6 }, "land+=0.3");
-      }
-
-      // one last ripple swells past the edges, then the page slides in
-      if (finalRing) {
-        tl.to(
-          finalRing,
-          {
-            scale: (maxDist * 2) / RING_D,
-            duration: 0.85,
-            ease: "power2.inOut",
-          },
-          "land+=1.35",
-        )
-          .to(finalRing, { opacity: 0.4, duration: 0.25 }, "<")
-          .to(finalRing, { opacity: 0, duration: 0.55 }, ">");
-      }
-      tl.call(exitLoader, [], "land+=1.7");
-      introTlRef.current = tl;
     }
+
+    if (hintRef.current) {
+      tl.to(hintRef.current, { opacity: 1, duration: 1.0 }, 2.2);
+      // gentle pulse while waiting
+      gsap.to(hintRef.current, {
+        opacity: 0.4,
+        duration: 1.2,
+        repeat: -1,
+        yoyo: true,
+        delay: 3.2,
+        ease: "power1.inOut",
+      });
+    }
+
+    tl.call(exitLoader, [], 3.3);
+    introTlRef.current = tl;
 
     addTimer(exitLoader, EXIT_FALLBACK_MS);
 
@@ -389,9 +270,9 @@ export function Loader() {
       introTlRef.current = null;
       exitTlRef.current?.kill();
       exitTlRef.current = null;
+      if (hintRef.current) gsap.killTweensOf(hintRef.current);
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
-
       if (broadcastTimerRef.current) {
         clearTimeout(broadcastTimerRef.current);
         broadcastTimerRef.current = null;
@@ -401,63 +282,60 @@ export function Loader() {
 
   if (shouldRun !== true || gone) return null;
 
+  let ci = 0;
+
   return (
     <div
-      ref={containerRef}
       data-app-loader=""
-      style={containerStyle}
+      style={rootStyle}
       onClick={exitLoader}
+      aria-hidden="true"
     >
-      <div ref={dotRef} style={dotStyle} />
-
-      {[0, 1].map((i) => (
+      {/* shoji doors — they ARE the backdrop, and slide apart on exit */}
+      <div ref={leftDoorRef} style={{ ...doorStyle, left: 0 }}>
+        <div style={{ ...grainStyle, left: 0 }} />
         <div
-          key={`ink-${i}`}
-          ref={(el: HTMLDivElement | null) => {
-            inkRefs.current[i] = el;
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: 1,
+            background: "rgba(255,255,255,0.08)",
           }}
-          style={inkStyle}
         />
-      ))}
-
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          ref={(el: HTMLDivElement | null) => {
-            ringRefs.current[i] = el;
-          }}
-          style={ringStyle}
-        />
-      ))}
-      <div ref={finalRingRef} style={ringStyle} />
-
-      <div ref={textWrapRef} style={textContainerStyle}>
-        {WORDS.map((word, wIdx) => {
-          const offset = WORDS.slice(0, wIdx).join("").length;
-          return (
-            <span key={wIdx} style={{ display: "flex" }}>
-              {word.split("").map((char, i) => (
-                <span
-                  key={i}
-                  ref={(el: HTMLSpanElement | null) => {
-                    letterRefs.current[offset + i] = el;
-                  }}
-                  style={letterStyle}
-                >
-                  {char}
-                </span>
-              ))}
-            </span>
-          );
-        })}
+      </div>
+      <div ref={rightDoorRef} style={{ ...doorStyle, right: 0 }}>
+        <div style={{ ...grainStyle, right: 0 }} />
       </div>
 
-      <div ref={signatureRef} style={signatureStyle}>
-        刘 栩源
+      <div ref={contentRef} style={contentStyle}>
+        <div style={nameStyle}>
+          {WORDS.map((word, wIdx) => (
+            <span key={wIdx} style={{ display: "flex" }}>
+              {word.split("").map((char) => {
+                const idx = ci++;
+                return (
+                  <span
+                    key={idx}
+                    ref={(el: HTMLSpanElement | null) => {
+                      letterRefs.current[idx] = el;
+                    }}
+                    style={letterStyle}
+                  >
+                    {char}
+                  </span>
+                );
+              })}
+            </span>
+          ))}
+        </div>
+        {/* the studio's own red seal, pressed beside the name */}
+        <img ref={sealRef} src={SEAL_SRC} alt="" style={sealStyle} />
       </div>
 
       <div ref={hintRef} style={hintStyle}>
-        CLICK OR ESC TO SKIP
+        CLICK ANYWHERE OR ESC TO SKIP INTRO
       </div>
     </div>
   );
