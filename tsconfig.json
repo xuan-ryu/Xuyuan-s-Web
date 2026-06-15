@@ -19,8 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "framer": ["./lib/framer-shim.ts"]
+      "@/*": ["./*"]
     }
   },
   "include": [
