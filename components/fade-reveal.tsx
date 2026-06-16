@@ -4,14 +4,16 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 // One observer pass for both reveal vocabularies:
-// - [data-fade]/.fade-up → .is-visible (detail pages)
+// - [data-fade]/.fade-up/.text-reveal → .is-visible (detail pages)
 // - .fx-rise/.fx-rise-big → .fx-revealed (home heading entrances)
 export function FadeReveal() {
   const pathname = usePathname();
 
   useEffect(() => {
     const fadeEls = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-fade], .fade-up"),
+      document.querySelectorAll<HTMLElement>(
+        "[data-fade], .fade-up, .text-reveal",
+      ),
     );
     const fxEls = Array.from(
       document.querySelectorAll<HTMLElement>(".fx-rise, .fx-rise-big"),

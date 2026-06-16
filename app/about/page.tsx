@@ -3,6 +3,7 @@ import Image from "next/image";
 import { about } from "@/data/about";
 import { CtaBlock } from "@/components/cta-block";
 import HongyadongScene from "@/components/hongyadong";
+import { RevealText } from "@/components/text-reveal";
 
 export const metadata: Metadata = {
   title: "About",
@@ -37,16 +38,29 @@ export default function About() {
 
           <div className="about-quote-wrap">
             <blockquote className="about-quote" data-fade>
-              <span className="zh">{about.koan.zh}</span>
-              <span className="en">{about.koan.en}</span>
-              <cite>{about.koan.caption}</cite>
+              <RevealText as="span" className="zh" text={about.koan.zh} mode="char" />
+              <RevealText
+                as="span"
+                className="en"
+                text={about.koan.en}
+                mode="line"
+                direction="left"
+                delay={260}
+              />
+              <RevealText
+                as="cite"
+                text={about.koan.caption}
+                mode="line"
+                direction="left"
+                delay={420}
+              />
             </blockquote>
           </div>
 
           <div className="about-text about-bio">
             {about.bio.map((p) => (
               <p key={p} data-fade>
-                {p}
+                <RevealText text={p} mode="line" direction="left" />
               </p>
             ))}
           </div>
@@ -54,7 +68,9 @@ export default function About() {
           <div className="about-divider" aria-hidden="true" />
 
           <div className="about-resume-note" data-fade>
-            <h2>{about.resumeNote}</h2>
+            <h2>
+              <RevealText text={about.resumeNote} mode="line" direction="right" />
+            </h2>
             <a
               className="about-resume-link"
               href="/assets/framerusercontent.com/assets/VXxmU8xrCkbdBVKix29pBF2kVeY.pdf"
@@ -70,12 +86,14 @@ export default function About() {
       <section className="section about-essay about-essay-right">
         <div className="container">
           <div className="section-intro" data-fade>
-            <h2>{about.whatChanged.title}</h2>
+            <h2>
+              <RevealText text={about.whatChanged.title} mode="char" direction="right" />
+            </h2>
           </div>
           <div className="about-text about-essay-text">
             {about.whatChanged.body.map((p, i) => (
               <p key={i} data-fade>
-                {p}
+                <RevealText text={p} mode="line" direction="right" />
               </p>
             ))}
           </div>
@@ -89,7 +107,7 @@ export default function About() {
           </div>
 
           <p className="about-essay-closing" data-fade>
-            {about.whatChanged.closing}
+            <RevealText text={about.whatChanged.closing} mode="line" direction="right" />
           </p>
         </div>
       </section>
@@ -99,12 +117,14 @@ export default function About() {
           <div className="about-shutter-grid">
             <div>
               <div className="section-intro" data-fade>
-                <h2>{about.shutter.title}</h2>
+                <h2>
+                  <RevealText text={about.shutter.title} mode="char" direction="left" />
+                </h2>
               </div>
               <div className="about-text about-essay-text">
                 {about.shutter.body.map((p, i) => (
                   <p key={i} data-fade>
-                    {p}
+                    <RevealText text={p} mode="line" direction="left" />
                   </p>
                 ))}
               </div>
@@ -127,16 +147,18 @@ export default function About() {
         <div className="container">
           <div className="about-howiwork">
             <div className="section-intro" data-fade>
-              <h2>{about.howIWork.title}</h2>
+              <h2>
+                <RevealText text={about.howIWork.title} mode="char" direction="right" />
+              </h2>
             </div>
             <div className="about-text about-essay-text">
               {about.howIWork.body.map((p, i) => (
                 <p key={i} data-fade>
-                  {p}
+                  <RevealText text={p} mode="line" direction="right" />
                 </p>
               ))}
               <p className="about-caption" data-fade>
-                {about.howIWork.caption}
+                <RevealText text={about.howIWork.caption} mode="line" direction="right" />
               </p>
             </div>
           </div>
@@ -171,13 +193,19 @@ export default function About() {
       <section className="section about-activities">
         <div className="container">
           <h2 className="about-activities-title" data-fade>
-            Activities&amp;Leadership
+            <RevealText text="Activities&Leadership" mode="char" />
           </h2>
           {about.activities.map((a) => (
             <div key={a.org + a.role} className="about-activity" data-fade>
-              <h3>{a.org}</h3>
-              <p className="about-activity-role">{a.role}</p>
-              <p className="about-activity-date">{a.date}</p>
+              <h3>
+                <RevealText text={a.org} mode="line" />
+              </h3>
+              <p className="about-activity-role">
+                <RevealText text={a.role} mode="line" delay={120} />
+              </p>
+              <p className="about-activity-date">
+                <RevealText text={a.date} mode="line" delay={220} />
+              </p>
               <ul>
                 {a.bullets.map((b, i) => (
                   <li key={i}>{b}</li>
@@ -196,9 +224,15 @@ export default function About() {
                 <Image src={t.photo} alt={t.name} fill sizes="369px" />
               </span>
               <figcaption>
-                <h3>{t.name}</h3>
-                <p className="about-testimonial-role">{t.role}</p>
-                <blockquote>{t.quote}</blockquote>
+                <h3>
+                  <RevealText text={t.name} mode="line" />
+                </h3>
+                <p className="about-testimonial-role">
+                  <RevealText text={t.role} mode="line" delay={120} />
+                </p>
+                <blockquote>
+                  <RevealText text={t.quote} mode="line" direction="left" delay={220} />
+                </blockquote>
               </figcaption>
             </figure>
           ))}
@@ -208,7 +242,7 @@ export default function About() {
       <section className="section about-habits">
         <div className="container">
           <h2 className="about-habits-title" data-fade>
-            My Habits
+            <RevealText text="My Habits" mode="char" />
           </h2>
           <div className="about-habits-grid">
             {about.habits.map((h) => (
@@ -217,8 +251,12 @@ export default function About() {
                   <Image src={h.photo} alt={h.label} fill sizes="240px" />
                 </span>
                 <figcaption>
-                  <p className="about-habit-label">{h.label}</p>
-                  <p className="about-habit-sub">{h.sub}</p>
+                  <p className="about-habit-label">
+                    <RevealText text={h.label} mode="line" />
+                  </p>
+                  <p className="about-habit-sub">
+                    <RevealText text={h.sub} mode="line" delay={120} />
+                  </p>
                 </figcaption>
               </figure>
             ))}
