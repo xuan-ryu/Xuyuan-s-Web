@@ -25,16 +25,29 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* consolidated from the hero/koi runtime injectors — same families
-            and weights, loaded once and early */}
+        {/* Cormorant Garamond + Newsreader are fully self-hosted now (@font-face
+            in globals.css, incl. the 300/200/italic weights) — no Google link, no
+            render-block. Noto Serif SC (CJK, impractical to self-host) + JetBrains
+            Mono load async: media="print" keeps them off the render path, the
+            inline script flips them to "all" on load (display=swap covers FOUT). */}
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Newsreader:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
+          media="print"
+          data-async-font=""
         />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Murecho:wght@300;400;500&family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var l=document.querySelector('link[data-async-font]');if(!l)return;if(l.sheet){l.media='all';}else{l.addEventListener('load',function(){l.media='all';});}})();",
+          }}
         />
+        <noscript>
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
+          />
+        </noscript>
       </head>
       {/* suppressHydrationWarning: browser extensions (ColorZilla's
           cz-shortcut-listen, Grammarly, etc.) inject attributes on <html>/<body>
