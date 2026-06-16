@@ -5,6 +5,7 @@
 import * as React from "react"
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
+import { subscribeLenis } from "@/lib/lenis-bus"
 
 
 type BirdDatum = {
@@ -79,9 +80,16 @@ const mountainVert = `
   attribute float aAlpha;
   varying float vAlpha;
   varying float vSpotlight;
+  varying float vLocalScroll;
 
   void main() {
     vec3 pos = position;
+    // left→right sweep: left columns transition before right ones, so the
+    // collapse / darken / black→white inversion reads as moving across screen
+    vec4 origWorldPos = modelMatrix * vec4(position, 1.0);
+    float normX = clamp((origWorldPos.x + 2400.0) / 4800.0, 0.0, 1.0);
+    float localScroll = clamp(uScroll + (0.5 - normX) * 0.14, 0.0, 1.0);
+    vLocalScroll = localScroll;
     float randVal = fract(sin(dot(pos.xz, vec2(12.9898, 78.233))) * 43758.5453);
     float phase = randVal * 6.2831;
     float twinkle = uFlatMode > 0.5 ? 1.0 : (0.6 + 0.8 * sin(uTime * 1.3 + phase));
@@ -89,12 +97,16 @@ const mountainVert = `
 
     float normY = clamp((position.y + 520.0) / 1050.0, 0.0, 1.0);
     float dRand = fract(sin(dot(position.xz, vec2(127.1, 311.7))) * 43758.5453);
-    float dissolveStart = 0.35 + normY * 0.15 + dRand * 0.05;
-    float dissolveT = smoothstep(dissolveStart, dissolveStart + 0.30, uScroll);
+    // dissolve to stars only after the white mountain has slid down
+    float dissolveStart = 0.56 + normY * 0.06 + dRand * 0.04;
+    float dissolveT = smoothstep(dissolveStart, dissolveStart + 0.24, localScroll);
     float scatter = smoothstep(0.0, 1.0, dissolveT);
 
-    // 山体向下塌缩：未散射部分随滚动整体下沉
-    float mountainSink = smoothstep(0.40, 0.60, uScroll) * -1200.0;
+    // 山体向下塌缩：未散射部分随滚动整体下沉（按 localScroll 从左到右）
+    // strict ordering: sky black (≤0.56) → white mountain appears (0.56–0.66) →
+    // it HOLDS, fully inverted and still (0.66–0.72) → THEN slides down (0.72+).
+    // No sink during the black/white flip.
+    float mountainSink = smoothstep(0.52, 0.70, localScroll) * -1200.0;
     pos.y += mountainSink * (1.0 - scatter);
 
     // 粒子升华至星场目标坐标（确定性 hash）
@@ -110,8 +122,7 @@ const mountainVert = `
     pos.x = mix(pos.x, starTargetX, lift);
     pos.z = mix(pos.z, starTargetZ, lift);
 
-    // 用原始坐标计算遮罩（不受偏移影响）
-    vec4 origWorldPos = modelMatrix * vec4(position, 1.0);
+    // 用原始坐标计算遮罩（不受偏移影响；origWorldPos 已在顶部计算）
     float valleyMask = 1.0 - smoothstep(-200.0, 100.0, origWorldPos.z);
     float seaLevel = uFlatMode > 0.5 ? 100.0
         : (100.0 + sin(origWorldPos.x * 0.002 + uTime * 0.5) * cos(origWorldPos.z * 0.002) * 1000.0);
@@ -123,10 +134,10 @@ const mountainVert = `
     float scatterShrink = mix(1.0, 0.15 + dRand * 0.15, scatter);
     float size = aSize * (1000.0 / -mvPosition.z);
     float maxSz = mix(70.0, 8.0, scatter);
-    float computedSize = clamp(size * scatterShrink * (uFlatMode > 0.5 ? 1.0 : twinkle) * (1.0 + uVelocity * 0.5), 0.5, maxSz);
+    float computedSize = clamp(size * scatterShrink * (uFlatMode > 0.5 ? 1.0 : twinkle), 0.5, maxSz);
 
     // 山体底座随黑夜消散，但已升华的粒子（散射=星星）保持完整
-    float baseFade = smoothstep(0.65, 0.85, uScroll);
+    float baseFade = smoothstep(0.68, 0.82, localScroll);
     float currentFade = mix(baseFade, 0.0, scatter);
 
     // 网格物理边缘羽化：仅作用于未散射粒子，散开的星星不受边界裁切
@@ -137,6 +148,10 @@ const mountainVert = `
     float finalEdge = mix(edgeMask, 1.0, scatter);
 
     vAlpha = aAlpha * mix(1.0, bottomFade, valleyMask * (1.0 - scatter)) * (1.0 - currentFade) * finalEdge;
+    // the mountain is a faint ink-wash; when it whitens it would read dim on
+    // black, so boost opacity through the white phase (fades as it scatters)
+    float whiteBoost = smoothstep(0.22, 0.36, localScroll) * (1.0 - scatter);
+    vAlpha = clamp(vAlpha * (1.0 + whiteBoost * 1.4), 0.0, 1.0);
 
     gl_PointSize = vAlpha < 0.02 ? 0.0 : computedSize;
 
@@ -155,15 +170,16 @@ const mountainFrag = `
   uniform float uScroll;
   varying float vAlpha;
   varying float vSpotlight;
+  varying float vLocalScroll;
   void main() {
     float d = distance(gl_PointCoord, vec2(0.5));
     float shape = 1.0 - smoothstep(0.14, 0.5, d);
     float a = clamp(vAlpha * shape + vSpotlight * 0.45 * shape, 0.0, 1.0);
     if (a < 0.02) discard;
 
-    // keep the dissolving particles inky until the sky darkens, so the
-    // collapse stays visible against the still-light background
-    float colorMix = smoothstep(0.55, 0.80, uScroll);
+    // black→white flips together with the sky and the text (same window) — one
+    // unified negative. Mountain, sky and copy invert as one, then hold, then sink.
+    float colorMix = smoothstep(0.22, 0.36, vLocalScroll);
     // 纯白星光色 — 散射粒子过渡到星星外观
     vec3 targetColor = vec3(1.0, 1.0, 1.0);
     vec3 finalColor = mix(uColor, targetColor, colorMix) + vSpotlight * 0.08;
@@ -179,6 +195,7 @@ const birdVert = `
   uniform float uMouseActive;
   varying float vDepth;
   varying float vSpotlight;
+  varying float vFlap;
   void main(){
     vec3 pos = position;
     pos.y += sin(uTime * 3.0 + pos.x * 0.05) * 8.0;
@@ -186,29 +203,47 @@ const birdVert = `
     vDepth = smoothstep(-2500.0, -500.0, mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
     float size = aSize * (1000.0 / -mvPosition.z);
-    gl_PointSize = clamp(size, 0.5, 60.0);
+    gl_PointSize = clamp(size, 0.5, 95.0);
     vec2 screenPos = gl_Position.xy / gl_Position.w;
     float distToMouse = length(screenPos - uMouse);
     vSpotlight = uMouseActive * (1.0 - smoothstep(0.03, 0.25, distToMouse));
+    // steady wingbeat. Phase offset comes from aSize (constant per bird) — NOT
+    // pos.x, which changes as the bird flies and would couple the beat to flight
+    // speed (a fast flutter instead of a clean flap).
+    vFlap = sin(uTime * 9.0 + aSize * 11.0) * 0.5 + 0.5;
   }
 `
 
+// Distant gull silhouette: two wings sweeping up from a low body, the tips
+// curling slightly back down, the stroke tapering to a fine point — and the
+// whole wing lifting and lowering on vFlap so the birds actually beat. Drawn
+// as a soft signed-distance band to the wing curve y = body + wing(|x|).
 const birdFrag = `
   uniform vec3 uColor;
   uniform float uScroll;
   varying float vDepth;
   varying float vSpotlight;
+  varying float vFlap;
   void main(){
     vec2 uv = gl_PointCoord - vec2(0.5);
-    float v = abs(uv.x * 1.5) + uv.y * 0.8;
-    float shape = 1.0 - smoothstep(0.05, 0.4, abs(v - 0.1));
+    float ax = abs(uv.x);
+    // wing lift oscillates with the flap (gl_PointCoord.y points down, so a
+    // more-negative yline sits higher on screen)
+    float lift = mix(0.85, 1.75, vFlap);
+    float wing = -lift * ax + 1.2 * lift * ax * ax;   // rise, then tips curl
+    float body = 0.035 * (1.0 - smoothstep(0.0, 0.2, ax)); // soft central dip
+    float yline = 0.06 + wing + body;
+    float d = abs(uv.y - yline);
+    float thick = mix(0.1, 0.028, smoothstep(0.0, 0.5, ax)); // taper to a point
+    float shape = 1.0 - smoothstep(thick * 0.45, thick, d);
+    shape *= 1.0 - smoothstep(0.44, 0.5, ax);          // soften the wingtips
     if (shape < 0.02) discard;
     float colorMix = smoothstep(0.18, 0.48, uScroll);
     vec3 targetColor = vec3(0.9, 0.9, 0.95);
     vec3 finalColor = mix(uColor, targetColor, colorMix);
     float scatterDim = 1.0 - vSpotlight * 0.3;
     float birdA = mix(0.2, 0.9, vDepth) * scatterDim;
-    float dissolveTB = smoothstep(0.32, 0.52, uScroll);
+    float dissolveTB = smoothstep(0.30, 0.50, uScroll);
     birdA *= (1.0 - dissolveTB);
     gl_FragColor = vec4(finalColor, shape * birdA);
   }
@@ -536,7 +571,10 @@ export default function DigitalLandscape(props: Props) {
             lastClientY = 0
 
         const handleMouseMove = (e: MouseEvent) => {
-            if (scrollProgress > 0.5) {
+            // keep reacting to the mouse through the day scene, the black/white
+            // flip and the hold — the cloud-piercing spotlight stays alive until
+            // the mountain begins to collapse (~0.72)
+            if (scrollProgress > 0.52) {
                 mouseActive = 0
                 return
             }
@@ -688,7 +726,9 @@ export default function DigitalLandscape(props: Props) {
                 setInlineStyle(
                     blackPageEl,
                     "transform",
-                    `translateY(${Math.round(moonPin)}px)`
+                    // subpixel: Math.round here stair-steps the pin ±1px every
+                    // frame under smooth scroll → visible avatar shimmer
+                    `translateY(${moonPin.toFixed(2)}px)`
                 )
                 setInlineStyle(
                     blackPageEl,
@@ -744,24 +784,35 @@ export default function DigitalLandscape(props: Props) {
                 }
             }
             if (uiEl) {
+                // the hero copy HOLDS in place through the day scene, the
+                // black/white flip and the hold — it only slides away once the
+                // mountain collapse begins (~0.72 of the hero scroll). It inverts
+                // to white with the sky so it stays legible on the dark backdrop.
+                const textInvert = smoothstepF(0.2, 0.36, progress)
+                const releaseY = Math.max(0, currentScrollY - winHeight * 0.52)
                 setInlineStyle(
                     uiEl,
                     "opacity",
-                    String(round3(Math.max(1 - progress * 1.55, 0)))
+                    // holds full until the collapse, then fades a touch after it
+                    // starts sliding so the slide-away actually reads
+                    String(round3(1 - smoothstepF(0.58, 0.76, progress)))
                 )
-                // live: hero copy scrolls away with the page (no pinning),
-                // fading as it goes — translate the fixed UI back by scrollY
+                setInlineStyle(uiEl, "filter", `invert(${textInvert.toFixed(3)})`)
+                // pinned (translateY 0) until the collapse, then scrolls away 1:1
                 setInlineStyle(
                     uiEl,
                     "transform",
-                    `translateY(${-Math.round(currentScrollY)}px)`
+                    `translateY(${(-releaseY).toFixed(2)}px)`
                 )
             }
 
             // Smooth day→night — opacity overlay（compositor-only，不触发 repaint）
             // fades back out once the roof transition's white wall owns the
             // viewport (the overlay is fixed and would otherwise linger)
-            const nightT = smoothstepF(0.65, 0.85, progress)
+            // whole screen darkens uniformly as you scroll — the left→right
+            // motion lives in the mountain collapse, not the sky. Darkens a touch
+            // early so the sky is already dark when the white collapse plays out.
+            const nightT = smoothstepF(0.2, 0.36, progress)
             const nightRelease =
                 1 -
                 smoothstepF(
@@ -793,17 +844,42 @@ export default function DigitalLandscape(props: Props) {
             }
         }
 
-        let scrollRaf = 0
+        // Scroll source for the pin/fade transforms. Two drivers, mutually
+        // exclusive per frame:
+        //
+        //  • Lenis (smooth scroll): the moon card is `position:absolute`, so it
+        //    scrolls with the page while a counter-translate pins it. The DOM
+        //    `scroll` event fires BEFORE Lenis's rAF each frame, so a transform
+        //    computed there reflects the PREVIOUS frame's scroll while the page
+        //    paints THIS frame's — a one-frame desync that makes the avatar
+        //    jitter. Lenis emits its own 'scroll' synchronously inside the same
+        //    rAF, right after it applies the scroll, so a transform computed
+        //    there paints in-sync. When Lenis is present we drive off that and
+        //    suppress the stale DOM path.
+        //  • No Lenis (reduced-motion / pre-mount / Framer canvas): fall back to
+        //    the DOM scroll event.
+        let lenisActive = false
         const onScrollRaf = () => {
-            if (scrollRaf) return
-            scrollRaf = requestAnimationFrame(() => {
-                scrollRaf = 0
-                handleScroll()
-            })
+            if (lenisActive) return
+            handleScroll()
         }
         document.addEventListener("scroll", onScrollRaf, {
             passive: true,
             capture: true,
+        })
+        let lenisDetach: (() => void) | null = null
+        const onLenisScroll = () => handleScroll()
+        const unsubLenis = subscribeLenis((lenis) => {
+            lenisDetach?.()
+            lenisDetach = null
+            if (lenis) {
+                lenisActive = true
+                lenis.on("scroll", onLenisScroll)
+                lenisDetach = () => lenis.off("scroll", onLenisScroll)
+            } else {
+                lenisActive = false
+            }
+            handleScroll()
         })
         handleScroll()
 
@@ -1237,14 +1313,17 @@ export default function DigitalLandscape(props: Props) {
                     const flockZ = -500 - Math.random() * 1500,
                         flockY = 300 + Math.random() * 400
                     const flockSpeed = 0.8 + Math.random() * 0.5,
-                        startXOffset = f * 2500 + Math.random() * 2000
+                        // first flock starts in-frame so birds are visible at
+                        // load; later flocks stream in from the left
+                        startXOffset = f * 3200
                     for (let b = 0; b < birdsPerFlock; b++) {
                         const offsetX = b * (30 + Math.random() * 20),
                             offsetZ =
                                 (Math.random() - 0.5) * 150 * (b * 0.1 + 1)
-                        bSize[f * birdsPerFlock + b] = 15 + Math.random() * 10
+                        // bigger so they read at distance (was 15 + rand*10)
+                        bSize[f * birdsPerFlock + b] = 24 + Math.random() * 16
                         birdData.push({
-                            baseX: -2500 - startXOffset + offsetX,
+                            baseX: -200 - startXOffset + offsetX,
                             baseY: flockY + (Math.random() - 0.5) * 50,
                             baseZ: flockZ + offsetZ,
                             speed: flockSpeed,
@@ -1311,7 +1390,9 @@ export default function DigitalLandscape(props: Props) {
                             : scrollForAnimation.current,
                     () => isSceneVisible,
                     () =>
-                        enableMouseSpotlight && scrollProgress < 0.25
+                        // cloud-piercing spotlight active through both the white
+                        // (day) and black (night) phases, until the collapse
+                        enableMouseSpotlight && scrollProgress < 0.52
                             ? mouseActive
                             : 0,
                     qualityTier,
@@ -1517,7 +1598,7 @@ export default function DigitalLandscape(props: Props) {
                 const activeMouse =
                     enableMouseSpotlight && getMouseActive() > 0.5 ? 1 : 0
                 // 山粒子 alphaFade 在 scroll=0.75 全部归零 — 提前隐藏 mesh 跳过 GPU vertex shader
-                const mountainFullyGone = sceneTransitionScroll >= 0.75
+                const mountainFullyGone = sceneTransitionScroll >= 0.82
                 if (mountainMeshArg.visible === mountainFullyGone) {
                     mountainMeshArg.visible = !mountainFullyGone
                 }
@@ -1545,7 +1626,7 @@ export default function DigitalLandscape(props: Props) {
 
                 // Birds dissolve completely at scroll 0.52 — skip CPU physics + GPU upload after that
                 const birdsGone =
-                    birdDataArg.length === 0 || sceneTransitionScroll >= 0.58
+                    birdDataArg.length === 0 || sceneTransitionScroll >= 0.54
                 if (birdMeshArg.visible === birdsGone)
                     birdMeshArg.visible = !birdsGone
                 if (!birdsGone) {
@@ -1556,7 +1637,7 @@ export default function DigitalLandscape(props: Props) {
                         const d = birdDataArg[i]
                         d.baseX += d.speed * dt * 60.0
                         if (d.baseX > 2500)
-                            d.baseX = -4500 - Math.random() * 3000
+                            d.baseX = -2800 - Math.random() * 2200
 
                         if (qualityTierArg >= 1 && active) {
                             const bx = d.baseX + d.scatterX,
@@ -1648,11 +1729,13 @@ export default function DigitalLandscape(props: Props) {
                     lastFogScroll = sceneTransitionScroll
                 }
 
-                // Cinematic camera: smooth lerp dolly + mouse-driven parallax tilt
-                const camT = smoothstepF(0.0, 0.65, smoothScroll)
-                const targetZ = 2200 - camT * 260
+                // Cinematic camera: mouse parallax tilt only through the day scene
+                // and the black/white flip (camera held still — no movement during
+                // the inversion), then a slight rise once the collapse begins.
+                const camT = smoothstepF(0.46, 0.74, smoothScroll)
+                const targetZ = 2200
                 const targetY = 200 + camT * 130
-                const targetX = scrollNow < 0.45 ? mouseNDC.x * 38 : 0
+                const targetX = scrollNow < 0.18 ? mouseNDC.x * 38 : 0
                 cameraArg.position.x += (targetX - cameraArg.position.x) * 0.04
                 cameraArg.position.y += (targetY - cameraArg.position.y) * 0.055
                 cameraArg.position.z += (targetZ - cameraArg.position.z) * 0.055
@@ -1699,6 +1782,8 @@ export default function DigitalLandscape(props: Props) {
         return () => {
             isMounted = false
             cancelAnimationFrame(scrollPollRaf)
+            unsubLenis?.()
+            lenisDetach?.()
             document.removeEventListener("scroll", onScrollRaf, {
                 capture: true,
             })
@@ -1936,9 +2021,11 @@ export default function DigitalLandscape(props: Props) {
                 font-size: clamp(17px, 2vw, 22px); font-weight: 300; font-style: italic;
                 letter-spacing: 0.015em; line-height: 1.6; color: rgba(255,255,255,0.65);
                 white-space: pre-line;
-                /* live: 940px box, text left-aligned inside */
+                /* centered to match the rest of the card (title, rule, YES
+                   line, footer are all centered); left-aligned here made the
+                   subtitle the one off-center element and read as broken */
                 width: min(940px, 92vw);
-                text-align: left;
+                text-align: center;
                 margin-left: auto;
                 margin-right: auto;
             }
@@ -2156,9 +2243,12 @@ export default function DigitalLandscape(props: Props) {
                         style={{
                             position: "absolute",
                             left: "6vw",
-                            // live: the quote hugs the fold (top edge at y≈963)
-                            // and the scroll hint sits below the first viewport
-                            bottom: "-52px",
+                            // bottom-anchored column: quote on top, "scroll down
+                            // to explore" hint below. Positive bottom keeps the
+                            // whole column above the fold — the hint's bottom sits
+                            // at vh - 30 (visible, ~30px margin) and the quote
+                            // clears well above it.
+                            bottom: "30px",
                             display: "flex",
                             flexDirection: "column",
                             gap: "20px",
