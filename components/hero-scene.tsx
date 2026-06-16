@@ -4,7 +4,9 @@
 
 import * as React from "react"
 import { useEffect, useRef } from "react"
-import * as THREE from "three"
+// NOTE: three.js is NOT imported statically — it's lazily `await import`ed inside
+// init3D() so mobile/low-end devices (which early-return to the CSS/SVG ink
+// fallback before init3D ever runs) never download or parse the ~150KB engine.
 import { subscribeLenis } from "@/lib/lenis-bus"
 
 
@@ -312,6 +314,20 @@ function smoothstepF(edge0: number, edge1: number, x: number) {
     else if (t > 1) t = 1
     return t * t * (3 - 2 * t)
 }
+// Horizontal-locked FOV: three.js PerspectiveCamera takes a VERTICAL fov, so a
+// fixed 54° makes wide viewports reveal ever more horizontally (panorama) and
+// narrow ones crop the side peaks — the composition drifts with window size.
+// Instead we lock the HORIZONTAL world span (calibrated so a 16:9 frame keeps
+// the original 54°) and derive the vertical fov from the aspect, clamped so the
+// extremes stay sane. Same mountains stay framed at any width.
+const FOV_HALF_TAN = Math.tan((54 * Math.PI) / 360) * (16 / 9)
+function fovForAspect(aspect: number) {
+    return clampF(
+        (2 * Math.atan(FOV_HALF_TAN / aspect) * 180) / Math.PI,
+        40,
+        66
+    )
+}
 function noise2D(x: number, z: number) {
     const ix = Math.floor(x),
         iz = Math.floor(z),
@@ -339,7 +355,9 @@ function fbm(x: number, z: number, oct: number) {
 function ridge1D(x: number) {
     let n = fbm(x * 0.0012, 10.0, 5),
         r = 1.0 - Math.abs(n - 0.5) * 2.0
-    r = r > 0 ? Math.pow(r, 2.2) : 0
+    // smoothstep rounds the triangular ridge into a soft hump (flat top =
+    // rounded peak) instead of pow(), which kept a sharp apex
+    r = r > 0 ? r * r * (3.0 - 2.0 * r) : 0
     let cut = fbm(x * 0.004, 200.0, 3)
     cut = smoothstepF(0.25, 0.75, cut)
     return r * cut
@@ -400,11 +418,13 @@ function getTerrainData(
     let texN = fbm(x * 0.003, z * 0.004, 4),
         texR = 1.0 - Math.abs(texN - 0.5) * 2.0
     texR = texR > 0 ? Math.pow(texR, 2.8) : 0
+    // texR's contribution to HEIGHT is reduced (less jagged silhouette); texR is
+    // still returned as _td.ridge below to drive the ridge ink density
     let h =
-        fg * fgCut * (sFg + texR * 120) +
-        near * (sNear + texR * 140) +
-        mid * (sMid + texR * 240) +
-        far * (sFar + texR * 120)
+        fg * fgCut * (sFg + texR * 70) +
+        near * (sNear + texR * 80) +
+        mid * (sMid + texR * 130) +
+        far * (sFar + texR * 70)
     const cmFinal = mixF(cm, 1.0, fg * 0.8)
     h *= cmFinal * 0.65 + 0.35
     h -= z * 0.25
@@ -518,6 +538,10 @@ export default function DigitalLandscape(props: Props) {
         let isMounted = true
         let animationFrameId = 0
         let cleanupAnimation: (() => void) | undefined = undefined
+        // assigned by init3D's dynamic `await import("three")`; shared so both
+        // init3D and startAnimation (effect-scope siblings) close over the same
+        // lazily-loaded engine. Never touched on the mobile early-return path.
+        let THREE: typeof import("three")
 
 
         // Fonts gate: ensure web fonts are loaded before text animations fire
@@ -1005,12 +1029,16 @@ export default function DigitalLandscape(props: Props) {
 
         async function init3D() {
             try {
+                // lazy-load the engine here so it lands in its own chunk,
+                // fetched only by devices that actually render the 3D scene
+                THREE = await import("three")
+                if (!isMounted) return
                 scene = new THREE.Scene()
                 scene.fog = new THREE.FogExp2(0xffffff, 0.0001)
                 const containerW =
                     mountRef.current?.offsetWidth || window.innerWidth
                 camera = new THREE.PerspectiveCamera(
-                    54,
+                    fovForAspect(containerW / window.innerHeight),
                     containerW / window.innerHeight,
                     1,
                     7000
@@ -1062,6 +1090,15 @@ export default function DigitalLandscape(props: Props) {
                     0.3,
                     1.8
                 )
+                // narrow viewports pack the SAME particle count into far fewer
+                // pixels, so the points pile up (NormalBlending accumulates)
+                // into a heavy black mass — lowering alpha alone can't undo the
+                // pile-up. So scale BOTH: inkCount thins the particle count
+                // (de-blobs the overlap), inkAlpha gently lifts what's left.
+                // Full strength on a wide canvas, progressively airier as it
+                // narrows.
+                const inkCount = clampF(containerW / 1400, 0.82, 1.0)
+                const inkAlpha = 0.85 + 0.15 * inkCount
                 const lx = -0.8,
                     ly = 0.4,
                     lz = -0.4,
@@ -1136,7 +1173,7 @@ export default function DigitalLandscape(props: Props) {
                                 1.0 - smoothstepF(-0.1, 0.5, dotLight) * 0.95
                             prob *= mixF(0.1, 1.4, depth) * tFg * 1.5
                             count = Math.min(
-                                Math.floor(prob * density * 1.2),
+                                Math.floor(prob * density * 1.2 * inkCount),
                                 qualityTier === 0
                                     ? 10
                                     : qualityTier === 1
@@ -1147,11 +1184,9 @@ export default function DigitalLandscape(props: Props) {
                                 mixF(1.5, 4.5, depth) +
                                 shadow * 2.0 +
                                 vegetation * 6.0
-                            const alphaBase = mixF(
-                                0.1,
-                                0.9,
-                                depth * Math.min(prob, 1.2)
-                            )
+                            const alphaBase =
+                                mixF(0.24, 0.95, depth * Math.min(prob, 1.2)) *
+                                inkAlpha
                             for (let p = 0; p < count; p++) {
                                 if (pIdx >= maxPoints) break
                                 const px = cx + Math.random() * cellSize,
@@ -1170,15 +1205,20 @@ export default function DigitalLandscape(props: Props) {
                         } else {
                             const farFactor = smoothstepF(-100.0, -1000.0, cz),
                                 isPeak = smoothstepF(100.0, 500.0, th)
+                            // ink spread across the WHOLE mountain body, not
+                            // pinned to the ridge line. A low tRidge exponent
+                            // keeps the crest a touch denser while letting the
+                            // ink fall off gradually down the slopes — so peaks
+                            // read as soft masses, not dark wires/points.
                             let probStructure =
-                                Math.pow(tRidge, 2.6) * 3.5 + shadow * 1.15
+                                Math.pow(tRidge, 1.6) * 2.2 + shadow * 1.2
                             probStructure *= 0.5 + 0.5 * tCm
                             probStructure *=
-                                mixF(0.25, 1.15, depth) *
+                                mixF(0.3, 1.1, depth) *
                                 mixF(0.55, 1.0, smoothstepF(-260, 220, th))
-                            probStructure *= 1.0 + farFactor * isPeak * 4.5
+                            probStructure *= 1.0 + farFactor * isPeak * 3.0
                             count = Math.min(
-                                Math.floor(probStructure * density),
+                                Math.floor(probStructure * density * inkCount),
                                 qualityTier === 0
                                     ? 6
                                     : qualityTier === 1
@@ -1188,15 +1228,23 @@ export default function DigitalLandscape(props: Props) {
                             let sBase =
                                 mixF(1.2, 3.6, depth) +
                                 shadow * 2.0 +
-                                Math.pow(tRidge, 2.0) * 1.5
+                                Math.pow(tRidge, 1.7) * 1.0
                             if (farFactor > 0.1)
-                                sBase += 15.0 * farFactor * isPeak
+                                sBase += 10.0 * farFactor * isPeak
+                            // ridge a bit darker than the slopes, but a gentle
+                            // exponent keeps the transition broad (no 1px black
+                            // crest wire); distant peaks stay misty, not bold
                             let aBase =
-                                mixF(0.1, 0.6, depth) *
-                                (0.55 + 0.45 * tCm) *
-                                mixF(0.85, 1.0, shadow)
+                                mixF(0.14, 0.82, depth) *
+                                (0.7 + 0.3 * tCm) *
+                                mixF(0.9, 1.0, shadow) *
+                                // crest darkening fades with distance: near
+                                // ridges keep their ink bones, far ranges melt
+                                // into a pale wash so no dark wire floats at the
+                                // horizon
+                                (1.0 + Math.pow(tRidge, 1.7) * 0.5 * depth)
                             if (farFactor > 0.1)
-                                aBase += 1.4 * farFactor * isPeak
+                                aBase += 0.5 * farFactor * isPeak
                             for (let p = 0; p < count; p++) {
                                 if (pIdx >= maxPoints) break
                                 const sid =
@@ -1214,8 +1262,83 @@ export default function DigitalLandscape(props: Props) {
                                 ).h
                                 positions[pIdx * 3 + 2] = pz
                                 sizes[pIdx] = sBase
-                                alphas[pIdx] = clampF(aBase, 0.05, 1.0)
+                                alphas[pIdx] = clampF(
+                                    aBase * inkAlpha,
+                                    0.05,
+                                    1.0
+                                )
                                 pIdx++
+                            }
+                            // — 点苔 ——————————————————————————————
+                            // Ink-painters punctuate a ridge with bold dark
+                            // moss dabs — but only on the NEAR mountains: 近点
+                            // 远无. A depth gate keeps far peaks clean (a stray
+                            // dark dot on a distant ridge just reads as a speck),
+                            // while the nearest ridges carry visible, deliberate
+                            // dabs. Same geometry/shader as the mountain, so they
+                            // scatter and collapse right along with it.
+                            const nearGate = smoothstepF(0.3, 0.58, depth)
+                            const mStep = Math.max(44, cellSize * 2.4)
+                            const onGridX =
+                                Math.abs(tx - Math.round(tx / mStep) * mStep) <
+                                cellSize * 0.5
+                            const onGridZ =
+                                Math.abs(tz - Math.round(tz / mStep) * mStep) <
+                                cellSize * 0.5
+                            if (onGridX && onGridZ) {
+                                const bx = Math.round(tx / mStep),
+                                    bz = Math.round(tz / mStep)
+                                const g = hash(bx * 73.7 + bz * 191.3)
+                                const onSpine = Math.pow(tRidge, 2.4)
+                                const onCrest = smoothstepF(-120, 240, th)
+                                const lit =
+                                    1.0 -
+                                    smoothstepF(-0.1, 0.5, dotLight) * 0.35
+                                const mossProb =
+                                    onSpine * onCrest * lit * nearGate * tCm
+                                if (
+                                    g < mossProb * 0.95 * inkCount &&
+                                    pIdx < maxPoints
+                                ) {
+                                    const dots = qualityTier === 1 ? 5 : 8
+                                    const cxm =
+                                        tx + (hash(g * 3.1) - 0.5) * cellSize
+                                    const czm =
+                                        tz + (hash(g * 9.7) - 0.5) * cellSize
+                                    // near peaks only, so the dab can be bold &
+                                    // tight — a deliberate moss point — while
+                                    // still sitting ON the slope, not poking up
+                                    const spread = mixF(6.0, 9.0, depth)
+                                    for (let m = 0; m < dots; m++) {
+                                        if (pIdx >= maxPoints) break
+                                        const mx =
+                                            cxm +
+                                            (hash(g * 13.3 + m * 2.1) - 0.5) *
+                                                spread
+                                        const mz =
+                                            czm +
+                                            (hash(g * 29.1 + m * 1.7) - 0.5) *
+                                                spread
+                                        positions[pIdx * 3] = mx
+                                        positions[pIdx * 3 + 1] =
+                                            getTerrainData(mx, mz, xc).h - 1.0
+                                        positions[pIdx * 3 + 2] = mz
+                                        // bold on the near peaks so the dab
+                                        // clearly registers as 点苔, tapering
+                                        // with depth and narrow viewports
+                                        sizes[pIdx] =
+                                            mixF(5.0, 10.5, depth) *
+                                            (0.85 + 0.45 * hash(g * 5.5 + m)) *
+                                            (0.6 + 0.4 * inkCount)
+                                        alphas[pIdx] = clampF(
+                                            (0.92 + 0.08 * hash(g * 7.7 + m)) *
+                                                inkAlpha,
+                                            0.05,
+                                            1.0
+                                        )
+                                        pIdx++
+                                    }
+                                }
                             }
                         }
                     }
@@ -1792,6 +1915,7 @@ export default function DigitalLandscape(props: Props) {
                 if (!camera || !renderer) return
                 const containerW = mountRef.current?.offsetWidth || winWidth
                 camera.aspect = containerW / winHeight
+                camera.fov = fovForAspect(camera.aspect)
                 camera.updateProjectionMatrix()
                 renderer.setSize(containerW, winHeight)
             })
