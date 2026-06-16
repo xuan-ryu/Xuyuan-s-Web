@@ -28,18 +28,13 @@ export default function RootLayout({
         {/* Cormorant Garamond + Newsreader are fully self-hosted now (@font-face
             in globals.css, incl. the 300/200/italic weights) — no Google link, no
             render-block. Noto Serif SC (CJK, impractical to self-host) + JetBrains
-            Mono load async: media="print" keeps them off the render path, the
-            inline script flips them to "all" on load (display=swap covers FOUT). */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
-          media="print"
-          data-async-font=""
-        />
+            Mono load async via a script-CREATED link: it lives outside React's
+            tree, so flipping media print→all on load can't cause a hydration
+            mismatch. media="print" keeps it off the render path; display=swap. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){var l=document.querySelector('link[data-async-font]');if(!l)return;if(l.sheet){l.media='all';}else{l.addEventListener('load',function(){l.media='all';});}})();",
+              "(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap';l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();",
           }}
         />
         <noscript>
