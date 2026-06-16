@@ -4,7 +4,7 @@ import { site } from "@/data/site";
 import { projects } from "@/data/projects";
 import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
-import KoiPondScene from "@/components/koi-pond";
+import KoiPondScene from "@/components/koi-pond-lazy";
 import { FeaturedWindows } from "@/components/featured-windows";
 import { RoofTransition } from "@/components/roof-transition";
 import { HowDecorParallax } from "@/components/how-decor-parallax";
