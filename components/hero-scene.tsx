@@ -97,24 +97,25 @@ const mountainVert = `
 
     float normY = clamp((position.y + 520.0) / 1050.0, 0.0, 1.0);
     float dRand = fract(sin(dot(position.xz, vec2(127.1, 311.7))) * 43758.5453);
-    // dissolve to stars only after the white mountain has slid down
-    float dissolveStart = 0.56 + normY * 0.06 + dRand * 0.04;
-    float dissolveT = smoothstep(dissolveStart, dissolveStart + 0.24, localScroll);
+    // Thanos-dust disperse along the X axis: dissolveStart ramps with normX so
+    // the disintegration sweeps left → right (left grains go first, right last);
+    // a small dRand keeps the wavefront a ragged band of grains dusting one by
+    // one, rather than a hard vertical line.
+    float dissolveStart = 0.55 + normX * 0.16 + dRand * 0.06;
+    float dissolveT = smoothstep(dissolveStart, dissolveStart + 0.14, localScroll);
     float scatter = smoothstep(0.0, 1.0, dissolveT);
 
-    // 山体向下塌缩：未散射部分随滚动整体下沉（按 localScroll 从左到右）
-    // strict ordering: sky black (≤0.56) → white mountain appears (0.56–0.66) →
-    // it HOLDS, fully inverted and still (0.66–0.72) → THEN slides down (0.72+).
-    // No sink during the black/white flip.
-    float mountainSink = smoothstep(0.52, 0.70, localScroll) * -1200.0;
-    pos.y += mountainSink * (1.0 - scatter);
+    // no downward sink — the mountain holds its place and simply disperses; the
+    // dispersal (grains drifting out to the star field) is the whole collapse
 
-    // 粒子升华至星场目标坐标（确定性 hash）
+    // dust lifts off LOCALLY and upward: each grain drifts up near its own x/z
+    // (no random screen-wide scatter — that read as "各处都在飞散") and never
+    // downward, so the disintegration sweeps up in place, left to right
     float hashX = fract(sin(dot(position.xz, vec2(45.1, 91.7))) * 43758.5453);
     float hashZ = fract(sin(dot(position.xz, vec2(23.3, 67.9))) * 43758.5453);
-    float starTargetY = 360.0 + (dRand * 2.0 - 1.0) * 700.0;
-    float starTargetX = (hashX * 2.0 - 1.0) * 2400.0;
-    float starTargetZ = -100.0 - hashZ * 2000.0;
+    float starTargetX = position.x + (hashX * 2.0 - 1.0) * 300.0;
+    float starTargetY = position.y + 320.0 + dRand * 600.0;
+    float starTargetZ = position.z + (hashZ - 0.5) * 400.0;
 
     // pow(scatter, 1.5) 产生加速升华感
     float lift = pow(scatter, 1.5);
@@ -127,6 +128,10 @@ const mountainVert = `
     float seaLevel = uFlatMode > 0.5 ? 100.0
         : (100.0 + sin(origWorldPos.x * 0.002 + uTime * 0.5) * cos(origWorldPos.z * 0.002) * 1000.0);
     float bottomFade = smoothstep(seaLevel - 60.0, seaLevel + 120.0, origWorldPos.y);
+    // turn the cloud sea (云海) OFF as the scene goes black — the undulating misty
+    // waterline at the mountain's foot is a day effect; at night the base is solid.
+    // (the atmospheric FogExp2 mist is kept — that's a separate effect.)
+    bottomFade = mix(bottomFade, 1.0, smoothstep(0.16, 0.30, localScroll));
 
     vec4 mvPosition = viewMatrix * modelMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
@@ -137,8 +142,11 @@ const mountainVert = `
     float computedSize = clamp(size * scatterShrink * (uFlatMode > 0.5 ? 1.0 : twinkle), 0.5, maxSz);
 
     // 山体底座随黑夜消散，但已升华的粒子（散射=星星）保持完整
-    float baseFade = smoothstep(0.68, 0.82, localScroll);
-    float currentFade = mix(baseFade, 0.0, scatter);
+    float baseFade = smoothstep(0.82, 0.94, localScroll);
+    // dispersing grains now FADE OUT as they fully scatter (dust dissipating)
+    // rather than persisting — they crossfade into the dedicated star field that
+    // fades in over the same window, so the dust visually becomes the night sky
+    float currentFade = max(baseFade, smoothstep(0.45, 1.0, scatter));
 
     // 网格物理边缘羽化：仅作用于未散射粒子，散开的星星不受边界裁切
     // edge0 < edge1 确保 Apple M 系 GPU 无未定义行为
@@ -150,7 +158,7 @@ const mountainVert = `
     vAlpha = aAlpha * mix(1.0, bottomFade, valleyMask * (1.0 - scatter)) * (1.0 - currentFade) * finalEdge;
     // the mountain is a faint ink-wash; when it whitens it would read dim on
     // black, so boost opacity through the white phase (fades as it scatters)
-    float whiteBoost = smoothstep(0.22, 0.36, localScroll) * (1.0 - scatter);
+    float whiteBoost = smoothstep(0.14, 0.28, localScroll) * (1.0 - scatter);
     vAlpha = clamp(vAlpha * (1.0 + whiteBoost * 1.4), 0.0, 1.0);
 
     gl_PointSize = vAlpha < 0.02 ? 0.0 : computedSize;
@@ -179,7 +187,7 @@ const mountainFrag = `
 
     // black→white flips together with the sky and the text (same window) — one
     // unified negative. Mountain, sky and copy invert as one, then hold, then sink.
-    float colorMix = smoothstep(0.22, 0.36, vLocalScroll);
+    float colorMix = smoothstep(0.14, 0.28, vLocalScroll);
     // 纯白星光色 — 散射粒子过渡到星星外观
     vec3 targetColor = vec3(1.0, 1.0, 1.0);
     vec3 finalColor = mix(uColor, targetColor, colorMix) + vSpotlight * 0.08;
@@ -203,7 +211,7 @@ const birdVert = `
     vDepth = smoothstep(-2500.0, -500.0, mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
     float size = aSize * (1000.0 / -mvPosition.z);
-    gl_PointSize = clamp(size, 0.5, 95.0);
+    gl_PointSize = clamp(size, 0.5, 150.0);
     vec2 screenPos = gl_Position.xy / gl_Position.w;
     float distToMouse = length(screenPos - uMouse);
     vSpotlight = uMouseActive * (1.0 - smoothstep(0.03, 0.25, distToMouse));
@@ -214,10 +222,10 @@ const birdVert = `
   }
 `
 
-// Distant gull silhouette: two wings sweeping up from a low body, the tips
-// curling slightly back down, the stroke tapering to a fine point — and the
-// whole wing lifting and lowering on vFlap so the birds actually beat. Drawn
-// as a soft signed-distance band to the wing curve y = body + wing(|x|).
+// Distant crane (仙鹤) silhouette: broad shallow wings lifting on vFlap, over a
+// long horizontal body — the neck stretched forward (the flight direction)
+// tapering to a fine point, short legs trailing behind. Reads elongated and
+// graceful, not a compact gull V.
 const birdFrag = `
   uniform vec3 uColor;
   uniform float uScroll;
@@ -227,19 +235,30 @@ const birdFrag = `
   void main(){
     vec2 uv = gl_PointCoord - vec2(0.5);
     float ax = abs(uv.x);
-    // wing lift oscillates with the flap (gl_PointCoord.y points down, so a
-    // more-negative yline sits higher on screen)
-    float lift = mix(0.85, 1.75, vFlap);
-    float wing = -lift * ax + 1.2 * lift * ax * ax;   // rise, then tips curl
-    float body = 0.035 * (1.0 - smoothstep(0.0, 0.2, ax)); // soft central dip
-    float yline = 0.06 + wing + body;
-    float d = abs(uv.y - yline);
-    float thick = mix(0.1, 0.028, smoothstep(0.0, 0.5, ax)); // taper to a point
-    float shape = 1.0 - smoothstep(thick * 0.45, thick, d);
-    shape *= 1.0 - smoothstep(0.44, 0.5, ax);          // soften the wingtips
+    // WINGS: broad shallow upward V, lifting/lowering on vFlap (gl_PointCoord.y
+    // points down, so a more-negative line sits higher on screen)
+    float lift = mix(0.5, 1.0, vFlap);
+    float wing = -lift * ax + 0.3 * lift * ax * ax;
+    float wd = abs(uv.y - 0.05 - wing);
+    float wt = mix(0.062, 0.015, smoothstep(0.0, 0.5, ax));  // taper to fine tips
+    float wings = (1.0 - smoothstep(wt * 0.4, wt, wd)) * (1.0 - smoothstep(0.46, 0.5, ax));
+    // BODY: long horizontal spine — crane neck stretched forward (+x = flight
+    // direction) tapering to a point, short thin legs trailing behind (-x)
+    float sy = abs(uv.y - 0.05);
+    float reach, thick;
+    if (uv.x > 0.0) {            // neck + head, forward
+        reach = 1.0 - smoothstep(0.34, 0.46, uv.x);
+        thick = 0.018 * (1.0 - smoothstep(0.26, 0.45, uv.x) * 0.7);
+    } else {                    // legs, trailing
+        reach = 1.0 - smoothstep(0.20, 0.30, -uv.x);
+        thick = 0.012;
+    }
+    float body = (1.0 - smoothstep(thick * 0.5, thick, sy)) * reach;
+    float shape = max(wings, body);
     if (shape < 0.02) discard;
-    float colorMix = smoothstep(0.18, 0.48, uScroll);
-    vec3 targetColor = vec3(0.9, 0.9, 0.95);
+    // invert black->white together with the sky/mountain/text flip (same window)
+    float colorMix = smoothstep(0.12, 0.28, uScroll);
+    vec3 targetColor = vec3(0.95, 0.95, 0.98);
     vec3 finalColor = mix(uColor, targetColor, colorMix);
     float scatterDim = 1.0 - vSpotlight * 0.3;
     float birdA = mix(0.2, 0.9, vDepth) * scatterDim;
@@ -262,7 +281,7 @@ const starVert = `
     // 固定像素大小：星星不随距离缩放（天体效果）
     gl_PointSize = clamp(aSize * twinkle, 1.0, 8.0);
     // gated behind the night overlay (0.65-0.85): stars only on a dark sky
-    float starT = smoothstep(0.85, 0.97, uScroll);
+    float starT = smoothstep(0.55, 0.85, uScroll);
     vStarA = starT * twinkle;
   }
 `
@@ -687,13 +706,15 @@ export default function DigitalLandscape(props: Props) {
             const blackPageEl = blackPageRef.current
             const roofTop = getRoofTop()
 
-            // page2: fade in profile once stars are mostly formed
-            // live window fitted at two viewport heights: start = 0.28h + 590
+            // page2: fade in profile once stars are mostly formed. Pushed later
+            // (590 → 850) for a longer night-sky pause after the dust dispersal,
+            // and a slower fade (350 → 540) so the avatar eases in instead of
+            // snapping on.
             const p2Reveal = Math.max(
                 0,
                 Math.min(
                     1,
-                    (currentScrollY - (winHeight * 0.28 + 590)) / 350
+                    (currentScrollY - (winHeight * 0.28 + 850)) / 540
                 )
             )
             // safety fade once the card is fully behind the roof wall
@@ -784,18 +805,16 @@ export default function DigitalLandscape(props: Props) {
                 }
             }
             if (uiEl) {
-                // the hero copy HOLDS in place through the day scene, the
-                // black/white flip and the hold — it only slides away once the
-                // mountain collapse begins (~0.72 of the hero scroll). It inverts
-                // to white with the sky so it stays legible on the dark backdrop.
-                const textInvert = smoothstepF(0.2, 0.36, progress)
-                const releaseY = Math.max(0, currentScrollY - winHeight * 0.52)
+                // the hero copy HOLDS in place — white — through the day scene,
+                // the black/white flip AND the whole mountain collapse; it only
+                // floats up and fades once the collapse has fully finished (~0.86),
+                // just before the avatar card arrives.
+                const textInvert = smoothstepF(0.12, 0.28, progress)
+                const releaseY = Math.max(0, currentScrollY - winHeight * 0.86)
                 setInlineStyle(
                     uiEl,
                     "opacity",
-                    // holds full until the collapse, then fades a touch after it
-                    // starts sliding so the slide-away actually reads
-                    String(round3(1 - smoothstepF(0.58, 0.76, progress)))
+                    String(round3(1 - smoothstepF(0.86, 0.95, progress)))
                 )
                 setInlineStyle(uiEl, "filter", `invert(${textInvert.toFixed(3)})`)
                 // pinned (translateY 0) until the collapse, then scrolls away 1:1
@@ -812,7 +831,7 @@ export default function DigitalLandscape(props: Props) {
             // whole screen darkens uniformly as you scroll — the left→right
             // motion lives in the mountain collapse, not the sky. Darkens a touch
             // early so the sky is already dark when the white collapse plays out.
-            const nightT = smoothstepF(0.2, 0.36, progress)
+            const nightT = smoothstepF(0.12, 0.28, progress)
             const nightRelease =
                 1 -
                 smoothstepF(
@@ -1321,7 +1340,7 @@ export default function DigitalLandscape(props: Props) {
                             offsetZ =
                                 (Math.random() - 0.5) * 150 * (b * 0.1 + 1)
                         // bigger so they read at distance (was 15 + rand*10)
-                        bSize[f * birdsPerFlock + b] = 24 + Math.random() * 16
+                        bSize[f * birdsPerFlock + b] = 38 + Math.random() * 24
                         birdData.push({
                             baseX: -200 - startXOffset + offsetX,
                             baseY: flockY + (Math.random() - 0.5) * 50,
@@ -1598,7 +1617,7 @@ export default function DigitalLandscape(props: Props) {
                 const activeMouse =
                     enableMouseSpotlight && getMouseActive() > 0.5 ? 1 : 0
                 // 山粒子 alphaFade 在 scroll=0.75 全部归零 — 提前隐藏 mesh 跳过 GPU vertex shader
-                const mountainFullyGone = sceneTransitionScroll >= 0.82
+                const mountainFullyGone = sceneTransitionScroll >= 0.94
                 if (mountainMeshArg.visible === mountainFullyGone) {
                     mountainMeshArg.visible = !mountainFullyGone
                 }
@@ -1732,10 +1751,12 @@ export default function DigitalLandscape(props: Props) {
                 // Cinematic camera: mouse parallax tilt only through the day scene
                 // and the black/white flip (camera held still — no movement during
                 // the inversion), then a slight rise once the collapse begins.
-                const camT = smoothstepF(0.46, 0.74, smoothScroll)
+                // camera fully still through the whole hero — no dolly and no
+                // vertical lift (the lift made the scene appear to sink while the
+                // mountain was dispersing)
                 const targetZ = 2200
-                const targetY = 200 + camT * 130
-                const targetX = scrollNow < 0.18 ? mouseNDC.x * 38 : 0
+                const targetY = 200
+                const targetX = scrollNow < 0.10 ? mouseNDC.x * 38 : 0
                 cameraArg.position.x += (targetX - cameraArg.position.x) * 0.04
                 cameraArg.position.y += (targetY - cameraArg.position.y) * 0.055
                 cameraArg.position.z += (targetZ - cameraArg.position.z) * 0.055
@@ -2258,7 +2279,10 @@ export default function DigitalLandscape(props: Props) {
                         <div
                             className="hero-quote"
                             style={{
-                                fontFamily: "'Cormorant Garamond', serif",
+                                // Noto Serif SC fallback so the 《潇湘八景图》
+                                // credit renders in a proper CJK serif
+                                fontFamily:
+                                    "'Cormorant Garamond', 'Noto Serif SC', serif",
                                 fontStyle: "italic",
                                 fontSize: "clamp(13px, 1.4vw, 16px)",
                                 letterSpacing: "0.03em",

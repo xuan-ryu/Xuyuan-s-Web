@@ -16,7 +16,8 @@ export const site = {
   heroSub:
     "Product Designer & Creative Development.\nCrafting digital experiences with an aesthetic and modern design.",
   brandCorner: {
-    zh: "Foreground bank, distant peaks, mist breathes, birds stitch the hush, and moss remembers the ink.",
+    // bottom-left hero caption — credits the composition's source
+    zh: "构图灵感源自《潇湘八景图》\nInspired by the Eight Views of Xiaoxiang",
     en: "GAWAIN · UX STRATEGY × VIBE CODING",
   },
   sideText: "先行先聽 萬縷歸心",
