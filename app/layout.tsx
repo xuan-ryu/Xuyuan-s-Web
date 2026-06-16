@@ -17,7 +17,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -36,7 +36,11 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Murecho:wght@300;400;500&family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
         />
       </head>
-      <body>
+      {/* suppressHydrationWarning: browser extensions (ColorZilla's
+          cz-shortcut-listen, Grammarly, etc.) inject attributes on <html>/<body>
+          before React hydrates — that's an extension artifact, not a real
+          server/client mismatch. Only suppresses these elements' own attributes. */}
+      <body suppressHydrationWarning>
         <div id="page-root">
           <SmoothScroll />
           <FadeReveal />
