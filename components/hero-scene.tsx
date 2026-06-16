@@ -2060,9 +2060,14 @@ export default function DigitalLandscape(props: Props) {
 
             .page2-footer { font-family: 'Newsreader', serif; font-size: clamp(10px, 1.1vw, 12px); font-weight: 300; letter-spacing: 0.06em; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
 
+            /* iOS viewport: dvh tracks the visible area (100vh includes the URL
+               bar, so a fixed full-height canvas overflows/jumps on iOS) */
+            :root { --vh100: 100dvh; }
+            @supports not (height: 100dvh) { :root { --vh100: 100vh; } }
+
             /* ─── Bridge Section ─── */
             .bridge-panel {
-                position: sticky; top: 0; width: 100%; height: 100vh;
+                position: sticky; top: 0; width: 100%; height: var(--vh100);
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 pointer-events: none; overflow: hidden;
             }
@@ -2171,7 +2176,7 @@ export default function DigitalLandscape(props: Props) {
                     top: 0,
                     left: 0,
                     width: "100%",
-                    height: "100vh",
+                    height: "var(--vh100, 100vh)",
                     zIndex: 1,
                     willChange: "opacity",
                     pointerEvents: "none",
@@ -2356,7 +2361,7 @@ export default function DigitalLandscape(props: Props) {
                         top: "calc(2152px - 136vh)",
                         left: 0,
                         width: "100%",
-                        height: "100vh",
+                        height: "var(--vh100, 100vh)",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "flex-start",
