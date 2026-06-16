@@ -37,9 +37,12 @@ export default function Home() {
       <section id="featured" className="home-featured home-featured-live">
         <div className="home-featured-shell">
           <div className="home-featured-head">
-            <h2 className="fx-rise">Featured Project</h2>
-            <Link href="/work" className="fx-rise-big">
-              view all projects
+            <div className="home-featured-title-block">
+              <p className="home-featured-kicker fx-rise">Selected work / 01-04</p>
+              <h2 className="fx-rise">Featured Project</h2>
+            </div>
+            <Link href="/work" className="home-featured-link fx-rise-big">
+              View all projects
             </Link>
           </div>
 
