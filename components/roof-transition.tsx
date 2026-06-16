@@ -21,6 +21,9 @@ const PIECES = [
   { src: ABW, cls: "roof-d", w: 1902, h: 1062, dir: -1 },
 ] as const;
 
+const clampF = (v: number, lo: number, hi: number) =>
+  v < lo ? lo : v > hi ? hi : v;
+
 export function RoofTransition() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
@@ -34,14 +37,23 @@ export function RoofTransition() {
     let raf = 0;
     const update = () => {
       raf = 0;
+      const vh = window.innerHeight;
       const r = section.getBoundingClientRect();
       // px scrolled past the point where the section center hits viewport center
-      const offset = window.innerHeight / 2 - (r.top + r.height / 2);
+      const offset = vh / 2 - (r.top + r.height / 2);
+      // "House rises" surge: as the eaves climb into view, give them an eased
+      // upward boost ON TOP of the measured drift, so the architecture appears
+      // to accelerate up to meet the pinned moon instead of the moon merely
+      // setting. Monotonic (never dips back) so the moon stays occluded once
+      // swallowed; bounded inside this overflow:hidden section so no gap opens
+      // below. p: 0 while the section is still low, →1 as it passes center.
+      const p = clampF((offset + vh * 0.45) / (vh * 0.9), 0, 1);
+      const surge = -(vh * 0.11) * (1 - Math.pow(1 - p, 3)); // easeOutCubic
       for (let i = 0; i < PIECES.length; i++) {
         const el = imgRefs.current[i];
         if (!el) continue;
         const tx = PIECES[i].dir * 0.0317 * offset;
-        const ty = 0.011 * offset;
+        const ty = 0.011 * offset + surge;
         el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)`;
       }
     };
