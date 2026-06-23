@@ -71,6 +71,97 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: "pulse",
+    title: "Pulse",
+    template: "case",
+    // TODO: drop in a cover image + a Featured hover preview clip when ready.
+    coverClass: "cover-pulse",
+    tags: ["Product Design", "Design System", "AI"],
+    oneliner:
+      "Designing and building an AI marketing platform — from a token-driven design system to the Creative Brief flow that takes a brand goal to a publish-ready post, with a human in every loop.",
+    blurb:
+      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over an intensive two-week sprint I designed and built it end to end — a token-driven design system of ~37 components, a multi-surface React application, and high-fidelity prototypes for the campaign production flow. The throughline of the work is one belief: AI should draft, humans should decide. Every generative step is wrapped in an editable brief, a review, or an approval gate, so speed never comes at the cost of brand safety.",
+    role: "Product Designer · Design System · Front-end",
+    duration: "2025 - present",
+    type: "Intern",
+    teams: "PMs, Design Team, Dev Team",
+    summary: [
+      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over an intensive two-week sprint I designed and built it end to end: a token-driven design system, a multi-surface React application, and a set of high-fidelity prototypes for the part that matters most — the campaign production flow.",
+      "The throughline is one belief: AI should draft, humans should decide. Every generative step in Pulse is wrapped in a review, an editable brief, or an approval gate, so speed never comes at the cost of brand safety. I worked across the whole stack of the problem — tokens and components, the product surfaces, the AI Creative Brief flow, the assistant chat, and the approval model — keeping the system itself as the source of generation so the product stayed consistent the longer it grew.",
+    ],
+    moment: {
+      title:
+        "When I realized the design decision wasn't “how much can AI do” — it was “where must a human stay”",
+      body: [
+        "It is tempting to let AI run a marketing post end to end: type a goal, get a scheduled post. Building Pulse, the more valuable question turned out to be the opposite one — where does a person have to stay in the loop, and how do I make that moment feel like control instead of friction?",
+        "The answer shaped the whole flow. Create with AI asks for almost nothing up front — a goal and a few assets, uploaded or picked from the brand vault. The assistant then drafts the full Creative Brief (audience, key message, content direction, tone, visual style) and shows it as editable fields inside the chat. The human edits, talks to refine, sees the budget envelope, and approves. Only then does generation run — and even then a standing guardrail holds: AI can draft and schedule, but a person always releases to publish.",
+        "Speed where it helps; a deliberate checkpoint everywhere it matters. That balance, not the automation itself, was the real design.",
+      ],
+      // TODO: add a screen recording of New Post -> Create with AI -> editable brief -> approve.
+    },
+    chapters: [
+      {
+        number: "Chapter 1",
+        title: "I built the system before the screens.",
+        sections: [
+          {
+            tags: "DESIGN SYSTEM · TOKENS · COMPONENTS",
+            heading:
+              "One source of truth, not a folder of one-offs",
+            body: [
+              "I started with the system, not the layouts. Pulse runs on a single canonical token set — color as six semantic ramps, a fixed type scale, an 8-based spacing rhythm, and radius and shadow scales — and a library of around 37 components built as standalone sources, browsable in a live preview and mirrored to a Figma handoff board.",
+              "The rule I held was simple: every screen composes from component contracts and shared tokens before any page-local UI is invented. Color is assigned by role, so a status green and a data-trend green never collide; a dependency-free check reconciles the component inventory, the preview, and the Figma board and flags any off-scale token, type, or radius before it ships. The system stopped being cleanup work and became the infrastructure that let the product grow without re-litigating the same patterns.",
+            ],
+          },
+          {
+            tags: "PRODUCT · SURFACES · INFORMATION HIERARCHY",
+            heading:
+              "A calm studio, not a dashboard of competing widgets",
+            body: [
+              "On top of the system sits the application — a sidebar-driven workspace spanning Home (a dashboard with a context-aware AI assistant), a marketing Calendar, a Signal feed of live brand trends, Analytics, Strategy, Campaigns, and the production Studio.",
+              "The design language is deliberately quiet: hierarchy comes from tone, spacing, and reading rhythm before borders, and the AI assistant docks beside the work instead of pulling the user away from it. The goal was a tool that feels like a focused studio rather than a wall of equal-weight cards.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "Chapter 2",
+        title: "Designing the Create-with-AI flow.",
+        sections: [
+          {
+            tags: "AI FLOW · CREATIVE BRIEF",
+            heading:
+              "A light brief, drafted by the AI, owned by the human",
+            body: [
+              "A post belongs to a campaign, so it starts inside that campaign's Posts page — New Post, then Create with AI — and the rest is a conversation, not a form. Instead of a long upfront questionnaire, the user gives a goal, an optional note, and a few assets. The detailed brief is the AI's job.",
+              "Pulse analyses the goal, the selected assets, the brand vault, and the campaign, then drafts a structured Creative Brief as editable fields inside the chat. The user edits any field, talks to refine, and sees the budget before committing. Approving the brief hands off to generation, and the post lands in Content Review.",
+            ],
+          },
+          {
+            tags: "APPROVALS · TRUST · GUARDRAILS",
+            heading:
+              "Two gates and a publish guardrail keep a person in charge",
+            body: [
+              "Approval runs through an ordered chain — reviewer, then brand admin, then org owner — with SLA timers and an escalation that never auto-approves. A campaign-level plan gate signs off direction and spend before any credits are burned; a per-post content gate signs off the finished creative before it goes live.",
+              "Underneath it all sits one non-negotiable rule, surfaced clearly in the UI: AI can draft and schedule, but releasing to publish is always a human action. The guardrail is independent of the gates, so turning approvals off never lets an agent publish on its own.",
+            ],
+          },
+          {
+            tags: "CRAFT · INTERACTION DETAIL",
+            heading:
+              "The texture lives in the small moments",
+            body: [
+              "Any reference or uploaded asset opens in a lightweight markup popup — a brush with adjustable size and a few colors for inpaint-style notes, plus a free-text description of how Pulse should use it. The same affordance works on Create-with-AI assets and on the brief's reference images.",
+              "The assistant chat follows the product's own component contract, tuned against the React reference so the prototype and the app speak the same language: the assistant replies as plain reading text, the user's turns sit in an ink bubble, rich content like the Creative Brief surfaces as a card, inline controls stay flat, and every action carries a considered hover state.",
+            ],
+          },
+        ],
+      },
+    ],
+    order: 0,
+    featured: true,
+  },
+  {
     slug: "vicino-ai",
     title: "Vicino AI",
     template: "case",
