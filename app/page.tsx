@@ -1,11 +1,10 @@
-import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/data/site";
 import { projects } from "@/data/projects";
 import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond-lazy";
-import { FeaturedWindows } from "@/components/featured-windows";
+import { MoonDial } from "@/components/moon-dial";
 import { RoofTransition } from "@/components/roof-transition";
 import { HowDecorParallax } from "@/components/how-decor-parallax";
 import { CtaBlock } from "@/components/cta-block";
@@ -34,22 +33,10 @@ export default function Home() {
 
       <RoofTransition />
 
+      {/* Phase 1 preview: moon-dial project selector (not yet wired into the
+          hero scroll choreography) */}
       <section id="featured" className="home-featured home-featured-live">
-        <div className="home-featured-shell">
-          <div className="home-featured-head">
-            <div className="home-featured-title-block">
-              <p className="home-featured-kicker fx-rise">Selected work / 01-04</p>
-              <h2 className="fx-rise">Featured Project</h2>
-            </div>
-            <Link href="/work" className="home-featured-link fx-rise-big">
-              View all projects
-            </Link>
-          </div>
-
-          <div className="home-featured-rule" />
-
-          <FeaturedWindows projects={projects} />
-        </div>
+        <MoonDial projects={projects} />
       </section>
 
       <section className="home-koi-section" aria-label="Interactive koi pond">

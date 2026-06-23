@@ -45,3 +45,6 @@ yarn-error.log*
 next-env.d.ts
 
 dev-server.log
+
+# local working snapshots (not for the repo)
+backups/

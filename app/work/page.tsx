@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { projects } from "@/data/projects";
 import { WorkCard } from "@/components/work-card";
 import { RevealText } from "@/components/text-reveal";
+import { WorkParticleBackground } from "@/components/work-particle-background";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -13,6 +14,7 @@ export default function WorkIndex() {
 
   return (
     <div className="work-index-page">
+      <WorkParticleBackground />
       <section className="work-header" id="header">
         <h1 className="work-title-reveal" data-fade>
           <RevealText text="My Work" mode="char" />

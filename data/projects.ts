@@ -56,6 +56,7 @@ export type Project = {
   coverClass?: string;
   tags: string[];
   oneliner: string;
+  cardBlurb?: string;
   blurb: string;
   role: string;
   duration: string;
@@ -170,20 +171,22 @@ export const projects: Project[] = [
     coverClass: "cover-vicino",
     tags: ["Product Design", "PM", "AI"],
     oneliner:
-      "Finding the structure underneath a creation chain that spans 3D, image, prompt, and video — so the seams stop being where users get lost.",
+      "Turning Vicino's interactive creation canvas into a clearer workflow system people could read, redirect, and keep building on.",
+    cardBlurb:
+      "The earlier Vicino homepage made the product feel alive: draggable creation nodes, connected outputs, and a dark workflow canvas where concept, image, video, and 3D could sit in one spatial chain. My work started from that promise and pushed it toward a clearer product system.",
     blurb:
-      "When I joined Vicino AI, the product was expanding quickly across 3D, image generation, video generation, editing tools, and higher-level workflow features. What it still lacked was a shared interaction model that could make those capabilities feel like one product instead of a growing collection of experiments. Prompts, reference assets, editors, and generated outputs all existed, but the logic connecting them was still unclear. As the product grew, so did a more important question: how do you turn fast-moving capabilities into a workflow people can actually understand, control, and build on?\n\nMy role quickly became much broader than designing individual screens. I worked closely with PMs, other designers, SDEs, frontend engineers, the founding engineer, and ML engineers to help turn those moving pieces into a more coherent product structure. I contributed to workflow design, node responsibilities, editor logic, interaction layers like sidebars and sliding panels, and the design system behind all of it. More importantly, this project changed how I think about these tools. I became much more aware of what the models could realistically support, where automation helped, where it broke down, and how a new workflow had to be designed around those limits. The goal was never to automate everything away. It was to make complex creation easier to begin, while still leaving people enough control to revise, refine, and make detailed decisions when the work demanded more precision.",
+      "Vicino AI was expanding across 3D, image generation, video generation, editing tools, and higher-level workflow features. What the product needed was not another impressive capability demo. It needed a shared interaction model that could make those capabilities feel like one product instead of a growing collection of experiments.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, sidebars, sliding panels, and the design system behind them. The core lesson was simple: better automation only matters when people still have clear places to inspect, redirect, and decide.",
     role: "Product Designer / PM",
     duration: "2025 - present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team, Mkt Team",
     summary: [
-      "When I joined Vicino AI, the product was expanding quickly across 3D, image generation, video generation, editing tools, and higher-level workflow features. What it still lacked was a shared interaction model that could make those capabilities feel like one product instead of a growing collection of experiments. Prompts, reference assets, editors, and generated outputs all existed, but the logic connecting them was still unclear. As the product grew, so did a more important question: how do you turn fast-moving capabilities into a workflow people can actually understand, control, and build on?",
-      "My role quickly became much broader than designing individual screens. I worked closely with PMs, other designers, SDEs, frontend engineers, the founding engineer, and ML engineers to help turn those moving pieces into a more coherent product structure. I contributed to workflow design, node responsibilities, editor logic, interaction layers like sidebars and sliding panels, and the design system behind all of it. More importantly, this project changed how I think about these tools. I became much more aware of what the models could realistically support, where automation helped, where it broke down, and how a new workflow had to be designed around those limits. The goal was never to automate everything away. It was to make complex creation easier to begin, while still leaving people enough control to revise, refine, and make detailed decisions when the work demanded more precision.",
+      "When I joined Vicino AI, the product already had a strong interactive promise: creation should feel like a canvas of connected agents and outputs, not a stack of isolated generators. The hard part was carrying that feeling into the real product as 3D, image generation, video generation, editing tools, reference assets, and workflow features expanded.",
+      "I helped frame the product around responsibility, not feature volume. Nodes should represent meaningful stages and outputs. The sidebar should hold global settings. Sliding panels should carry node-specific input, references, and version context. Editors should handle deep revision work. That separation gave the team a clearer language for deciding where new functionality belonged.",
     ],
     moment: {
       title:
-        "When I realized the product did not need one more features — it needed a clearer interaction model",
+        "When I realized the product did not need one more feature - it needed a clearer interaction model",
       body: [
         "What stayed with me most from this project was the moment I realized the product did not need one more feature. It needed a clearer structure.",
         "During one review, we walked through a long creation chain: camera, 3D, image, prompt, and then video. On paper, each part was already becoming more capable. But when I tried to trace the flow from input to output, I realized the problem was no longer feature depth. The problem was that the system itself was becoming harder to explain. Even within the team, people were beginning to describe the same workflow in different ways. That was the moment I stopped treating the project as a series of screen problems and started treating it as a workflow problem.",

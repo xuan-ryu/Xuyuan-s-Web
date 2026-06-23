@@ -32,7 +32,7 @@ export function WorkCard({ project }: { project: Project }) {
         <RevealText text={displayTitle} mode="char" direction="right" delay={120} />
       </div>
       <div className="work-card-copy">
-        {project.blurb.split("\n\n").map((paragraph, index) => (
+        {(project.cardBlurb ?? project.blurb).split("\n\n").map((paragraph, index) => (
           <p key={paragraph} className="work-card-copy-line">
             <RevealText
               text={paragraph}

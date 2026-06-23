@@ -234,6 +234,10 @@
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* 黑白红 — one high-saturation red is the site's only accent, set against
+     pure white / ink black */
+  --accent-red: #e60012;
+
   /* ——— canonical tokens extracted from the original Framer export ———
      full reference: docs/design-system.md. New/touched rules use these. */
   --ink-950: #050505;
@@ -1014,6 +1018,16 @@
 /* ============================================================
    Work index — header + grid
    ============================================================ */
+.home-particle-mountain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transition: opacity 0.22s linear;
+}
+
 .work-header {
   padding: 72px 0 56px;
   border-bottom: 1px solid var(--color-line);
@@ -1070,6 +1084,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.work-particle-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  mix-blend-mode: multiply;
+}
+.work-particle-background canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.work-index-page .work-header,
+.work-index-page .work-list {
+  position: relative;
+  z-index: 1;
 }
 .work-index-page .work-header {
   width: 100%;
@@ -3731,9 +3766,9 @@
 }
 
 .home-featured-live {
-  min-height: 3467px;
+  min-height: auto;
   margin-top: -6px;
-  padding: 0;
+  padding: 0 0 clamp(20px, 2.5vw, 40px);
   position: relative;
   overflow: hidden;
   background: #fff;
@@ -3742,27 +3777,14 @@
   z-index: 1;
 }
 .home-featured-live::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 255px;
-  height: 11px;
-  background: linear-gradient(#a7a7a7 0 5px, transparent 5px 100%);
-  box-shadow: 0 104px 0 #a7a7a7;
+  content: none;
 }
 .home-featured-live::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 180px;
-  background: #050505;
+  content: none;
 }
 .home-featured-shell {
   width: 100%;
-  height: 3467px;
+  height: auto;
   position: relative;
   z-index: 1;
 }
@@ -3811,11 +3833,11 @@
   display: inline-flex;
   padding: 0 0 6px;
   border: 0;
-  border-bottom: 1px solid rgba(10, 10, 10, 0.35);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-red) 45%, transparent);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  color: #050505;
+  color: var(--accent-red);
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 500;
@@ -3828,9 +3850,9 @@
     transform 0.2s var(--ease-default);
 }
 .home-featured-live .home-featured-head a.home-featured-link:hover {
-  border-color: rgba(10, 10, 10, 0.8);
+  border-color: var(--accent-red);
   background: transparent;
-  color: #050505;
+  color: var(--accent-red);
   transform: translateY(-1px);
 }
 .home-featured-live .home-featured-head a.home-featured-link::after {
@@ -3838,6 +3860,466 @@
 }
 .home-featured-rule {
   display: none;
+}
+
+/* ——— Featured · 房檐 + 项目卡片 ————————————————————————————
+   The grey-tile eave kept as a divider; a compact card grid below it with
+   hover preview. 黑白红: the index numerals are red on the white card meta. */
+.fc {
+  position: relative;
+}
+.fc-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 26px);
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 72px);
+  max-width: 1680px;
+}
+.fc-card {
+  min-width: 0;
+}
+.fc-link {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+.fc-media {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #0c0c0c;
+}
+.fc-media img,
+.fc-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s var(--ease-default);
+}
+.fc-media video {
+  position: absolute;
+  inset: 0;
+}
+.fc-card:hover .fc-media img {
+  transform: scale(1.045);
+}
+.fc-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: baseline;
+}
+.fc-num {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  /* 黑白红: red index on the white card meta (never on black) */
+  color: var(--accent-red);
+}
+.fc-title {
+  font-family: var(--font-serif);
+  font-size: clamp(19px, 1.5vw, 26px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: #0a0a0a;
+}
+.fc-tags {
+  grid-column: 2;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.5);
+}
+@media (max-width: 1100px) {
+  .fc-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: clamp(24px, 4vw, 40px);
+  }
+}
+@media (max-width: 640px) {
+  .fc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ——— 月亮转盘 · Moon dial (Phase 1 preview) ————————————————————
+   Night-sky stage: the moon parks at the right edge as an interactive dial;
+   the left glass panel reads out the focused project. */
+.md-stage {
+  position: relative;
+  width: 100%;
+  min-height: clamp(680px, 100vh, 1120px);
+  overflow: hidden;
+  background:
+    radial-gradient(
+      140% 100% at 108% 50%,
+      #1a2030 0%,
+      #11151e 34%,
+      #0a0c12 66%,
+      #06070b 100%
+    );
+  color: #fff;
+  isolation: isolate;
+  /* moon shows half on the right as a backdrop; content sits centred */
+  --moon-d: clamp(520px, 80vh, 980px);
+  --moon-cx: 100%;
+}
+/* sparse hand-placed stars (kept off the right where the moon sits) */
+.md-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 22%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 26% 64%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.4px 1.4px at 38% 14%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 48% 80%, rgba(255, 255, 255, 0.42), transparent),
+    radial-gradient(1px 1px at 8% 78%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.3px 1.3px at 18% 46%, rgba(255, 255, 255, 0.55), transparent),
+    radial-gradient(1px 1px at 33% 36%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 44% 54%, rgba(255, 255, 255, 0.46), transparent),
+    radial-gradient(1px 1px at 6% 34%, rgba(255, 255, 255, 0.44), transparent),
+    radial-gradient(1.3px 1.3px at 22% 8%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 52% 28%, rgba(255, 255, 255, 0.38), transparent),
+    radial-gradient(1px 1px at 30% 88%, rgba(255, 255, 255, 0.4), transparent);
+  opacity: 0.6;
+  animation: md-twinkle 6s ease-in-out infinite;
+}
+@keyframes md-twinkle {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+.md-eyebrow {
+  position: absolute;
+  top: clamp(28px, 4vw, 48px);
+  left: clamp(24px, 5vw, 72px);
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* moon */
+.md-moon {
+  position: absolute;
+  top: 50%;
+  left: var(--moon-cx);
+  width: var(--moon-d);
+  height: var(--moon-d);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  /* feather the rim so the disc melts into the night instead of a hard circle */
+  -webkit-mask: radial-gradient(circle, #000 84%, transparent 99%);
+  mask: radial-gradient(circle, #000 84%, transparent 99%);
+  cursor: grab;
+  touch-action: none;
+  z-index: 2;
+}
+.md-moon:active {
+  cursor: grabbing;
+}
+.md-moon-face {
+  position: absolute;
+  inset: -2%;
+  border-radius: 50%;
+  background: #0a0907 url("/media/moon.png") center / 120% 120% no-repeat;
+  /* the source moon is low-res — soften to hide the pixels; keep it warm and
+     gently lit (dimmed, but golden, not grey) */
+  filter: blur(2.5px) brightness(0.82) saturate(1.12) contrast(0.97)
+    sepia(0.12);
+  will-change: transform;
+}
+/* a fixed sphere-shading pass over the spinning face keeps the lit side stable
+   (the terminator stays put while the craters rotate underneath) */
+.md-moon-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 36%,
+    rgba(255, 252, 240, 0.14) 0%,
+    rgba(255, 255, 255, 0) 44%,
+    rgba(10, 8, 6, 0.26) 84%,
+    rgba(8, 6, 4, 0.46) 100%
+  );
+  pointer-events: none;
+}
+/* soft atmospheric halo — a smooth radial falloff, no hard ring */
+.md-glow {
+  position: absolute;
+  top: 50%;
+  left: var(--moon-cx);
+  width: calc(var(--moon-d) * 1.7);
+  height: calc(var(--moon-d) * 1.7);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(228, 224, 214, 0.08) 0%,
+    rgba(228, 224, 214, 0.045) 26%,
+    rgba(220, 216, 206, 0.02) 44%,
+    transparent 60%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+/* the fixed focus point on the moon's left rim — a soft halo ring the active
+   node settles into */
+.md-focus {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.md-focus-dot {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 0 24px rgba(255, 255, 255, 0.14),
+    inset 0 0 10px rgba(255, 255, 255, 0.06);
+}
+
+/* rim nodes */
+.md-dialwrap {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  outline: none;
+}
+.md-node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+.md-node-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transition:
+    transform 0.35s var(--ease-default),
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.md-node-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0);
+  transform: translateX(-22px);
+  transition: color 0.35s ease;
+  white-space: nowrap;
+}
+.md-node.is-active .md-node-dot {
+  transform: scale(1.9);
+  background: #fff;
+  box-shadow:
+    0 0 0 5px rgba(255, 255, 255, 0.12),
+    0 0 22px 4px rgba(255, 255, 255, 0.6);
+}
+.md-node.is-active .md-node-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* content centred in the viewport; the preview reads ~half the screen wide */
+.md-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(520px, 52vw, 1000px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 6;
+  animation: md-panel-in 0.55s var(--ease-default);
+}
+@keyframes md-panel-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 16px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+.md-panel-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 26px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0c0c0c;
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.md-panel-media img,
+.md-panel-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.md-panel-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.md-panel-num {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1;
+  color: var(--accent-red);
+  margin-bottom: 10px;
+}
+.md-panel-num i {
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.4);
+}
+.md-panel-title {
+  margin: 0 0 12px;
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 3.2vw, 56px);
+  font-weight: 400;
+  line-height: 0.98;
+  color: #fff;
+}
+.md-panel-tags {
+  margin: 0 0 14px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.md-panel-desc {
+  margin: 0 0 24px;
+  max-width: 26em;
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 1.3vw, 21px);
+  line-height: 1.28;
+  color: rgba(255, 255, 255, 0.78);
+}
+.md-panel-cta {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent-red);
+  padding-bottom: 5px;
+}
+.md-panel-cta span {
+  color: var(--accent-red);
+  display: inline-block;
+  transition: transform 0.2s var(--ease-default);
+}
+.md-panel-cta:hover span {
+  transform: translateX(4px);
+}
+
+/* chevron controls on the moon's visible (left) rim */
+.md-arc {
+  position: absolute;
+  right: calc(var(--moon-d) * 0.5 - 6px);
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transform: translate(50%, -50%);
+  transition: color 0.2s ease;
+  z-index: 7;
+}
+.md-arc:hover {
+  color: #fff;
+}
+.md-arc-up {
+  top: calc(50% - var(--moon-d) * 0.3);
+}
+.md-arc-down {
+  top: calc(50% + var(--moon-d) * 0.3);
+}
+.md-arc-down .md-arc-svg {
+  transform: scaleY(-1);
+}
+.md-arc-svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.md-rotate-cap {
+  position: absolute;
+  right: calc(var(--moon-d) * 0.5 - 10px);
+  top: calc(50% + var(--moon-d) * 0.34);
+  transform: translateX(50%);
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  z-index: 5;
+  pointer-events: none;
+}
+@media (max-width: 860px) {
+  .md-panel {
+    width: min(80vw, 420px);
+  }
+  .md-panel-media {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 18px;
+  }
 }
 .home-window-stage {
   position: relative;
@@ -3914,10 +4396,16 @@
   font-size: 80px;
   font-weight: 200;
   line-height: 1;
+  /* default: ink on the black pane (no red on black — that read as alarming) */
   color: currentColor;
   transition:
     transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.3s ease;
+}
+/* red only lands once the pane flips to white on hover/active — red vs white */
+.window-pane.is-active .window-pane-number,
+.window-pane:hover .window-pane-number {
+  color: var(--accent-red);
 }
 .window-pane-right .window-pane-number {
   top: 5px;

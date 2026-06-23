@@ -76,16 +76,29 @@ const mountainVert = `
   uniform float uScroll;
   uniform float uVelocity;
   uniform vec2 uMouse;
+  uniform vec2 uMouseVel;
   uniform float uMouseActive;
   uniform float uFlatMode;
+  uniform sampler2D uFlow;
   attribute float aSize;
   attribute float aAlpha;
+  attribute float aRidge;
   varying float vAlpha;
   varying float vSpotlight;
   varying float vLocalScroll;
 
   void main() {
     vec3 pos = position;
+    // the ridge spine holds still; the body/slope grains move a lot more
+    float bodyMove = mix(2.0, 0.06, clamp(aRidge, 0.0, 1.0));
+    // 压成2D — flatten the 3D depth toward a single plane: far layers (z<0)
+    // ride up and near layers (z>0) drop, and the depth itself is squeezed, so
+    // the terrain reads as a layered 2D ink painting instead of a receding 3D
+    // scene. uFlatMode keeps the mobile/flat path untouched.
+    if (uFlatMode < 0.5) {
+      pos.y += -position.z * 0.26;
+      pos.z *= 0.30;
+    }
     // left→right sweep: left columns transition before right ones, so the
     // collapse / darken / black→white inversion reads as moving across screen
     vec4 origWorldPos = modelMatrix * vec4(position, 1.0);
@@ -95,9 +108,18 @@ const mountainVert = `
     float randVal = fract(sin(dot(pos.xz, vec2(12.9898, 78.233))) * 43758.5453);
     float phase = randVal * 6.2831;
     float twinkle = uFlatMode > 0.5 ? 1.0 : (0.6 + 0.8 * sin(uTime * 1.3 + phase));
-    if (uFlatMode < 0.5) pos.y += sin(uTime * 0.35 + pos.x * 0.008) * 6.0;
+    if (uFlatMode < 0.5) pos.y += bodyMove * (
+        sin(uTime * 0.4 + pos.x * 0.008) * 7.0
+      + cos(uTime * 0.3 + pos.z * 0.006) * 3.0);
 
     float normY = clamp((position.y + 520.0) / 1050.0, 0.0, 1.0);
+    // the foot of the mountain also stirs — drift grows toward the base so the
+    // bottom isn't static (still gated by bodyMove, so the ridge holds)
+    if (uFlatMode < 0.5) {
+      float baseDrift = (1.0 - normY) * bodyMove;
+      pos.x += sin(uTime * 0.33 + position.z * 0.011 + phase) * 16.0 * baseDrift;
+      pos.y += cos(uTime * 0.27 + position.x * 0.009 + phase * 0.5) * 11.0 * baseDrift;
+    }
     float dRand = fract(sin(dot(position.xz, vec2(127.1, 311.7))) * 43758.5453);
     // Thanos-dust disperse along the X axis: dissolveStart ramps with normX so
     // the disintegration sweeps left → right (left grains go first, right last);
@@ -127,16 +149,40 @@ const mountainVert = `
 
     // 用原始坐标计算遮罩（不受偏移影响；origWorldPos 已在顶部计算）
     float valleyMask = 1.0 - smoothstep(-200.0, 100.0, origWorldPos.z);
-    float seaLevel = uFlatMode > 0.5 ? 100.0
-        : (100.0 + sin(origWorldPos.x * 0.002 + uTime * 0.5) * cos(origWorldPos.z * 0.002) * 1000.0);
+    // 云海起伏 — layered waves at different frequencies/speeds/phases so the
+    // waterline undulates irregularly (organic swell) rather than one tidy sine
+    float sx = origWorldPos.x * 0.002;
+    float sz = origWorldPos.z * 0.0016;
+    float seaWave =
+          sin(sx + uTime * 0.45) * cos(sz + uTime * 0.11)
+        + sin(sx * 2.1 + sz * 1.3 - uTime * 0.27 + 1.3) * 0.55
+        + sin(sx * 0.55 - sz * 0.8 + uTime * 0.19 + 3.1) * 0.7
+        + cos(sx * 3.4 + sz * 0.6 + uTime * 0.13) * 0.3;
+    // cloud-sea swell halves once the scene flips to black (calmer night sea)
+    float seaAmp = mix(330.0, 165.0, smoothstep(0.16, 0.32, localScroll));
+    float seaLevel = uFlatMode > 0.5 ? 100.0 : (100.0 + seaWave * seaAmp);
     float bottomFade = smoothstep(seaLevel - 60.0, seaLevel + 120.0, origWorldPos.y);
-    // turn the cloud sea (云海) OFF as the scene goes black — the undulating misty
-    // waterline at the mountain's foot is a day effect; at night the base is solid.
-    // (the atmospheric FogExp2 mist is kept — that's a separate effect.)
-    bottomFade = mix(bottomFade, 1.0, smoothstep(0.16, 0.30, localScroll));
+    // keep the cloud sea (云海) alive through the colour change and the night
+    // hold — it only releases as the mountain disperses into the star field
+    // (the atmospheric FogExp2 mist is a separate effect, kept throughout).
+    bottomFade = mix(bottomFade, 1.0, smoothstep(0.45, 0.8, scatter));
 
     vec4 mvPosition = viewMatrix * modelMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
+
+    // 拨开云海 — the cursor parts the mist locally: particles within a soft
+    // radius of the pointer have their cloud-sea suppression lifted, opening a
+    // clearing that reveals the ink mountain beneath. One distance, no trails.
+    vec2 screenPos = gl_Position.xy / gl_Position.w;
+    float mouseNear = (uFlatMode > 0.5) ? 0.0
+        : uMouseActive * (1.0 - smoothstep(0.0, 0.22, length(screenPos - uMouse)));
+    bottomFade = mix(bottomFade, 1.0, mouseNear * (1.0 - scatter) * 0.7);
+    // 流场位移 — sample the dissipating velocity field (flowmap) at this grain's
+    // screen position and drift along it: the cursor stirs the ink like water
+    // and the motion LINGERS, then settles (izanami-style fluid wake).
+    vec2 flowUv = screenPos * 0.5 + 0.5;
+    vec2 flow = texture2D(uFlow, flowUv).xy;
+    gl_Position.xy += flow * (1.0 - scatter) * bodyMove * 0.12 * gl_Position.w;
 
     float scatterShrink = mix(1.0, 0.15 + dRand * 0.15, scatter);
     float size = aSize * (1000.0 / -mvPosition.z);
@@ -165,12 +211,8 @@ const mountainVert = `
 
     gl_PointSize = vAlpha < 0.02 ? 0.0 : computedSize;
 
-    if (uFlatMode > 0.5) {
-      vSpotlight = 0.0;
-    } else {
-      vec2 screenPos = gl_Position.xy / gl_Position.w;
-      vSpotlight = uMouseActive * (1.0 - scatter) * (1.0 - smoothstep(0.02, 0.18, length(screenPos - uMouse)));
-    }
+    vSpotlight = (uFlatMode > 0.5) ? 0.0
+        : uMouseActive * (1.0 - scatter) * (1.0 - smoothstep(0.02, 0.18, length(screenPos - uMouse)));
   }
 `
 
@@ -275,16 +317,22 @@ const starVert = `
   attribute float aPhase;
   uniform float uTime;
   uniform float uScroll;
+  uniform vec2 uMouse;
+  uniform float uMouseActive;
   varying float vStarA;
   void main() {
     float twinkle = 0.55 + 0.45 * sin(uTime * 2.1 + aPhase);
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mvPosition;
+    // 点亮 — stars within a soft radius of the cursor flare brighter and a
+    // touch larger, like fanning embers in the night sky
+    vec2 screenPos = gl_Position.xy / gl_Position.w;
+    float near = uMouseActive * (1.0 - smoothstep(0.0, 0.14, length(screenPos - uMouse)));
     // 固定像素大小：星星不随距离缩放（天体效果）
-    gl_PointSize = clamp(aSize * twinkle, 1.0, 8.0);
+    gl_PointSize = clamp(aSize * twinkle * (1.0 + near * 0.9), 1.0, 12.0);
     // gated behind the night overlay (0.65-0.85): stars only on a dark sky
     float starT = smoothstep(0.55, 0.85, uScroll);
-    vStarA = starT * twinkle;
+    vStarA = starT * twinkle * (1.0 + near * 2.2);
   }
 `
 
@@ -296,6 +344,78 @@ const starFrag = `
     float a = vStarA * shape;
     if (a < 0.01) discard;
     gl_FragColor = vec4(vec3(1.0) * a, a);
+  }
+`
+
+// ——— flowmap (流场) — a low-res velocity field the cursor stirs and that
+// dissipates over time; the mountain samples it to drift like fluid (izanami-
+// style). Update pass: previous field * dissipation + a velocity splat at the
+// cursor.
+const flowVert = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position.xy, 0.0, 1.0);
+  }
+`
+const flowFrag = `
+  precision highp float;
+  uniform sampler2D tPrev;
+  uniform vec2 uMouse;
+  uniform vec2 uVel;
+  uniform float uAspect;
+  uniform float uFalloff;
+  uniform float uDissipation;
+  varying vec2 vUv;
+  void main() {
+    vec2 prevVel = texture2D(tPrev, vUv).xy;
+    // advect the field along its own velocity — the disturbance propagates and
+    // spreads like water (水波), so the whole drag path keeps flowing
+    vec2 advected = texture2D(tPrev, vUv - prevVel * 0.004).xy;
+    vec2 vel = advected * uDissipation;
+    vec2 d = vUv - uMouse;
+    d.x *= uAspect;
+    float splat = exp(-dot(d, d) / uFalloff);
+    vel += uVel * splat;
+    vel = clamp(vel, -1.2, 1.2);
+    gl_FragColor = vec4(vel, 0.0, 1.0);
+  }
+`
+
+// ——— 雾气层 (mist) — a soft ink-cloud whose UVs are warped by the flowmap, so
+// the cursor pushes the mist around like water while the mountains and text
+// behind it stay sharp (izanami-style fluid distortion of a mask layer).
+const mistFrag = `
+  precision highp float;
+  uniform sampler2D uFlow;
+  uniform float uTime;
+  uniform vec3 uColor;
+  uniform float uOpacity;
+  uniform float uDistort;
+  uniform float uAspect;
+  varying vec2 vUv;
+  float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float n(vec2 p){
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(h(i), h(i + vec2(1.0, 0.0)), f.x),
+               mix(h(i + vec2(0.0, 1.0)), h(i + vec2(1.0, 1.0)), f.x), f.y);
+  }
+  float fbm(vec2 p){
+    float v = 0.0, a = 0.5;
+    for (int k = 0; k < 5; k++){ v += a * n(p); p = p * 2.03 + 7.0; a *= 0.5; }
+    return v;
+  }
+  void main(){
+    vec2 flow = texture2D(uFlow, vUv).xy;
+    vec2 uv = vUv;
+    uv.x *= uAspect;
+    uv -= flow * uDistort;                 // warp the mist UVs by the flow
+    float m = fbm(uv * 2.6 + vec2(uTime * 0.015, uTime * 0.008));
+    m = smoothstep(0.46, 0.92, m);
+    // keep the mist mostly low (a drifting bank), fading toward the top
+    m *= smoothstep(0.05, 0.55, vUv.y) * (1.0 - smoothstep(0.62, 1.0, vUv.y));
+    gl_FragColor = vec4(uColor, m * uOpacity);
   }
 `
 
@@ -374,7 +494,7 @@ function centralMistFactor(x: number) {
 function computeXCache(x: number) {
     return {
         fgCut: smoothstepF(100.0, 1200.0, x),
-        rightBank: Math.max(0, 1.0 - Math.pow((x - 1400) / 800, 2)) * 380.0,
+        rightBank: Math.max(0, 1.0 - Math.pow((x - 1000) / 900, 2)) * 230.0,
         sFg: ridge1D(x - 900) * 120,
         sNear: ridge1D(x + 80) * 240,
         sMid: ridge1D(x - 220) * 720,
@@ -408,7 +528,7 @@ function getTerrainData(
     } else {
         fgCut = smoothstepF(100.0, 1200.0, x)
         const rightBank =
-            Math.max(0, 1.0 - Math.pow((x - 1400) / 800, 2)) * 380.0
+            Math.max(0, 1.0 - Math.pow((x - 1000) / 900, 2)) * 230.0
         sFg = ridge1D(x - 900) * 120 + rightBank
         sNear = ridge1D(x + 80) * 240
         sMid = ridge1D(x - 220) * 720
@@ -425,6 +545,7 @@ function getTerrainData(
         near * (sNear + texR * 80) +
         mid * (sMid + texR * 130) +
         far * (sFar + texR * 70)
+    // full mountain height (no trim); the 2D-planar look is done in the shader
     const cmFinal = mixF(cm, 1.0, fg * 0.8)
     h *= cmFinal * 0.65 + 0.35
     h -= z * 0.25
@@ -596,6 +717,16 @@ export default function DigitalLandscape(props: Props) {
         let scene: THREE.Scene,
             camera: THREE.PerspectiveCamera,
             renderer: THREE.WebGLRenderer
+        // flowmap (流场) — ping-pong velocity field stirred by the cursor
+        let flowRTa: THREE.WebGLRenderTarget | null = null,
+            flowRTb: THREE.WebGLRenderTarget | null = null,
+            flowMat: THREE.ShaderMaterial | null = null,
+            flowScene: THREE.Scene | null = null,
+            flowCam: THREE.OrthographicCamera | null = null
+        // 雾气层 — flowmap-warped ink mist composited over the mountains
+        let mistMat: THREE.ShaderMaterial | null = null,
+            mistScene: THREE.Scene | null = null,
+            mistCam: THREE.OrthographicCamera | null = null
         let mountainMat: THREE.ShaderMaterial, mountain: THREE.Points
         let starMesh: THREE.Points
         let birdGeo: THREE.BufferGeometry,
@@ -608,6 +739,9 @@ export default function DigitalLandscape(props: Props) {
         let resumeSceneAnimation: (() => void) | null = null
 
         const mouseNDC = { x: 0, y: 0 }
+        // smoothed cursor velocity (NDC/frame) — drives the "sliding water" wake
+        const prevMouseNDC = { x: 0, y: 0 }
+        const mouseVel = { x: 0, y: 0 }
         let mouseActive = 0,
             pendingMouse = false
         let lastClientX = 0,
@@ -1111,7 +1245,7 @@ export default function DigitalLandscape(props: Props) {
                 const cellSize =
                     qualityTier === 0 ? 40.0 : qualityTier === 1 ? 22.0 : 15.0
                 const density =
-                    qualityTier === 0 ? 3.0 : qualityTier === 1 ? 16.0 : 30.0
+                    qualityTier === 0 ? 3.0 : qualityTier === 1 ? 18.0 : 35.0
                 // measured demand (uncapped): ~280k at tier 2 across common
                 // viewports — demand does NOT scale with pixel area (terrain
                 // width grows as windows get SHORTER), so an area-scaled cap
@@ -1129,6 +1263,9 @@ export default function DigitalLandscape(props: Props) {
                 const positions = new Float32Array(maxPoints * 3)
                 const sizes = new Float32Array(maxPoints)
                 const alphas = new Float32Array(maxPoints)
+                // per-particle ridge-ness (0 = slope/body, 1 = ridge spine):
+                // the ridge holds still, the body flows
+                const ridges = new Float32Array(maxPoints)
                 let pIdx = 0
                 let lastYield = performance.now()
 
@@ -1185,7 +1322,7 @@ export default function DigitalLandscape(props: Props) {
                                 shadow * 2.0 +
                                 vegetation * 6.0
                             const alphaBase =
-                                mixF(0.24, 0.95, depth * Math.min(prob, 1.2)) *
+                                mixF(0.34, 1.0, depth * Math.min(prob, 1.2)) *
                                 inkAlpha
                             for (let p = 0; p < count; p++) {
                                 if (pIdx >= maxPoints) break
@@ -1200,6 +1337,7 @@ export default function DigitalLandscape(props: Props) {
                                 positions[pIdx * 3 + 2] = pz
                                 sizes[pIdx] = sizeBase
                                 alphas[pIdx] = alphaBase
+                                ridges[pIdx] = tRidge
                                 pIdx++
                             }
                         } else {
@@ -1235,16 +1373,16 @@ export default function DigitalLandscape(props: Props) {
                             // exponent keeps the transition broad (no 1px black
                             // crest wire); distant peaks stay misty, not bold
                             let aBase =
-                                mixF(0.14, 0.82, depth) *
-                                (0.7 + 0.3 * tCm) *
+                                mixF(0.26, 0.98, depth) *
+                                (0.72 + 0.28 * tCm) *
                                 mixF(0.9, 1.0, shadow) *
                                 // crest darkening fades with distance: near
                                 // ridges keep their ink bones, far ranges melt
                                 // into a pale wash so no dark wire floats at the
                                 // horizon
-                                (1.0 + Math.pow(tRidge, 1.7) * 0.5 * depth)
+                                (1.0 + Math.pow(tRidge, 1.6) * 0.78 * depth)
                             if (farFactor > 0.1)
-                                aBase += 0.5 * farFactor * isPeak
+                                aBase += 0.55 * farFactor * isPeak
                             for (let p = 0; p < count; p++) {
                                 if (pIdx >= maxPoints) break
                                 const sid =
@@ -1267,6 +1405,7 @@ export default function DigitalLandscape(props: Props) {
                                     0.05,
                                     1.0
                                 )
+                                ridges[pIdx] = tRidge
                                 pIdx++
                             }
                             // — 点苔 ——————————————————————————————
@@ -1336,6 +1475,7 @@ export default function DigitalLandscape(props: Props) {
                                             0.05,
                                             1.0
                                         )
+                                        ridges[pIdx] = 1.0
                                         pIdx++
                                     }
                                 }
@@ -1365,6 +1505,10 @@ export default function DigitalLandscape(props: Props) {
                     "aAlpha",
                     new THREE.BufferAttribute(alphas.slice(0, pIdx), 1)
                 )
+                geo.setAttribute(
+                    "aRidge",
+                    new THREE.BufferAttribute(ridges.slice(0, pIdx), 1)
+                )
 
                 mountainMat = new THREE.ShaderMaterial({
                     vertexShader: mountainVert,
@@ -1375,8 +1519,10 @@ export default function DigitalLandscape(props: Props) {
                         uScroll: { value: 0 },
                         uVelocity: { value: 0 },
                         uMouse: { value: new THREE.Vector2(0, 0) },
+                        uMouseVel: { value: new THREE.Vector2(0, 0) },
                         uMouseActive: { value: 0 },
                         uFlatMode: { value: 0.0 }, // mobile handled by early return above
+                        uFlow: { value: null },
                     },
                     transparent: true,
                     blending: THREE.NormalBlending,
@@ -1386,6 +1532,65 @@ export default function DigitalLandscape(props: Props) {
                 mountain.renderOrder = 30
                 mountain.frustumCulled = false
                 scene.add(mountain)
+
+                // — Flowmap (流场) ————————————————————————————————————
+                // a low-res velocity field the cursor stirs; it dissipates each
+                // frame, and the mountain samples it to drift like fluid
+                {
+                    const fw = 220
+                    const fh = Math.max(
+                        120,
+                        Math.round((fw * window.innerHeight) / containerW)
+                    )
+                    const rtOpts = {
+                        type: THREE.HalfFloatType,
+                        depthBuffer: false,
+                        stencilBuffer: false,
+                    }
+                    flowRTa = new THREE.WebGLRenderTarget(fw, fh, rtOpts)
+                    flowRTb = new THREE.WebGLRenderTarget(fw, fh, rtOpts)
+                    flowMat = new THREE.ShaderMaterial({
+                        vertexShader: flowVert,
+                        fragmentShader: flowFrag,
+                        uniforms: {
+                            tPrev: { value: null },
+                            uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                            uVel: { value: new THREE.Vector2(0, 0) },
+                            uAspect: { value: fw / fh },
+                            uFalloff: { value: 0.0011 },
+                            uDissipation: { value: 0.965 },
+                        },
+                        depthTest: false,
+                        depthWrite: false,
+                    })
+                    flowScene = new THREE.Scene()
+                    flowScene.add(
+                        new THREE.Mesh(new THREE.PlaneGeometry(2, 2), flowMat)
+                    )
+                    flowCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+
+                    // mist layer — procedural ink-cloud, UVs warped by the flow
+                    mistMat = new THREE.ShaderMaterial({
+                        vertexShader: flowVert,
+                        fragmentShader: mistFrag,
+                        uniforms: {
+                            uFlow: { value: null },
+                            uTime: { value: 0 },
+                            uColor: { value: new THREE.Color(0x1c1c1c) },
+                            uOpacity: { value: 0.34 },
+                            uDistort: { value: 0.22 },
+                            uAspect: { value: containerW / window.innerHeight },
+                        },
+                        transparent: true,
+                        depthTest: false,
+                        depthWrite: false,
+                    })
+                    mistScene = new THREE.Scene()
+                    mistScene.add(
+                        new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mistMat)
+                    )
+                    mistCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+                }
 
                 // — Star field ——————————————————————————————————————
                 const starCount =
@@ -1434,6 +1639,8 @@ export default function DigitalLandscape(props: Props) {
                     uniforms: {
                         uTime: { value: 0 },
                         uScroll: { value: 0 },
+                        uMouse: { value: new THREE.Vector2(0, 0) },
+                        uMouseActive: { value: 0 },
                     },
                     transparent: true,
                     depthWrite: false,
@@ -1739,6 +1946,12 @@ export default function DigitalLandscape(props: Props) {
 
                 const activeMouse =
                     enableMouseSpotlight && getMouseActive() > 0.5 ? 1 : 0
+                // smoothed cursor velocity (NDC delta), eased so it builds while
+                // sliding and decays to 0 the moment the cursor stops
+                mouseVel.x += (mouseNDC.x - prevMouseNDC.x - mouseVel.x) * 0.35
+                mouseVel.y += (mouseNDC.y - prevMouseNDC.y - mouseVel.y) * 0.35
+                prevMouseNDC.x = mouseNDC.x
+                prevMouseNDC.y = mouseNDC.y
                 // 山粒子 alphaFade 在 scroll=0.75 全部归零 — 提前隐藏 mesh 跳过 GPU vertex shader
                 const mountainFullyGone = sceneTransitionScroll >= 0.94
                 if (mountainMeshArg.visible === mountainFullyGone) {
@@ -1753,10 +1966,16 @@ export default function DigitalLandscape(props: Props) {
                         mouseNDC.x,
                         mouseNDC.y
                     )
+                    mountainMatArg.uniforms.uMouseVel.value.set(
+                        mouseVel.x,
+                        mouseVel.y
+                    )
                     mountainMatArg.uniforms.uMouseActive.value = activeMouse
                 }
                 starMatArg.uniforms.uTime.value = t
                 starMatArg.uniforms.uScroll.value = sceneTransitionScroll
+                starMatArg.uniforms.uMouse.value.set(mouseNDC.x, mouseNDC.y)
+                starMatArg.uniforms.uMouseActive.value = activeMouse
 
                 const active = activeMouse > 0.5
                 if (active) {
@@ -1884,7 +2103,31 @@ export default function DigitalLandscape(props: Props) {
                 cameraArg.position.y += (targetY - cameraArg.position.y) * 0.055
                 cameraArg.position.z += (targetZ - cameraArg.position.z) * 0.055
 
+                // 流场更新 — stir the velocity field with the cursor, dissipate,
+                // ping-pong, then hand the current field to the mountain shader
+                if (flowRTa && flowRTb && flowMat && flowScene && flowCam) {
+                    flowMat.uniforms.tPrev.value = flowRTa.texture
+                    flowMat.uniforms.uMouse.value.set(
+                        mouseNDC.x * 0.5 + 0.5,
+                        mouseNDC.y * 0.5 + 0.5
+                    )
+                    flowMat.uniforms.uVel.value.set(
+                        activeMouse ? mouseVel.x * 5 : 0,
+                        activeMouse ? mouseVel.y * 5 : 0
+                    )
+                    rendererArg.setRenderTarget(flowRTb)
+                    rendererArg.render(flowScene, flowCam)
+                    rendererArg.setRenderTarget(null)
+                    const tmp = flowRTa
+                    flowRTa = flowRTb
+                    flowRTb = tmp
+                    if (mountainMatArg.uniforms.uFlow)
+                        mountainMatArg.uniforms.uFlow.value = flowRTa.texture
+                }
+
                 rendererArg.render(sceneArg, cameraArg)
+                // (procedural mist layer removed — it read as a muddy smudge;
+                //  the flowmap stays, ready for a real ink-mist texture later)
             }
 
             return () => {
@@ -1950,6 +2193,10 @@ export default function DigitalLandscape(props: Props) {
             renderer?.domElement?.remove()
             mountain?.geometry.dispose()
             mountain?.material.dispose()
+            flowRTa?.dispose()
+            flowRTb?.dispose()
+            flowMat?.dispose()
+            mistMat?.dispose()
             starMesh?.geometry.dispose()
             ;(starMesh?.material as THREE.ShaderMaterial | undefined)?.dispose()
             birdMesh?.geometry.dispose()
