@@ -234,10 +234,6 @@
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* 黑白红 — one high-saturation red is the site's only accent, set against
-     pure white / ink black */
-  --accent-red: #e60012;
-
   /* ——— canonical tokens extracted from the original Framer export ———
      full reference: docs/design-system.md. New/touched rules use these. */
   --ink-950: #050505;
@@ -3735,9 +3731,9 @@
 }
 
 .home-featured-live {
-  min-height: auto;
+  min-height: 3467px;
   margin-top: -6px;
-  padding: 0 0 clamp(20px, 2.5vw, 40px);
+  padding: 0;
   position: relative;
   overflow: hidden;
   background: #fff;
@@ -3746,14 +3742,27 @@
   z-index: 1;
 }
 .home-featured-live::before {
-  content: none;
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 255px;
+  height: 11px;
+  background: linear-gradient(#a7a7a7 0 5px, transparent 5px 100%);
+  box-shadow: 0 104px 0 #a7a7a7;
 }
 .home-featured-live::after {
-  content: none;
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 180px;
+  background: #050505;
 }
 .home-featured-shell {
   width: 100%;
-  height: auto;
+  height: 3467px;
   position: relative;
   z-index: 1;
 }
@@ -3802,11 +3811,11 @@
   display: inline-flex;
   padding: 0 0 6px;
   border: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent-red) 45%, transparent);
+  border-bottom: 1px solid rgba(10, 10, 10, 0.35);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  color: var(--accent-red);
+  color: #050505;
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 500;
@@ -3819,9 +3828,9 @@
     transform 0.2s var(--ease-default);
 }
 .home-featured-live .home-featured-head a.home-featured-link:hover {
-  border-color: var(--accent-red);
+  border-color: rgba(10, 10, 10, 0.8);
   background: transparent;
-  color: var(--accent-red);
+  color: #050505;
   transform: translateY(-1px);
 }
 .home-featured-live .home-featured-head a.home-featured-link::after {
@@ -3829,115 +3838,6 @@
 }
 .home-featured-rule {
   display: none;
-}
-
-/* ——— Featured · 房檐 + 项目卡片 ————————————————————————————
-   The grey-tile eave kept as a divider; a compact card grid below it with
-   hover preview. 黑白红: the index numerals are red on the white card meta. */
-.fc {
-  position: relative;
-}
-.fc-eave {
-  position: relative;
-  width: 100%;
-  /* slim roofline divider; capped so wide screens don't blow the tiles up */
-  height: clamp(54px, 5vw, 84px);
-  margin-top: clamp(26px, 3vw, 44px);
-  overflow: hidden;
-  pointer-events: none;
-}
-.fc-eave img {
-  /* frame on the horizontal tiled eave edge (lower-middle of a mostly
-     transparent image); keep the image near native scale so it stays crisp */
-  object-fit: cover;
-  object-position: center 60%;
-  filter: grayscale(1) contrast(1.06);
-}
-.fc-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(14px, 1.6vw, 26px);
-  list-style: none;
-  margin: 0 auto;
-  padding: 0 clamp(24px, 5vw, 72px);
-  max-width: 1680px;
-}
-.fc-card {
-  min-width: 0;
-}
-.fc-link {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  text-decoration: none;
-  color: inherit;
-}
-.fc-media {
-  position: relative;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  background: #0c0c0c;
-}
-.fc-media img,
-.fc-media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.6s var(--ease-default);
-}
-.fc-media video {
-  position: absolute;
-  inset: 0;
-}
-.fc-card:hover .fc-media img {
-  transform: scale(1.045);
-}
-.fc-meta {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 12px;
-  row-gap: 4px;
-  align-items: baseline;
-}
-.fc-num {
-  font-family: var(--font-mono, monospace);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  /* 黑白红: red index on the white card meta (never on black) */
-  color: var(--accent-red);
-}
-.fc-title {
-  font-family: var(--font-serif);
-  font-size: clamp(19px, 1.5vw, 26px);
-  font-weight: 400;
-  line-height: 1.1;
-  color: #0a0a0a;
-}
-.fc-tags {
-  grid-column: 2;
-  font-family: var(--font-sans);
-  font-size: 10.5px;
-  font-weight: 400;
-  letter-spacing: 0.13em;
-  line-height: 1.4;
-  text-transform: uppercase;
-  color: rgba(5, 5, 5, 0.5);
-}
-@media (max-width: 1100px) {
-  .fc-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    row-gap: clamp(24px, 4vw, 40px);
-  }
-}
-@media (max-width: 640px) {
-  .fc-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .fc-eave {
-    height: 40px;
-  }
 }
 .home-window-stage {
   position: relative;
@@ -4014,16 +3914,10 @@
   font-size: 80px;
   font-weight: 200;
   line-height: 1;
-  /* default: ink on the black pane (no red on black — that read as alarming) */
   color: currentColor;
   transition:
     transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.3s ease;
-}
-/* red only lands once the pane flips to white on hover/active — red vs white */
-.window-pane.is-active .window-pane-number,
-.window-pane:hover .window-pane-number {
-  color: var(--accent-red);
 }
 .window-pane-right .window-pane-number {
   top: 5px;
