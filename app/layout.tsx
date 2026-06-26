@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { FadeReveal } from "@/components/fade-reveal";
+import { GsapReveal } from "@/components/gsap-reveal";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { PageTransition } from "@/components/page-transition";
 import { site } from "@/data/site";
@@ -34,13 +35,13 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap';l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();",
+              "(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Noto+Sans+SC:wght@200;300;400;500;600;700&family=Saira+Condensed:wght@100;200;300;400&family=Oswald:wght@200;300&family=JetBrains+Mono:wght@100..800&display=swap';l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();",
           }}
         />
         <noscript>
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500;600&family=JetBrains+Mono:wght@100..800&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Noto+Sans+SC:wght@200;300;400;500;600;700&family=Saira+Condensed:wght@100;200;300;400&family=Oswald:wght@200;300&family=JetBrains+Mono:wght@100..800&display=swap"
           />
         </noscript>
       </head>
@@ -52,6 +53,7 @@ export default function RootLayout({
         <div id="page-root">
           <SmoothScroll />
           <FadeReveal />
+          <GsapReveal />
           <PageTransition />
           <Header />
           <main>{children}</main>

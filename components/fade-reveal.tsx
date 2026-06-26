@@ -11,9 +11,8 @@ export function FadeReveal() {
 
   useEffect(() => {
     const fadeEls = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        "[data-fade], .fade-up, .text-reveal",
-      ),
+      // .text-reveal is now driven by GsapReveal (GSAP + ScrollTrigger)
+      document.querySelectorAll<HTMLElement>("[data-fade], .fade-up"),
     );
     const fxEls = Array.from(
       document.querySelectorAll<HTMLElement>(".fx-rise, .fx-rise-big"),

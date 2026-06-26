@@ -166,6 +166,9 @@ const mountainVert = `
     // hold — it only releases as the mountain disperses into the star field
     // (the atmospheric FogExp2 mist is a separate effect, kept throughout).
     bottomFade = mix(bottomFade, 1.0, smoothstep(0.45, 0.8, scatter));
+    // cloud-sea mask switches OFF as the scene turns black (night): the mountains
+    // then show their full feet with no waterline masking.
+    bottomFade = mix(bottomFade, 1.0, smoothstep(0.20, 0.34, localScroll));
 
     vec4 mvPosition = viewMatrix * modelMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
@@ -306,7 +309,9 @@ const birdFrag = `
     vec3 finalColor = mix(uColor, targetColor, colorMix);
     float scatterDim = 1.0 - vSpotlight * 0.3;
     float birdA = mix(0.2, 0.9, vDepth) * scatterDim;
-    float dissolveTB = smoothstep(0.30, 0.50, uScroll);
+    // birds stay through the night (white on black) and only dissolve as the
+    // mountain disperses into the star field
+    float dissolveTB = smoothstep(0.80, 0.92, uScroll);
     birdA *= (1.0 - dissolveTB);
     gl_FragColor = vec4(finalColor, shape * birdA);
   }
@@ -589,6 +594,8 @@ export default function DigitalLandscape(props: Props) {
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const mountRef = useRef<HTMLDivElement | null>(null)
     const uiRef = useRef<HTMLDivElement | null>(null)
+    const wordmarkRef = useRef<HTMLDivElement | null>(null)
+    const frontCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const nightOverlayRef = useRef<HTMLDivElement | null>(null)
     const blackPageRef = useRef<HTMLDivElement | null>(null)
     const page2ActiveRef = useRef(false)
@@ -980,6 +987,23 @@ export default function DigitalLandscape(props: Props) {
                     uiEl,
                     "transform",
                     `translateY(${(-releaseY).toFixed(2)}px)`
+                )
+            }
+            // Wordmark rides the day→night flip: DIFFERENCE blend by day (reads
+            // black on the white page, mountains carve through it), switching to
+            // NORMAL once night sets (clean solid white on black), then floats
+            // out before page-2 arrives.
+            if (wordmarkRef.current) {
+                const isNight = progress > 0.22
+                setInlineStyle(
+                    wordmarkRef.current,
+                    "mix-blend-mode",
+                    isNight ? "normal" : "difference"
+                )
+                setInlineStyle(
+                    wordmarkRef.current,
+                    "opacity",
+                    String(round3(1 - smoothstepF(0.42, 0.56, progress)))
                 )
             }
 
@@ -1985,9 +2009,10 @@ export default function DigitalLandscape(props: Props) {
                     )
                 }
 
-                // Birds dissolve completely at scroll 0.52 — skip CPU physics + GPU upload after that
+                // Birds fly through the night and only dissolve as the mountain
+                // disperses (~0.92) — skip CPU physics + GPU upload after that
                 const birdsGone =
-                    birdDataArg.length === 0 || sceneTransitionScroll >= 0.54
+                    birdDataArg.length === 0 || sceneTransitionScroll >= 0.92
                 if (birdMeshArg.visible === birdsGone)
                     birdMeshArg.visible = !birdsGone
                 if (!birdsGone) {
@@ -2230,14 +2255,52 @@ export default function DigitalLandscape(props: Props) {
 
             /* ── Page 1 hero text: held invisible until scene-loaded class fires ── */
             .framer-xy-hero h1 {
-                font-family: 'Cormorant Garamond', serif;
-                font-size: clamp(48px, 6vw, 82px);
-                letter-spacing: 0.04em;
-                font-weight: 200;
-                margin: 0 0 20px 0;
-                line-height: 1;
-                display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline;
+                /* tall, narrow condensed wordmark pressed low into the range */
+                font-family: var(--font-condensed);
+                /* scales with the viewport width (occupies ~half the frame on
+                   any screen); only a small min floor, no upper cap so it keeps
+                   growing on large monitors */
+                font-size: max(44px, 11.5vw);
+                letter-spacing: -0.1em;
+                font-weight: 100;
+                margin: 0;
+                line-height: 0.86;
+                /* white + difference blend on the layer → reads black on the
+                   page, white where the ink mountains cross it */
+                color: #ffffff;
+                white-space: nowrap;
+                display: flex; flex-wrap: nowrap; justify-content: flex-end;
             }
+            /* wordmark entrance — self-contained (not gated on scene-loaded,
+               since it lives behind the canvas, outside the uiRef layer) */
+            .framer-xy-hero .wm {
+                display: inline-block;
+                animation: wmRise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+            }
+            @keyframes wmRise {
+                from { opacity: 0; transform: translateY(16px); filter: blur(7px); }
+                to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+            }
+            /* front-mountain copy: on narrow viewports the particles pile into a
+               heavier mass, so dial the front layer back so it veils — not
+               smothers — the wordmark */
+            .hero-front { opacity: 1; }
+            @media (max-width: 1180px) { .hero-front { opacity: 0.62; } }
+            @media (max-width: 900px)  { .hero-front { opacity: 0.4; } }
+            @media (max-width: 720px)  { .hero-front { opacity: 0.26; } }
+            /* multilingual footnote under the protagonist */
+            .framer-xy-hero .hero-langs {
+                margin-top: 22px;
+                font-family: var(--font-sans);
+                font-size: clamp(11px, 1vw, 13px);
+                letter-spacing: 0.34em;
+                text-transform: uppercase;
+                font-weight: 500;
+                color: #b3b3b3;
+                opacity: 0; transform: translateY(7px); filter: blur(4px);
+                will-change: transform, opacity, filter;
+            }
+            .scene-loaded .framer-xy-hero .hero-langs { animation: appleRevealSub 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards; }
             .framer-xy-hero .w {
                 display: inline-block;
                 opacity: 0;
@@ -2257,8 +2320,9 @@ export default function DigitalLandscape(props: Props) {
             }
 
             .framer-xy-sub {
-                font-family: 'Cormorant Garamond', serif;
-                font-size: clamp(13px, 1.5vw, 16px); color: #666; letter-spacing: 0.02em; line-height: 1.6; max-width: 440px; font-weight: 200; white-space: pre-line;
+                font-family: var(--font-sans);
+                font-size: clamp(12px, 1.2vw, 15px); color: #707070; letter-spacing: 0.01em; line-height: 1.6; max-width: 360px; font-weight: 300; white-space: pre-line;
+                margin-top: 28px;
                 opacity: 0; transform: translateY(7px); filter: blur(4px);
                 will-change: transform, opacity, filter;
             }
@@ -2278,6 +2342,25 @@ export default function DigitalLandscape(props: Props) {
             }
             .hero-right-vertical { opacity: 0; transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.30s; }
             .scene-loaded .hero-right-vertical { opacity: 0.9; }
+
+            /* 朱红落款印 — the site's single red accent, set against the ink */
+            .hero-seal {
+                width: clamp(46px, 3.3vw, 58px);
+                height: clamp(46px, 3.3vw, 58px);
+                background: var(--accent-red);
+                color: #fff;
+                border-radius: 7px;
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                font-family: var(--font-brush);
+                font-size: clamp(18px, 1.5vw, 23px);
+                line-height: 0.96;
+                transform: rotate(-2deg);
+                box-shadow: 0 5px 20px rgba(230, 0, 18, 0.18);
+                opacity: 0;
+                transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.7s;
+            }
+            .scene-loaded .hero-seal { opacity: 0.96; }
             
             /* Page 2 — centered layout, generous spacing */
             .page2-center-container {
@@ -2539,6 +2622,41 @@ export default function DigitalLandscape(props: Props) {
                 }}
             />
 
+            {/* Wordmark — a fixed layer ABOVE the WebGL wrapper but at the page
+                level (so it DIFFERENCE-blends against the white backgroundRef +
+                the ink mountains). White text → reads black on the white page,
+                flips to white exactly where the black mountains cross it, so the
+                range visibly cuts through the letters while the mountains stay
+                crisp (only the thin strokes blend → no grey haze). */}
+            <div
+                ref={wordmarkRef}
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "var(--vh100, 100vh)",
+                    zIndex: 2,
+                    pointerEvents: "none",
+                    mixBlendMode: "difference",
+                    willChange: "opacity",
+                }}
+            >
+                <div
+                    className="framer-xy-hero"
+                    style={{
+                        position: "absolute",
+                        left: "3vw",
+                        right: "3vw",
+                        bottom: "7%",
+                    }}
+                >
+                    <h1 aria-label="Xuyuan Liu">
+                        <span className="wm">XUYUAN LIU</span>
+                    </h1>
+                </div>
+            </div>
+
             {/* 第一页 WebGL Wrapper — fixed 跳出 Framer 祖先 layout，消除 sticky 弹跳 */}
             <div
                 ref={wrapperRef}
@@ -2584,31 +2702,13 @@ export default function DigitalLandscape(props: Props) {
                     }}
                 >
                     <div
-                        className="framer-xy-hero"
-                        style={{
-                            position: "absolute",
-                            left: "6vw",
-                            top: "calc(50% + 80px)",
-                            transform: "translateY(-50%)",
-                            maxWidth: "520px",
-                        }}
-                    >
-                        <h1
-                            aria-label={`${heroWord1}, ${heroWord2}, ${heroWord3}`}
-                        >
-                            <span className="w">{heroWord1}</span>
-                            <span className="w">{heroWord2}</span>
-                            <span className="w">{heroWord3}</span>
-                        </h1>
-                        <div className="framer-xy-sub">{heroSubtitle}</div>
-                    </div>
-                    <div
                         style={{
                             position: "absolute",
                             top: "50%",
                             right: "6vw",
                             transform: "translateY(-50%)",
-                            display: "flex",
+                            // right-side inscription cleared too
+                            display: "none",
                             flexDirection: "column",
                             alignItems: "center",
                             gap: "24px",
@@ -2618,10 +2718,11 @@ export default function DigitalLandscape(props: Props) {
                             className="hero-right-vertical"
                             style={{
                                 writingMode: "vertical-rl",
-                                letterSpacing: "1.2em",
-                                fontWeight: 200,
-                                fontFamily: "'Cormorant Garamond', serif",
-                                fontSize: "clamp(13px, 1.4vw, 16px)",
+                                letterSpacing: "0.5em",
+                                fontWeight: 300,
+                                fontFamily: "var(--font-sans)",
+                                fontSize: "clamp(12px, 1.2vw, 15px)",
+                                color: "#8a8a8a",
                                 whiteSpace: "pre-line",
                                 textAlign: "center",
                             }}
@@ -2652,32 +2753,16 @@ export default function DigitalLandscape(props: Props) {
                             pointerEvents: "none",
                         }}
                     >
-                        <div
-                            className="hero-quote"
-                            style={{
-                                // Noto Serif SC fallback so the 《潇湘八景图》
-                                // credit renders in a proper CJK serif
-                                fontFamily:
-                                    "'Cormorant Garamond', 'Noto Serif SC', serif",
-                                fontStyle: "italic",
-                                fontSize: "clamp(13px, 1.4vw, 16px)",
-                                letterSpacing: "0.03em",
-                                fontWeight: 200,
-                                color: "#777",
-                                maxWidth: "480px",
-                                lineHeight: "1.6",
-                                whiteSpace: "pre-line",
-                            }}
-                        >
-                            {quoteLine}
-                        </div>
+                        {/* 《潇湘八景图》 credit removed for restraint — the
+                            right-side inscription + seal already carries the
+                            literary signature. */}
                         <div
                             className="hero-scroll-hint"
                             style={{
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "12px",
-                                fontFamily: "'Newsreader', serif",
+                                fontFamily: "var(--font-sans)",
                                 fontSize: "clamp(9px, 0.9vw, 10px)",
                                 fontWeight: 300,
                                 letterSpacing: "0.2em",

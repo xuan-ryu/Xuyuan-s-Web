@@ -1152,7 +1152,7 @@ export default function HongyadongFramer(props: Props) {
 
                 .hyf-hero h1 {
                     margin: 0 0 0.14em;
-                    font-family: "Cormorant Garamond", "ZCOOL XiaoWei", "Noto Serif SC", Georgia, serif;
+                    font-family: var(--font-sans);
                     font-size: clamp(82px, 12vw, 168px);
                     line-height: 0.88;
                     font-weight: 300;
@@ -1217,7 +1217,7 @@ export default function HongyadongFramer(props: Props) {
 
                 .hyf-zh {
                     margin: 0 0 22px;
-                    font-family: "Cormorant Garamond", "ZCOOL XiaoWei", "Noto Serif SC", Georgia, serif;
+                    font-family: var(--font-sans);
                     font-size: clamp(14px, 1.25vw, 18px);
                     font-weight: 500;
                     letter-spacing: 0.18em;
