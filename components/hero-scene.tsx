@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react"
 // init3D() so mobile/low-end devices (which early-return to the CSS/SVG ink
 // fallback before init3D ever runs) never download or parse the ~150KB engine.
 import { subscribeLenis } from "@/lib/lenis-bus"
+import { Wordmark } from "@/components/wordmark"
 
 
 type BirdDatum = {
@@ -595,7 +596,6 @@ export default function DigitalLandscape(props: Props) {
     const mountRef = useRef<HTMLDivElement | null>(null)
     const uiRef = useRef<HTMLDivElement | null>(null)
     const wordmarkRef = useRef<HTMLDivElement | null>(null)
-    const frontCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const nightOverlayRef = useRef<HTMLDivElement | null>(null)
     const blackPageRef = useRef<HTMLDivElement | null>(null)
     const page2ActiveRef = useRef(false)
@@ -616,6 +616,7 @@ export default function DigitalLandscape(props: Props) {
             fontsReadyRef.current
         ) {
             uiRef.current?.classList.add("scene-loaded")
+            wordmarkRef.current?.classList.add("scene-loaded")
         }
     }, [isLoaded])
 
@@ -684,12 +685,16 @@ export default function DigitalLandscape(props: Props) {
                 if (document.querySelector("[data-app-loader]")) {
                     window.addEventListener(
                         "loaderFinished",
-                        () => uiRef.current?.classList.add("scene-loaded"),
+                        () => {
+                            uiRef.current?.classList.add("scene-loaded")
+                            wordmarkRef.current?.classList.add("scene-loaded")
+                        },
                         { once: true }
                     )
                     return
                 }
                 uiRef.current?.classList.add("scene-loaded")
+                wordmarkRef.current?.classList.add("scene-loaded")
             }
         }
         const fontRevealFallback = window.setTimeout(() => {
@@ -1005,6 +1010,9 @@ export default function DigitalLandscape(props: Props) {
                     "opacity",
                     String(round3(1 - smoothstepF(0.42, 0.56, progress)))
                 )
+                // once the user scrolls off the top, drop the name's hover
+                // hit-cells so they don't block page-2 underneath
+                setClassState(wordmarkRef.current, "wm-faded", progress > 0.06)
             }
 
             // Smooth day→night — opacity overlay（compositor-only，不触发 repaint）
@@ -2253,72 +2261,9 @@ export default function DigitalLandscape(props: Props) {
                 opacity: 0.05; 
             }
 
-            /* ── Page 1 hero text: held invisible until scene-loaded class fires ── */
-            .framer-xy-hero h1 {
-                /* tall, narrow condensed wordmark pressed low into the range */
-                font-family: var(--font-condensed);
-                /* scales with the viewport width (occupies ~half the frame on
-                   any screen); only a small min floor, no upper cap so it keeps
-                   growing on large monitors */
-                font-size: max(44px, 11.5vw);
-                letter-spacing: -0.1em;
-                font-weight: 100;
-                margin: 0;
-                line-height: 0.86;
-                /* white + difference blend on the layer → reads black on the
-                   page, white where the ink mountains cross it */
-                color: #ffffff;
-                white-space: nowrap;
-                display: flex; flex-wrap: nowrap; justify-content: flex-end;
-            }
-            /* wordmark entrance — self-contained (not gated on scene-loaded,
-               since it lives behind the canvas, outside the uiRef layer) */
-            .framer-xy-hero .wm {
-                display: inline-block;
-                animation: wmRise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
-            }
-            @keyframes wmRise {
-                from { opacity: 0; transform: translateY(16px); filter: blur(7px); }
-                to   { opacity: 1; transform: translateY(0); filter: blur(0); }
-            }
-            /* front-mountain copy: on narrow viewports the particles pile into a
-               heavier mass, so dial the front layer back so it veils — not
-               smothers — the wordmark */
-            .hero-front { opacity: 1; }
-            @media (max-width: 1180px) { .hero-front { opacity: 0.62; } }
-            @media (max-width: 900px)  { .hero-front { opacity: 0.4; } }
-            @media (max-width: 720px)  { .hero-front { opacity: 0.26; } }
-            /* multilingual footnote under the protagonist */
-            .framer-xy-hero .hero-langs {
-                margin-top: 22px;
-                font-family: var(--font-sans);
-                font-size: clamp(11px, 1vw, 13px);
-                letter-spacing: 0.34em;
-                text-transform: uppercase;
-                font-weight: 500;
-                color: #b3b3b3;
-                opacity: 0; transform: translateY(7px); filter: blur(4px);
-                will-change: transform, opacity, filter;
-            }
-            .scene-loaded .framer-xy-hero .hero-langs { animation: appleRevealSub 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.28s forwards; }
-            .framer-xy-hero .w {
-                display: inline-block;
-                opacity: 0;
-                transform: translateY(10px) scale(0.96);
-                filter: blur(6px);
-                will-change: transform, opacity, filter;
-            }
-            .scene-loaded .framer-xy-hero .w {
-                animation: appleReveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            }
-            .scene-loaded .framer-xy-hero .w:nth-child(1) { animation-delay: 0.00s; }
-            .scene-loaded .framer-xy-hero .w:nth-child(2) { animation-delay: 0.10s; }
-            .scene-loaded .framer-xy-hero .w:nth-child(3) { animation-delay: 0.22s; }
-
-            @keyframes appleReveal {
-                to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
-            }
-
+            /* ── Page 1 hero text — the wordmark itself now lives in the
+               <Wordmark/> component (SVG); only the scroll hint / side
+               inscription styles remain below. ── */
             .framer-xy-sub {
                 font-family: var(--font-sans);
                 font-size: clamp(12px, 1.2vw, 15px); color: #707070; letter-spacing: 0.01em; line-height: 1.6; max-width: 360px; font-weight: 300; white-space: pre-line;
@@ -2636,7 +2581,9 @@ export default function DigitalLandscape(props: Props) {
                     left: 0,
                     width: "100%",
                     height: "var(--vh100, 100vh)",
-                    zIndex: 2,
+                    // above the page-2 profile-zone (z10) so the name's hover
+                    // hit-cells receive the cursor at the top of the page
+                    zIndex: 11,
                     pointerEvents: "none",
                     mixBlendMode: "difference",
                     willChange: "opacity",
@@ -2648,12 +2595,14 @@ export default function DigitalLandscape(props: Props) {
                         position: "absolute",
                         left: "3vw",
                         right: "3vw",
-                        bottom: "7%",
+                        bottom: "0",
+                        display: "flex",
+                        justifyContent: "flex-end",
                     }}
                 >
-                    <h1 aria-label="Xuyuan Liu">
-                        <span className="wm">XUYUAN LIU</span>
-                    </h1>
+                    <Wordmark
+                        style={{ width: "max(330px, 60vw)", fontSize: "max(90px, 17.8vw)" }}
+                    />
                 </div>
             </div>
 
