@@ -378,38 +378,26 @@
   pointer-events: none;
 }
 .nav-logo {
-  font-family: var(--font-serif);
-  width: 147px;
-  height: 80px;
-  min-height: 80px;
-  padding: 8px 8px 0;
-  background: #000;
-  color: #fafafa;
+  font-family: var(--font-brush);
+  margin: 16px 0 0 22px;
+  padding: 0;
+  background: transparent;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0;
-  border-radius: 2px;
-  letter-spacing: 0;
+  align-items: center;
   pointer-events: auto;
   transition: opacity 0.2s;
 }
-.nav-logo-en {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  line-height: 1;
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
 .nav-logo-zh {
   font-family: var(--font-brush);
-  font-size: 40px;
-  line-height: 1.05;
+  font-size: 36px;
+  line-height: 1;
   font-weight: 400;
   white-space: nowrap;
+  color: #161616;
+  transition: color 0.4s ease;
+}
+/* the page turns black during the hero night → ink flips to white */
+body.hero-night .nav-logo-zh {
   color: #fff;
 }
 .nav-logo:hover {
@@ -420,33 +408,36 @@
   gap: 0;
   align-items: center;
   margin-left: auto;
-  background: #0a0a0a;
-  border-radius: 2px;
-  overflow: hidden;
-  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+  margin-top: 22px;
+  margin-right: 18px;
   pointer-events: auto;
 }
 .nav-links a {
-  font-family: var(--font-serif);
-  font-size: 14px;
+  font-family: var(--font-sans);
+  font-size: 12px;
   font-weight: 500;
   line-height: 1;
-  letter-spacing: 0;
-  color: #fff;
-  padding: 12px 26px;
+  letter-spacing: 0.12em;
+  color: #1a1a1a;
+  padding: 6px 18px;
   position: relative;
   text-transform: uppercase;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.4s ease, opacity 0.2s ease;
+}
+body.hero-night .nav-links a {
+  color: #fff;
+}
+body.hero-night .nav-links a.active {
+  color: #ff5a5a;
 }
 .nav-links a::after {
   display: none;
 }
-.nav-links a:hover,
 .nav-links a.active {
-  background: #262626;
-  color: #ffa62b;
+  color: #d10000;
+}
+.nav-links a:hover {
+  opacity: 0.55;
 }
 .nav-links a.active::after,
 .nav-links a:hover::after {

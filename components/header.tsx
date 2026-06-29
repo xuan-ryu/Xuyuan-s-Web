@@ -35,8 +35,7 @@ export function Header() {
         aria-label="Primary navigation"
       >
         <div className="content-nav-inner">
-          <Link href="/" className="nav-logo">
-            <span className="nav-logo-en">XUYUAN LIU</span>
+          <Link href="/" className="nav-logo" aria-label="Xuyuan Liu — home">
             <span className="nav-logo-zh">{site.nameZh}</span>
           </Link>
           <div className="nav-links">

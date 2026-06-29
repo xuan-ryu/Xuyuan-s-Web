@@ -27,6 +27,7 @@ type BirdDatum = {
 type Props = {
     sealComponent?: React.ReactNode
     mobileBgUrl?: string
+    liteMode?: boolean
     heroWord1: string
     heroWord2: string
     heroWord3: string
@@ -190,7 +191,7 @@ const mountainVert = `
 
     float scatterShrink = mix(1.0, 0.15 + dRand * 0.15, scatter);
     float size = aSize * (1000.0 / -mvPosition.z);
-    float maxSz = mix(70.0, 8.0, scatter);
+    float maxSz = mix(42.0, 8.0, scatter);
     float computedSize = clamp(size * scatterShrink * (uFlatMode > 0.5 ? 1.0 : twinkle), 0.5, maxSz);
 
     // 山体底座随黑夜消散，但已升华的粒子（散射=星星）保持完整
@@ -572,6 +573,7 @@ export default function DigitalLandscape(props: Props) {
     const {
         sealComponent,
         mobileBgUrl,
+        liteMode = false,
         heroWord1,
         heroWord2,
         heroWord3,
@@ -999,16 +1001,32 @@ export default function DigitalLandscape(props: Props) {
             // NORMAL once night sets (clean solid white on black), then floats
             // out before page-2 arrives.
             if (wordmarkRef.current) {
-                const isNight = progress > 0.22
+                // ink colour rides the day→night flip: near-black on the white
+                // page → white once the scene turns black (the red O is fixed).
+                const nightT = smoothstepF(0.12, 0.28, progress)
+                const g = Math.round(22 + (255 - 22) * nightT)
                 setInlineStyle(
                     wordmarkRef.current,
-                    "mix-blend-mode",
-                    isNight ? "normal" : "difference"
+                    "--wm-ink",
+                    `rgb(${g}, ${g}, ${g})`
+                )
+                // exit: as you scroll into the night the block lifts up, blurs
+                // and dissolves away (like the ink letting go).
+                const exit = smoothstepF(0.3, 0.5, progress)
+                setInlineStyle(
+                    wordmarkRef.current,
+                    "transform",
+                    `translateY(${(-exit * 9).toFixed(2)}vh)`
+                )
+                setInlineStyle(
+                    wordmarkRef.current,
+                    "filter",
+                    exit > 0.001 ? `blur(${(exit * 6).toFixed(1)}px)` : "none"
                 )
                 setInlineStyle(
                     wordmarkRef.current,
                     "opacity",
-                    String(round3(1 - smoothstepF(0.42, 0.56, progress)))
+                    String(round3(1 - exit))
                 )
                 // once the user scrolls off the top, drop the name's hover
                 // hit-cells so they don't block page-2 underneath
@@ -1035,12 +1053,28 @@ export default function DigitalLandscape(props: Props) {
                     "opacity",
                     String(round3(nightT * nightRelease))
                 )
+            if (mountRef.current?.dataset.liteFallback === "true") {
+                setInlineStyle(
+                    mountRef.current,
+                    "filter",
+                    `invert(${nightT.toFixed(3)})`
+                )
+            }
 
             const wasSceneVisible = isSceneVisible
             isSceneVisible = currentScrollY < roofTop + winHeight * 0.5
             if (isSceneVisible && !wasSceneVisible) {
                 resumeSceneAnimation?.()
             }
+
+            // Flag the dark-night window for the fixed header: while the scene
+            // is in view AND turned black, the nav ink flips to white; once the
+            // scene scrolls away (white sections below) it returns to black.
+            setClassState(
+                document.body,
+                "hero-night",
+                isSceneVisible && smoothstepF(0.12, 0.28, progress) > 0.5
+            )
 
             // Hide the fixed canvas entirely when past the Three.js zone
             // Prevents the last rendered star frame from bleeding into work cards / other pages
@@ -1142,13 +1176,22 @@ export default function DigitalLandscape(props: Props) {
 
         // ── Mobile / 低端设备: skip Three.js entirely, use CSS ink fallback ──
         const isLowEndDevice =
+            liteMode ||
             window.innerWidth <= 768 ||
             (navigator.hardwareConcurrency || 4) <= 2 ||
             ((navigator as any).deviceMemory || 4) <= 2
         if (isLowEndDevice) {
             if (mountRef.current) {
                 const bg = mobileBgRef.current
-                mountRef.current.innerHTML = bg
+                const useLiteInkFallback = liteMode || !bg
+                mountRef.current.dataset.liteFallback = useLiteInkFallback
+                    ? "true"
+                    : "false"
+                mountRef.current.style.background = useLiteInkFallback
+                    ? "#fff"
+                    : "transparent"
+                mountRef.current.style.filter = "invert(0)"
+                mountRef.current.innerHTML = !useLiteInkFallback && bg
                     ? `<img src="${bg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;" />`
                     : `<svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice"
                          style="position:absolute;inset:0;width:100%;height:100%">
@@ -1275,9 +1318,9 @@ export default function DigitalLandscape(props: Props) {
                     minZ = -1200,
                     maxZ = 1200
                 const cellSize =
-                    qualityTier === 0 ? 40.0 : qualityTier === 1 ? 22.0 : 15.0
+                    qualityTier === 0 ? 40.0 : qualityTier === 1 ? 24.0 : 18.0
                 const density =
-                    qualityTier === 0 ? 3.0 : qualityTier === 1 ? 18.0 : 35.0
+                    qualityTier === 0 ? 3.0 : qualityTier === 1 ? 15.0 : 24.0
                 // measured demand (uncapped): ~280k at tier 2 across common
                 // viewports — demand does NOT scale with pixel area (terrain
                 // width grows as windows get SHORTER), so an area-scaled cap
@@ -1288,10 +1331,10 @@ export default function DigitalLandscape(props: Props) {
                     qualityTier === 0
                         ? 8000
                         : qualityTier === 1
-                          ? 120000
-                          : 360000
+                          ? 90000
+                          : 220000
                 const yieldInterval =
-                    qualityTier === 0 ? 14 : qualityTier === 1 ? 24 : 40
+                    qualityTier === 0 ? 14 : qualityTier === 1 ? 20 : 24
                 const positions = new Float32Array(maxPoints * 3)
                 const sizes = new Float32Array(maxPoints)
                 const alphas = new Float32Array(maxPoints)
@@ -1816,6 +1859,7 @@ export default function DigitalLandscape(props: Props) {
             let lastFogScroll = -1
             let smoothScroll = 0
             let scrollSpring = 0
+            let flowEnergy = 0.01
             const scatterRadius = 0.4,
                 scatterForce = 80,
                 scatterDamping = 0.92,
@@ -1970,8 +2014,13 @@ export default function DigitalLandscape(props: Props) {
                     now - lastRenderTime < 33
                 )
                     return
-                // Global FPS cap for mid/low-end devices
-                const fpsCap = qualityTierArg === 1 ? 33 : 0
+                // Cap even high-end GPUs. On 144Hz+ panels, uncapped WebGL
+                // burns frames the page cannot visually use and can make Chrome
+                // feel sticky while compositing.
+                const fpsCap =
+                    qualityTierArg >= 2 ? 1000 / 60 :
+                    qualityTierArg === 1 ? 1000 / 45 :
+                    1000 / 30
                 if (fpsCap > 0 && now - lastRenderTime < fpsCap) return
                 lastRenderTime = now
                 const t = now * 0.001
@@ -2138,7 +2187,28 @@ export default function DigitalLandscape(props: Props) {
 
                 // 流场更新 — stir the velocity field with the cursor, dissipate,
                 // ping-pong, then hand the current field to the mountain shader
-                if (flowRTa && flowRTb && flowMat && flowScene && flowCam) {
+                if (activeMouse) {
+                    flowEnergy = Math.min(
+                        1,
+                        flowEnergy +
+                            Math.min(
+                                0.35,
+                                Math.hypot(mouseVel.x, mouseVel.y) * 8 + 0.02
+                            )
+                    )
+                } else {
+                    flowEnergy *= 0.92
+                    if (flowEnergy < 0.002) flowEnergy = 0
+                }
+
+                if (
+                    flowEnergy > 0 &&
+                    flowRTa &&
+                    flowRTb &&
+                    flowMat &&
+                    flowScene &&
+                    flowCam
+                ) {
                     flowMat.uniforms.tPrev.value = flowRTa.texture
                     flowMat.uniforms.uMouse.value.set(
                         mouseNDC.x * 0.5 + 0.5,
@@ -2202,6 +2272,7 @@ export default function DigitalLandscape(props: Props) {
 
         return () => {
             isMounted = false
+            document.body.classList.remove("hero-night")
             cancelAnimationFrame(scrollPollRaf)
             unsubLenis?.()
             lenisDetach?.()
@@ -2236,7 +2307,7 @@ export default function DigitalLandscape(props: Props) {
             birdMesh?.material.dispose()
             renderer?.dispose()
         }
-    }, [])
+    }, [enableMouseSpotlight, isCanvas, liteMode])
 
     return (
         <div
@@ -2585,7 +2656,6 @@ export default function DigitalLandscape(props: Props) {
                     // hit-cells receive the cursor at the top of the page
                     zIndex: 11,
                     pointerEvents: "none",
-                    mixBlendMode: "difference",
                     willChange: "opacity",
                 }}
             >
@@ -2593,16 +2663,11 @@ export default function DigitalLandscape(props: Props) {
                     className="framer-xy-hero"
                     style={{
                         position: "absolute",
-                        left: "3vw",
-                        right: "3vw",
-                        bottom: "0",
-                        display: "flex",
-                        justifyContent: "flex-end",
+                        right: "4vw",
+                        top: "23%",
                     }}
                 >
-                    <Wordmark
-                        style={{ width: "max(330px, 60vw)", fontSize: "max(90px, 17.8vw)" }}
-                    />
+                    <Wordmark style={{ fontSize: "max(96px, 16.5vw)" }} />
                 </div>
             </div>
 
