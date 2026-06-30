@@ -115,13 +115,17 @@ export function Header() {
     update();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
-    // the overlay fades via inline opacity (no scroll/class event) while the
-    // hero's scroll-spring settles, so poll briefly to keep the nav in sync
-    const poll = window.setInterval(schedule, 200);
+    // The hero's night overlay fades via inline opacity while its scroll-spring
+    // settles (no scroll/class event fires) — observe its style attribute
+    // directly instead of polling, so non-hero pages pay nothing.
+    const overlay = document.querySelector("[data-night-overlay]");
+    const mo = overlay ? new MutationObserver(schedule) : null;
+    if (overlay)
+      mo!.observe(overlay, { attributes: true, attributeFilter: ["style"] });
     return () => {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
-      window.clearInterval(poll);
+      mo?.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };
   }, [pathname]);
