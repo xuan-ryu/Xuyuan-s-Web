@@ -566,6 +566,37 @@ function getTerrainData(
     return _td
 }
 
+// One-shot GPU probe. CPU cores / deviceMemory say nothing about the GPU, yet
+// the point cloud is GPU-bound — so an 8-core laptop with an Intel iGPU, or a
+// browser with hardware acceleration disabled (→ software WebGL), would score a
+// high tier and then stutter. Read the real renderer string and classify it.
+function detectGPU(): { isSoftware: boolean; isIntegrated: boolean; name: string } {
+    try {
+        const c = document.createElement("canvas")
+        const gl = (c.getContext("webgl") ||
+            c.getContext("experimental-webgl")) as WebGLRenderingContext | null
+        if (!gl) return { isSoftware: true, isIntegrated: true, name: "no-webgl" }
+        const ext = gl.getExtension("WEBGL_debug_renderer_info")
+        const name = String(
+            (ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) ||
+                gl.getParameter(gl.RENDERER) ||
+                ""
+        )
+        // free the probe context immediately (browsers cap live GL contexts)
+        gl.getExtension("WEBGL_lose_context")?.loseContext()
+        const n = name.toLowerCase()
+        const isSoftware =
+            /swiftshader|llvmpipe|software|basic render|microsoft basic|warp/.test(n)
+        // Apple Silicon ("Apple GPU") is strong — deliberately NOT integrated.
+        const isIntegrated =
+            !isSoftware &&
+            /intel|hd graphics|uhd|iris|mali|adreno|powervr|videocore|vivante/.test(n)
+        return { isSoftware, isIntegrated, name }
+    } catch {
+        return { isSoftware: false, isIntegrated: false, name: "unknown" }
+    }
+}
+
 export default function DigitalLandscape(props: Props) {
     // de-framered: this never runs inside the Framer canvas anymore
     const isCanvas = false
@@ -1175,11 +1206,15 @@ export default function DigitalLandscape(props: Props) {
             pollIO.observe(backgroundRef.current)
 
         // ── Mobile / 低端设备: skip Three.js entirely, use CSS ink fallback ──
+        // Software WebGL (HW-accel off / SwiftShader / llvmpipe) can't push the
+        // point cloud — route it to the CSS ink fallback too.
+        const gpu = detectGPU()
         const isLowEndDevice =
             liteMode ||
             window.innerWidth <= 768 ||
             (navigator.hardwareConcurrency || 4) <= 2 ||
-            ((navigator as any).deviceMemory || 4) <= 2
+            ((navigator as any).deviceMemory || 4) <= 2 ||
+            gpu.isSoftware
         if (isLowEndDevice) {
             if (mountRef.current) {
                 const bg = mobileBgRef.current
@@ -1260,11 +1295,17 @@ export default function DigitalLandscape(props: Props) {
                 // 低端设备已被早返回拦截；此处 isLowEnd 仅作防御性一致
                 const isLowEnd = isMobile || hwCores <= 2 || deviceMemory <= 2
                 // 0 = mobile/low-end (handled by early return above), 1 = mid/canvas, 2 = high-end desktop
-                const qualityTier: 0 | 1 | 2 = isLowEnd
+                const baseTier: 0 | 1 | 2 = isLowEnd
                     ? 0
                     : isCanvas || hwCores <= 4 || deviceMemory <= 4
                       ? 1
                       : 2
+                // GPU-aware cap: an 8-core laptop with an integrated GPU scores
+                // tier 2 on cores/RAM but chokes on 220k points — pin it to tier 1.
+                const qualityTier: 0 | 1 | 2 =
+                    gpu.isIntegrated && baseTier > 1 ? 1 : baseTier
+                if (process.env.NODE_ENV !== "production")
+                    console.info(`[hero] GPU="${gpu.name}" → tier ${qualityTier}`)
 
                 renderer = new THREE.WebGLRenderer({
                     antialias: false,
@@ -1872,6 +1913,23 @@ export default function DigitalLandscape(props: Props) {
             const projVec = new THREE.Vector4(),
                 vpMatrix = new THREE.Matrix4()
 
+            // ── Adaptive pixelRatio ────────────────────────────────────────
+            // If the device can't hold pace in the heavy mountain zone, step the
+            // pixelRatio down (fill cost ∝ DPR²) — the cheapest real-time lever.
+            // Downgrade-only (never upgrades → no oscillation/flicker). Free on
+            // capable GPUs: they never miss the budget, so it never fires.
+            let curPR = rendererArg.getPixelRatio()
+            const minPR = Math.max(0.5, curPR * 0.5)
+            const adaptCapMs =
+                qualityTierArg >= 2
+                    ? 1000 / 60
+                    : qualityTierArg === 1
+                      ? 1000 / 45
+                      : 1000 / 30
+            const slowMs = adaptCapMs * 1.7 // sustained slower than this = struggling
+            let slowAccum = 0
+            let adaptCooldown = 0
+
             // ── Visibility / pause system ──────────────────────────────────
             let isRunning = false
             let isPageVisible =
@@ -2022,7 +2080,25 @@ export default function DigitalLandscape(props: Props) {
                     qualityTierArg === 1 ? 1000 / 45 :
                     1000 / 30
                 if (fpsCap > 0 && now - lastRenderTime < fpsCap) return
+                const interRender = now - lastRenderTime
                 lastRenderTime = now
+                // Sample only in the heavy mountain zone (scroll < 0.6); the
+                // dark-reading zone is throttled to 30fps on purpose, which would
+                // otherwise read as "struggling". Ignore >1.5s gaps (tab-return).
+                if (curPR > minPR && scrollNow < 0.6 && adaptCooldown <= 0) {
+                    if (interRender > slowMs && interRender < 1500) {
+                        if (++slowAccum >= 14) {
+                            curPR = Math.max(minPR, curPR * 0.82)
+                            rendererArg.setPixelRatio(curPR)
+                            slowAccum = 0
+                            adaptCooldown = 30 // settle before re-measuring
+                        }
+                    } else if (interRender <= slowMs) {
+                        slowAccum = slowAccum > 0 ? slowAccum - 1 : 0
+                    }
+                } else if (adaptCooldown > 0) {
+                    adaptCooldown--
+                }
                 const t = now * 0.001
 
                 const activeMouse =
@@ -2481,7 +2557,7 @@ export default function DigitalLandscape(props: Props) {
 
             @keyframes titleBreath { 0%,100% { text-shadow: 0 2px 12px rgba(0,0,0,0.6); } 50% { text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 50px rgba(255,255,255,0.06); } }
             .page2-title {
-                font-family: 'Cormorant Garamond', serif;
+                font-family: var(--font-sans);
                 font-size: clamp(40px, 5.5vw, 72px); letter-spacing: 0.01em; line-height: 1.2;
                 font-weight: 300; color: #FFFFFF; text-shadow: 0 2px 12px rgba(0,0,0,0.6);
                 margin-bottom: 22px; overflow: hidden;
@@ -2508,7 +2584,7 @@ export default function DigitalLandscape(props: Props) {
             .page2-active .page2-name-rule { width: 280px; }
 
             .page2-subtitle {
-                font-family: 'Cormorant Garamond', serif;
+                font-family: var(--font-sans);
                 font-size: clamp(17px, 2vw, 22px); font-weight: 300; font-style: italic;
                 letter-spacing: 0.015em; line-height: 1.6; color: rgba(255,255,255,0.65);
                 white-space: pre-line;
@@ -2528,7 +2604,7 @@ export default function DigitalLandscape(props: Props) {
             .page2-active .page2-brand-line { transform: scaleX(1); }
             .scramble-text { contain: layout paint; }
 
-            .page2-footer { font-family: 'Newsreader', serif; font-size: clamp(10px, 1.1vw, 12px); font-weight: 300; letter-spacing: 0.06em; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
+            .page2-footer { font-family: var(--font-sans); font-size: clamp(10px, 1.1vw, 12px); font-weight: 300; letter-spacing: 0.06em; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
 
             /* iOS viewport: dvh tracks the visible area (100vh includes the URL
                bar, so a fixed full-height canvas overflows/jumps on iOS) */
@@ -2942,7 +3018,7 @@ export default function DigitalLandscape(props: Props) {
                             <div className="page2-brand-line left" />
                             <div
                                 style={{
-                                    fontFamily: "'Newsreader', serif",
+                                    fontFamily: "var(--font-sans)",
                                     fontSize: "clamp(11px, 1.1vw, 13px)",
                                     fontWeight: 200,
                                     letterSpacing: "0.22em",

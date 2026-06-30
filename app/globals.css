@@ -219,26 +219,22 @@
   --color-card: #f6f6f6;
   --color-hover: #f0f0f0;
 
-  /* Site went fully sans-serif: Latin glyphs use Manrope; --font-serif /
-     --font-newsreader now alias the same stack so the ~90 var(--font-serif)
-     call sites switch without per-rule edits. Manrope/Inter carry NO CJK
-     glyphs, so the original Chinese/Japanese fallback fonts are kept AFTER
-     Manrope — CJK renders exactly as before (no tofu/layout break). The brush
-     font (--font-brush) is untouched — calligraphy stays. */
-  /* CJK tails kept per-context exactly as before: sans → Murecho (JP),
-     serif/newsreader → ZCOOL XiaoWei + Noto Serif SC (CN). Manrope only
-     overrides Latin glyphs. */
-  --font-sans: "Manrope", "Inter", "Murecho Local", "Murecho", "Noto Sans SC",
+  /* One Saira superfamily: body/UI use Saira (normal width), big display uses
+     Saira Condensed (--font-condensed). --font-serif / --font-newsreader alias
+     the same Saira stack so the ~90 var(--font-serif) call sites switch without
+     per-rule edits. Saira/Inter carry NO CJK glyphs, so the original
+     Chinese/Japanese fallback fonts are kept AFTER it (no tofu). The brush font
+     (--font-brush) is untouched — calligraphy stays. */
+  --font-sans: "Saira", "Inter", "Murecho Local", "Murecho", "Noto Sans SC",
     system-ui, sans-serif;
-  --font-serif: "Manrope", "Inter", "Noto Sans SC", "Murecho", "Songti SC",
+  --font-serif: "Saira", "Inter", "Noto Sans SC", "Murecho", "Songti SC",
     system-ui, sans-serif;
   /* tall, narrow condensed sans — for big ink-wash display wordmarks */
-  --font-condensed: "Saira Condensed", "Oswald", "Manrope", system-ui,
-    sans-serif;
+  --font-condensed: "Saira Condensed", "Saira", "Oswald", system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-brush: "LiuJian-Mao-Cao Regular", "LiuJian Mao Cao",
     "Source Han Serif SC", serif;
-  --font-newsreader: "Manrope", "Inter", "Noto Sans SC", "Murecho", "Songti SC",
+  --font-newsreader: "Saira", "Inter", "Noto Sans SC", "Murecho", "Songti SC",
     system-ui, sans-serif;
 
   --nav-h: 60px;

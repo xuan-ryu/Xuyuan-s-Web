@@ -1306,7 +1306,7 @@ export default function HongyadongFramer(props: Props) {
 
                 .hyf-sub {
                     margin: 0;
-                    font-family: "Murecho", "Inter", system-ui, sans-serif;
+                    font-family: var(--font-sans);
                     font-size: clamp(16px, 1.5vw, 22px);
                     font-weight: 400;
                     line-height: 1.55;
@@ -1335,7 +1335,7 @@ export default function HongyadongFramer(props: Props) {
                     width: auto;
                     margin: 0;
                     text-align: left;
-                    font-family: "Murecho", "Inter", system-ui, sans-serif;
+                    font-family: var(--font-sans);
                     font-size: clamp(42px, 10.8vw, 214px);
                     line-height: 0.76;
                     font-weight: 300;
@@ -1348,7 +1348,7 @@ export default function HongyadongFramer(props: Props) {
 
                 .hyf-signature-note {
                     margin: 0 0 0.18em;
-                    font-family: "Murecho", "Inter", system-ui, sans-serif;
+                    font-family: var(--font-sans);
                     font-size: clamp(12px, 1vw, 15px);
                     font-weight: 400;
                     line-height: 1.35;

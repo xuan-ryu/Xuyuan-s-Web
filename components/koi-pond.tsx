@@ -2011,7 +2011,7 @@ drawBody() {
               50%{ filter: drop-shadow(0 0 6px rgba(255,190,30,1.00)) drop-shadow(0 0 18px rgba(220,155,15,0.70)); }
             }
             .feed-text {
-              font-family: 'Murecho', -apple-system, sans-serif;
+              font-family: var(--font-sans);
               font-size: clamp(15px, 1.5vw, 20px); letter-spacing: -0.01em;
               font-weight: 500; line-height: 1;
               color: rgba(255,255,255,0.82); transition: color 0.2s ease;
