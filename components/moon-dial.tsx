@@ -73,6 +73,9 @@ export function MoonDial({ projects }: { projects: DialProject[] }) {
 
   useEffect(() => {
     let lastIdx = -1;
+    let lastAngle = NaN;
+    let needsLayout = true;
+    let visible = true;
     const reduceMotion =
       typeof window !== "undefined" &&
       typeof window.matchMedia === "function" &&
@@ -89,6 +92,12 @@ export function MoonDial({ projects }: { projects: DialProject[] }) {
           if (Math.abs(d) < 0.04) angle.current = target.current;
         }
       }
+      // skip the layout read + node writes when nothing moved (idle / settled);
+      // the dial geometry only changes on interaction, not on scroll (moon and
+      // stage scroll together), so a static frame needs no work
+      if (dragging.current || angle.current !== lastAngle || needsLayout) {
+      lastAngle = angle.current;
+      needsLayout = false;
       const st = stageRef.current;
       const moon = moonRef.current;
       if (st && moon) {
@@ -124,10 +133,44 @@ export function MoonDial({ projects }: { projects: DialProject[] }) {
         lastIdx = idx;
         setActive(idx);
       }
+      }
       raf.current = requestAnimationFrame(tick);
     };
+    const start = () => {
+      cancelAnimationFrame(raf.current);
+      raf.current = requestAnimationFrame(tick);
+    };
+    // pause the rAF entirely while the dial is scrolled off-screen
+    const io =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            ([e]) => {
+              if (e.isIntersecting) {
+                if (!visible) {
+                  visible = true;
+                  needsLayout = true;
+                  start();
+                }
+              } else if (visible) {
+                visible = false;
+                cancelAnimationFrame(raf.current);
+              }
+            },
+            { threshold: 0 },
+          )
+        : null;
+    const obsEl = stageRef.current ?? moonRef.current;
+    if (io && obsEl) io.observe(obsEl);
+    const onResize = () => {
+      needsLayout = true;
+    };
+    window.addEventListener("resize", onResize, { passive: true });
     raf.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf.current);
+    return () => {
+      cancelAnimationFrame(raf.current);
+      io?.disconnect();
+      window.removeEventListener("resize", onResize);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
