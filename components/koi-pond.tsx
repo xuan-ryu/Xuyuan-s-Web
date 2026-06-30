@@ -169,7 +169,7 @@ export default function InkKoiEcosystem(props: Props) {
             feedCursor.style.left = x + "px"
             feedCursor.style.top = y + "px"
         }
-        const onFeedClick = (e: MouseEvent) => {
+        const onFeedClick = (e: Event) => {
             e.stopPropagation()
             if (feedIntroShown) {
                 feedIntroShown = false
@@ -184,8 +184,16 @@ export default function InkKoiEcosystem(props: Props) {
         const onFeedPointerDown = (e: PointerEvent) => {
             e.stopPropagation()
         }
+        // Keyboard access: Enter / Space fire the same toggle as a click.
+        const onFeedKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
+                e.preventDefault()
+                onFeedClick(e)
+            }
+        }
         feedBtn.addEventListener("click", onFeedClick)
         feedBtn.addEventListener("pointerdown", onFeedPointerDown)
+        feedBtn.addEventListener("keydown", onFeedKeyDown)
 
         // =========================
         // Canvas setup + quality
@@ -1874,6 +1882,7 @@ drawBody() {
             container.removeEventListener("pointerdown", onPointerDown)
             feedBtn.removeEventListener("click", onFeedClick)
             feedBtn.removeEventListener("pointerdown", onFeedPointerDown)
+            feedBtn.removeEventListener("keydown", onFeedKeyDown)
             container.classList.remove("feed-mode")
         }
     }, [props.introDurationMs])
@@ -1919,17 +1928,16 @@ drawBody() {
                 background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 38%, rgba(0,0,0,0.55) 100%);
             }
 
-            /* Feed UI — intro center, then flies to corner */
+            /* Feed UI — intro center, then scales down in place (transform/opacity only) */
             #hero-ui {
               position: absolute;
               top: 50%; left: 50%;
               transform: translate(-50%, -50%);
               pointer-events: auto;
               z-index: 30;
-              will-change: transform, top, left;
-              transition: top 0.65s cubic-bezier(0.4,0,0.2,1),
-                          left 0.65s cubic-bezier(0.4,0,0.2,1),
-                          transform 0.65s cubic-bezier(0.4,0,0.2,1);
+              will-change: transform, opacity;
+              transition: transform 0.65s cubic-bezier(0.4,0,0.2,1),
+                          opacity 0.65s cubic-bezier(0.4,0,0.2,1);
               animation: feedIntroAppear 0.7s 0.9s ease both;
             }
             @keyframes feedIntroAppear {
@@ -1937,9 +1945,7 @@ drawBody() {
               to   { opacity:1; transform: translate(-50%, -50%); }
             }
             #hero-ui.dismissed {
-              top: 20px; left: 20px;
-              transform: translate(0,0) scale(0.85);
-              transform-origin: top left;
+              transform: translate(-50%, -50%) scale(0.85);
               animation: none;
             }
 
@@ -1997,6 +2003,7 @@ drawBody() {
             }
             #feed-ui:hover { background: rgba(30, 30, 34, 0.82); border-color: rgba(255,255,255,0.22); }
             #feed-ui:active { transform: scale(0.97); }
+            #feed-ui:focus-visible{outline:2px solid var(--accent-amber);outline-offset:2px}
 
             .feed-pellets { position:relative; width:clamp(36px, 4vw, 52px); height:clamp(36px, 4vw, 52px); flex-shrink:0; animation: pelletGlow 2.8s ease-in-out infinite; }
             /* Pellets scale with container via em-like ratios: base container = 40px */
@@ -2047,7 +2054,13 @@ drawBody() {
                 <div id="feed-cursor" ref={feedCursorRef} />
 
                 <div id="hero-ui" ref={uiBoxRef}>
-                    <div id="feed-ui" ref={feedBtnRef}>
+                    <div
+                        id="feed-ui"
+                        ref={feedBtnRef}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={props.feedText}
+                    >
                         <div className="feed-pellets">
                             <span className="pellet" />
                             <span className="pellet" />

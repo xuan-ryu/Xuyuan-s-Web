@@ -24,7 +24,13 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
 
     let raf = 0;
 
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const apply = (clientX: number, clientY: number) => {
+      if (prefersReducedMotion) return;
       const rect = el.getBoundingClientRect();
       const x = clientX - rect.left;
       const y = clientY - rect.top;
@@ -208,6 +214,21 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
             opacity: 0.035;
             border-radius: inherit;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .vibe-card {
+              opacity: 1;
+            }
+            .vibe-card.card-revealed {
+              animation: none;
+              opacity: 1;
+            }
+            .text-bloom {
+              transition: none;
+            }
+            .vibe-sub-bar {
+              transition: none;
+            }
           }
         `}</style>
 

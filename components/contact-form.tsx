@@ -9,23 +9,54 @@ const SERVICES = [
   "Design & Marketing",
 ];
 
+type Status = "idle" | "submitting" | "success" | "error";
+type FieldKey = "name" | "email" | "message";
+type Errors = Partial<Record<FieldKey, string>>;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function ContactForm() {
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const [errors, setErrors] = useState<Errors>({});
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const body = `Name: ${data.get("name")}%0D%0AService: ${data.get(
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const name = String(data.get("name") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const message = String(data.get("message") || "").trim();
+
+    const next: Errors = {};
+    if (!name) next.name = "Please enter your name.";
+    if (!email) next.email = "Please enter your email.";
+    else if (!EMAIL_RE.test(email)) next.email = "That email doesn't look right.";
+    if (!message) next.message = "Add a short note about your project.";
+
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      setStatus("error");
+      form.querySelector<HTMLElement>("[aria-invalid='true']")?.focus();
+      return;
+    }
+
+    setErrors({});
+    setStatus("submitting");
+    const body = `Name: ${name}%0D%0AService: ${data.get(
       "service",
-    )}%0D%0A%0D%0A${data.get("message")}`;
-    window.location.href = `mailto:${site.email}?subject=Portfolio inquiry from ${data.get(
-      "name",
-    )}&body=${body}`;
-    setSent(true);
+    )}%0D%0A%0D%0A${message}`;
+    window.location.href = `mailto:${site.email}?subject=Portfolio inquiry from ${name}&body=${body}`;
+    setStatus("success");
   }
 
+  const submitting = status === "submitting";
+  const fieldProps = (k: FieldKey) =>
+    errors[k]
+      ? ({ "aria-invalid": true, "aria-describedby": `${k}-error` } as const)
+      : {};
+
   return (
-    <form className="contact-form" onSubmit={handleSubmit}>
+    <form className="contact-form" onSubmit={handleSubmit} noValidate>
       <div className="form-row">
         <div className="form-group">
           <label htmlFor="name">Name</label>
@@ -34,8 +65,13 @@ export function ContactForm() {
             name="name"
             type="text"
             placeholder="Jane Smith"
-            required
+            {...fieldProps("name")}
           />
+          {errors.name && (
+            <p className="form-error" id="name-error" role="alert">
+              {errors.name}
+            </p>
+          )}
         </div>
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -44,8 +80,13 @@ export function ContactForm() {
             name="email"
             type="email"
             placeholder="jane@smith.com"
-            required
+            {...fieldProps("email")}
           />
+          {errors.email && (
+            <p className="form-error" id="email-error" role="alert">
+              {errors.email}
+            </p>
+          )}
         </div>
       </div>
       <div className="form-group">
@@ -66,13 +107,33 @@ export function ContactForm() {
         <textarea
           id="message"
           name="message"
-          placeholder="Your  Message"
-          required
+          placeholder="Your message"
+          {...fieldProps("message")}
         />
+        {errors.message && (
+          <p className="form-error" id="message-error" role="alert">
+            {errors.message}
+          </p>
+        )}
       </div>
-      <button type="submit" className="btn contact-submit">
-        {sent ? "Opening email..." : "Submit"}
+      <button
+        type="submit"
+        className="btn contact-submit"
+        disabled={submitting}
+      >
+        {submitting
+          ? "Opening email…"
+          : status === "success"
+            ? "Email opened"
+            : "Submit"}
       </button>
+      <p className="form-status" role="status" aria-live="polite">
+        {status === "success"
+          ? `Your email app should have opened with the message ready. If it didn't, write to ${site.email} directly.`
+          : status === "error"
+            ? "Please fix the highlighted fields and try again."
+            : ""}
+      </p>
     </form>
   );
 }

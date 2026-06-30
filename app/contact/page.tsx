@@ -18,10 +18,10 @@ export default function Contact() {
 
         <div className="contact-hero-grid">
           <p className="contact-intro" data-fade>
-            With a focus on innovation, storytelling, and user-centered design,
-            I create immersive experiences that captivate and engage. Let&apos;s
-            collaborate to bring your vision to life and craft digital solutions
-            that leave a lasting impact.
+            Have a project, a half-formed idea, or just want to compare notes on
+            design and AI? I&apos;m most useful early &mdash; while the problem is
+            still messy and the right shape isn&apos;t obvious yet. Tell me what
+            you&apos;re working on.
           </p>
 
           <aside className="contact-card" aria-label="Contact information">

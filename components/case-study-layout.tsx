@@ -121,11 +121,11 @@ export function CaseStudyLayout({ project }: { project: Project }) {
           {chapter.sections.map((section) => (
             <div key={section.tags} className="case-section">
               <div className="case-section-grid">
-                <h3 className="case-section-tags" data-fade>
+                <p className="case-section-tags" data-fade>
                   {section.tags}
-                </h3>
+                </p>
                 <div className="case-section-copy" data-fade>
-                  <p className="case-section-heading">{section.heading}</p>
+                  <h3 className="case-section-heading">{section.heading}</h3>
                   {section.body.map((p, i) => (
                     <p key={i}>{p}</p>
                   ))}

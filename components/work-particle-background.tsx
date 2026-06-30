@@ -122,13 +122,24 @@ export function WorkParticleBackground() {
       const points = new THREE.Points(geometry, material);
       scene.add(points);
 
+      const prefersReducedMotion =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
       const render = () => {
         if (disposed || !renderer || !material) return;
         frame = requestAnimationFrame(render);
         material.uniforms.uTime.value = performance.now() * 0.001;
         renderer.render(scene, camera);
       };
-      render();
+
+      if (prefersReducedMotion) {
+        // Reduced motion: draw a single static frame and skip the rAF loop.
+        material.uniforms.uTime.value = 0;
+        renderer.render(scene, camera);
+      } else {
+        render();
+      }
 
       const handleResize = () => {
         const nextW = mountRef.current?.offsetWidth || window.innerWidth;

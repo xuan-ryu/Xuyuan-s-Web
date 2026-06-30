@@ -73,11 +73,21 @@ export function MoonDial({ projects }: { projects: DialProject[] }) {
 
   useEffect(() => {
     let lastIdx = -1;
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const tick = () => {
       if (!dragging.current) {
-        const d = target.current - angle.current;
-        angle.current += d * 0.12;
-        if (Math.abs(d) < 0.04) angle.current = target.current;
+        if (reduceMotion) {
+          // snap straight to target — the dial still navigates, but does not
+          // continuously ease/animate
+          angle.current = target.current;
+        } else {
+          const d = target.current - angle.current;
+          angle.current += d * 0.12;
+          if (Math.abs(d) < 0.04) angle.current = target.current;
+        }
       }
       const st = stageRef.current;
       const moon = moonRef.current;
