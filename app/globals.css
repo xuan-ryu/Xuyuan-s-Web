@@ -84,10 +84,10 @@
      geometry may keep literal sizes; all other rules use these. Full
      reference + role guidance: docs/design-system.md. */
   --text-micro: 11px; /* fine print, indices, legal */
-  --text-label: 13px; /* uppercase labels, nav, eyebrows, tags */
-  --text-meta: 15px; /* captions, secondary text, dates */
-  --text-body: clamp(16px, 1.1vw, 18px); /* long-form reading copy */
-  --text-lead: clamp(20px, 1.4vw, 24px); /* section lead paragraphs */
+  --text-label: 13px; /* uppercase eyebrows, tags, small labels */
+  --text-meta: 15px; /* nav, captions, secondary text, dates */
+  --text-body: clamp(17px, 1.25vw, 20px); /* long-form reading copy */
+  --text-lead: clamp(21px, 1.55vw, 26px); /* section lead paragraphs */
   --text-title: clamp(24px, 2vw, 28px); /* card / sub-section titles */
   --text-heading: clamp(32px, 3.4vw, 46px); /* editorial section headings */
   --text-display-3: clamp(48px, 6.5vw, 80px); /* chapter banners, CTA, section display */
@@ -270,10 +270,10 @@ body.hero-night .nav-logo-zh {
 }
 .nav-links a {
   font-family: var(--font-sans);
-  font-size: var(--text-label);
+  font-size: var(--text-meta); /* nav reads at meta size */
   font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: #1a1a1a;
   padding: 6px 13px;
   position: relative;
