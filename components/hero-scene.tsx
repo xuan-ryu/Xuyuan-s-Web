@@ -1098,13 +1098,15 @@ export default function DigitalLandscape(props: Props) {
                 resumeSceneAnimation?.()
             }
 
-            // Flag the dark-night window for the fixed header: while the scene
-            // is in view AND turned black, the nav ink flips to white; once the
-            // scene scrolls away (white sections below) it returns to black.
+            // Flag the dark-night window for the fixed header. Tie it to the
+            // ACTUAL darkness behind the nav — the night overlay (nightT *
+            // nightRelease) stays opaque through the dark roof transition, well
+            // past the point where the scene stops being "visible". Using
+            // isSceneVisible here flipped the nav black-on-black over the roof.
             setClassState(
                 document.body,
                 "hero-night",
-                isSceneVisible && smoothstepF(0.12, 0.28, progress) > 0.5
+                nightT * nightRelease > 0.5
             )
 
             // Hide the fixed canvas entirely when past the Three.js zone
@@ -1332,14 +1334,24 @@ export default function DigitalLandscape(props: Props) {
                     .forEach((c) => c.remove())
                 mountRef.current?.appendChild(renderer.domElement)
 
-                // 响应式地形：X 范围跟视口宽高比，粒子上限跟分辨率
-                const terrainAspect = containerW / window.innerHeight
-                const aspectScale = clampF(terrainAspect / (16 / 9), 0.55, 1.55)
+                // star density tracks the initial viewport's pixel area
                 const pixelAreaRatio = clampF(
                     (containerW * window.innerHeight) / (1920 * 1080),
                     0.3,
                     1.8
                 )
+                // Re-runnable particle-field builder. Resize rebuilds the field
+                // for the new width (debounced) instead of stretching the
+                // original, so the point count tracks screen size and the
+                // mountains refill the viewport (no white gaps when widened).
+                let lastBuiltW = containerW
+                let mtnRebuildTimer = 0
+                let mtnBuildToken = 0
+                const buildMountainGeometry = async (containerW: number) => {
+                const myToken = ++mtnBuildToken
+                // 响应式地形：X 范围跟视口宽高比，粒子上限跟分辨率
+                const terrainAspect = containerW / window.innerHeight
+                const aspectScale = clampF(terrainAspect / (16 / 9), 0.55, 1.55)
                 // narrow viewports pack the SAME particle count into far fewer
                 // pixels, so the points pile up (NormalBlending accumulates)
                 // into a heavy black mass — lowering alpha alone can't undo the
@@ -1386,7 +1398,7 @@ export default function DigitalLandscape(props: Props) {
                 let lastYield = performance.now()
 
                 for (let cx = -extX; cx <= extX; cx += cellSize) {
-                    if (!isMounted) return
+                    if (!isMounted || myToken !== mtnBuildToken) return null
                     const tx = cx + cellSize / 2
                     const xc = computeXCache(tx)
                     const eps = 4.0
@@ -1438,7 +1450,7 @@ export default function DigitalLandscape(props: Props) {
                                 shadow * 2.0 +
                                 vegetation * 6.0
                             const alphaBase =
-                                mixF(0.34, 1.0, depth * Math.min(prob, 1.2)) *
+                                mixF(0.5, 1.0, depth * Math.min(prob, 1.2)) *
                                 inkAlpha
                             for (let p = 0; p < count; p++) {
                                 if (pIdx >= maxPoints) break
@@ -1489,7 +1501,7 @@ export default function DigitalLandscape(props: Props) {
                             // exponent keeps the transition broad (no 1px black
                             // crest wire); distant peaks stay misty, not bold
                             let aBase =
-                                mixF(0.26, 0.98, depth) *
+                                mixF(0.44, 1.0, depth) *
                                 (0.72 + 0.28 * tCm) *
                                 mixF(0.9, 1.0, shadow) *
                                 // crest darkening fades with distance: near
@@ -1602,11 +1614,12 @@ export default function DigitalLandscape(props: Props) {
                     // 🌟 极速生成，不再渲染任何 Loading 界面，仅仅是防止主线程卡死
                     if (performance.now() - lastYield > yieldInterval) {
                         await new Promise((r) => requestAnimationFrame(r))
+                        if (!isMounted || myToken !== mtnBuildToken) return null
                         lastYield = performance.now()
                     }
                 }
 
-                if (!isMounted) return
+                if (!isMounted || myToken !== mtnBuildToken) return null
 
                 const geo = new THREE.BufferGeometry()
                 geo.setAttribute(
@@ -1626,12 +1639,19 @@ export default function DigitalLandscape(props: Props) {
                     new THREE.BufferAttribute(ridges.slice(0, pIdx), 1)
                 )
 
+                return geo
+                }
+
+                const geo = await buildMountainGeometry(containerW)
+                if (!geo || !isMounted) return
+                lastBuiltW = containerW
+
                 mountainMat = new THREE.ShaderMaterial({
                     vertexShader: mountainVert,
                     fragmentShader: mountainFrag,
                     uniforms: {
                         uTime: { value: 0 },
-                        uColor: { value: new THREE.Color(0x2a2a2a) },
+                        uColor: { value: new THREE.Color(0x1c1c1c) },
                         uScroll: { value: 0 },
                         uVelocity: { value: 0 },
                         uMouse: { value: new THREE.Vector2(0, 0) },
@@ -1648,6 +1668,26 @@ export default function DigitalLandscape(props: Props) {
                 mountain.renderOrder = 30
                 mountain.frustumCulled = false
                 scene.add(mountain)
+
+                // Debounced field rebuild on resize (called by handleResize).
+                // Fires only after the drag settles; an in-flight build is
+                // cancelled via the token, and the swap disposes the old buffers.
+                scheduleMountainRebuild = (w: number) => {
+                    if (mtnRebuildTimer) clearTimeout(mtnRebuildTimer)
+                    mtnRebuildTimer = window.setTimeout(async () => {
+                        if (!isMounted || !mountain) return
+                        if (Math.abs(w - lastBuiltW) < 80) return
+                        const newGeo = await buildMountainGeometry(w)
+                        if (!newGeo || !isMounted || !mountain) {
+                            if (newGeo) newGeo.dispose()
+                            return
+                        }
+                        const oldGeo = mountain.geometry
+                        mountain.geometry = newGeo
+                        oldGeo.dispose()
+                        lastBuiltW = w
+                    }, 380)
+                }
 
                 // — Flowmap (流场) ————————————————————————————————————
                 // a low-res velocity field the cursor stirs; it dissipates each
@@ -2328,6 +2368,7 @@ export default function DigitalLandscape(props: Props) {
         }
 
         let resizeRaf = 0
+        let scheduleMountainRebuild: ((w: number) => void) | null = null
         const handleResize = () => {
             if (resizeRaf) return
             resizeRaf = requestAnimationFrame(() => {
@@ -2340,6 +2381,7 @@ export default function DigitalLandscape(props: Props) {
                 camera.fov = fovForAspect(camera.aspect)
                 camera.updateProjectionMatrix()
                 renderer.setSize(containerW, winHeight)
+                scheduleMountainRebuild?.(containerW)
             })
         }
 
@@ -2388,6 +2430,7 @@ export default function DigitalLandscape(props: Props) {
     return (
         <div
             ref={backgroundRef}
+            data-hero-bg
             style={{
                 width: "100%",
                 // live: hero+page2 flow = 300vh − 911px (measured at viewport
@@ -2703,6 +2746,7 @@ export default function DigitalLandscape(props: Props) {
                 transition's transparent sky, so the moon sets BEHIND the eaves */}
             <div
                 ref={nightOverlayRef}
+                data-night-overlay
                 style={{
                     position: "fixed",
                     inset: 0,

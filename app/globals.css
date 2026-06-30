@@ -392,7 +392,8 @@
   color: #161616;
   transition: color 0.4s ease;
 }
-/* the page turns black during the hero night → ink flips to white */
+/* Pre-JS fallback only — the Header's real-time controller sets each nav
+   element's colour inline from the actual background behind it. */
 body.hero-night .nav-logo-zh {
   color: #fff;
 }
@@ -401,11 +402,11 @@ body.hero-night .nav-logo-zh {
 }
 .nav-links {
   display: flex;
-  gap: 0;
+  gap: 2px;
   align-items: center;
   margin-left: auto;
   margin-top: 22px;
-  margin-right: 18px;
+  margin-right: 24px;
   pointer-events: auto;
 }
 .nav-links a {
@@ -415,29 +416,38 @@ body.hero-night .nav-logo-zh {
   line-height: 1;
   letter-spacing: 0.12em;
   color: #1a1a1a;
-  padding: 6px 18px;
+  padding: 6px 13px;
   position: relative;
   text-transform: uppercase;
-  transition: color 0.4s ease, opacity 0.2s ease;
+  transition: color 0.4s ease, opacity 0.25s ease;
 }
+/* Pre-JS fallback only — see note above; the controller owns the live colour */
 body.hero-night .nav-links a {
   color: #fff;
-}
-body.hero-night .nav-links a.active {
-  color: #ff5a5a;
-}
-.nav-links a::after {
-  display: none;
 }
 .nav-links a.active {
   color: #d10000;
 }
-.nav-links a:hover {
-  opacity: 0.55;
+body.hero-night .nav-links a.active {
+  color: #ff6a5a;
+}
+/* a thin ink line slides out under the active / hovered link */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 1px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0.5;
+  transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .nav-links a.active::after,
 .nav-links a:hover::after {
-  width: 0;
+  transform: scaleX(1);
 }
 .nav-toggle {
   display: none;
@@ -1131,42 +1141,71 @@ body.hero-night .nav-links a.active {
 .work-view-controls {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 24px;
   flex: 0 0 auto;
 }
-.work-list-icon {
-  width: 28px;
-  height: 28px;
-  display: block;
+.work-view-control {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #050505;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s var(--ease-default);
 }
-.work-list-icon svg,
-.work-card-icon svg {
+.work-view-control:hover {
+  opacity: 0.72;
+}
+.work-view-control:active {
+  transform: translateY(1px) scale(0.98);
+}
+.work-view-control:focus-visible {
+  outline: 1px solid #fe8411;
+  outline-offset: 5px;
+}
+.work-list-icon,
+.work-card-icon {
+  width: 44px;
+  height: 44px;
+}
+.work-view-control svg {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
-.work-list-icon path {
+.work-list-icon-shell,
+.work-card-icon-shell {
+  fill: transparent;
+  transition: fill 0.2s ease;
+}
+.work-list-icon-line,
+.work-card-icon-window,
+.work-card-icon-line {
   fill: none;
   stroke: rgba(10, 10, 10, 0.86);
   stroke-width: 2.2;
   stroke-linecap: round;
-}
-.work-card-icon {
-  width: 44px;
-  height: 44px;
-  display: block;
-}
-.work-card-icon-shell {
-  fill: #050505;
+  stroke-linejoin: round;
+  transition: stroke 0.2s ease;
 }
 .work-card-icon-window,
 .work-card-icon-line {
-  fill: none;
-  stroke: #fe8411;
   stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+}
+.work-view-control[aria-pressed="true"] .work-list-icon-shell,
+.work-view-control[aria-pressed="true"] .work-card-icon-shell {
+  fill: #050505;
+}
+.work-view-control[aria-pressed="true"] .work-list-icon-line,
+.work-view-control[aria-pressed="true"] .work-card-icon-window,
+.work-view-control[aria-pressed="true"] .work-card-icon-line {
+  stroke: #fe8411;
 }
 .work-list {
   width: 100%;
@@ -1365,6 +1404,110 @@ body.hero-night .nav-links a.active {
   color: #0a0a0a;
   transform: translateY(-1px);
 }
+.work-index-page[data-work-view="list"] .work-grid {
+  gap: 0;
+  border-top: 1px solid rgba(5, 5, 5, 0.14);
+}
+.work-index-page[data-work-view="list"] .work-feature-card {
+  min-height: 188px;
+  height: auto;
+  padding: 0;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.14);
+  border-radius: 0;
+  background: transparent;
+  display: grid;
+  grid-template-columns: minmax(228px, 32%) minmax(0, 1fr) minmax(132px, auto);
+  grid-template-rows: auto auto;
+  align-items: stretch;
+  box-shadow: none;
+}
+.work-index-page[data-work-view="list"] .work-feature-card:hover {
+  background: rgba(5, 5, 5, 0.025);
+  box-shadow: none;
+  transform: none;
+}
+.work-index-page[data-work-view="list"] .work-feature-card .project-cover {
+  position: relative;
+  inset: auto;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 100%;
+  height: 100%;
+  min-height: 188px;
+  background: #f2f2f2;
+}
+.work-index-page[data-work-view="list"] .work-feature-card .project-cover img {
+  filter: brightness(0.96);
+  transform: none;
+}
+.work-index-page[data-work-view="list"] .work-feature-card:hover .project-cover img {
+  filter: brightness(0.9);
+  transform: scale(1.02);
+}
+.work-index-page[data-work-view="list"] .work-card-shade {
+  display: none;
+}
+.work-index-page[data-work-view="list"] .work-card-title {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  padding: 32px 40px 8px;
+  border-radius: 0;
+  background: transparent;
+  color: #050505;
+  font-size: 32px;
+  line-height: 1.12;
+  text-transform: none;
+  white-space: normal;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.work-index-page[data-work-view="list"] .work-card-copy {
+  position: static;
+  grid-column: 2;
+  grid-row: 2;
+  width: auto;
+  max-height: none;
+  padding: 0 40px 32px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: rgba(5, 5, 5, 0.66);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: left;
+  overflow: hidden;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.work-index-page[data-work-view="list"] .work-card-copy p + p {
+  display: none;
+}
+.work-index-page[data-work-view="list"] .work-card-button {
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-self: end;
+  margin-right: 32px;
+  min-height: 44px;
+  padding: 14px 24px;
+  border-color: #050505;
+  background: #fff;
+  color: #050505;
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.work-index-page[data-work-view="list"] .work-feature-card:hover .work-card-button {
+  background: #050505;
+  color: #fff;
+  transform: translateY(-1px);
+}
 @media (max-width: 900px) {
   .work-index-page .work-header {
     padding: 160px 44px 80px;
@@ -1393,19 +1536,40 @@ body.hero-night .nav-links a.active {
   .work-card-copy {
     width: min(620px, calc(100% - 220px));
   }
+  .work-index-page[data-work-view="list"] .work-feature-card {
+    min-height: 168px;
+    grid-template-columns: minmax(180px, 34%) minmax(0, 1fr);
+  }
+  .work-index-page[data-work-view="list"] .work-feature-card .project-cover {
+    min-height: 168px;
+  }
+  .work-index-page[data-work-view="list"] .work-card-title {
+    padding: 28px 28px 8px;
+    font-size: 28px;
+  }
+  .work-index-page[data-work-view="list"] .work-card-copy {
+    padding: 0 28px 28px;
+    font-size: 15px;
+  }
+  .work-index-page[data-work-view="list"] .work-card-button {
+    display: none;
+  }
 }
 @media (max-width: 640px) {
   .work-index-page .work-header {
     padding: 128px 24px 64px;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    gap: 24px;
   }
   .work-index-page .work-header h1 {
     font-size: 48px;
     line-height: 1.2;
   }
   .work-view-controls {
-    display: none;
+    display: flex;
+    gap: 18px;
   }
   .work-list {
     padding: 0 24px 128px;
@@ -1451,6 +1615,26 @@ body.hero-night .nav-links a.active {
     font-size: 12px;
     border-radius: 4px;
     background: #0a0a0a;
+  }
+  .work-index-page[data-work-view="list"] .work-grid {
+    gap: 0;
+  }
+  .work-index-page[data-work-view="list"] .work-feature-card {
+    min-height: 126px;
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+  .work-index-page[data-work-view="list"] .work-feature-card .project-cover {
+    min-height: 126px;
+  }
+  .work-index-page[data-work-view="list"] .work-card-title {
+    align-self: center;
+    padding: 20px 0 20px 20px;
+    font-size: 22px;
+    line-height: 1.16;
+  }
+  .work-index-page[data-work-view="list"] .work-card-copy,
+  .work-index-page[data-work-view="list"] .work-card-button {
+    display: none;
   }
 }
 
