@@ -6,62 +6,12 @@
   font-display: swap;
 }
 
-/* live body-copy serif (300 for long-form, 400 for meta values) */
-@font-face {
-  font-family: "Newsreader";
-  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/newsreader-300.woff2")
-    format("woff2");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 300;
-}
-@font-face {
-  font-family: "Newsreader";
-  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/newsreader-400.woff2")
-    format("woff2");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 400;
-}
-@font-face {
-  font-family: "Newsreader";
-  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/newsreader-500.woff2")
-    format("woff2");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 500;
-}
-
 /* live koan brush font (Chinese 行草 with Latin glyphs) */
 @font-face {
   font-family: "CloudXingCaoGBK";
   src: url("/assets/framerusercontent.com/assets/imUjwEtsUuwif5zrT6p44rQetdM.woff2")
     format("woff2");
   font-display: swap;
-}
-
-@font-face {
-  font-family: "Cormorant Garamond";
-  src: url("/assets/fonts.gstatic.com/s/cormorantgaramond/v21/co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtK.woff2")
-    format("woff2");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 400 500;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
-    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-  font-family: "Cormorant Garamond";
-  src: url("/assets/fonts.gstatic.com/s/cormorantgaramond/v21/co3smX5slCNuHLi8bLeY9MK7whWMhyjYrGFEsdtdc62E6zd58jD-iNM8.woff2")
-    format("woff2");
-  font-display: swap;
-  font-style: italic;
-  font-weight: 400;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
-    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
@@ -95,116 +45,6 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
     U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
     U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-  font-family: "Newsreader Local";
-  src: url("/assets/fonts.gstatic.com/s/newsreader/v26/cY9qfjOCX1hbuyalUrK49dLac06G1ZGsZBtoBCzBDXXD9JVF438wSo_wC-ZF.woff2")
-    format("woff2");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 500;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
-    U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* --- self-hosted: Cormorant 300 + Newsreader 200/italics (was Google link) --- */
-@font-face {
-  font-family: "Cormorant Garamond";
-  font-style: italic;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/assets/fonts/cormorant-garamond/300-italic-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Cormorant Garamond";
-  font-style: italic;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/assets/fonts/cormorant-garamond/300-italic-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Cormorant Garamond";
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/assets/fonts/cormorant-garamond/300-normal-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Cormorant Garamond";
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/assets/fonts/cormorant-garamond/300-normal-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 200;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/200-italic-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 200;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/200-italic-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/300-italic-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 300;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/300-italic-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/400-italic-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/400-italic-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 200;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/200-normal-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Newsreader";
-  font-style: normal;
-  font-weight: 200;
-  font-display: swap;
-  src: url("/assets/fonts/newsreader/200-normal-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* ============================================================
@@ -241,7 +81,6 @@
   --radius-card: 12px;
 
   --ease-default: var(--ease-silk); /* alias → one real silk curve */
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Seal red — the site's active/interactive accent (persimmon amber stays for
@@ -331,7 +170,7 @@
   }
   ::selection {
     background: #111;
-    color: #fff;
+    color: var(--paper);
   }
 }
 
@@ -398,7 +237,7 @@
 /* Pre-JS fallback only — the Header's real-time controller sets each nav
    element's colour inline from the actual background behind it. */
 body.hero-night .nav-logo-zh {
-  color: #fff;
+  color: var(--paper);
 }
 .nav-logo:hover {
   opacity: 0.5;
@@ -426,7 +265,7 @@ body.hero-night .nav-logo-zh {
 }
 /* Pre-JS fallback only — see note above; the controller owns the live colour */
 body.hero-night .nav-links a {
-  color: #fff;
+  color: var(--paper);
 }
 .nav-links a.active {
   color: var(--seal-red);
@@ -446,7 +285,7 @@ body.hero-night .nav-links a.active {
   transform: scaleX(0);
   transform-origin: center;
   opacity: 0.5;
-  transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.34s var(--ease-standard);
 }
 .nav-links a.active::after,
 .nav-links a:hover::after {
@@ -519,7 +358,7 @@ body.hero-night .nav-links a.active {
     height: 48px;
     margin: 0 auto;
     padding: 0 16px;
-    background: #0a0a0a;
+    background: var(--ink-900);
     border-radius: 2px;
     pointer-events: auto;
   }
@@ -535,7 +374,7 @@ body.hero-night .nav-links a.active {
     font-size: 14px;
     line-height: 1;
     letter-spacing: 0;
-    color: #fff;
+    color: var(--paper);
   }
   .nav-logo-zh {
     display: none;
@@ -547,7 +386,7 @@ body.hero-night .nav-links a.active {
     display: flex;
   }
   .nav-toggle span {
-    background: #fff;
+    background: var(--paper);
   }
 }
 
@@ -557,8 +396,8 @@ body.hero-night .nav-links a.active {
 .site-footer {
   margin-top: -1px;
   padding: 0 20px;
-  background: #fff;
-  color: #fff;
+  background: var(--paper);
+  color: var(--paper);
 }
 .footer-inner {
   min-height: 286px;
@@ -590,12 +429,12 @@ body.hero-night .nav-links a.active {
   font-size: 17px;
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: #fff;
+  color: var(--paper);
   text-transform: uppercase;
   transition: color 0.2s;
 }
 .footer-socials-row a:hover {
-  color: #fe8411;
+  color: var(--accent-amber);
 }
 .footer-mark {
   width: 36px;
@@ -616,12 +455,12 @@ body.hero-night .nav-links a.active {
   font-size: 17px;
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: #fff;
+  color: var(--paper);
   text-transform: uppercase;
   transition: color 0.2s;
 }
 .footer-nav a:hover {
-  color: #fe8411;
+  color: var(--accent-amber);
 }
 .footer-copy {
   font-family: var(--font-serif);
@@ -758,7 +597,7 @@ body.hero-night .nav-links a.active {
     transform 0.55s var(--ease-default);
 }
 .project-card:hover {
-  border-color: #c8c8c8;
+  border-color: var(--stone);
   transform: translateY(-4px);
 }
 .project-cover {
@@ -778,22 +617,22 @@ body.hero-night .nav-links a.active {
   transform: scale(1.05);
 }
 .cover-froghire {
-  background: linear-gradient(135deg, #e8f0fe 0%, #c9d8fa 100%);
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
 .cover-roper {
-  background: linear-gradient(135deg, #f0ede8 0%, #ddd6cc 100%);
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
 .cover-hunger {
-  background: linear-gradient(135deg, #f5e8e8 0%, #e8cccc 100%);
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
 .cover-vr-monarch {
-  background: linear-gradient(135deg, #e8f5ec 0%, #c4e0cb 100%);
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
 .cover-vicino {
-  background: linear-gradient(135deg, #f0e8f5 0%, #d8c4e0 100%);
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
 .cover-pulse {
-  background: linear-gradient(135deg, #e6fbff 0%, #bdeef6 100%);
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
 .cover-label {
   position: absolute;
@@ -955,7 +794,7 @@ body.hero-night .nav-links a.active {
 .cta-marquee-section {
   position: relative;
   padding: clamp(120px, 14vw, 210px) 0;
-  background: #fff;
+  background: var(--paper);
   overflow: hidden;
 }
 /* live: the about page runs the marquee tighter under My Habits */
@@ -980,7 +819,7 @@ body.hero-night .nav-links a.active {
   font-size: clamp(56px, 7.8vw, 112px);
   font-weight: 400;
   line-height: 1;
-  color: #0a0a0a;
+  color: var(--ink-900);
   white-space: nowrap;
 }
 .cta-marquee-item img {
@@ -992,8 +831,8 @@ body.hero-night .nav-links a.active {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background: #0a0a0a;
-  color: #fff;
+  background: var(--ink-900);
+  color: var(--paper);
   font-size: 13px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1013,7 +852,7 @@ body.hero-night .nav-links a.active {
   pointer-events: none;
 }
 .cta-marquee-button:hover {
-  background: #fe8411;
+  background: var(--accent-amber);
 }
 @keyframes cta-marquee-scroll {
   from {
@@ -1093,8 +932,8 @@ body.hero-night .nav-links a.active {
 
 /* Strict Framer work index migration overlay */
 .work-index-page {
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1155,7 +994,7 @@ body.hero-night .nav-links a.active {
   background: transparent;
   display: grid;
   place-items: center;
-  color: #050505;
+  color: var(--ink-950);
   cursor: pointer;
   transition:
     opacity 0.2s ease,
@@ -1203,7 +1042,7 @@ body.hero-night .nav-links a.active {
 }
 .work-view-control[aria-pressed="true"] .work-list-icon-shell,
 .work-view-control[aria-pressed="true"] .work-card-icon-shell {
-  fill: #050505;
+  fill: var(--ink-950);
 }
 .work-view-control[aria-pressed="true"] .work-list-icon-line,
 .work-view-control[aria-pressed="true"] .work-card-icon-window,
@@ -1232,7 +1071,7 @@ body.hero-night .nav-links a.active {
   padding-top: 8px;
   border: 0;
   border-radius: 15px;
-  background: #050505;
+  background: var(--ink-950);
   display: block;
   position: relative;
   overflow: hidden;
@@ -1251,7 +1090,7 @@ body.hero-night .nav-links a.active {
   width: 100%;
   height: 100%;
   aspect-ratio: auto;
-  background: #050505;
+  background: var(--ink-950);
   overflow: hidden;
 }
 .work-feature-card .project-cover img {
@@ -1307,7 +1146,7 @@ body.hero-night .nav-links a.active {
   font-size: 24px;
   font-weight: 400;
   line-height: 1.4;
-  color: #fff;
+  color: var(--paper);
   text-transform: capitalize;
   white-space: nowrap;
   opacity: 0;
@@ -1329,7 +1168,7 @@ body.hero-night .nav-links a.active {
   border-top-right-radius: 8px;
   background: rgba(10, 10, 10, 0.8);
   box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.25);
-  color: #fff;
+  color: var(--paper);
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 300;
@@ -1362,12 +1201,12 @@ body.hero-night .nav-links a.active {
   height: auto;
   min-height: 51px;
   padding: 16px 32px;
-  border: 1px solid #fff;
+  border: 1px solid var(--paper);
   border-radius: 4px;
-  background: #0a0a0a;
+  background: var(--ink-900);
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--paper);
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 500;
@@ -1403,8 +1242,8 @@ body.hero-night .nav-links a.active {
   transition-delay: 420ms, 420ms, 0ms, 0ms, 420ms;
 }
 .work-feature-card:hover .work-card-button {
-  background: #fff;
-  color: #0a0a0a;
+  background: var(--paper);
+  color: var(--ink-900);
   transform: translateY(-1px);
 }
 .work-index-page[data-work-view="list"] .work-grid {
@@ -1458,7 +1297,7 @@ body.hero-night .nav-links a.active {
   padding: 32px 40px 8px;
   border-radius: 0;
   background: transparent;
-  color: #050505;
+  color: var(--ink-950);
   font-size: 32px;
   line-height: 1.12;
   text-transform: none;
@@ -1499,16 +1338,16 @@ body.hero-night .nav-links a.active {
   margin-right: 32px;
   min-height: 44px;
   padding: 14px 24px;
-  border-color: #050505;
-  background: #fff;
-  color: #050505;
+  border-color: var(--ink-950);
+  background: var(--paper);
+  color: var(--ink-950);
   opacity: 1;
   transform: none;
   filter: none;
 }
 .work-index-page[data-work-view="list"] .work-feature-card:hover .work-card-button {
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   transform: translateY(-1px);
 }
 @media (max-width: 900px) {
@@ -1617,7 +1456,7 @@ body.hero-night .nav-links a.active {
     padding: 16px 32px;
     font-size: 12px;
     border-radius: 4px;
-    background: #0a0a0a;
+    background: var(--ink-900);
   }
   .work-index-page[data-work-view="list"] .work-grid {
     gap: 0;
@@ -1645,8 +1484,8 @@ body.hero-night .nav-links a.active {
    Project detail
    ============================================================ */
 .case-study-page {
-  background: #fff;
-  color: #0a0a0a;
+  background: var(--paper);
+  color: var(--ink-900);
 }
 .case-study-hero {
   height: clamp(300px, 32vw, 430px);
@@ -1669,7 +1508,7 @@ body.hero-night .nav-links a.active {
 .case-study-rule {
   height: 3px;
   margin: 0 20px 18px;
-  background: #d4941e;
+  background: var(--accent-gold);
 }
 .proj-hero {
   width: 100%;
@@ -1677,14 +1516,14 @@ body.hero-night .nav-links a.active {
   padding: 0 20px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  background: var(--paper);
 }
 .proj-hero-frame {
   width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
-  background: #050505;
+  background: var(--ink-950);
 }
 .proj-hero img {
   width: 100%;
@@ -1702,8 +1541,8 @@ body.hero-night .nav-links a.active {
   /* live: labels at x108, body 22px x1210 wide */
   padding: 20px clamp(40px, 10.4vw, 150px) 100px 88px;
   border-radius: 0 0 8px 8px;
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   overflow: hidden;
   position: relative;
 }
@@ -1744,7 +1583,7 @@ body.hero-night .nav-links a.active {
 .proj-summary-meta strong {
   font-family: var(--font-serif);
   line-height: 1.2;
-  color: #fff;
+  color: var(--paper);
 }
 .proj-summary-meta span {
   font-size: 20px;
@@ -1766,11 +1605,11 @@ body.hero-night .nav-links a.active {
   font-size: 22px;
   line-height: 1.5;
   text-align: left;
-  color: #fff;
+  color: var(--paper);
 }
 .proj-solution-heading {
   padding: clamp(140px, 17vw, 250px) 20px 0;
-  background: #fff;
+  background: var(--paper);
   overflow: hidden;
 }
 .proj-solution-heading h2 {
@@ -1806,7 +1645,7 @@ body.hero-night .nav-links a.active {
   font-size: clamp(19px, 1.7vw, 24px);
   font-weight: 500;
   line-height: 1.42;
-  color: #0a0a0a;
+  color: var(--ink-900);
   margin-bottom: clamp(40px, 4.5vw, 72px);
 }
 /* live: copy left (660), the two half videos stacked right with a 40px gap */
@@ -1838,7 +1677,7 @@ body.hero-night .nav-links a.active {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
-  background: #0a0a0a;
+  background: var(--ink-900);
 }
 .case-video-wide {
   margin-top: clamp(36px, 4vw, 64px);
@@ -1861,19 +1700,19 @@ body.hero-night .nav-links a.active {
   text-align: right;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  color: #0a0a0a;
+  color: var(--ink-900);
   margin-bottom: 22px;
 }
 .case-chapter-rule {
   height: 2px;
-  background: #1c1c1c;
+  background: var(--ink-800);
 }
 .case-chapter-sub {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: clamp(21px, 2.1vw, 30px);
   line-height: 1.4;
-  color: #0a0a0a;
+  color: var(--ink-900);
   margin-top: 20px;
 }
 .case-section {
@@ -1928,8 +1767,8 @@ body.hero-night .nav-links a.active {
 
 /* --- Poster template (hunger1942, vr-education) --- */
 .poster-page {
-  background: #fff;
-  color: #0a0a0a;
+  background: var(--paper);
+  color: var(--ink-900);
 }
 .poster-hero {
   /* live: title at doc y235, lede at y369 */
@@ -1964,8 +1803,8 @@ body.hero-night .nav-links a.active {
   display: block;
 }
 .poster-about {
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   margin-top: clamp(40px, 5vw, 72px);
   padding: clamp(56px, 7vw, 110px) clamp(24px, 5vw, 72px);
 }
@@ -2025,15 +1864,15 @@ body.hero-night .nav-links a.active {
 .poster-details-row dd {
   font-size: clamp(14px, 1.2vw, 17px);
   text-align: right;
-  color: #fff;
+  color: var(--paper);
 }
 .poster-details-row dd a {
-  color: #fe8411;
+  color: var(--accent-amber);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .poster-live-label {
-  color: #fe8411 !important;
+  color: var(--accent-amber) !important;
 }
 .poster-body {
   max-width: 1408px;
@@ -2074,7 +1913,7 @@ body.hero-night .nav-links a.active {
   display: flex;
   align-items: center;
   gap: 18px;
-  color: #0a0a0a;
+  color: var(--ink-900);
 }
 .poster-nav-item.next {
   text-align: right;
@@ -2425,8 +2264,8 @@ body.hero-night .nav-links a.active {
 
 /* Strict Framer contact migration overlay */
 .contact-page {
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
 }
 .contact-hero {
   min-height: 920px;
@@ -2463,8 +2302,8 @@ body.hero-night .nav-links a.active {
   width: 294px;
   height: 234px;
   border-radius: 14px;
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2559,8 +2398,8 @@ body.hero-night .nav-links a.active {
   width: 100%;
   height: 52px;
   border-radius: 4px;
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   font-family: var(--font-serif);
   font-size: 14px;
   font-weight: 600;
@@ -2619,7 +2458,7 @@ body.hero-night .nav-links a.active {
   /* 130px lands the meeting photo at live doc y2134 */
   padding: 130px 0 100px;
   border-bottom: 0;
-  background: #fff;
+  background: var(--paper);
   overflow: hidden;
 }
 .about-layout {
@@ -2661,7 +2500,7 @@ body.hero-night .nav-links a.active {
   margin: 0;
   padding: 0;
   border-left: 0;
-  color: #0a0a0a;
+  color: var(--ink-900);
   text-align: center;
 }
 .about-quote .zh {
@@ -2680,7 +2519,7 @@ body.hero-night .nav-links a.active {
   font-size: 20px;
   font-style: normal;
   line-height: 1.5;
-  color: #0a0a0a;
+  color: var(--ink-900);
 }
 .about-quote cite {
   margin-top: 10px;
@@ -2697,7 +2536,7 @@ body.hero-night .nav-links a.active {
   margin: 0 0 18px;
   font-size: 16px;
   line-height: 1.78;
-  color: #262626;
+  color: var(--ink-700);
 }
 .about-text strong {
   font-weight: 500;
@@ -2732,7 +2571,7 @@ body.hero-night .nav-links a.active {
   padding: 10px 20px;
   border-radius: 4px;
   background: #111;
-  color: #fff;
+  color: var(--paper);
   font-family: var(--font-serif);
   font-size: 16px;
   font-weight: 500;
@@ -2765,12 +2604,12 @@ body.hero-night .nav-links a.active {
   text-transform: capitalize;
   /* live: white-section essay titles carry a black side bar; the bar
      alternates sides (What Changed right, Shutter left) */
-  border-left: 4px solid #0a0a0a;
+  border-left: 4px solid var(--ink-900);
   padding-left: clamp(16px, 1.8vw, 26px);
 }
 .about-essay-right .section-intro h2 {
   border-left: 0;
-  border-right: 4px solid #0a0a0a;
+  border-right: 4px solid var(--ink-900);
   padding-left: 0;
   padding-right: clamp(16px, 1.8vw, 26px);
   text-align: right;
@@ -2808,7 +2647,7 @@ body.hero-night .nav-links a.active {
   font-style: italic;
   font-size: clamp(20px, 1.95vw, 28px);
   text-align: center;
-  color: #0a0a0a;
+  color: var(--ink-900);
 }
 /* live: Shutter section spans doc 4381-5600 (white) */
 .about-shutter {
@@ -2816,8 +2655,8 @@ body.hero-night .nav-links a.active {
 }
 /* dark band: How I Work + dojo wall (live: doc 5610-7143) */
 .about-dark {
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   padding: 98px 0;
 }
 .about-dark .container {
@@ -2832,7 +2671,7 @@ body.hero-night .nav-links a.active {
   font-size: clamp(42px, 5.1vw, 55px);
   font-weight: 500;
   line-height: 1.15;
-  color: #fff;
+  color: var(--paper);
   text-transform: capitalize;
   /* live: the dark-band title sits right-aligned */
   text-align: right;
@@ -2931,7 +2770,7 @@ body.hero-night .nav-links a.active {
 .about-activity-date {
   font-family: var(--font-serif);
   font-size: 22px;
-  color: #d4941e;
+  color: var(--accent-gold);
   margin-bottom: 14px;
 }
 .about-activity ul {
@@ -3352,8 +3191,8 @@ body.hero-night .nav-links a.active {
 }
 
 .contact-page {
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
 }
 .contact-hero {
   min-height: 760px;
@@ -3403,7 +3242,7 @@ body.hero-night .nav-links a.active {
   min-width: 244px;
   height: 233px;
   border-radius: 16px;
-  background: #0a0a0a;
+  background: var(--ink-900);
   justify-content: space-between;
   gap: 20px;
   padding: 32px;
@@ -3474,7 +3313,7 @@ body.hero-night .nav-links a.active {
   border: 0;
   border-radius: 6px;
   background: #e7e7e7;
-  color: #050505;
+  color: var(--ink-950);
   font-size: 15px;
   transition: background 0.2s var(--ease-default);
 }
@@ -3678,7 +3517,7 @@ body.hero-night .nav-links a.active {
   bottom: -1px;
   z-index: 30;
   height: 18px;
-  background: #fff;
+  background: var(--paper);
   pointer-events: none;
 }
 .home-roof-transition .roof {
@@ -3725,8 +3564,8 @@ body.hero-night .nav-links a.active {
 .fx-rise-big {
   opacity: 0;
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.7s var(--ease-reveal),
+    transform 0.9s var(--ease-reveal);
   will-change: opacity, transform;
 }
 .fx-rise {
@@ -3754,8 +3593,8 @@ body.hero-night .nav-links a.active {
 }
 .home-featured {
   padding: 88px 0 74px;
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
   /* garden decor extends past both edges (live does the same and clips) */
   overflow-x: clip;
 }
@@ -3803,8 +3642,8 @@ body.hero-night .nav-links a.active {
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.16);
   border-radius: 8px;
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
 }
 .home-project-card-large {
   grid-column: 1 / -1;
@@ -3855,7 +3694,7 @@ body.hero-night .nav-links a.active {
   height: 51px;
   display: grid;
   place-items: center;
-  border: 1px solid #fff;
+  border: 1px solid var(--paper);
   border-radius: 4px;
   font-family: var(--font-sans);
   font-size: 17px;
@@ -3867,8 +3706,8 @@ body.hero-night .nav-links a.active {
 .home-how {
   position: relative;
   height: 1735px;
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
   /* clip the decor bleed at the viewport, not at the 1440 canvas — on wide
      screens the screens/floors overflow the canvas like on the live site */
   overflow-x: clip;
@@ -3999,8 +3838,8 @@ body.hero-night .nav-links a.active {
   padding: 0 0 clamp(20px, 2.5vw, 40px);
   position: relative;
   overflow: hidden;
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
   /* opaque above the fixed night overlay while it fades out */
   z-index: 1;
 }
@@ -4156,7 +3995,7 @@ body.hero-night .nav-links a.active {
   font-size: clamp(19px, 1.5vw, 26px);
   font-weight: 400;
   line-height: 1.1;
-  color: #0a0a0a;
+  color: var(--ink-900);
 }
 .fc-tags {
   grid-column: 2;
@@ -4196,7 +4035,7 @@ body.hero-night .nav-links a.active {
       #0a0c12 66%,
       #06070b 100%
     );
-  color: #fff;
+  color: var(--paper);
   isolation: isolate;
   /* moon shows half on the right as a backdrop; content sits centred */
   --moon-d: clamp(520px, 80vh, 980px);
@@ -4362,7 +4201,7 @@ body.hero-night .nav-links a.active {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #fff;
+  color: var(--paper);
   cursor: pointer;
   transition: opacity 0.3s ease;
   z-index: 5;
@@ -4389,7 +4228,7 @@ body.hero-night .nav-links a.active {
 }
 .md-node.is-active .md-node-dot {
   transform: scale(1.9);
-  background: #fff;
+  background: var(--paper);
   box-shadow:
     0 0 0 5px rgba(255, 255, 255, 0.12),
     0 0 22px 4px rgba(255, 255, 255, 0.6);
@@ -4464,7 +4303,7 @@ body.hero-night .nav-links a.active {
   font-size: clamp(34px, 3.2vw, 56px);
   font-weight: 400;
   line-height: 0.98;
-  color: #fff;
+  color: var(--paper);
 }
 .md-panel-tags {
   margin: 0 0 14px;
@@ -4489,7 +4328,7 @@ body.hero-night .nav-links a.active {
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--paper);
   text-decoration: none;
   border-bottom: 1px solid var(--accent-red);
   padding-bottom: 5px;
@@ -4519,7 +4358,7 @@ body.hero-night .nav-links a.active {
   z-index: 7;
 }
 .md-arc:hover {
-  color: #fff;
+  color: var(--paper);
 }
 .md-arc-up {
   top: calc(50% - var(--moon-d) * 0.3);
@@ -4570,7 +4409,7 @@ body.hero-night .nav-links a.active {
   position: absolute;
   display: block;
   width: 475px;
-  color: #050505;
+  color: var(--ink-950);
   z-index: 3;
 }
 /* Framer pins these by fraction of the free space (left:% with a matching
@@ -4597,7 +4436,7 @@ body.hero-night .nav-links a.active {
   width: 1px;
   height: 100%;
   display: block;
-  background: #050505;
+  background: var(--ink-950);
   position: relative;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.78);
@@ -4606,11 +4445,11 @@ body.hero-night .nav-links a.active {
     0.68656px 1.14427px 1.33443px -2.16667px rgba(0, 0, 0, 0.15),
     3px 5px 5.83095px -3.25px rgba(0, 0, 0, 0.09);
   transition:
-    flex 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    flex 0.55s var(--ease-silk),
+    background-color 0.42s var(--ease-silk),
+    color 0.42s var(--ease-silk),
+    transform 0.42s var(--ease-silk),
+    box-shadow 0.42s var(--ease-silk);
 }
 .window-pane-left {
   border-top-left-radius: 280px;
@@ -4621,8 +4460,8 @@ body.hero-night .nav-links a.active {
 .window-pane:hover,
 .window-pane.is-active {
   flex: 3 0 0;
-  background: #fff;
-  color: #050505;
+  background: var(--paper);
+  color: var(--ink-950);
   transform: translateY(0);
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.13),
@@ -4640,7 +4479,7 @@ body.hero-night .nav-links a.active {
   /* default: ink on the black pane (no red on black — that read as alarming) */
   color: currentColor;
   transition:
-    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.42s var(--ease-silk),
     opacity 0.3s ease;
 }
 /* red only lands once the pane flips to white on hover/active — red vs white */
@@ -4669,7 +4508,7 @@ body.hero-night .nav-links a.active {
   transform: translateY(16px);
   transition:
     opacity 0.34s ease,
-    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    transform 0.42s var(--ease-silk);
 }
 .window-pane-preview img {
   object-fit: contain;
@@ -4715,11 +4554,11 @@ body.hero-night .nav-links a.active {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 325px;
   gap: 40px;
-  color: #050505;
+  color: var(--ink-950);
   z-index: 4;
   opacity: 0;
   transform: translateY(28px);
-  animation: featuredPreviewIn 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: featuredPreviewIn 0.52s var(--ease-silk) forwards;
 }
 .preview-group-a {
   top: 468px;
@@ -4790,8 +4629,8 @@ body.hero-night .nav-links a.active {
   display: grid;
   place-items: center;
   border-radius: 3px;
-  background: #050505;
-  color: #fff;
+  background: var(--ink-950);
+  color: var(--paper);
   font-family: var(--font-sans);
   font-size: 17px;
   font-weight: 700;
@@ -4862,7 +4701,7 @@ body.hero-night .nav-links a.active {
   right: 0;
   top: 1368px;
   height: 1310px;
-  background: #fff;
+  background: var(--paper);
   z-index: 2;
   pointer-events: none;
 }
@@ -4979,7 +4818,7 @@ body.hero-night .nav-links a.active {
   height: 1555px;
   min-height: 1180px;
   position: relative;
-  background: #fff;
+  background: var(--paper);
 }
 /* live construction: a #fafafa card with 141px side insets and the pond
    canvas inset 52px uniformly — the pond's own frame/pinstripe is drawn
@@ -4990,7 +4829,7 @@ body.hero-night .nav-links a.active {
   right: 141px;
   top: -19px;
   height: 1318px;
-  background: #fafafa;
+  background: var(--paper-warm);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
 }
 .home-koi-inner {
