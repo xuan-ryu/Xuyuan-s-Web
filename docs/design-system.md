@@ -51,32 +51,41 @@ art-direction or Canvas/WebGL internals.
 
 ### Typography
 
-| Role | Family | Current usage | Rule |
+| Role | Family | Usage | Rule |
 | --- | --- | --- | --- |
-| Display serif | `var(--font-serif)` | Hero greeting, page titles, case chapter banners, CTA marquee. | Use for large titles from 48px upward. Weight stays light/regular. |
-| Reading serif | `var(--font-newsreader)` | Body copy, captions, second-page/card treatment. | Use for long-form copy and elegant meta text. Line height 1.55 to 1.7. |
-| Compact UI | `var(--font-sans)` | Nav, labels, small controls, CJK microcopy. | Use for uppercase labels, form labels, mobile controls. Keep letter spacing intentional. |
-| Brush | `var(--font-brush)` | Logo, signature, seal-like wordmarks. | Brand moments only. Never use for paragraphs or controls. |
-| Mono | `var(--font-mono)` | Technical labels and tiny coordinate-like UI. | Use sparingly for numeric or system microcopy. |
+| Text / display | `var(--font-sans)` / `--font-serif` / `--font-newsreader` (all = **Manrope**) | Body copy, UI, labels, and page/section titles. | Manrope is a humanist sans tuned for long reading. The three aliases all resolve to the same Manrope stack so the ~90 legacy call sites switch together. |
+| Wordmark | `var(--font-condensed)` (**Saira Condensed**) | The big hero wordmark + `PORTFOLIO` label only. | Tall narrow display. Brand signature — not for body. |
+| Brush | `var(--font-brush)` (LiuJian Mao Cao) | Logo, signature, seal-like marks. | Brand moments only. Never paragraphs or controls. |
+| Mono | `var(--font-mono)` | Technical / coordinate-like microcopy. | Use sparingly. |
 
-Type scale anchors:
+All CJK glyphs fall through to Noto Sans SC / Murecho after the Latin face (no tofu).
 
-| Token name | Size | Use |
+#### Type scale
+
+Every `font-size` uses a **role token** from `app/globals.css` `:root` — set
+`font-size: var(--text-…)`, never a raw pixel/clamp invented per section. Fluid
+steps are `clamp(min, vw, max)`; small UI text is fixed px.
+
+| Token | Value | Role |
 | --- | --- | --- |
-| Display 1 | `clamp(82px, 12vw, 168px)` | About/Hongyadong hero scale. |
-| Display 2 | `clamp(58px, 8.4vw, 120px)` | Page and case major titles. |
-| Display 3 | `clamp(52px, 7.8vw, 112px)` | Chapter banners and CTA marquee. |
-| Heading | `clamp(42px, 5.1vw, 55px)` | Editorial section headings. |
-| Lead | `clamp(20px, 1.95vw, 28px)` | Section lead paragraphs. |
-| Body | `clamp(18px, 1.55vw, 22px)` | Long-form copy. |
-| Meta | `12px` to `17px` | Labels, captions, nav, dates. |
+| `--text-display-1` | `clamp(72px, 11vw, 144px)` | Hero / About opener — the single biggest title on a page. |
+| `--text-display-2` | `clamp(56px, 8vw, 110px)` | Page + case major titles. |
+| `--text-display-3` | `clamp(48px, 6.5vw, 80px)` | Chapter banners, CTA marquee, large section display. |
+| `--text-heading` | `clamp(32px, 3.4vw, 46px)` | Editorial section headings (the real `<h2>`/`<h3>`). |
+| `--text-title` | `clamp(24px, 2vw, 28px)` | Card and sub-section titles. |
+| `--text-lead` | `clamp(20px, 1.4vw, 24px)` | Section lead paragraphs. |
+| `--text-body` | `clamp(16px, 1.1vw, 18px)` | Long-form reading copy. |
+| `--text-meta` | `15px` | Captions, secondary text, dates. |
+| `--text-label` | `13px` | Uppercase labels, nav, eyebrows, tags. |
+| `--text-micro` | `11px` | Fine print, indices, legal. |
 
 Rules:
 
-- Do not use viewport-only font scaling. Always use `clamp()` with stable min and max.
-- Letter spacing defaults to `0`. Add tracking only for labels, vertical text, and uppercase UI.
-- Long-form text should not exceed about `68ch` unless it is a measured Framer clone.
-- Center display type only for poster-style moments. Most content sections should be left or right anchored.
+- Pick by **role**, not by eyeballing a pixel value. One heading size, one body size — reuse a token instead of inventing a new `clamp()`.
+- Letter spacing defaults to `0`. Add tracking only for `--text-label` / `--text-micro` uppercase, vertical text, and compact UI.
+- Long-form text stays about `68ch` unless it is a measured Framer clone.
+- Center display type only for poster moments. Most content is left/right anchored.
+- Measured Framer-clone geometry may keep literal sizes; everything else uses a token.
 
 ### Motion
 
