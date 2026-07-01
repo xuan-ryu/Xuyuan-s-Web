@@ -26,7 +26,6 @@ export default function Home() {
         scrollHint={site.scrollHint}
         page2Title={site.brandmark}
         page2Subtitle={site.blackPage.body}
-        page2BrandLine={site.blackPage.line}
         page2Footer="Keep scrolling. The true craft lives in the transitions."
         photoUrl="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
       />

@@ -2528,25 +2528,35 @@ export default function DigitalLandscape(props: Props) {
                     radial-gradient(ellipse 100% 88% at 50% 50%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.10) 72%, rgba(0,0,0,0.28) 100%);
             }
 
-            /* Spring bounce reveal */
+            /* Blur→sharp rise — supporting blocks materialize out of the mist */
             .p2-fade {
                 opacity: 0;
-                transform: translateY(20px) scale(0.98);
-                transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                            transform 0.7s cubic-bezier(0.34, 1.52, 0.64, 1);
-                will-change: opacity, transform;
+                transform: translateY(26px);
+                filter: blur(8px);
+                transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+                            transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                            filter 0.55s ease-out;
+                will-change: opacity, transform, filter;
             }
-            .page2-active .p2-fade { opacity: 1; transform: translateY(0) scale(1); }
+            .page2-active .p2-fade { opacity: 1; transform: translateY(0); filter: blur(0); }
+            /* Avatar: springier rise + subtle scale settle. No blur — a photo
+               resolving out of blur reads as a loading glitch, not intent; the
+               blur→sharp materialize is reserved for the text (ink). The active
+               rule below is more specific so the wrapper always settles sharp. */
             .page2-photo-wrapper.p2-fade {
-                transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                            transform 1.0s cubic-bezier(0.34, 1.65, 0.64, 1);
+                transform: translateY(30px) scale(0.94);
+                filter: none;
+                transition: opacity 0.5s ease-out,
+                            transform 1.0s cubic-bezier(0.34, 1.4, 0.5, 1);
             }
+            .page2-active .page2-photo-wrapper.p2-fade { transform: translateY(0) scale(1); filter: none; }
             .delay-1 { transition-delay: 0.00s; }
-            .delay-2 { transition-delay: 0.07s; }
+            .delay-2 { transition-delay: 0.06s; }   /* avatar */
             .delay-3 { transition-delay: 0.15s; }
             .delay-4 { transition-delay: 0.26s; }
-            .delay-5 { transition-delay: 0.36s; }
-            .delay-6 { transition-delay: 0.46s; }
+            .delay-5 { transition-delay: 0.62s; }   /* subtitle — after title wave */
+            .delay-6 { transition-delay: 0.82s; }   /* brand row */
+            .delay-7 { transition-delay: 0.98s; }   /* footer */
 
             /* Profile sticky — padding-top pulled out of inline style for responsive control */
             .profile-sticky { padding-top: 0; }
@@ -2601,38 +2611,40 @@ export default function DigitalLandscape(props: Props) {
             @keyframes titleBreath { 0%,100% { text-shadow: 0 2px 12px rgba(0,0,0,0.6); } 50% { text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 50px rgba(255,255,255,0.06); } }
             .page2-title {
                 font-family: var(--font-sans);
-                font-size: var(--text-display-3); letter-spacing: 0.01em; line-height: 1.2;
+                font-size: var(--text-display-3); letter-spacing: 0; line-height: 1.2;
                 font-weight: 300; color: #FFFFFF; text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-                margin-bottom: 10px; overflow: hidden;
-                /* room for the last line's descenders (g/y) — the word-reveal
-                   words start 0.75em lower, so this padding never un-masks them */
-                padding-bottom: 0.18em;
+                margin-bottom: 12px;
             }
-            .page2-active .page2-title { animation: titleBreath 5s ease-in-out infinite 1s; }
+            .page2-active .page2-title { animation: titleBreath 5s ease-in-out infinite 1.6s; }
 
-            /* Clip-path word reveal — each word slides up from mask */
-            .page2-word {
+            /* Per-character wave — each glyph rises and resolves out of blur, a
+               tight cascade so the whole line reads as one kinetic sweep. Words
+               stay atomic (nowrap) so wrapping only ever breaks between words. */
+            .page2-word { display: inline-block; margin-right: 0.26em; white-space: nowrap; }
+            .page2-char {
                 display: inline-block;
                 opacity: 0;
-                transform: translateY(0.75em);
-                transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                            transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+                transform: translateY(0.7em);
+                filter: blur(7px);
+                transition: opacity 0.5s cubic-bezier(0.2, 0.85, 0.25, 1),
+                            transform 0.62s cubic-bezier(0.2, 0.9, 0.3, 1),
+                            filter 0.5s ease-out;
             }
-            .page2-active .page2-word { opacity: 1; transform: translateY(0); }
+            .page2-active .page2-char { opacity: 1; transform: translateY(0); filter: blur(0); }
 
             /* Expanding rule beneath the name */
             .page2-name-rule {
                 width: 0; height: 1px;
                 background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
                 margin-bottom: 18px;
-                transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.25s;
+                transition: width 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.55s;
             }
             .page2-active .page2-name-rule { width: 280px; }
 
             .page2-subtitle {
                 font-family: var(--font-sans);
-                font-size: var(--text-lead); font-weight: 300; font-style: italic;
-                letter-spacing: 0.015em; line-height: 1.6; color: rgba(255,255,255,0.65);
+                font-size: var(--text-lead); font-weight: 300;
+                letter-spacing: 0; line-height: 1.6; color: rgba(255,255,255,0.65);
                 white-space: pre-line;
                 /* centered to match the rest of the card (title, rule, YES
                    line, footer are all centered); left-aligned here made the
@@ -2645,12 +2657,12 @@ export default function DigitalLandscape(props: Props) {
 
             /* Brand row */
             .page2-brand-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: clamp(10px, 2.5vh, 24px); }
-            .page2-brand-line { height: 1px; width: 36px; background: linear-gradient(90deg, rgba(255,255,255,0.22), rgba(255,255,255,0)); transform-origin: left; transform: scaleX(0); transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s; }
+            .page2-brand-line { height: 1px; width: 36px; background: linear-gradient(90deg, rgba(255,255,255,0.22), rgba(255,255,255,0)); transform-origin: left; transform: scaleX(0); transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.82s; }
             .page2-brand-line.left { background: linear-gradient(270deg, rgba(255,255,255,0.22), rgba(255,255,255,0)); transform-origin: right; }
             .page2-active .page2-brand-line { transform: scaleX(1); }
             .scramble-text { contain: layout paint; }
 
-            .page2-footer { font-family: var(--font-sans); font-size: var(--text-micro); font-weight: 300; letter-spacing: 0.06em; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
+            .page2-footer { font-family: var(--font-sans); font-size: var(--text-micro); font-weight: 300; letter-spacing: 0; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
 
             /* iOS viewport: dvh tracks the visible area (100vh includes the URL
                bar, so a fixed full-height canvas overflows/jumps on iOS) */
@@ -2715,28 +2727,30 @@ export default function DigitalLandscape(props: Props) {
               }
               .page2-tag { margin-bottom: 22px; }
               .page2-photo { width: clamp(130px, 38vw, 190px); height: clamp(130px, 38vw, 190px); }
-              .page2-title { font-size: clamp(28px, 8vw, 44px); margin-bottom: 12px; }
+              .page2-title { margin-bottom: 12px; }
               .page2-name-rule { margin-bottom: 12px; }
               .page2-active .page2-name-rule { width: min(72vw, 260px); }
-              .page2-subtitle { font-size: clamp(13px, 3.6vw, 16px); line-height: 1.6; }
+              .page2-subtitle { line-height: 1.6; }
               .page2-brand-row { gap: 10px; }
               .page2-brand-line { width: 24px; }
-              .page2-footer { font-size: 11px; line-height: 1.7; }
+              .page2-footer { line-height: 1.7; }
             }
             /* 短屏幕（横屏手机 / 小笔记本）：压缩垂直间距 */
             @media (max-height: 700px) {
               .profile-sticky { padding-top: 4vh; }
               .page2-photo { width: clamp(100px, 20vh, 150px) !important; height: clamp(100px, 20vh, 150px) !important; }
-              .page2-title { font-size: clamp(24px, 4.5vh, 40px); margin-bottom: 8px; }
+              .page2-title { margin-bottom: 8px; }
               .page2-name-rule { margin-bottom: 8px; }
-              .page2-subtitle { font-size: clamp(12px, 1.8vh, 15px); line-height: 1.5; }
+              .page2-subtitle { line-height: 1.5; }
             }
             @media (max-height: 560px) {
               .profile-sticky { padding-top: 1vh; }
               .page2-footer { display: none; }
             }
             @media (prefers-reduced-motion: reduce) {
-                .framer-xy-hero .w, .framer-xy-sub, .hero-quote, .hero-scroll-hint, .p2-fade { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+                .framer-xy-hero .w, .framer-xy-sub, .hero-quote, .hero-scroll-hint, .p2-fade, .page2-char { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
+                .page2-title { animation: none !important; }
+                .page2-name-rule, .page2-brand-line { transition: none !important; }
                 .hero-right-vertical { opacity: 0.9 !important; transition: none !important; }
             }
 
@@ -3041,42 +3055,38 @@ export default function DigitalLandscape(props: Props) {
                             willChange: "opacity",
                         }}
                     >
-                        <div className="page2-name-block p2-fade delay-3">
+                        <div className="page2-name-block">
                             <div className="page2-title">
-                                {page2Title.split(" ").map((word, i) => (
-                                    <span
-                                        key={i}
-                                        className="page2-word"
-                                        style={{
-                                            transitionDelay: `${0.02 + i * 0.05}s`,
-                                            marginRight: "0.26em",
-                                        }}
-                                    >
-                                        {word}
-                                    </span>
-                                ))}
+                                {(() => {
+                                    let ci = 0
+                                    return page2Title
+                                        .split(" ")
+                                        .map((word, wi) => (
+                                            <span
+                                                key={wi}
+                                                className="page2-word"
+                                            >
+                                                {word
+                                                    .split("")
+                                                    .map((ch, k) => (
+                                                        <span
+                                                            key={k}
+                                                            className="page2-char"
+                                                            style={{
+                                                                transitionDelay: `${0.12 + ci++ * 0.02}s`,
+                                                            }}
+                                                        >
+                                                            {ch}
+                                                        </span>
+                                                    ))}
+                                            </span>
+                                        ))
+                                })()}
                             </div>
                             <div className="page2-name-rule" />
-                            <div className="page2-subtitle">
+                            <div className="page2-subtitle p2-fade delay-5">
                                 {page2Subtitle}
                             </div>
-                        </div>
-                        <div className="page2-brand-row p2-fade delay-4">
-                            <div className="page2-brand-line left" />
-                            <div
-                                style={{
-                                    fontFamily: "var(--font-sans)",
-                                    fontSize: "var(--text-label)",
-                                    fontWeight: 200,
-                                    letterSpacing: "0.22em",
-                                    textTransform: "uppercase",
-                                    color: "rgba(255,255,255,0.85)",
-                                    whiteSpace: "nowrap",
-                                }}
-                            >
-                                {page2BrandLine}
-                            </div>
-                            <div className="page2-brand-line" />
                         </div>
                         <div className="page2-footer p2-fade delay-6">
                             {page2Footer}

@@ -24,8 +24,7 @@ export const site = {
   scrollHint: "Scroll down to explore",
   blackPage: {
     zh: "深 邃",
-    body: "I use AI the way a craftsman uses good tools: to build faster, not think less.",
-    line: "YES — TECH GIVES IT STRUCTURE, AND AESTHETICS GIVES IT SOUL.",
+    body: "AI is just the newest tool. The soul of the work never changes — it only comes through more vividly.",
   },
   archetypes: [
     {
