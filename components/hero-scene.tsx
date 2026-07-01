@@ -2603,7 +2603,10 @@ export default function DigitalLandscape(props: Props) {
                 font-family: var(--font-sans);
                 font-size: var(--text-display-3); letter-spacing: 0.01em; line-height: 1.2;
                 font-weight: 300; color: #FFFFFF; text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-                margin-bottom: 22px; overflow: hidden;
+                margin-bottom: 10px; overflow: hidden;
+                /* room for the last line's descenders (g/y) — the word-reveal
+                   words start 0.75em lower, so this padding never un-masks them */
+                padding-bottom: 0.18em;
             }
             .page2-active .page2-title { animation: titleBreath 5s ease-in-out infinite 1s; }
 

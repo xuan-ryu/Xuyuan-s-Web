@@ -1,10 +1,10 @@
 export const site = {
   name: "Xuyuan Liu",
   nameZh: "刘 栩源",
-  brandmark: "Hi, I'm Xuyuan. I design for intuition.",
-  title: "Xuyuan Liu — Product Designer & Creative Developer",
+  brandmark: "Hi, I'm Xuyuan — an AI design engineer.",
+  title: "Xuyuan Liu — AI Design Engineer",
   description:
-    "Interactive Design & Creative Development. Crafting digital experiences with an oriental aesthetic and modern engineering.",
+    "AI design engineer crafting digital products where design meets code — an oriental aesthetic with modern engineering.",
   email: "xuan.ryu8@gmail.com",
   phone: "+1 4405813229",
   location: "New York, NY",
@@ -14,7 +14,7 @@ export const site = {
   },
   greeting: ["Welcome,", "欢迎,", "ようこそ。"],
   heroSub:
-    "Product Designer & Creative Development.\nCrafting digital experiences with an aesthetic and modern design.",
+    "AI Design Engineer.\nI design products and build them in code — with AI as the medium.",
   brandCorner: {
     // bottom-left hero caption — credits the composition's source
     zh: "构图灵感源自《潇湘八景图》\nInspired by the Eight Views of Xiaoxiang",
@@ -24,7 +24,7 @@ export const site = {
   scrollHint: "Scroll down to explore",
   blackPage: {
     zh: "深 邃",
-    body: "Trained in research, pulled toward making things.\nI use AI the way a craftsman uses good tools — to think faster, not think less",
+    body: "I use AI the way a craftsman uses good tools: to build faster, not think less.",
     line: "YES — TECH GIVES IT STRUCTURE, AND AESTHETICS GIVES IT SOUL.",
   },
   archetypes: [
