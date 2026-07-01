@@ -258,7 +258,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
             style={{
               margin: 0,
               fontFamily: "var(--font-serif)",
-              fontSize: "clamp(32px, 5.8vw, 44px)",
+              fontSize: "var(--text-heading)",
               fontWeight: 400,
               letterSpacing: "0.06em",
               color: "#FFFFFF",
@@ -273,7 +273,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
             <span
               style={{
                 fontFamily: "var(--font-newsreader)",
-                fontSize: "clamp(12px, 1.3vw, 14px)",
+                fontSize: "var(--text-label)",
                 fontWeight: 400,
                 letterSpacing: "0.15em",
                 color: "rgba(255,255,255,0.85)",
@@ -289,7 +289,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
             style={{
               margin: 0,
               fontFamily: "var(--font-newsreader)",
-              fontSize: "clamp(17px, 2.8vw, 20px)",
+              fontSize: "var(--text-body)",
               fontWeight: 300,
               lineHeight: 1.7,
               color: "rgba(255,255,255,0.95)",

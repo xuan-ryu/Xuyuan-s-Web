@@ -2456,7 +2456,7 @@ export default function DigitalLandscape(props: Props) {
                inscription styles remain below. ── */
             .framer-xy-sub {
                 font-family: var(--font-sans);
-                font-size: clamp(12px, 1.2vw, 15px); color: #707070; letter-spacing: 0.01em; line-height: 1.6; max-width: 360px; font-weight: 300; white-space: pre-line;
+                font-size: var(--text-meta); color: #707070; letter-spacing: 0.01em; line-height: 1.6; max-width: 360px; font-weight: 300; white-space: pre-line;
                 margin-top: 28px;
                 opacity: 0; transform: translateY(7px); filter: blur(4px);
                 will-change: transform, opacity, filter;
@@ -2601,7 +2601,7 @@ export default function DigitalLandscape(props: Props) {
             @keyframes titleBreath { 0%,100% { text-shadow: 0 2px 12px rgba(0,0,0,0.6); } 50% { text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 50px rgba(255,255,255,0.06); } }
             .page2-title {
                 font-family: var(--font-sans);
-                font-size: clamp(40px, 5.5vw, 72px); letter-spacing: 0.01em; line-height: 1.2;
+                font-size: var(--text-display-3); letter-spacing: 0.01em; line-height: 1.2;
                 font-weight: 300; color: #FFFFFF; text-shadow: 0 2px 12px rgba(0,0,0,0.6);
                 margin-bottom: 22px; overflow: hidden;
             }
@@ -2628,7 +2628,7 @@ export default function DigitalLandscape(props: Props) {
 
             .page2-subtitle {
                 font-family: var(--font-sans);
-                font-size: clamp(17px, 2vw, 22px); font-weight: 300; font-style: italic;
+                font-size: var(--text-lead); font-weight: 300; font-style: italic;
                 letter-spacing: 0.015em; line-height: 1.6; color: rgba(255,255,255,0.65);
                 white-space: pre-line;
                 /* centered to match the rest of the card (title, rule, YES
@@ -2647,7 +2647,7 @@ export default function DigitalLandscape(props: Props) {
             .page2-active .page2-brand-line { transform: scaleX(1); }
             .scramble-text { contain: layout paint; }
 
-            .page2-footer { font-family: var(--font-sans); font-size: clamp(10px, 1.1vw, 12px); font-weight: 300; letter-spacing: 0.06em; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
+            .page2-footer { font-family: var(--font-sans); font-size: var(--text-micro); font-weight: 300; letter-spacing: 0.06em; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
 
             /* iOS viewport: dvh tracks the visible area (100vh includes the URL
                bar, so a fixed full-height canvas overflows/jumps on iOS) */
@@ -2855,7 +2855,7 @@ export default function DigitalLandscape(props: Props) {
                                 letterSpacing: "0.5em",
                                 fontWeight: 300,
                                 fontFamily: "var(--font-sans)",
-                                fontSize: "clamp(12px, 1.2vw, 15px)",
+                                fontSize: "var(--text-meta)",
                                 color: "#8a8a8a",
                                 whiteSpace: "pre-line",
                                 textAlign: "center",
@@ -2897,7 +2897,7 @@ export default function DigitalLandscape(props: Props) {
                                 alignItems: "center",
                                 gap: "12px",
                                 fontFamily: "var(--font-sans)",
-                                fontSize: "clamp(9px, 0.9vw, 10px)",
+                                fontSize: "var(--text-micro)",
                                 fontWeight: 300,
                                 letterSpacing: "0.2em",
                                 color: "#888",
@@ -3063,7 +3063,7 @@ export default function DigitalLandscape(props: Props) {
                             <div
                                 style={{
                                     fontFamily: "var(--font-sans)",
-                                    fontSize: "clamp(11px, 1.1vw, 13px)",
+                                    fontSize: "var(--text-label)",
                                     fontWeight: 200,
                                     letterSpacing: "0.22em",
                                     textTransform: "uppercase",

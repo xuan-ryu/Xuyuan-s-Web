@@ -1122,7 +1122,7 @@ export default function HongyadongFramer(props: Props) {
                     justify-content: space-between;
                     align-items: flex-start;
                     gap: 24px;
-                    font-size: 13px;
+                    font-size: var(--text-label);
                     letter-spacing: 0.16em;
                     text-transform: uppercase;
                     color: rgba(0, 0, 0, 0.52);
@@ -1153,7 +1153,7 @@ export default function HongyadongFramer(props: Props) {
                 .hyf-hero h1 {
                     margin: 0 0 0.14em;
                     font-family: var(--font-sans);
-                    font-size: clamp(82px, 12vw, 168px);
+                    font-size: var(--text-display-1);
                     line-height: 0.88;
                     font-weight: 300;
                     letter-spacing: 0.015em;
@@ -1218,7 +1218,7 @@ export default function HongyadongFramer(props: Props) {
                 .hyf-zh {
                     margin: 0 0 22px;
                     font-family: var(--font-sans);
-                    font-size: clamp(14px, 1.25vw, 18px);
+                    font-size: var(--text-meta);
                     font-weight: 500;
                     letter-spacing: 0.18em;
                     color: rgba(0, 0, 0, 0.42);
@@ -1307,7 +1307,7 @@ export default function HongyadongFramer(props: Props) {
                 .hyf-sub {
                     margin: 0;
                     font-family: var(--font-sans);
-                    font-size: clamp(16px, 1.5vw, 22px);
+                    font-size: var(--text-body);
                     font-weight: 400;
                     line-height: 1.55;
                     letter-spacing: -0.01em;
@@ -1349,7 +1349,7 @@ export default function HongyadongFramer(props: Props) {
                 .hyf-signature-note {
                     margin: 0 0 0.18em;
                     font-family: var(--font-sans);
-                    font-size: clamp(12px, 1vw, 15px);
+                    font-size: var(--text-meta);
                     font-weight: 400;
                     line-height: 1.35;
                     letter-spacing: 0.08em;
@@ -1373,22 +1373,22 @@ export default function HongyadongFramer(props: Props) {
                     }
 
                     .hyf-hero h1 {
-                        font-size: clamp(54px, 15vw, 104px);
+                        font-size: var(--text-display-2);
                     }
 
                     .hyf-zh {
                         margin: 0 0 16px;
-                        font-size: 13px;
+                        font-size: var(--text-label);
                         letter-spacing: 0.14em;
                     }
 
                     .hyf-sub {
-                        font-size: 14px;
+                        font-size: var(--text-meta);
                         line-height: 1.5;
                     }
 
                     .hyf-top {
-                        font-size: 11px;
+                        font-size: var(--text-micro);
                         letter-spacing: 0.14em;
                     }
 
@@ -1403,7 +1403,7 @@ export default function HongyadongFramer(props: Props) {
 
                     .hyf-signature-note {
                         margin-bottom: 0.14em;
-                        font-size: 11px;
+                        font-size: var(--text-micro);
                         letter-spacing: 0.06em;
                     }
                 }
@@ -1420,7 +1420,7 @@ export default function HongyadongFramer(props: Props) {
                     }
 
                     .hyf-hero h1 {
-                        font-size: clamp(62px, 10vw, 128px);
+                        font-size: var(--text-display-1);
                     }
 
                     .hyf-zh {
@@ -1428,7 +1428,7 @@ export default function HongyadongFramer(props: Props) {
                     }
 
                     .hyf-sub {
-                        font-size: clamp(14px, 1.3vw, 18px);
+                        font-size: var(--text-body);
                     }
                 }
 
@@ -1448,15 +1448,15 @@ export default function HongyadongFramer(props: Props) {
                     }
 
                     .hyf-hero h1 {
-                        font-size: clamp(42px, 8vw, 78px);
+                        font-size: var(--text-display-3);
                     }
 
                     .hyf-sub {
-                        font-size: 13px;
+                        font-size: var(--text-label);
                     }
 
                     .hyf-top {
-                        font-size: 10px;
+                        font-size: var(--text-micro);
                     }
 
                     .hyf-signature {
@@ -1481,17 +1481,17 @@ export default function HongyadongFramer(props: Props) {
 
                 @media (max-width: 480px) {
                     .hyf-hero h1 {
-                        font-size: clamp(44px, 14vw, 80px);
+                        font-size: var(--text-display-3);
                     }
 
                     .hyf-zh {
                         margin: 0 0 14px;
-                        font-size: 12px;
+                        font-size: var(--text-label);
                         letter-spacing: 0.12em;
                     }
 
                     .hyf-sub {
-                        font-size: 13px;
+                        font-size: var(--text-label);
                     }
 
                     .hyf-top {
@@ -1508,7 +1508,7 @@ export default function HongyadongFramer(props: Props) {
                     }
 
                     .hyf-signature-note {
-                        font-size: 10px;
+                        font-size: var(--text-micro);
                         letter-spacing: 0.05em;
                     }
                 }

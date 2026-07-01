@@ -120,7 +120,7 @@ export function Wordmark({ style }: { style?: CSSProperties }) {
 
         /* per-letter hover — the thin glyph simply tints to the cinnabar accent
            (the heavy slide didn't suit the hairline weight) */
-        .wm-cell:hover .wm-letter { fill: #d10000; }
+        .wm-cell:hover .wm-letter { fill: var(--seal-red); }
 
         /* PORTFOLIO — slides up out of the name once it lands */
         .wm-portfolio-mask {
@@ -138,7 +138,7 @@ export function Wordmark({ style }: { style?: CSSProperties }) {
           transform: translateY(130%);
           will-change: transform;
         }
-        .wm-o { color: #d10000; }
+        .wm-o { color: var(--seal-red); }
         .scene-loaded .wm-portfolio {
           animation: wmSlideUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards 1.7s;
         }

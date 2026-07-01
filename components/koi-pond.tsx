@@ -1955,7 +1955,7 @@ drawBody() {
               pointer-events:none; z-index:20;
             }
             .scroll-tip-label {
-              font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 300;
+              font-family: 'JetBrains Mono', monospace; font-size: var(--text-micro); font-weight: 300;
               letter-spacing: 0.28em; color: rgba(255,255,255,0.35); text-transform: uppercase;
               animation: scrollTipPulse 3s ease-in-out infinite;
             }
@@ -2019,7 +2019,7 @@ drawBody() {
             }
             .feed-text {
               font-family: var(--font-sans);
-              font-size: clamp(15px, 1.5vw, 20px); letter-spacing: -0.01em;
+              font-size: var(--text-body); letter-spacing: -0.01em;
               font-weight: 500; line-height: 1;
               color: rgba(255,255,255,0.82); transition: color 0.2s ease;
             }
