@@ -79,16 +79,17 @@ export const projects: Project[] = [
     coverClass: "cover-pulse",
     tags: ["Product Design", "Design System", "AI"],
     oneliner:
-      "Designing and building an AI marketing platform end to end — the design system, the core surfaces from Home to Calendar, and the quality of what the AI hands back to users — with a human in every loop.",
+      "Designing and building an AI marketing platform end to end — the system first, then the surfaces on top of it, with a human in every loop.",
     blurb:
-      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end — a token-driven design system of ~37 components and the core surfaces themselves: Home with its docked assistant, the marketing Calendar, Signal, Analytics, Studio. I owned the quality of what the AI hands back to users too — onboarding that turns a new brand into usable visual assets and a starter design system — and when the campaign production flow ran into trouble, I took it over mid-flight from another designer and rebuilt it on the system. The throughline of the work is one belief: AI should draft, humans should decide. Every generative step is wrapped in an editable brief, a review, or an approval gate, so speed never comes at the cost of brand safety.",
+      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end: a token-driven design system of ~37 components, the core surfaces — Home with its docked assistant, the marketing Calendar, Signal, Analytics, Studio — the quality of what the AI hands back to users, and the campaign production flow, taken over mid-flight from another designer and rebuilt on the system.\n\nThe throughline is one belief: AI should draft, humans should decide. Every generative step is wrapped in an editable brief, a review, or an approval gate, so speed never comes at the cost of brand safety.",
     role: "Product Designer · Design System · Front-end",
     duration: "2025 - present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team",
+    // Overview = what Pulse is + the owner's scope, once. The belief lives in
+    // the moment band; the acts carry the detail — no smearing.
     summary: [
-      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end: a token-driven design system, the core product surfaces — Home and its assistant, Calendar, Signal, Analytics, Studio — and the quality of what the AI hands back to users, from an onboarding that generates a brand's visual assets and starter design system, to the campaign production flow, which I inherited mid-flight from another designer and rebuilt on the system.",
-      "The throughline is one belief: AI should draft, humans should decide. Every generative step in Pulse is wrapped in a review, an editable brief, or an approval gate, so speed never comes at the cost of brand safety. I worked across the whole stack of the problem — tokens and components, the product surfaces, the assistant chat, the approval model, and the user-facing generation itself — and picked up the campaign flow as a rescue, rebuilding another designer's stalled start on the same system so the product stayed consistent the longer it grew.",
+      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end: the token-driven design system, the core surfaces from Home to the production Studio, the quality of what the AI hands back to users, and the campaign production flow — taken over mid-flight from another designer and rebuilt on the system.",
     ],
     moment: {
       title:
@@ -100,34 +101,107 @@ export const projects: Project[] = [
       ],
       // TODO: add a screen recording of New Post -> Create with AI -> editable brief -> approve.
     },
+    // Standard case-study arc: context → Act I (system) → Act II (product) →
+    // Act III (rescue). Engineering facts (dates, line counts, quotes) are
+    // transcribed from the Pulse repo's git log and docs — nothing invented.
+    // The pulse layout attaches its specimen figures to these positionally.
     chapters: [
       {
-        number: "Chapter 1",
-        title: "I built the system before the screens.",
+        number: "01 · Context",
+        title:
+          "Prototypes were piling up; pages were parked waiting for a system.",
         sections: [
           {
-            tags: "DESIGN SYSTEM · TOKENS · COMPONENTS",
+            tags: "TEAM CODE · PARKED PAGES · AUDIT",
             heading:
-              "One source of truth, not a folder of one-offs",
+              "Single-file prototypes, parked pages, parallel universes",
             body: [
-              "I started with the system, not the layouts. Pulse runs on a single canonical token set — color as six semantic ramps, a fixed type scale, an 8-based spacing rhythm, and radius and shadow scales — and a library of around 37 components built as standalone sources, browsable in a live preview and mirrored to a Figma handoff board.",
-              "The rule I held was simple: every screen composes from component contracts and shared tokens before any page-local UI is invented. Color is assigned by role, so a status green and a data-trend green never collide; a dependency-free check reconciles the component inventory, the preview, and the Figma board and flags any off-scale token, type, or radius before it ships. The system stopped being cleanup work and became the infrastructure that let the product grow without re-litigating the same patterns.",
-            ],
-          },
-          {
-            tags: "PRODUCT · SURFACES · INFORMATION HIERARCHY",
-            heading:
-              "A calm studio, not a dashboard of competing widgets",
-            body: [
-              "On top of the system sits the application — a sidebar-driven workspace spanning Home (a dashboard with a context-aware AI assistant), a marketing Calendar, a Signal feed of live brand trends, Analytics, Strategy, Campaigns, and the production Studio.",
-              "The design language is deliberately quiet: hierarchy comes from tone, spacing, and reading rhythm before borders, and the AI assistant docks beside the work instead of pulling the user away from it. The goal was a tool that feels like a focused studio rather than a wall of equal-weight cards.",
-              "The output is a design surface too. Onboarding doesn't end at a configured account — it turns a new brand into working material, generating on-brand visual assets and a starter design system the team can use from day one, and the brand vault feeds every generative step after that, so what the AI drafts already speaks the brand's language instead of arriving generic.",
+              "The team's work arrived the way single files do: whole prototypes uploaded to the repo root, one 13,020 lines long, and pages queuing behind the missing foundation. One teammate's commit message reads, in full, “Design is ready. Only waiting to run with new design system.”",
+              "The mess was measurable. The single-source audit put numbers on it: a 557 KB stylesheet carrying three hand-reconciled copies of the token set, and 94 page partials that imported nothing from the system. That was the situation the system had to answer.",
             ],
           },
         ],
       },
       {
-        number: "Chapter 2",
+        number: "02 · Act I",
+        title: "I built the system before the screens.",
+        sections: [
+          {
+            tags: "TOKENS · COMPONENTS · CANONICAL",
+            heading:
+              "One source of truth, not a folder of one-offs",
+            body: [
+              "The system was there from day one: my first product commit landed an 8,626-line single-file prototype with a 1,863-line design-system.html already sitting beside it — the design system explored as code before there was any process to require it.",
+              "Pulse runs on a single canonical token set — color as six semantic ramps, a fixed type scale, an 8-based spacing rhythm, and radius and shadow scales — and a library of around 37 components. On June 17 I made the pivot that stuck: drop React as the source of truth. Each component became a standalone folder — one HTML file, one CSS file — over a shared tokens.css of 340 custom properties, with a live browser to flip through the set.",
+              "The rule I held was simple: every screen composes from component contracts and shared tokens before any page-local UI is invented. Color is assigned by role, so a status green and a data-trend green never collide; a dependency-free check reconciles the component inventory, the preview, and the Figma board and flags any off-scale token, type, or radius before it ships.",
+            ],
+          },
+          {
+            tags: "STANDARDS · CI · ADOPTION",
+            heading: "The standard became commits, not advice",
+            body: [
+              "In one June wave I Prettier-normalized the codebase — the 13,020-line upload included — repaired the ESLint config, forced LF line endings, converted oversized PNGs to WebP at 94% smaller, and moved the loose prototypes out of the tracked root. I wrote the contracts down as documents — an app UI standard, then the single-source migration plan. A teammate stood up the CI that runs the consistency checks; I greened the token gate and kept extending it.",
+              "Then the parallel universes converged. The single-file prototypes were split into partials and page modules through late June, the hardest clusters extracted last, and the best pieces graduated into the library itself. Four days of slice-by-slice adoption after the audit, eight system components owned the app's UI and 1,905 verified-dead lines were gone.",
+            ],
+          },
+          {
+            tags: "LIBRARY · NPM · NO DRIFT",
+            heading: "One canonical library, wrapped for every consumer",
+            body: [
+              "That canonical layer is what made a package safe. Over June 23–25 a teammate wrapped the library as internal-package/react — typed React components on the team's private registry — where the JSX wrappers are the only authored layer. A build step copies the canonical CSS straight into the package, in the script's own words, so the components “style themselves from the truth source and can never drift.”",
+            ],
+          },
+          {
+            tags: "FIGMA · HANDOFF · DESIGNERS",
+            heading: "A handoff designers can double-click",
+            body: [
+              "The designer surface got the same discipline. On June 12 I rebuilt the visual component library as a self-contained HTML page, then expanded it into variant-by-state boards for Figma import — one 7,874-line file that prints every component, every state, with its interaction contract alongside. A companion foundations handbook typesets the brand rules — neutral first, color with meaning — for people who will never open the repo.",
+              "And the handoff is not a snapshot — when the system moves, a sync pass carries the decision back out to the designer surfaces; the latest landed July 1.",
+            ],
+          },
+          {
+            tags: "GIT LOG · EVIDENCE",
+            heading: "The paper trail, dated from the log",
+            body: [
+              "The record is the repository: 656 of my commits between May 30 and July 2, 2026, alongside a team shipping prototypes of its own. Eight entries below carry the arc — two of them teammates' work, and their notes say so.",
+              "By the end, the system had stopped being cleanup work. It was the infrastructure that let the product grow without re-litigating the same patterns.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "03 · Act II",
+        title: "The product: seven surfaces that read as one studio.",
+        sections: [
+          {
+            tags: "SURFACES · HIERARCHY · ASSISTANT",
+            heading:
+              "A calm studio, not a dashboard of competing widgets",
+            body: [
+              "On top of the system sits the application — a sidebar-driven workspace spanning Home (a dashboard with a context-aware AI assistant), a marketing Calendar, a Signal feed of live brand trends, Analytics, Strategy, Campaigns, and the production Studio.",
+              "The design language is deliberately quiet: hierarchy comes from tone, spacing, and reading rhythm before borders, and the AI assistant docks beside the work instead of pulling the user away from it. The goal was a tool that feels like a focused studio rather than a wall of equal-weight cards.",
+            ],
+          },
+          {
+            tags: "STATIC EXPORT · FILE:// · DEMOS",
+            heading: "Demos the team could open from disk",
+            body: [
+              "Standards alone don't align a team — runnable demos do. The first week of June was a React sprint: a Calendar workspace, the homepage post queue, a 1:1 port of the campaigns workspace — real surfaces for the team to react to within days. By June 24 the demos were unified into a single vanilla-HTML product, draft/pulse-app: Home, Calendar, Campaign, Analytics, Signal, Strategy, and Onboarding as routable pages on the system's tokens.",
+              "The engineering constraint is the point: the app builds to plain HTML that renders from a double-click. The README states it as a rule — “Preserve file:// support because designers may open this export directly.” Every product screenshot on this page was captured from a file:// address: no server, no toolchain, no account.",
+            ],
+          },
+          {
+            tags: "OUTPUT QUALITY · ONBOARDING · BRAND VAULT",
+            heading: "The output is a design surface too",
+            body: [
+              "Onboarding doesn't end at a configured account — it turns a new brand into working material, generating on-brand visual assets and a starter design system the team can use from day one.",
+              "The brand vault feeds every generative step after that, so what the AI drafts already speaks the brand's language instead of arriving generic.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "04 · Act III",
         title: "The campaign flow: inherited as a rescue, rebuilt on the system.",
         sections: [
           {
@@ -135,7 +209,7 @@ export const projects: Project[] = [
             heading:
               "A light brief, drafted by the AI, owned by the human",
             body: [
-              "The campaign production flow reached me as firefighting — another designer's work I took over mid-flight and rebuilt on the system. A post belongs to a campaign, so it starts inside that campaign's Posts page — New Post, then Create with AI — and the rest is a conversation, not a form. Instead of a long upfront questionnaire, the user gives a goal, an optional note, and a few assets. The detailed brief is the AI's job.",
+              "The campaign production flow reached me as firefighting — another designer's work, taken over mid-flight. A post belongs to a campaign, so it starts inside that campaign's Posts page — New Post, then Create with AI — and the rest is a conversation, not a form. Instead of a long upfront questionnaire, the user gives a goal, an optional note, and a few assets. The detailed brief is the AI's job.",
               "Pulse analyses the goal, the selected assets, the brand vault, and the campaign, then drafts a structured Creative Brief as editable fields inside the chat. The user edits any field, talks to refine, and sees the budget before committing. Approving the brief hands off to generation, and the post lands in Content Review.",
             ],
           },
@@ -143,9 +217,11 @@ export const projects: Project[] = [
             tags: "APPROVALS · TRUST · GUARDRAILS",
             heading:
               "Two gates and a publish guardrail keep a person in charge",
+            // The publish-guardrail rule ("AI can draft and schedule…") is set
+            // once by the pulse layout as the guardrail artifact below this
+            // section — not repeated here.
             body: [
               "Approval runs through an ordered chain — reviewer, then brand admin, then org owner — with SLA timers and an escalation that never auto-approves. A campaign-level plan gate signs off direction and spend before any credits are burned; a per-post content gate signs off the finished creative before it goes live.",
-              "Underneath it all sits one non-negotiable rule, surfaced clearly in the UI: AI can draft and schedule, but releasing to publish is always a human action. The guardrail is independent of the gates, so turning approvals off never lets an agent publish on its own.",
             ],
           },
           {
@@ -176,7 +252,7 @@ export const projects: Project[] = [
     cardBlurb:
       "The earlier Vicino homepage made the product feel alive: draggable creation nodes, connected outputs, and a dark workflow canvas where concept, image, video, and 3D could sit in one spatial chain. My work started from that promise and pushed it toward a clearer product system.",
     blurb:
-      "Vicino AI was expanding across 3D, image, video, editing tools, references, and higher-level workflow features. What the product needed was not another feature tour. It needed a shared interaction model that could make those pieces feel like one production environment instead of a growing collection of experiments.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, sidebars, sliding panels, and the design system behind them. The core lesson was simple: new technical range only matters when people still have clear places to inspect, redirect, and decide.",
+      "Vicino AI was expanding across 3D, image, video, editing tools, references, and higher-level workflow features. What the product needed was not another feature tour. It needed a shared interaction model that could make those pieces feel like one production environment instead of a growing collection of experiments.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, the two side rails, sliding panels, and the design system behind them. The core lesson was simple: new technical range only matters when people still have clear places to inspect, redirect, and decide.",
     role: "Product Designer / PM",
     duration: "2025 - present",
     type: "Intern",
