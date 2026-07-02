@@ -1,37 +1,15 @@
-﻿// Capture one URL at several scroll offsets.
+// Capture one URL at several scroll offsets.
 // Usage: node scripts/capture-one.mjs <url> <outPrefix> <y1,y2,...> [width] [height]
-import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
+import { launchBrowser, skipLoader } from "./_pw.mjs";
 
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
 const [, , url, outPrefix, offsetsArg, widthArg, heightArg] = process.argv;
 const offsets = (offsetsArg || "0").split(",").map(Number);
 const vpWidth = Number(widthArg) || 1440;
 const vpHeight = Number(heightArg) || 1000;
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: vpHeight } });
-await page.addInitScript(() => {
-  try {
-    sessionStorage.setItem("skip-loader", "1");
-  } catch {}
-});
+await skipLoader(page);
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
 await page.waitForTimeout(2500);
 for (const y of offsets) {

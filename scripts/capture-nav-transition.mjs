@@ -1,37 +1,14 @@
-﻿// Click a nav link and capture frames of the page transition.
+// Click a nav link and capture frames of the page transition.
 // Usage: node scripts/capture-nav-transition.mjs <url> <linkText> <outPrefix>
-import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
+import { launchBrowser, skipLoader } from "./_pw.mjs";
 
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
 const [, , url, linkText, outPrefix] = process.argv;
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const page = await browser.newPage({
   viewport: { width: 1536, height: 770 },
   reducedMotion: "no-preference",
 });
-await page.addInitScript(() => {
-  try {
-    sessionStorage.setItem("skip-loader", "1");
-    sessionStorage.setItem("loader-shown", "1");
-  } catch {}
-});
+await skipLoader(page, ["loader-shown"]);
 page.on('console', m => console.log('[browser]', m.text().slice(0,120)));
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
 await page.waitForTimeout(2000);

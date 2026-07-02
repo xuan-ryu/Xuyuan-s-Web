@@ -1,29 +1,11 @@
-﻿// Capture the session loader animation frames (does NOT skip the loader).
+// Capture the session loader animation frames (does NOT skip the loader).
 // Usage: node scripts/capture-loader.mjs <url> <outPrefix> [width]
-import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
+import { launchBrowser } from "./_pw.mjs";
 
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
 const [, , url, outPrefix, widthArg] = process.argv;
 const vpWidth = Number(widthArg) || 1440;
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
 await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
 

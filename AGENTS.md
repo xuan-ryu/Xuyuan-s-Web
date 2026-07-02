@@ -4,6 +4,18 @@
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
 
+## Engineering skill gate
+
+Before build/tooling/dependency/asset/refactor work, running checks or
+screenshots, or touching the WebGL scene components, read and follow:
+
+- `skills/xuyuan-portfolio-engineering/SKILL.md`
+
+It carries the dev-server rules (ONE `next dev` on :3000 — a second one or an
+in-tree `next build` corrupts the Turbopack cache), the validation workflow,
+the `scripts/_pw.mjs` screenshot tooling, the asset policy, the data-layer
+conventions, and the scene lifecycle contracts.
+
 ## Design skill gate
 
 Before changing portfolio UI, visual hierarchy, typography, color, motion,

@@ -1,26 +1,8 @@
-﻿// Capture live + react at mobile width for the main routes.
+// Capture live + react at mobile width for the main routes.
 // Usage: node scripts/capture-mobile-pair.mjs <outDirName>
 import fs from "node:fs/promises";
 import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
-
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
+import { launchBrowser, routeName, skipLoader } from "./_pw.mjs";
 
 const plan = {
   "/": [0, 700, 1400, 2100, 2800, 3500, 4500, 5500],
@@ -33,7 +15,7 @@ const plan = {
 
 const targets = [
   ["live", "https://xuyuan.framer.website"],
-  ["react", "http://127.0.0.1:4000"],
+  ["react", "http://localhost:3000"],
 ];
 
 const outDir = path.join(
@@ -43,11 +25,7 @@ const outDir = path.join(
 );
 await fs.mkdir(outDir, { recursive: true });
 
-function routeName(route) {
-  return route === "/" ? "home" : route.slice(1).replaceAll("/", "__");
-}
-
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 try {
   for (const [targetName, baseUrl] of targets) {
     const context = await browser.newContext({
@@ -58,11 +36,7 @@ try {
       userAgent:
         "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
     });
-    await context.addInitScript(() => {
-      try {
-        sessionStorage.setItem("skip-loader", "1");
-      } catch {}
-    });
+    await skipLoader(context);
     for (const [route, offsets] of Object.entries(plan)) {
       const page = await context.newPage();
       try {

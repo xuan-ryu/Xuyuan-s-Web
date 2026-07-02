@@ -9,6 +9,9 @@ const config = [
       "scripts/**",
       "public/**",
       "next-env.d.ts",
+      // local working snapshots — not app code, keep them out of the lint signal
+      "backups/**",
+      "assets-backup/**",
     ],
   },
   ...next,

@@ -1,36 +1,14 @@
-﻿// Measure How-I-Work decor boxes at a fixed scroll position.
+// Measure How-I-Work decor boxes at a fixed scroll position.
 // Usage: node scripts/measure-how-decor.mjs <url> <scrollY> [width]
-import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
+import { launchBrowser, skipLoader } from "./_pw.mjs";
 
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
 const [, , url, scrollArg, widthArg] = process.argv;
 const scrollY = Number(scrollArg);
 const vpWidth = Number(widthArg) || 1440;
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
-await page.addInitScript(() => {
-  try {
-    sessionStorage.setItem("skip-loader", "1");
-  } catch {}
-});
+await skipLoader(page);
 await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
 await page.waitForTimeout(2500);
 await page.evaluate((y) => window.scrollTo(0, y), scrollY);

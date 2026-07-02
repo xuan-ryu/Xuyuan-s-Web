@@ -1,4 +1,4 @@
-﻿// Reproduce: tab hidden 鈫?visible again 鈥?does the hero RAF loop resume?
+﻿// Reproduce: tab hidden -> visible again -- does the hero RAF loop resume?
 // Simulates via visibilityState override + events (headless can't truly background).
 // Usage: node scripts/repro-tabswitch.mjs <url> [scrollY]
 import path from "node:path";

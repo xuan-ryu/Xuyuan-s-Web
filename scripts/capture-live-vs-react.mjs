@@ -1,24 +1,8 @@
-﻿import fs from "node:fs/promises";
+// Capture live + react desktop screenshots at planned scroll offsets per route.
+// Usage: node scripts/capture-live-vs-react.mjs [outDirName]
+import fs from "node:fs/promises";
 import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
-
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
+import { launchBrowser, routeName, skipLoader } from "./_pw.mjs";
 
 // route -> scroll offsets (px) to capture
 const plan = {
@@ -32,19 +16,14 @@ const plan = {
 
 const targets = [
   ["live", "https://xuyuan.framer.website"],
-  ["react", "http://127.0.0.1:4000"],
+  ["react", "http://localhost:3000"],
 ];
 
 const outName = process.argv[2] || "live-vs-react";
 const outDir = path.join(process.cwd(), "audit-screenshots", outName);
-
-function routeName(route) {
-  return route === "/" ? "home" : route.slice(1).replaceAll("/", "__");
-}
-
 await fs.mkdir(outDir, { recursive: true });
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 try {
   for (const [targetName, baseUrl] of targets) {
     const context = await browser.newContext({
@@ -52,11 +31,7 @@ try {
       deviceScaleFactor: 1,
     });
     // skip the intro loader on the react build
-    await context.addInitScript(() => {
-      try {
-        sessionStorage.setItem("skip-loader", "1");
-      } catch {}
-    });
+    await skipLoader(context);
 
     for (const [route, offsets] of Object.entries(plan)) {
       const page = await context.newPage();

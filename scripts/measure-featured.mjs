@@ -1,42 +1,15 @@
-﻿// Measure bounding boxes of the Featured-section decor on a page.
-// Usage: node scripts/measure-featured.mjs <url>
-import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
+// Measure bounding boxes of the Featured-section decor on a page.
+// Usage: node scripts/measure-featured.mjs <url> [width]
+import { launchBrowser, preScroll, skipLoader } from "./_pw.mjs";
 
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
 const vpWidth = Number(process.argv[3]) || 1440;
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 const page = await browser.newPage({ viewport: { width: vpWidth, height: 1000 } });
-await page.addInitScript(() => {
-  try {
-    sessionStorage.setItem("skip-loader", "1");
-  } catch {}
-});
+await skipLoader(page);
 await page.goto(process.argv[2], { waitUntil: "networkidle", timeout: 60000 });
 await page.waitForTimeout(2500);
 // scroll through to force lazy loads
-await page.evaluate(async () => {
-  for (let y = 0; y < document.body.scrollHeight; y += 800) {
-    window.scrollTo(0, y);
-    await new Promise((r) => setTimeout(r, 100));
-  }
-});
+await preScroll(page, { step: 800, delay: 100, returnToTop: false });
 await page.waitForTimeout(800);
 
 const data = await page.evaluate(() => {

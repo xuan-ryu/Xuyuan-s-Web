@@ -38,7 +38,7 @@ const found = new Map();
 
 for (let y = 0; y < height - 1000; y += 700) {
   await page.evaluate((top) => window.scrollTo(0, top), y);
-  // sample immediately and shortly after 鈥?mid-animation states
+  // sample immediately and shortly after -- catches mid-animation states
   for (const delay of [60, 200, 400]) {
     await page.waitForTimeout(delay);
     const rows = await page.evaluate(() => {

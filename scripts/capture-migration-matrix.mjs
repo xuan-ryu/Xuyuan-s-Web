@@ -1,24 +1,9 @@
+// Screenshot matrix: live Framer baseline vs local React build, desktop +
+// mobile, across all routes. Wired to `npm run audit:screenshots`.
+// Output: audit-screenshots/matrix/<target>__<viewport>__<route>.png
 import fs from "node:fs/promises";
 import path from "node:path";
-import os from "node:os";
-import { pathToFileURL } from "node:url";
-
-async function loadPlaywright() {
-  try {
-    return await import("playwright");
-  } catch {
-    const fallback = path.join(
-      os.tmpdir(),
-      "xuyuan-pw-tools",
-      "node_modules",
-      "playwright",
-      "index.mjs",
-    );
-    return import(pathToFileURL(fallback).href);
-  }
-}
-
-const { chromium } = await loadPlaywright();
+import { launchBrowser, routeName } from "./_pw.mjs";
 
 const routes = [
   "/",
@@ -33,8 +18,8 @@ const routes = [
 ];
 
 const targets = [
-  ["source", "http://127.0.0.1:4101"],
-  ["react", "http://127.0.0.1:4000"],
+  ["live", "https://xuyuan.framer.website"],
+  ["react", "http://localhost:3000"],
 ];
 
 const viewports = [
@@ -44,13 +29,9 @@ const viewports = [
 
 const outDir = path.join(process.cwd(), "audit-screenshots", "matrix");
 
-function routeName(route) {
-  return route === "/" ? "home" : route.slice(1).replaceAll("/", "__");
-}
-
 await fs.mkdir(outDir, { recursive: true });
 
-const browser = await chromium.launch();
+const browser = await launchBrowser();
 try {
   for (const [targetName, baseUrl] of targets) {
     for (const [viewportName, viewport] of viewports) {

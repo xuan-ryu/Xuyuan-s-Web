@@ -44,7 +44,7 @@ await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
 await page.waitForTimeout(2500);
 
 const heroAlive = async () => {
-  // sample canvas pixels twice 鈥?the mountain twinkles, so frames differ
+  // sample canvas pixels twice -- the mountain twinkles, so frames differ
   return page.evaluate(
     () =>
       new Promise((resolve) => {
