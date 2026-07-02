@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { site } from "@/data/site";
 import { projects } from "@/data/projects";
 import { Loader } from "@/components/loader";
@@ -6,9 +5,8 @@ import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond-lazy";
 import { FeaturedGate } from "@/components/featured-gate";
 import { RoofTransition } from "@/components/roof-transition";
-import { HowDecorParallax } from "@/components/how-decor-parallax";
+import { KoiHowOverlay } from "@/components/koi-how-overlay";
 import { CtaBlock } from "@/components/cta-block";
-import { ValueCard } from "@/components/value-card";
 
 export default function Home() {
   const liteScenesEnabled = process.env.NEXT_PUBLIC_LITE_SCENES === "1";
@@ -42,105 +40,36 @@ export default function Home() {
         <FeaturedGate projects={projects} />
       </div>
 
-      {!liteScenesEnabled ? (
-        <section className="home-koi-section" aria-label="Interactive koi pond">
-          <div className="home-koi-frame">
-            <div className="home-koi-inner" data-nav-dark>
+      {/* The pond hosts How I Work: after a few feeds (or the overlay's
+          in-view/scroll fallback) the title + method cards surface over the
+          water. The old #value screens/vase/bamboo collage is retired — its
+          markup is preserved at git tag backup/home-how-screens. */}
+      <section
+        id="value"
+        className="home-koi-section koi-has-how"
+        aria-label="Interactive koi pond"
+      >
+        <div className="home-koi-frame">
+          <div className="home-koi-inner" data-nav-dark>
+            {!liteScenesEnabled ? (
               <KoiPondScene
                 eyebrow="INTERLUDE / INK ECOSYSTEM"
                 titleMain="A small pond"
                 titleSub="for the wandering eye"
                 tag="MOVE THE CURSOR. FEED THE FISH."
-                feedText="Why not feed the fish?"
+                feedText="Feed the fish"
                 showScrollTip
                 introDurationMs={800}
                 heroBoxXvw={50}
               />
-            </div>
+            ) : null}
           </div>
-        </section>
-      ) : null}
-
-      {/* live layout: 96px title right-of-center, antique-screen decor on both
-          edges, three glassy method cards staggered left/right/left with ink
-          brush strokes behind them; geometry measured from the live site */}
-      <section id="value" className="home-how">
-        <div className="home-how-canvas">
-        <HowDecorParallax />
-        <div className="how-decor how-screen" aria-hidden="true">
-          <Image
-            src="/assets/framerusercontent.com/images/YLXrjVSbjpbSEr6VDxoQlckuA4E.png"
-            alt=""
-            fill
-            sizes="608px"
-          />
         </div>
-        <div className="how-decor how-vase" aria-hidden="true">
-          <Image
-            src="/assets/framerusercontent.com/images/ZDxCTcmPVVb0cfyh5FFNd4dj1NA.png"
-            alt=""
-            fill
-            sizes="376px"
-          />
-        </div>
-        <div className="how-decor how-bamboo-screen" aria-hidden="true">
-          <Image
-            src="/assets/framerusercontent.com/images/lwMaDnjXri23sjZmiuTe7sT1Q.png"
-            alt=""
-            fill
-            sizes="881px"
-          />
-        </div>
-        <div className="how-decor how-lotus" aria-hidden="true">
-          <Image
-            src="/assets/framerusercontent.com/images/GuVBPaGjujlgeSpfvNyLP3YczDs.png"
-            alt=""
-            fill
-            sizes="597px"
-          />
-        </div>
-        <div className="how-decor how-gold-screen" aria-hidden="true">
-          <Image
-            src="/assets/framerusercontent.com/images/j6sQpno4wHi7mS5QGmU6grlMWI.png"
-            alt=""
-            fill
-            sizes="947px"
-          />
-        </div>
-        <div className="how-decor how-dark-screen" aria-hidden="true">
-          <Image
-            src="/assets/framerusercontent.com/images/WpBupAnkoyx461zF3yJoLAf86VQ.png"
-            alt=""
-            fill
-            sizes="385px"
-          />
-        </div>
-        {["how-brush-a", "how-brush-b", "how-brush-c"].map((cls) => (
-          <div key={cls} className={`how-decor how-brush ${cls}`} aria-hidden="true">
-            <Image
-              src="/assets/framerusercontent.com/images/RJnh8cLkwy27PD5vycbXZbYjcQA.png"
-              alt=""
-              fill
-              sizes="800px"
-            />
-          </div>
-        ))}
-
-        <h2 className="home-how-title fx-rise">How I Work</h2>
-
-        {site.workMethods.map((method, i) => (
-          <div
-            key={method.title}
-            className={`how-card-pos how-card-pos-${i + 1}`}
-          >
-            <ValueCard
-              title={method.title}
-              subtitle={method.heading}
-              bodyText={method.body}
-            />
-          </div>
-        ))}
-        </div>
+        <KoiHowOverlay
+          title="How I Work"
+          methods={site.workMethods}
+          forceReveal={liteScenesEnabled}
+        />
       </section>
 
       <CtaBlock />

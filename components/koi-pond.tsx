@@ -159,9 +159,34 @@ export default function InkKoiEcosystem(props: Props) {
         // Feed mode
         // =========================
         let feedMode = false
-        let feedIntroShown = true
+        let feedCount = 0
+        // Dock state: after the first feed (or when the How-I-Work overlay
+        // surfaces) the centered tip collapses into a small chip on the left
+        // edge. Transform-only: JS measures the dock delta into CSS vars.
+        let tipDocked = false
+        const DOCK_INSET = 24
+        const DOCK_SCALE = 0.8
+        const updateDockVars = () => {
+            if (!tipDocked) return
+            const rect = container.getBoundingClientRect()
+            const chipW = uiBox.offsetWidth // layout width, unaffected by transform
+            const dockX = DOCK_INSET + (chipW * DOCK_SCALE) / 2 - rect.width / 2
+            uiBox.style.setProperty("--dock-x", dockX.toFixed(1) + "px")
+            uiBox.style.setProperty("--dock-s", String(DOCK_SCALE))
+        }
+        const dockTip = () => {
+            if (tipDocked) return
+            tipDocked = true
+            updateDockVars()
+            uiBox.classList.add("dismissed")
+        }
+        // The overlay reveals via fallback (dwell/scroll) too — dock the tip
+        // then as well so the cards never rise under the centered pill.
+        const onHowReveal = () => dockTip()
+        window.addEventListener("koi:how-reveal", onHowReveal)
         const syncFeedUi = () => {
             container.classList.toggle("feed-mode", feedMode)
+            feedBtn.setAttribute("aria-pressed", String(feedMode))
             feedCursor.style.display = feedMode ? "block" : "none"
             feedCursor.style.opacity = feedMode ? "1" : "0"
         }
@@ -171,9 +196,8 @@ export default function InkKoiEcosystem(props: Props) {
         }
         const onFeedClick = (e: Event) => {
             e.stopPropagation()
-            if (feedIntroShown) {
-                feedIntroShown = false
-                uiBox.classList.add("dismissed")
+            if (!tipDocked) {
+                dockTip()
                 feedMode = true
             } else {
                 feedMode = !feedMode
@@ -393,6 +417,7 @@ export default function InkKoiEcosystem(props: Props) {
             }
 
             rebuildLilyPads()
+            updateDockVars()
         }
 
         const onResize = () => resize()
@@ -1624,8 +1649,22 @@ drawBody() {
                     return
                 }
             }
-            if (feedMode) spawnFoodBurst(pos.x, pos.y)
-            else {
+            if (feedMode) {
+                spawnFoodBurst(pos.x, pos.y)
+                // Feed-count signal for the How-I-Work overlay (and anything
+                // else outside this island — it is loaded via next/dynamic,
+                // so a DOM event is cleaner than threading a callback prop).
+                feedCount++
+                try {
+                    window.dispatchEvent(
+                        new CustomEvent("koi:feed", {
+                            detail: { count: feedCount },
+                        })
+                    )
+                } catch {
+                    /* CustomEvent unavailable — signal is progressive */
+                }
+            } else {
                 for (const f of fishes) {
                     const dHead = dist(f.x, f.y, pos.x, pos.y),
                         dMid = dist(
@@ -1875,6 +1914,7 @@ drawBody() {
             window.removeEventListener("pageshow", onPageShow)
             window.removeEventListener("scroll", onViewportChange)
             window.removeEventListener("keydown", handleKeyDown) // ✨ 清理事件
+            window.removeEventListener("koi:how-reveal", onHowReveal)
             viewportObserver?.disconnect()
             window.removeEventListener("resize", onResize)
             container.removeEventListener("pointermove", onPointerMove)
@@ -1928,7 +1968,9 @@ drawBody() {
                 background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 38%, rgba(0,0,0,0.55) 100%);
             }
 
-            /* Feed UI — intro center, then scales down in place (transform/opacity only) */
+            /* Feed UI — intro center; after the first feed it docks to the
+               left edge as a small chip (transform/opacity only; the dock
+               delta is measured into --dock-x/--dock-s by JS). */
             #hero-ui {
               position: absolute;
               top: 50%; left: 50%;
@@ -1936,7 +1978,7 @@ drawBody() {
               pointer-events: auto;
               z-index: 30;
               will-change: transform, opacity;
-              transition: transform 0.65s cubic-bezier(0.4,0,0.2,1),
+              transition: transform 0.8s var(--ease-silk),
                           opacity 0.65s cubic-bezier(0.4,0,0.2,1);
               animation: feedIntroAppear 0.7s 0.9s ease both;
             }
@@ -1945,8 +1987,14 @@ drawBody() {
               to   { opacity:1; transform: translate(-50%, -50%); }
             }
             #hero-ui.dismissed {
-              transform: translate(-50%, -50%) scale(0.85);
+              transform: translate(calc(-50% + var(--dock-x, 0px)), -50%)
+                         scale(var(--dock-s, 1));
               animation: none;
+            }
+            @media (max-width: 740px) {
+              /* phone: the pond band can grow to host the How-I-Work stack —
+                 keep the tip anchored in the top water area */
+              #hero-ui { top: min(50%, 380px); }
             }
 
             #scroll-tip {
@@ -1975,60 +2023,60 @@ drawBody() {
               50%     { transform: translateY(5px); opacity:1; }
             }
 
-            /* Feed button — responsive sizing via clamp() */
+            /* Feed chip — quiet ink-glass control: hairline edge, 4px radius,
+               uppercase label; the glowing pellets stay as the one warm accent. */
             #feed-ui {
               display: flex; align-items: center;
-              gap: clamp(12px, 1.6vw, 22px);
-              padding: clamp(14px, 2vh, 24px) clamp(22px, 2.8vw, 40px);
-              min-height: clamp(56px, 8vh, 76px);
-              background: rgba(20, 20, 22, 0.72);
-              backdrop-filter: blur(20px) saturate(1.8); -webkit-backdrop-filter: blur(20px) saturate(1.8);
-              border: 0.5px solid rgba(255,255,255,0.14);
-              border-radius: clamp(14px, 1.6vw, 20px);
+              gap: 14px;
+              padding: 13px 20px;
+              background: rgba(10, 10, 10, 0.58);
+              backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(255,255,255,0.14);
+              border-radius: var(--radius-control);
               cursor: pointer; user-select: none; pointer-events: auto;
-              transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1),
-                          background 0.15s ease, box-shadow 0.15s ease;
-              box-shadow: 0 2px 12px rgba(0,0,0,0.40), 0 0 0 0 rgba(255,190,30,0);
-              animation: feedButtonPulse 2.8s ease-in-out infinite;
+              transition: background var(--dur-fast) ease,
+                          border-color var(--dur-fast) ease,
+                          transform var(--dur-fast) var(--ease-soft);
+              box-shadow: 0 2px 16px rgba(0,0,0,0.35);
             }
-            #hero-ui.dismissed #feed-ui {
-              padding: clamp(11px, 1.6vh, 18px) clamp(16px, 2vw, 28px);
-              min-height: clamp(44px, 6vh, 58px);
-              border-radius: clamp(12px, 1.2vw, 16px);
-              animation: none;
-            }
-            @keyframes feedButtonPulse {
-              0%,100% { box-shadow: 0 2px 12px rgba(0,0,0,0.40), 0 0 0 0 rgba(255,190,30,0); }
-              50% { box-shadow: 0 2px 20px rgba(0,0,0,0.50), 0 0 16px 2px rgba(255,190,30,0.10); }
-            }
-            #feed-ui:hover { background: rgba(30, 30, 34, 0.82); border-color: rgba(255,255,255,0.22); }
-            #feed-ui:active { transform: scale(0.97); }
-            #feed-ui:focus-visible{outline:2px solid var(--accent-amber);outline-offset:2px}
+            #feed-ui:hover { background: rgba(20, 20, 20, 0.72); border-color: rgba(255,255,255,0.24); }
+            #feed-ui:active { transform: scale(0.98); }
+            #feed-ui:focus-visible{outline: var(--focus-ring); outline-offset: var(--focus-offset)}
 
-            .feed-pellets { position:relative; width:clamp(36px, 4vw, 52px); height:clamp(36px, 4vw, 52px); flex-shrink:0; animation: pelletGlow 2.8s ease-in-out infinite; }
+            .feed-pellets { position:relative; width:34px; height:34px; flex-shrink:0; animation: pelletGlow 4.5s ease-in-out infinite; }
             /* Pellets scale with container via em-like ratios: base container = 40px */
-            .pellet { position:absolute; border-radius:50em; background: linear-gradient(135deg, #ffe07a 0%, #d38010 100%); transition: filter 0.3s ease; }
+            .pellet { position:absolute; border-radius:50%; background: linear-gradient(135deg, #ffe07a 0%, #d38010 100%); transition: filter 0.3s ease; }
             .pellet:nth-child(1){ width:57%; height:28%; top:3%;  left:0;    transform: rotate(-20deg); }
             .pellet:nth-child(2){ width:39%; height:21%; top:10%; left:60%;  transform: rotate(18deg); }
             .pellet:nth-child(3){ width:32%; height:18%; top:57%; left:18%;  transform: rotate(-6deg); }
             .pellet:nth-child(4){ width:25%; height:14%; top:63%; left:67%;  transform: rotate(26deg); }
 
             @keyframes pelletGlow{
-              0%,100%{ filter: drop-shadow(0 0 4px rgba(220,155,15,0.85)) drop-shadow(0 0 10px rgba(220,155,15,0.45)); }
-              50%{ filter: drop-shadow(0 0 6px rgba(255,190,30,1.00)) drop-shadow(0 0 18px rgba(220,155,15,0.70)); }
+              0%,100%{ filter: drop-shadow(0 0 3px rgba(220,155,15,0.65)) drop-shadow(0 0 8px rgba(220,155,15,0.30)); }
+              50%{ filter: drop-shadow(0 0 5px rgba(255,190,30,0.85)) drop-shadow(0 0 14px rgba(220,155,15,0.50)); }
             }
             .feed-text {
               font-family: var(--font-sans);
-              font-size: var(--text-body); letter-spacing: -0.01em;
+              font-size: var(--text-label);
+              letter-spacing: var(--track-label);
+              text-transform: uppercase;
               font-weight: 500; line-height: 1;
-              color: rgba(255,255,255,0.82); transition: color 0.2s ease;
+              white-space: nowrap;
+              color: rgba(255,255,255,0.78); transition: color var(--dur-fast) ease;
             }
-            #feed-ui:hover .feed-pellets { filter: drop-shadow(0 0 7px rgba(255,190,30,1.00)) drop-shadow(0 0 20px rgba(220,155,15,0.80)); animation:none; }
+            #feed-ui:hover .feed-pellets { filter: drop-shadow(0 0 6px rgba(255,190,30,0.9)) drop-shadow(0 0 16px rgba(220,155,15,0.6)); animation:none; }
             #feed-ui:hover .feed-text { color:#fff; }
-            .koi-container.feed-mode #feed-ui { background: rgba(30, 30, 34, 0.86); border-color: rgba(255,200,60,0.28); }
-            .koi-container.feed-mode #feed-ui .feed-pellets { animation:none; filter: drop-shadow(0 0 7px rgba(255,190,30,1.00)) drop-shadow(0 0 20px rgba(220,155,15,0.80)); }
+            .koi-container.feed-mode #feed-ui { background: rgba(20, 20, 20, 0.78); border-color: rgba(255,200,60,0.28); }
+            .koi-container.feed-mode #feed-ui .feed-pellets { animation:none; filter: drop-shadow(0 0 6px rgba(255,190,30,0.9)) drop-shadow(0 0 16px rgba(220,155,15,0.6)); }
             .koi-container.feed-mode #feed-ui .feed-text { color:#fff; }
             .koi-container.feed-mode { cursor:none; }
+
+            @media (prefers-reduced-motion: reduce) {
+              #hero-ui { animation: none; opacity: 1; transition: none; }
+              #feed-ui { transition: none; }
+              .feed-pellets { animation: none; }
+              .scroll-tip-label, .scroll-tip-chevron { animation: none; }
+            }
 
             #feed-cursor {
               position: absolute; pointer-events:none; z-index:1000;
@@ -2060,6 +2108,7 @@ drawBody() {
                         role="button"
                         tabIndex={0}
                         aria-label={props.feedText}
+                        aria-pressed={false}
                     >
                         <div className="feed-pellets">
                             <span className="pellet" />

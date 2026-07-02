@@ -57,18 +57,6 @@ function displayYear(project: Project): string {
   return String(start);
 }
 
-function yearRange(list: Project[]): string {
-  const sources = list.map((p) => p.poster?.details.year ?? p.duration);
-  const years = sources.flatMap((s) =>
-    [...s.matchAll(/(?:19|20)\d{2}/g)].map((m) => Number(m[0])),
-  );
-  const min = Math.min(...years);
-  const max = sources.some((s) => /present/i.test(s))
-    ? new Date().getFullYear()
-    : Math.max(...years);
-  return `${min}—${max}`;
-}
-
 export default function WorkIndex() {
   // continuous catalogue numerals 01–06 across categories
   let counter = 0;
@@ -86,9 +74,6 @@ export default function WorkIndex() {
   return (
     <div className="wki-page">
       <header className="wki-header">
-        <p className="wki-eyebrow" data-fade>
-          Selected Work · {yearRange(projects)}
-        </p>
         <h1 className="wki-title" data-fade>
           My Work
         </h1>
@@ -196,15 +181,6 @@ export default function WorkIndex() {
           max-width: var(--work-shell-max);
           margin-inline: auto;
           padding: clamp(180px, 17vw, 245px) var(--work-gutter) var(--space-11);
-        }
-        .wki-eyebrow {
-          grid-column: 1 / 5;
-          grid-row: 1;
-          margin: 0;
-          font-size: var(--text-label);
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--wki-meta-ink);
         }
         .wki-title {
           grid-column: 1 / 10;
@@ -460,9 +436,6 @@ export default function WorkIndex() {
           .wki-header {
             grid-template-columns: repeat(8, minmax(0, 1fr));
           }
-          .wki-eyebrow {
-            grid-column: 1 / 6;
-          }
           .wki-title {
             grid-column: 1 / 8;
           }
@@ -535,7 +508,6 @@ export default function WorkIndex() {
             padding-top: 142px;
             padding-bottom: var(--space-9);
           }
-          .wki-eyebrow,
           .wki-title,
           .wki-jump {
             grid-column: 1;
