@@ -1,37 +1,325 @@
 "use client";
 
-// Moon Gate (月洞门) — an editorial index whose preview is framed in a round
-// opening in the #fff plaster wall beneath the eaves.
+// Moon Gate (月洞门) — an editorial index whose preview fills a round opening
+// in the #fff plaster wall beneath the eaves.
 //
 // Left: a compact index of condensed-uppercase project names (skill's "work
-// index list mode", seal-red active mark). Resting on a name fills a FIXED hero
-// slot — enlarged title + one-line caption + tags + link. The slot height is
-// fixed and the button is pinned to its base, so moving through the index never
-// changes the column height and the whole composition never drifts.
-// Right: the moon gate holds a vertical film-strip of the six covers; selecting
-// slides the strip up/down to the chosen frame (it follows the list's up/down
-// motion), clipped inside the circular opening. The frame itself never moves.
+// index list mode", seal-red active mark). Resting on a name unfolds its story;
+// a seal-red tick slides along the number gutter to the active row.
+// Right: the moon gate holds a vertical film-strip of the covers; selecting
+// slides the strip up/down to the chosen frame, clipped inside the circular
+// opening. Media FILLS the circle (you look through a garden gate at the
+// scene, not at a mounted print) — a soft radial vignette keeps the rim round.
+//
+// Scroll choreography (desktop, motion-safe): the section pins for ~3.6
+// viewports. The first four beats drive the index 01→04 (the strip follows);
+// then the gate scales until the round opening swallows the viewport and its
+// interior sinks to ink; in the final stretch the koi section (pulled up
+// -100vh so it waits right behind) rises into place while the ink dissolves —
+// you pass through the moon gate and you're AT the pond, no dead scroll in
+// between. Reduced-motion / mobile keep the plain stacked layout, where an
+// idle timer walks the index instead.
 //
 // English copy, Arabic numerals, one seal-red accent. Prefix fg-.
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
+import { subscribeLenis } from "@/lib/lenis-bus";
+
+const BEATS = 4;
+const BEAT_END = 0.4; // share of the pin devoted to the index beats
+const BEAT_SPAN = BEAT_END / BEATS;
+const ZOOM_END = 0.72; // gate fully ink by here; the rest is the pond handoff
 
 export function FeaturedGate({ projects }: { projects: Project[] }) {
   // only the product / UI-UX / AI work (the first four); the game + VR pieces
   // live on the full Work page, reached via the CTA below the list
-  const list = [...projects].sort((a, b) => a.order - b.order).slice(0, 4);
+  const list = [...projects].sort((a, b) => a.order - b.order).slice(0, BEATS);
   const firstWithVideo = Math.max(0, list.findIndex((p) => p.previewVideo));
   const [active, setActive] = useState(firstWithVideo);
+  const [tickY, setTickY] = useState<number | null>(null);
+  // entrance is component-owned state (NOT the global FadeReveal classes):
+  // is-visible painted onto re-rendered nodes gets wiped by React, and the
+  // global observer only arms once per route — state survives everything
+  const [revealed, setRevealed] = useState(false);
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const bgRef = useRef<HTMLSpanElement>(null);
+  const gateRef = useRef<HTMLAnchorElement>(null);
+  const veilRef = useRef<HTMLSpanElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
+  const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const pinnedRef = useRef(false);
+  // auto-advance backoff: each interaction makes the idle timer skip the next
+  // two ticks (~9.6s) before it resumes walking the index
+  const holdTicksRef = useRef(0);
+
   const ap = list[active] ?? list[0];
   const num = (i: number) => String(i + 1).padStart(2, "0");
+  const pick = (i: number) => {
+    holdTicksRef.current = 2;
+    setActive(i);
+  };
+
+  // ── seal-red tick: slide to the active row's number (re-measure after the
+  //    accordion settles — collapsing rows above shift the target) ──
+  useEffect(() => {
+    const measure = () => {
+      const listEl = listRef.current;
+      const numEl =
+        rowRefs.current[active]?.querySelector<HTMLElement>(".fg-row-num");
+      if (!listEl || !numEl) return;
+      setTickY(
+        numEl.getBoundingClientRect().top -
+          listEl.getBoundingClientRect().top +
+          2,
+      );
+    };
+    measure();
+    const settle = window.setTimeout(measure, 660);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.clearTimeout(settle);
+      window.removeEventListener("resize", measure);
+    };
+  }, [active]);
+
+  // ── scroll choreography: pin + beats + through-the-gate zoom ──
+  useEffect(() => {
+    let cancelled = false;
+    let mm: ReturnType<typeof import("gsap").default.matchMedia> | null = null;
+    let lenisDetach: (() => void) | null = null;
+    let unsubLenis: (() => void) | null = null;
+
+    (async () => {
+      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      if (cancelled) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // keep ScrollTrigger in sync with Lenis's own scroll emission — the DOM
+      // scroll event alone is one frame stale under smooth scroll. Also keep
+      // a handle on the instance: the snap glides below are driven BY Lenis
+      // (lenis.scrollTo), because a ScrollTrigger snap tween writing scrollTop
+      // fights Lenis's rAF frame-by-frame and stalls on long distances.
+      let currentLenis: Parameters<Parameters<typeof subscribeLenis>[0]>[0] =
+        null;
+      unsubLenis = subscribeLenis((lenis) => {
+        currentLenis = lenis;
+        lenisDetach?.();
+        lenisDetach = null;
+        if (lenis) {
+          lenis.on("scroll", ScrollTrigger.update);
+          lenisDetach = () => lenis.off("scroll", ScrollTrigger.update);
+        }
+      });
+
+      mm = gsap.matchMedia();
+      mm.add(
+        "(min-width: 901px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          const section = sectionRef.current;
+          const gate = gateRef.current;
+          const veil = veilRef.current;
+          const bg = bgRef.current;
+          if (!section || !gate || !veil || !bg) return;
+          pinnedRef.current = true;
+
+          // pull the koi section up one viewport so it waits right behind the
+          // pinned gate — the final pin stretch is the pond rising into place
+          // while the ink dissolves (gsap.matchMedia reverts this on cleanup).
+          // The pinned section paints above it via .fg-section { z-index: 2 }.
+          gsap.set(".home-koi-section", { marginTop: "-100vh" });
+
+          // scale that guarantees the circular opening covers the viewport
+          // from any layout position (worst case: gate center at a corner)
+          const coverScale = () =>
+            (Math.hypot(window.innerWidth, window.innerHeight) /
+              (gate.offsetWidth / 2)) *
+            1.05;
+
+          // ── directional snap, executed by Lenis ──
+          // beat centers → full ink → pond. A flick always glides to the NEXT
+          // point in the scroll direction (and back one on up-scroll): with
+          // nearest-point snapping, slow scrollers whose per-flick travel
+          // (~200px under Lenis) never beat half a gap kept getting yanked
+          // back to the same beat and could never cross the zoom.
+          const SNAPS = [0.05, 0.15, 0.25, 0.35, ZOOM_END, 1];
+          let snapGliding = false;
+          let snapClear = 0;
+          let idleTimer = 0;
+          const easeInOut = (t: number) =>
+            t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+          const trySnap = (self: globalThis.ScrollTrigger) => {
+            const lenis = currentLenis;
+            if (!lenis || snapGliding) return;
+            const p = self.progress;
+            if (p <= 0.001 || p >= 0.999) return;
+            const dir = self.direction;
+            const target =
+              dir >= 0
+                ? SNAPS.find((s) => s > p + 0.005)
+                : [...SNAPS].reverse().find((s) => s < p - 0.005);
+            if (target === undefined) return;
+            const y = self.start + target * (self.end - self.start);
+            const dist = Math.abs(y - window.scrollY);
+            if (dist < 2) return;
+            const duration = Math.min(1.1, Math.max(0.35, dist / 1600));
+            snapGliding = true;
+            // a user flick mid-glide retargets Lenis and onComplete never
+            // fires — the fallback timer re-arms snapping either way
+            window.clearTimeout(snapClear);
+            snapClear = window.setTimeout(
+              () => {
+                snapGliding = false;
+              },
+              duration * 1000 + 250,
+            );
+            lenis.scrollTo(y, {
+              duration,
+              easing: easeInOut,
+              onComplete: () => {
+                snapGliding = false;
+              },
+            });
+          };
+
+          const tl = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              id: "fg-gate",
+              trigger: section,
+              start: "top top",
+              end: "+=360%",
+              pin: true,
+              scrub: 0.6,
+              invalidateOnRefresh: true,
+              onUpdate(self) {
+                const p = self.progress;
+                if (p < BEAT_END) {
+                  setActive(Math.min(BEATS - 1, Math.floor(p / BEAT_SPAN)));
+                }
+                // once the ink starts dissolving, the (transparent) fixed
+                // section must stop swallowing the pond's pointer events
+                section.style.pointerEvents = p > 0.9 ? "none" : "";
+                // idle-detect: when scroll emission stops for a beat and no
+                // glide is in flight, snap toward the next point
+                if (!snapGliding) {
+                  window.clearTimeout(idleTimer);
+                  idleTimer = window.setTimeout(() => trySnap(self), 140);
+                }
+              },
+            },
+          });
+
+          tl.to({}, { duration: 1 }, 0) // master span: positions = fractions
+            .to(
+              [leftRef.current, headRef.current],
+              { opacity: 0, duration: 0.08 },
+              BEAT_END,
+            )
+            .to(
+              gate,
+              {
+                scale: coverScale,
+                duration: ZOOM_END - BEAT_END,
+                ease: "power2.in",
+                force3D: true,
+              },
+              BEAT_END,
+            )
+            .to(veil, { opacity: 1, duration: 0.2 }, BEAT_END + 0.05)
+            // the handoff: ink (and the white wall) dissolve while the koi
+            // section rises behind — autoAlpha so the faded layers also stop
+            // hit-testing
+            .to(
+              [bg, gate],
+              { autoAlpha: 0, duration: 0.16 },
+              ZOOM_END + 0.02,
+            );
+
+          return () => {
+            pinnedRef.current = false;
+            section.style.pointerEvents = "";
+            window.clearTimeout(idleTimer);
+            window.clearTimeout(snapClear);
+          };
+        },
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+      mm?.revert();
+      unsubLenis?.();
+      lenisDetach?.();
+    };
+  }, []);
+
+  // ── entrance: arm once when the section approaches; state-driven so no
+  //    re-render or HMR can un-reveal the rows ──
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setRevealed(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
+    );
+    io.observe(section);
+    return () => io.disconnect();
+  }, []);
+
+  // ── idle auto-advance — only where the pin doesn't run (mobile), so touch
+  //    users still see all four projects; pauses after any interaction ──
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    let inView = false;
+    const io = new IntersectionObserver(
+      (entries) => {
+        inView = !!entries[0]?.isIntersecting;
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(section);
+    const id = window.setInterval(() => {
+      if (!inView || pinnedRef.current || document.hidden) return;
+      if (holdTicksRef.current > 0) {
+        holdTicksRef.current -= 1;
+        return;
+      }
+      setActive((a) => (a + 1) % BEATS);
+    }, 4800);
+    return () => {
+      io.disconnect();
+      window.clearInterval(id);
+    };
+  }, []);
 
   return (
-    <section className="fg-section" aria-labelledby="fg-heading">
+    <section
+      className={`fg-section${revealed ? " is-revealed" : ""}`}
+      aria-labelledby="fg-heading"
+      ref={sectionRef}
+    >
+      {/* the white plaster wall — a child (not the section bg) so the pond
+          handoff can dissolve it while the section stays pinned */}
+      <span className="fg-bg" ref={bgRef} aria-hidden="true" />
       <div className="fg-shell">
-        <header className="fg-head">
+        <header className="fg-head" ref={headRef}>
           <h2 id="fg-heading" className="fg-title">Selected Work</h2>
           <Cta href="/work" variant="line" large className="fg-allwork">
             All Work
@@ -40,17 +328,32 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
 
         <div className="fg-main">
           {/* left: an accordion index of the top four */}
-          <div className="fg-left">
-          <ol className="fg-list" aria-label="Selected work">
+          <div className="fg-left" ref={leftRef}>
+          <ol className="fg-list" aria-label="Selected work" ref={listRef}>
+            <span
+              className="fg-tick"
+              aria-hidden="true"
+              style={{
+                transform: `translateY(${tickY ?? 0}px)`,
+                opacity: tickY == null ? 0 : 1,
+              }}
+            />
             {list.map((p, i) => {
               const isActive = i === active;
               return (
-                <li key={p.slug} className={`fg-row${isActive ? " is-active" : ""}`}>
+                <li
+                  key={p.slug}
+                  className={`fg-row${isActive ? " is-active" : ""}`}
+                  ref={(el) => {
+                    rowRefs.current[i] = el;
+                  }}
+                >
                   <Link
                     href={`/work/${p.slug}`}
                     className="fg-row-link"
-                    onMouseEnter={() => setActive(i)}
-                    onFocus={() => setActive(i)}
+                    style={{ ["--row-i" as string]: i }}
+                    onMouseEnter={() => pick(i)}
+                    onFocus={() => pick(i)}
                     aria-label={`${p.title} — ${p.tags.join(", ")}`}
                   >
                     <span className="fg-row-head">
@@ -80,6 +383,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               className="fg-gate"
               aria-label={`View ${ap.title}`}
               tabIndex={-1}
+              ref={gateRef}
             >
               <span className="fg-gate-inner">
                 <span
@@ -115,14 +419,19 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                           ) : null
                         ) : (
                           <span className="fg-gate-plate">
-                            <span className="fg-gate-plate-note">In development</span>
+                            <span className="fg-gate-plate-title">{p.title}</span>
+                            <span className="fg-gate-plate-note">
+                              Preview in development
+                            </span>
                           </span>
                         )}
                       </span>
                     );
                   })}
                 </span>
+                <span className="fg-vignette" aria-hidden="true" />
                 <span className="fg-dip" key={active} aria-hidden="true" />
+                <span className="fg-ink-veil" ref={veilRef} aria-hidden="true" />
               </span>
               <span className="fg-gate-rim" aria-hidden="true" />
             </Link>
@@ -135,13 +444,21 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           __html: `
         .fg-section {
           position: relative;
-          background: #ffffff;
+          /* the wall is painted by .fg-bg (a child) so the pond handoff can
+             dissolve it; z-index keeps the pinned section above the koi
+             section it overlaps during the crossing */
+          background: transparent;
+          z-index: 2;
           color: #141414;
           padding-block: clamp(96px, 14vh, 172px);
           min-height: 100vh;
           display: flex; align-items: center;
-          font-family: var(--font-sans);
+          font-family: var(--font-text);
           overflow: hidden;
+        }
+        .fg-bg {
+          position: absolute; inset: 0; z-index: 0;
+          background: #ffffff;
         }
         .fg-shell {
           position: relative; z-index: 1;
@@ -159,7 +476,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           margin: 0;
           font-family: var(--font-condensed);
           font-size: clamp(56px, 8.8vw, 208px);
-          font-weight: 300; line-height: 0.9; letter-spacing: -0.05em;
+          font-weight: 300; line-height: 0.9; letter-spacing: var(--track-display);
           text-transform: uppercase; color: #141414;
         }
 
@@ -172,27 +489,46 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         }
 
         /* ---- accordion index: big condensed names, active unfolds its story ---- */
-        .fg-list { list-style: none; margin: 0; padding: 0; }
+        .fg-list { list-style: none; margin: 0; padding: 0; position: relative; }
+        /* the seal-red tick that slides along the number gutter */
+        .fg-tick {
+          position: absolute; left: -16px; top: 0;
+          width: 2px; height: 1.1em;
+          background: var(--seal-red);
+          transition: transform 0.6s var(--ease-silk), opacity 0.3s ease;
+          pointer-events: none;
+        }
         .fg-row { border-top: 1px solid rgba(15,16,20,0.1); }
         .fg-row:first-child { border-top: none; }
         .fg-row-link {
           display: block; text-decoration: none; color: inherit; outline: none;
           padding: clamp(9px, 1.3vh, 16px) 0;
+          /* staggered entrance, driven by the section's is-revealed state */
+          opacity: 0;
+          transform: translateY(26px);
+          transition:
+            opacity 0.7s var(--ease-silk),
+            transform 0.7s var(--ease-silk);
+          transition-delay: calc(var(--row-i, 0) * 90ms);
+        }
+        .fg-section.is-revealed .fg-row-link {
+          opacity: 1;
+          transform: none;
         }
         .fg-row-head { display: grid; grid-template-columns: 2.4em 1fr; align-items: baseline; gap: 12px; }
         .fg-row-num {
           font-size: var(--text-meta); font-variant-numeric: tabular-nums;
           color: rgba(20,20,22,0.3);
-          transition: color 0.35s var(--ease-silk, cubic-bezier(0.16,1,0.3,1));
+          transition: color 0.35s var(--ease-silk);
         }
         .fg-row-name {
           font-family: var(--font-condensed);
           font-size: clamp(30px, 3.7vw, 78px);
-          font-weight: 300; line-height: 1.0; letter-spacing: -0.05em;
+          font-weight: 300; line-height: 1.0; letter-spacing: var(--track-display);
           text-transform: uppercase; color: rgba(20,20,22,0.32);
-          transition: color 0.35s var(--ease-silk, cubic-bezier(0.16,1,0.3,1));
+          transition: color 0.35s var(--ease-silk);
         }
-        .fg-row.is-active .fg-row-num { color: var(--seal-red, #d10000); }
+        .fg-row.is-active .fg-row-num { color: var(--seal-red); }
         .fg-row.is-active .fg-row-name { color: #111; }
         .fg-row-link:focus-visible .fg-row-name { color: #111; }
 
@@ -201,7 +537,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           display: grid; grid-template-rows: 0fr;
           margin-left: calc(2.4em + 12px);
           opacity: 0;
-          transition: grid-template-rows 0.6s var(--ease-silk, cubic-bezier(0.16,1,0.3,1)),
+          transition: grid-template-rows 0.6s var(--ease-silk),
                       opacity 0.5s ease;
         }
         .fg-row.is-active .fg-row-detail { grid-template-rows: 1fr; opacity: 1; }
@@ -219,7 +555,6 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           font-size: var(--text-label); text-transform: uppercase; letter-spacing: 0.12em;
           color: rgba(20,20,22,0.5);
         }
-        /* no arrow — a hairline that wipes in under the label carries the hover */
         /* label chrome + seal-red rule come from .cta--quiet (globals.css);
            only the row-level hover trigger is local — the wipe fires when the
            whole row is hovered, not just the label */
@@ -238,6 +573,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           width: clamp(380px, 40vw, 720px); aspect-ratio: 1 / 1;
           margin-right: clamp(-56px, -3vw, 0px);
           border-radius: 50%; text-decoration: none; color: inherit;
+          transform-origin: center;
         }
         .fg-gate-inner {
           position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: #101010;
@@ -253,19 +589,26 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           transition: transform 0.66s ease-in-out;
           will-change: transform;
         }
-        /* each frame mattes its cover so the whole project is legible in the
-           round window — a picture mounted in the porthole, not a tight crop */
         .fg-cell {
           position: relative; flex: 0 0 100%; overflow: hidden;
-          display: flex; align-items: center; justify-content: center;
-          /* flat black — no inner glow */
           background: #0a0a0a;
         }
-        /* the whole cover, centered in the black moon, framed with a hairline */
+        /* the scene FILLS the round opening — you look through the gate, not
+           at a mounted print. Slow breathe-in on hover. */
         .fg-cover, .fg-video {
-          max-width: 90%; max-height: 86%; width: auto; height: auto;
-          object-fit: contain; display: block; border-radius: 3px;
-          box-shadow: 0 22px 46px -18px rgba(3,3,3,0.82), 0 0 0 1px rgba(255,255,255,0.12);
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center;
+          display: block;
+          transition: transform 1.4s var(--ease-silk);
+        }
+        .fg-gate:hover .fg-cover,
+        .fg-gate:hover .fg-video { transform: scale(1.035); }
+        /* soft radial falloff so the rim always reads as a round opening */
+        .fg-vignette {
+          position: absolute; inset: 0; z-index: 2; pointer-events: none;
+          background: radial-gradient(circle at 50% 50%,
+            rgba(5,5,5,0) 56%, rgba(5,5,5,0.05) 72%, rgba(5,5,5,0.34) 100%);
         }
         /* switch = a slow, smooth dip through black, like a page transition */
         .fg-dip {
@@ -274,16 +617,29 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           animation: fgDip 0.7s ease-in-out;
         }
         @keyframes fgDip { 0% { opacity: 0; } 44% { opacity: 1; } 56% { opacity: 1; } 100% { opacity: 0; } }
+        /* the ink the gate fills with as you pass through it (scroll zoom) */
+        .fg-ink-veil {
+          position: absolute; inset: 0; z-index: 4; pointer-events: none;
+          background: #050505; opacity: 0;
+        }
         /* a clean opening: a soft top recess + a hairline edge. No inner glow. */
         .fg-gate-rim {
-          position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 2;
+          position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 5;
           box-shadow:
             inset 0 0 0 1px rgba(15,16,20,0.16),
             0 18px 56px rgba(15,16,20,0.12);
         }
         .fg-gate-plate {
-          position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+          position: absolute; inset: 0;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 14px;
           background: radial-gradient(circle at 44% 40%, #242424 0%, #151515 62%, #0d0d0d 100%);
+        }
+        .fg-gate-plate-title {
+          font-family: var(--font-condensed);
+          font-size: clamp(40px, 4.4vw, 84px);
+          font-weight: 300; line-height: 1; letter-spacing: var(--track-display);
+          text-transform: uppercase; color: rgba(255,255,255,0.82);
         }
         .fg-gate-plate-note {
           font-size: var(--text-label); text-transform: uppercase; letter-spacing: 0.24em;
@@ -294,11 +650,15 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           .fg-main { grid-template-columns: 1fr; gap: clamp(30px, 6vh, 52px); padding-top: clamp(30px, 5vh, 52px); }
           .fg-right { order: -1; justify-content: center; }
           .fg-gate { width: min(72vw, 400px); margin-right: 0; }
+          .fg-tick { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
           .fg-strip, .fg-row-num, .fg-row-name, .fg-row-detail,
-          .fg-row-cta::after { transition: none; animation: none; }
+          .fg-row-cta::after, .fg-tick, .fg-cover, .fg-video,
+          .fg-row-link { transition: none; animation: none; }
           .fg-dip { animation: none; }
+          .fg-gate:hover .fg-cover, .fg-gate:hover .fg-video { transform: none; }
+          .fg-row-link { opacity: 1; transform: none; }
         }
       `,
         }}
