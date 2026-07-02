@@ -14,7 +14,7 @@ scratchpad (`specs/spec-*.json`) — if gone, regenerate from the
 | /work | done | **full QA ✓** | catalogue index; card view + WebGL deleted; keyboard parity verified |
 | /work/hunger1942 | done | **full QA ✓** | broadsheet; loupe shipped (hover/fine-pointer only); adjacent-nav reused |
 | /about | done | **interrupted** | film-roll rebuild; needs QA pass |
-| /work/pulse | done | **interrupted** | specimen document; token sheet renders; needs QA |
+| /work/pulse | done | **full QA ✓** | specimen document; values traced to the real Pulse repo (private Pulse repo); 2 iterations + reduced-motion/phone verified; copy trims deferred to owner pass |
 | /work/froghire-ai | done | **interrupted** | triage ledger + affinity map + trade ledger; needs QA |
 | /work/roper-center | done | **interrupted** | ledger/weathervane + GuessVsAmerica (keyboard Reveal to verify!) |
 | /work/vr-education | done | **interrupted** | field folio + particle strip (40-sprite cap to verify) + public/media/vrmb/ derived assets |
