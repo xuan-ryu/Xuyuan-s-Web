@@ -123,6 +123,16 @@ touching them or adding a scene, the lifecycle contract is:
 
 ## Known landmines (hard-won)
 
+- ScrollTrigger + Lenis: pins and scrubs work (Lenis drives native window
+  scroll; hook `lenis.on("scroll", ScrollTrigger.update)` via the lenis-bus),
+  but ScrollTrigger's OWN `snap` tween writes scrollTop against Lenis's rAF
+  and stalls on long glides — execute snap glides with `lenis.scrollTo()`
+  instead, and make snapping directional (nearest-point snapping traps slow
+  scrollers whose per-flick travel is under half a gap). See featured-gate.tsx.
+- Entrance reveals must be component-owned state on elements whose className
+  React recomputes — the global FadeReveal paints `is-visible` onto the DOM,
+  and any re-render that changes that element's class wipes it (observer is
+  already disconnected, so it never comes back).
 - Two `next dev` processes = corrupted `.next` cache (exit 127).
 - `next build` while dev server runs = same corruption. Worktree or stop it.
 - Playwright chromium revision mismatch → use `_pw.mjs`, never bare launch.

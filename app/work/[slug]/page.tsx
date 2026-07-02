@@ -1,9 +1,27 @@
 import type { Metadata } from "next";
+import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
-import { projects, projectsBySlug } from "@/data/projects";
+import { projects, projectsBySlug, type Project } from "@/data/projects";
 import { CaseStudyLayout } from "@/components/case-study-layout";
 import { PosterLayout } from "@/components/poster-layout";
 import { VicinoCaseLayout } from "@/components/vicino-case-layout";
+import { PulseCaseLayout } from "@/components/pulse-case-layout";
+import { FroghireCaseLayout } from "@/components/froghire-case-layout";
+import { RoperCaseLayout } from "@/components/roper-case-layout";
+import { HungerPosterLayout } from "@/components/hunger-poster-layout";
+import { VrmbPosterLayout } from "@/components/vrmb-poster-layout";
+
+// Every project has a bespoke layout rooted in its own material (the vicino
+// precedent, generalized). The shared templates remain as fallbacks for any
+// future project that hasn't earned a bespoke treatment yet.
+const bespokeLayouts: Record<string, ComponentType<{ project: Project }>> = {
+  "vicino-ai": VicinoCaseLayout,
+  pulse: PulseCaseLayout,
+  "froghire-ai": FroghireCaseLayout,
+  "roper-center": RoperCaseLayout,
+  hunger1942: HungerPosterLayout,
+  "vr-education": VrmbPosterLayout,
+};
 
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -26,11 +44,8 @@ export default async function CaseStudy(props: PageProps<"/work/[slug]">) {
   const project = projectsBySlug[slug];
   if (!project) notFound();
 
-  return project.slug === "vicino-ai" ? (
-    <VicinoCaseLayout project={project} />
-  ) : project.template === "poster" ? (
-    <PosterLayout project={project} />
-  ) : (
-    <CaseStudyLayout project={project} />
-  );
+  const Layout =
+    bespokeLayouts[project.slug] ??
+    (project.template === "poster" ? PosterLayout : CaseStudyLayout);
+  return <Layout project={project} />;
 }

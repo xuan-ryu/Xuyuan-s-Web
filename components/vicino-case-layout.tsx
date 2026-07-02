@@ -1620,7 +1620,9 @@ const vicinoCriticalCss = `
 .vicino-closing {
   position: relative;
   background: var(--ink-950);
-  color: var(--v-paper);
+  /* --v-ink is the TEXT color on this inverted page (--v-paper is the ink
+     background alias — using it as text renders #050505 on #050505) */
+  color: var(--v-ink);
 }
 .vicino-layers {
   display: grid;
@@ -1631,7 +1633,7 @@ const vicinoCriticalCss = `
 }
 .vicino-layers h2,
 .vicino-closing h2 {
-  color: var(--v-paper);
+  color: var(--v-ink);
   margin-top: 0;
 }
 .vicino-layer-copy p,
@@ -1658,7 +1660,7 @@ const vicinoCriticalCss = `
   font-size: var(--vicino-h3);
   font-weight: 400;
   line-height: 1.04;
-  color: var(--v-paper);
+  color: var(--v-ink);
 }
 .vicino-layer-row p {
   color: rgba(247,243,235,0.76);
