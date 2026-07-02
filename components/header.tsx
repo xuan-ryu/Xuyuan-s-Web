@@ -72,6 +72,12 @@ export function Header() {
     };
     const isDarkBehind = (x: number, y: number) => {
       const stack = document.elementsFromPoint(x, y) as HTMLElement[];
+      // the roof transition (z11) is the white garden wall painted OVER the still
+      // -opaque night overlay (z10, pointer-events:none so it is absent here). Its
+      // dark eave tiles are <img> children; the bare section is the white wall. So
+      // an IMG under the nav = dark tile (white ink); reaching the wall with no
+      // tile above means the overlay is hidden and the wall shows → light ink.
+      let roofWall = false;
       for (const el of stack) {
         if (
           el.closest(".content-nav") ||
@@ -82,6 +88,11 @@ export function Header() {
         )
           continue;
         if (el.closest("[data-nav-dark]")) return true; // explicit dark scene
+        if (el.closest(".home-roof-transition")) {
+          if (el.tagName === "IMG") return true; // over a dark eave tile
+          roofWall = true; // the white wall — resolve to light after the loop
+          continue;
+        }
         const cs = getComputedStyle(el);
         const op = parseFloat(cs.opacity || "1");
         // first opaque layer wins — try solid colour, then gradient image
@@ -93,6 +104,7 @@ export function Header() {
           if (grad) return grad.lum < 115;
         }
       }
+      if (roofWall) return false; // white wall covers the overlay → dark ink
       return overlayDark(); // stack transparent → the night overlay shows through
     };
     let raf = 0;

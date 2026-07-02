@@ -59,9 +59,7 @@ export default function About() {
 
           <div className="about-text about-bio">
             {about.bio.map((p) => (
-              <p key={p} data-fade>
-                <RevealText text={p} mode="line" direction="left" />
-              </p>
+              <p key={p} data-fade>{p}</p>
             ))}
           </div>
 
@@ -87,14 +85,12 @@ export default function About() {
         <div className="container">
           <div className="section-intro" data-fade>
             <h2>
-              <RevealText text={about.whatChanged.title} mode="char" direction="right" />
+              <RevealText text={about.whatChanged.title} mode="line" direction="right" />
             </h2>
           </div>
           <div className="about-text about-essay-text">
             {about.whatChanged.body.map((p, i) => (
-              <p key={i} data-fade>
-                <RevealText text={p} mode="line" direction="right" />
-              </p>
+              <p key={i} data-fade>{p}</p>
             ))}
           </div>
 
@@ -107,7 +103,7 @@ export default function About() {
           </div>
 
           <p className="about-essay-closing" data-fade>
-            <RevealText text={about.whatChanged.closing} mode="line" direction="right" />
+            {about.whatChanged.closing}
           </p>
         </div>
       </section>
@@ -118,14 +114,12 @@ export default function About() {
             <div>
               <div className="section-intro" data-fade>
                 <h2>
-                  <RevealText text={about.shutter.title} mode="char" direction="left" />
+                  <RevealText text={about.shutter.title} mode="line" direction="left" />
                 </h2>
               </div>
               <div className="about-text about-essay-text">
                 {about.shutter.body.map((p, i) => (
-                  <p key={i} data-fade>
-                    <RevealText text={p} mode="line" direction="left" />
-                  </p>
+                  <p key={i} data-fade>{p}</p>
                 ))}
               </div>
             </div>
@@ -148,18 +142,14 @@ export default function About() {
           <div className="about-howiwork">
             <div className="section-intro" data-fade>
               <h2>
-                <RevealText text={about.howIWork.title} mode="char" direction="right" />
+                <RevealText text={about.howIWork.title} mode="line" direction="right" />
               </h2>
             </div>
             <div className="about-text about-essay-text">
               {about.howIWork.body.map((p, i) => (
-                <p key={i} data-fade>
-                  <RevealText text={p} mode="line" direction="right" />
-                </p>
+                <p key={i} data-fade>{p}</p>
               ))}
-              <p className="about-caption" data-fade>
-                <RevealText text={about.howIWork.caption} mode="line" direction="right" />
-              </p>
+              <p className="about-caption" data-fade>{about.howIWork.caption}</p>
             </div>
           </div>
 
@@ -193,19 +183,13 @@ export default function About() {
       <section className="section about-activities">
         <div className="container">
           <h2 className="about-activities-title" data-fade>
-            <RevealText text="Activities&Leadership" mode="char" />
+            <RevealText text="Activities & Leadership" mode="line" />
           </h2>
           {about.activities.map((a) => (
             <div key={a.org + a.role} className="about-activity" data-fade>
-              <h3>
-                <RevealText text={a.org} mode="line" />
-              </h3>
-              <p className="about-activity-role">
-                <RevealText text={a.role} mode="line" delay={120} />
-              </p>
-              <p className="about-activity-date">
-                <RevealText text={a.date} mode="line" delay={220} />
-              </p>
+              <h3>{a.org}</h3>
+              <p className="about-activity-role">{a.role}</p>
+              <p className="about-activity-date">{a.date}</p>
               <ul>
                 {a.bullets.map((b, i) => (
                   <li key={i}>{b}</li>
@@ -224,15 +208,9 @@ export default function About() {
                 <Image src={t.photo} alt={t.name} fill sizes="369px" />
               </span>
               <figcaption>
-                <h3>
-                  <RevealText text={t.name} mode="line" />
-                </h3>
-                <p className="about-testimonial-role">
-                  <RevealText text={t.role} mode="line" delay={120} />
-                </p>
-                <blockquote>
-                  <RevealText text={t.quote} mode="line" direction="left" delay={220} />
-                </blockquote>
+                <h3>{t.name}</h3>
+                <p className="about-testimonial-role">{t.role}</p>
+                <blockquote>{t.quote}</blockquote>
               </figcaption>
             </figure>
           ))}
@@ -242,7 +220,7 @@ export default function About() {
       <section className="section about-habits">
         <div className="container">
           <h2 className="about-habits-title" data-fade>
-            <RevealText text="My Habits" mode="char" />
+            <RevealText text="My Habits" mode="line" />
           </h2>
           <div className="about-habits-grid">
             {about.habits.map((h) => (
@@ -251,12 +229,8 @@ export default function About() {
                   <Image src={h.photo} alt={h.label} fill sizes="240px" />
                 </span>
                 <figcaption>
-                  <p className="about-habit-label">
-                    <RevealText text={h.label} mode="line" />
-                  </p>
-                  <p className="about-habit-sub">
-                    <RevealText text={h.sub} mode="line" delay={120} />
-                  </p>
+                  <p className="about-habit-label">{h.label}</p>
+                  <p className="about-habit-sub">{h.sub}</p>
                 </figcaption>
               </figure>
             ))}

@@ -1,5 +1,9 @@
 @AGENTS.md
 
+Claude must treat the `AGENTS.md` design skill gate as mandatory. For visual or
+layout changes, load `skills/xuyuan-portfolio-design-usage/SKILL.md` and follow
+the Muller-Brockmann grid rules before editing.
+
 ## Agent skills
 
 ### Issue tracker

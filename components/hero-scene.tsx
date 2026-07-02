@@ -2662,7 +2662,10 @@ export default function DigitalLandscape(props: Props) {
             .page2-active .page2-brand-line { transform: scaleX(1); }
             .scramble-text { contain: layout paint; }
 
-            .page2-footer { font-family: var(--font-sans); font-size: var(--text-micro); font-weight: 300; letter-spacing: 0; color: rgba(255,255,255,0.32); line-height: 1.8; white-space: pre-line; }
+            /* the closing micro-line: same treatment as the page-1 scroll hint
+               (uppercase, 0.2em tracking) so the two bottom-of-page hints read as
+               siblings, at a legible grey instead of the near-invisible 0.32 */
+            .page2-footer { font-family: var(--font-sans); font-size: var(--text-micro); font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.56); line-height: 1.8; white-space: pre-line; }
 
             /* iOS viewport: dvh tracks the visible area (100vh includes the URL
                bar, so a fixed full-height canvas overflows/jumps on iOS) */

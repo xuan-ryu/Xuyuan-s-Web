@@ -14,15 +14,31 @@ export function CaseStudyLayout({ project }: { project: Project }) {
   ];
 
   return (
-    <article className="case-study-page">
+    <article
+      className="case-study-page"
+      data-has-cover={project.cover ? "true" : "false"}
+    >
       <section className="case-study-hero" id="header">
-        <h1>{project.title}</h1>
+        <p className="case-hero-kicker" data-fade>
+          Case Study
+        </p>
+        <h1 data-fade>{project.title}</h1>
+        <p className="case-hero-lede" data-fade>
+          {project.oneliner}
+        </p>
+        <dl className="case-hero-meta" data-fade>
+          {meta.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
-      <div className="case-study-rule" />
 
-      <div className={`proj-hero ${project.coverClass ?? ""}`.trim()}>
-        <div className="proj-hero-frame">
-          {project.cover ? (
+      {project.cover && (
+        <figure className={`proj-hero ${project.coverClass ?? ""}`.trim()}>
+          <div className="proj-hero-frame">
             <Image
               src={project.cover}
               alt={project.title}
@@ -31,43 +47,27 @@ export function CaseStudyLayout({ project }: { project: Project }) {
               priority
               style={{ objectFit: "cover" }}
             />
-          ) : (
-            <div className="proj-hero-placeholder">
-              <span className="cover-label" style={{ position: "static" }}>
-                {project.title}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </figure>
+      )}
 
-      <section className="proj-summary">
-        <h2 data-fade>Project Summary</h2>
-        <div className="proj-summary-meta" data-fade>
-          {meta.map(([label, value]) => (
-            <div key={label} className="proj-summary-cell">
-              <span>{label}</span>
-              <strong>{value}</strong>
-            </div>
+      <section className="proj-summary" aria-labelledby="project-summary">
+        <h2 id="project-summary" data-fade>
+          Project Summary
+        </h2>
+        <div className="proj-summary-copy">
+          {(project.summary ?? [project.blurb]).map((p, i) => (
+            <p key={i} data-fade>
+              {p}
+            </p>
           ))}
         </div>
-        {(project.summary ?? [project.blurb]).map((p, i) => (
-          <p key={i} data-fade>
-            {p}
-          </p>
-        ))}
-      </section>
-
-      <section className="proj-solution-heading">
-        <h2>Solution</h2>
       </section>
 
       {project.moment && (
         <section className="case-moment">
           <h2 className="case-moment-label" data-fade>
-            Most
-            <br />
-            Memorable Moment
+            Most Memorable Moment
           </h2>
           {/* live: copy in the left column, the half videos stacked in the
               right column, the wide video full-width below */}
@@ -139,6 +139,7 @@ export function CaseStudyLayout({ project }: { project: Project }) {
                     width={1380}
                     height={900}
                     sizes="(max-width: 809px) 100vw, 1380px"
+                    style={{ height: "auto" }}
                   />
                 </figure>
               )}

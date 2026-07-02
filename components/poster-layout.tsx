@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { adjacent, type Project } from "@/data/projects";
 
 // Mirrors the Framer "poster" template (hunger1942, vr-education): centered
@@ -10,7 +11,7 @@ export function PosterLayout({ project }: { project: Project }) {
   if (!poster) return null;
 
   const { prev, next } = adjacent(project.slug);
-  const details: [string, React.ReactNode][] = [
+  const details: [string, ReactNode][] = [
     ["Project:", poster.details.project],
     ["Client:", poster.details.client],
     ["Year:", poster.details.year],
@@ -32,11 +33,15 @@ export function PosterLayout({ project }: { project: Project }) {
           height={1530}
           sizes="(max-width: 809px) 100vw, 1376px"
           priority
+          style={{ height: "auto" }}
         />
       </div>
 
-      <section className="poster-about">
-        <p className="poster-about-label">about</p>
+      <section className="poster-about" aria-labelledby="poster-about-title">
+        <p className="poster-section-kicker">01</p>
+        <h2 id="poster-about-title" className="poster-section-title">
+          About the Project
+        </h2>
         <div className="poster-about-intro">
           {poster.intro.map((p, i) => (
             <p key={i}>{p}</p>
@@ -51,6 +56,7 @@ export function PosterLayout({ project }: { project: Project }) {
               alt=""
               width={157}
               height={127}
+              style={{ width: "clamp(74px, 8vw, 118px)", height: "auto" }}
             />
           </div>
           <dl className="poster-details-list">
@@ -78,26 +84,33 @@ export function PosterLayout({ project }: { project: Project }) {
         </div>
       </section>
 
-      <section className="poster-body">
-        {poster.body.map((p, i) => (
-          <p key={i} data-fade>
-            {p}
-          </p>
-        ))}
+      <section className="poster-body" aria-labelledby="poster-essay-title">
+        <h2 id="poster-essay-title">Project Essay</h2>
+        <div className="poster-body-copy">
+          {poster.body.map((p, i) => (
+            <p key={i} data-fade>
+              {p}
+            </p>
+          ))}
+        </div>
       </section>
 
-      <section className="poster-gallery">
-        {poster.gallery.map((src) => (
-          <div key={src} data-fade>
-            <Image
-              src={src}
-              alt=""
-              width={1376}
-              height={1607}
-              sizes="(max-width: 809px) 100vw, 1376px"
-            />
-          </div>
-        ))}
+      <section className="poster-gallery" aria-labelledby="poster-gallery-title">
+        <h2 id="poster-gallery-title">Process Gallery</h2>
+        <div className="poster-gallery-grid">
+          {poster.gallery.map((src) => (
+            <div key={src} data-fade>
+              <Image
+                src={src}
+                alt=""
+                width={1376}
+                height={1607}
+                sizes="(max-width: 809px) 100vw, 1376px"
+                style={{ height: "auto" }}
+              />
+            </div>
+          ))}
+        </div>
       </section>
 
       <nav className="poster-nav" aria-label="Adjacent projects">

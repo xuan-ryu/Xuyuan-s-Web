@@ -175,14 +175,14 @@ export const projects: Project[] = [
     cardBlurb:
       "The earlier Vicino homepage made the product feel alive: draggable creation nodes, connected outputs, and a dark workflow canvas where concept, image, video, and 3D could sit in one spatial chain. My work started from that promise and pushed it toward a clearer product system.",
     blurb:
-      "Vicino AI was expanding across 3D, image generation, video generation, editing tools, and higher-level workflow features. What the product needed was not another impressive capability demo. It needed a shared interaction model that could make those capabilities feel like one product instead of a growing collection of experiments.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, sidebars, sliding panels, and the design system behind them. The core lesson was simple: better automation only matters when people still have clear places to inspect, redirect, and decide.",
+      "Vicino AI was expanding across 3D, image, video, editing tools, references, and higher-level workflow features. What the product needed was not another feature tour. It needed a shared interaction model that could make those pieces feel like one production environment instead of a growing collection of experiments.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, sidebars, sliding panels, and the design system behind them. The core lesson was simple: new technical range only matters when people still have clear places to inspect, redirect, and decide.",
     role: "Product Designer / PM",
     duration: "2025 - present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team, Mkt Team",
     summary: [
-      "When I joined Vicino AI, the product already had a strong interactive promise: creation should feel like a canvas of connected agents and outputs, not a stack of isolated generators. The hard part was carrying that feeling into the real product as 3D, image generation, video generation, editing tools, reference assets, and workflow features expanded.",
-      "I helped frame the product around responsibility, not feature volume. Nodes should represent meaningful stages and outputs. The sidebar should hold global settings. Sliding panels should carry node-specific input, references, and version context. Editors should handle deep revision work. That separation gave the team a clearer language for deciding where new functionality belonged.",
+      "When I joined Vicino AI, the product already had a strong interactive promise: creation should feel like a canvas of connected stages and outputs, not a stack of isolated tools. The hard part was carrying that feeling into the real product as 3D, image, video, editing, reference, and workflow features expanded.",
+      "I helped frame the product around responsibility, not feature count. Nodes should represent meaningful stages and outputs. The sidebar should hold global settings. Sliding panels should carry node-specific input, references, and version context. Editors should handle deep revision work. That separation gave the team a clearer language for deciding where new functionality belonged.",
     ],
     moment: {
       title:
@@ -240,7 +240,7 @@ export const projects: Project[] = [
               "I was not packaging a finished capability — I was helping define what that capability should become as a product",
             body: [
               "The more I worked on the system, the more I realized that design was not happening after the technology was “done.” Some paths were too expensive, too unstable, or too uneven to be presented as a default experience. Some outputs needed an intermediate step where users could inspect and redirect the result before moving on. That meant design could not simply wrap an existing capability in a nicer interface. It had to help define the form that capability should take as a product.",
-              "One of the clearest examples was our decision not to compress too much into a single node. A more “magical” version often looked cleaner at first, but it also removed the checkpoints users needed to understand and correct what was happening. In several cases, splitting one powerful step into two smaller ones created a better product—not because the system became simpler underneath, but because the user finally had somewhere to pause, inspect, and decide.",
+              "One of the clearest examples was our decision not to compress too much into a single node. A more collapsed version often looked cleaner at first, but it also removed the checkpoints users needed to understand and correct what was happening. In several cases, splitting one broad step into two smaller ones created a better product, not because the system became simpler underneath, but because the user finally had somewhere to pause, inspect, and decide.",
             ],
             image: `${IMG}/PAs9cYC0pYFMy5JNWi2b9MljpaE.png`,
           },

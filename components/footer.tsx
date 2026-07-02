@@ -27,7 +27,7 @@ export function Footer() {
             src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
             alt=""
             width={36}
-            height={69}
+            height={76}
           />
         </div>
         <nav className="footer-nav" aria-label="Footer navigation">

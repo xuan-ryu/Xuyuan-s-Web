@@ -46,7 +46,11 @@ export function RevealText({
       {tokens.map((token, index) => {
         const style = { "--reveal-index": index } as CSSProperties;
         const child: ReactNode =
-          mode === "word" && index < tokens.length - 1 ? `${token} ` : token;
+          mode === "char" && token === " "
+            ? "\u00A0"
+            : mode === "word" && index < tokens.length - 1
+              ? `${token} `
+              : token;
 
         return (
           <span className="text-reveal-slot" key={`${token}-${index}`}>

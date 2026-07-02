@@ -54,7 +54,7 @@ art-direction or Canvas/WebGL internals.
 | Role | Family | Usage | Rule |
 | --- | --- | --- | --- |
 | Text / display | `var(--font-sans)` / `--font-serif` / `--font-newsreader` (all = **Manrope**) | Body copy, UI, labels, and page/section titles. | Manrope is a humanist sans tuned for long reading. The three aliases all resolve to the same Manrope stack so the ~90 legacy call sites switch together. |
-| Wordmark | `var(--font-condensed)` (**Saira Condensed**) | The big hero wordmark + `PORTFOLIO` label only. | Tall narrow display. Brand signature — not for body. |
+| Condensed display | `var(--font-condensed)` (**Saira Condensed**) | The hero wordmark + `PORTFOLIO` label, and **large display titles** (section headers, big editorial titles). | Tall narrow display. Uppercase, **light weight (300)**, **tight tracking (`-0.05em`)** — the wordmark's look. Not for body/controls. |
 | Brush | `var(--font-brush)` (LiuJian Mao Cao) | Logo, signature, seal-like marks. | Brand moments only. Never paragraphs or controls. |
 | Mono | `var(--font-mono)` | Technical / coordinate-like microcopy. | Use sparingly. |
 
@@ -73,8 +73,8 @@ steps are `clamp(min, vw, max)`; small UI text is fixed px.
 | `--text-display-3` | `clamp(48px, 6.5vw, 80px)` | Chapter banners, CTA marquee, large section display. |
 | `--text-heading` | `clamp(32px, 3.4vw, 46px)` | Editorial section headings (the real `<h2>`/`<h3>`). |
 | `--text-title` | `clamp(24px, 2vw, 28px)` | Card and sub-section titles. |
-| `--text-lead` | `clamp(20px, 1.4vw, 24px)` | Section lead paragraphs. |
-| `--text-body` | `clamp(16px, 1.1vw, 18px)` | Long-form reading copy. |
+| `--text-lead` | `clamp(21px, 1.55vw, 26px)` | Section lead paragraphs. |
+| `--text-body` | `clamp(17px, 1.25vw, 20px)` | Long-form reading copy. |
 | `--text-meta` | `15px` | Captions, secondary text, dates. |
 | `--text-label` | `13px` | Uppercase labels, nav, eyebrows, tags. |
 | `--text-micro` | `11px` | Fine print, indices, legal. |
@@ -83,6 +83,7 @@ Rules:
 
 - Pick by **role**, not by eyeballing a pixel value. One heading size, one body size — reuse a token instead of inventing a new `clamp()`.
 - Letter spacing defaults to `0`. Add tracking only for `--text-label` / `--text-micro` uppercase, vertical text, and compact UI.
+- **Large display titles** may set `font-family: var(--font-condensed)` (Saira Condensed), uppercase, `font-weight: 300`, `letter-spacing: -0.05em` — the wordmark's tight condensed look. This is the one sanctioned negative tracking, and the one place condensed steps outside the wordmark.
 - Long-form text stays about `68ch` unless it is a measured Framer clone.
 - Center display type only for poster moments. Most content is left/right anchored.
 - Measured Framer-clone geometry may keep literal sizes; everything else uses a token.
@@ -145,6 +146,37 @@ Surface rules:
   single readable column with no horizontal scroll.
 - Use rules and empty space before adding boxes.
 
+### Muller-Brockmann Editorial Grid
+
+The working grid is adapted from Josef Muller-Brockmann's Swiss grid practice:
+structure comes before decoration. For every non-measured layout pass, define
+the container, margins, columns, rows/modules, gutters, and baseline before
+placing content.
+
+Use these defaults unless a measured Framer section says otherwise:
+
+| Surface | Grid | Shell | Use |
+| --- | --- | --- | --- |
+| Reading section | 6 or 8 columns | Existing 1080px `.container` | Essays, intros, body copy, contact text. |
+| Editorial/case shell | 12 columns | 1408-1440px | Case studies, work index, media/text pairings. |
+| Dense artifact panel | 16, 24, or 32 fields | Local media frame | Diagrams, node canvases, image sequences, annotated UI. |
+| Tablet | 6 or 8 columns | Viewport with margins | Preserve spans, then simplify. |
+| Phone | 4 columns, then single reading column | Viewport with safe gutters | Keep structure; collapse prose. |
+
+Rules:
+
+- Design the grid first. Do not start from generic cards or center alignment.
+- Let gutters separate fields; never start or end text, media, rules, or
+  controls inside the gutter.
+- Align text and media to column/module edges. Use spans like 5/7, 4/8, 3/9,
+  2/10, or offset single columns for asymmetric editorial balance.
+- Treat type as part of the grid. Long text uses the role tokens and their
+  line-height; vertical gaps should follow the same baseline rhythm.
+- Full-bleed art scenes may break the outer shell, but they still need internal
+  rails so adjacent sections feel related.
+- If a layout feels wrong, diagnose the grid before adding color, shadows, or
+  new components.
+
 ### Breakpoints
 
 Framer export maps to:
@@ -155,6 +187,24 @@ Framer export maps to:
 
 Use those thresholds when translating Framer variants. Tailwind utilities are
 allowed, but CSS media queries should follow these breakpoints for Framer parity.
+
+### Large / wide screens
+
+The editorial shell caps at 1408-1440px for reading measure, but on a 27-32in
+display that strands art-directed home sections in the middle with dead margins.
+For those hero/showcase sections (not reading columns), keep scaling past the
+cap instead of freezing:
+
+- Let the shell keep widening — e.g. `width: min(1800px, 100% - 2 * <margin>)`
+  — so the composition fills more of the viewport.
+- Drive display type with `clamp(min, vw, max)` and set the `max` high enough to
+  keep growing on wide screens (the featured section's title runs to `208px`),
+  rather than a `max` that freezes near 1440px.
+- Scale the key art (the moon gate uses `clamp(380px, 40vw, 720px)`) and section
+  gaps with it, so type, media, and whitespace grow together.
+
+Reading/body columns still hold their measure — only art-directed sections chase
+the viewport.
 
 ## Component Contracts
 
@@ -175,23 +225,47 @@ Gap:
 - Current header uses the correct structure but still mixes some hard-coded
   black/white/orange values in CSS.
 
-### Buttons And Links
+### Call To Action
 
-Source: Framer form button, nav item, link-with-arrow; current CTA/contact/work links.
+Source: current standalone CTAs across the site (`All Work`, `View Project`,
+`GET IN TOUCH`, contact submit) unified into one primitive.
+
+The site has a single CTA affordance: the `.cta` classes in `app/globals.css`,
+wrapped by `<Cta variant>` in `components/ui/cta.tsx`. Do not hand-roll a new
+CTA look per section — reach for this and pick the emphasis level.
 
 Contract:
 
-- Primary button: dark ink fill, 4px radius, serif or compact UI text, uppercase
-  only when the label is a command.
-- Hover: darken to `--ink-700` or invert on dark surfaces.
-- Active: slight `translateY(1px)` or scale within the same transform stack.
+- **No arrows.** `→`/`&rarr;` glyphs read as generic and AI-generated. The
+  shape (lozenge / pill) or the seal-red rule carries the affordance instead.
+- Emphasis ladder (one component, three variants):
+  - `solid` — filled ink lozenge (`--ink-950` on `--paper`), pill radius. The
+    primary page action. Hover accent is `--accent-amber`.
+  - `line` — hairline pill outline, transparent; fills to ink on hover. The
+    secondary action (e.g. `All Work` beside a section title).
+  - `quiet` — no box; an uppercase label with a seal-red rule that wipes in on
+    hover/focus. Contextual actions, including a label inside a row that is
+    itself a link (apply `cta cta--quiet` to a `span`, not a nested `<a>`).
+- Type: `--font-sans`, uppercase, weight 500, `0.14em` tracking. `.cta--lg`
+  bumps the label from `--text-label` to `--text-meta` for prominent placements.
+- Seal red is reserved for the `quiet` indicator rule (see the skill's hover
+  /focus-indicator rule); amber is the `solid` hover accent. No new colors.
+- Links inside body copy still use a plain text underline or amber hover, not
+  the CTA classes.
+
+### Forms
+
+- Primary form button: dark ink fill, 4px radius, compact UI text, uppercase
+  only when the label is a command. Hover darkens or inverts on dark surfaces;
+  active nudges within the same transform stack.
 - States required for forms: default, loading, success, error, disabled.
-- Links inside body copy use text underline or amber hover, not button styling.
 
 Gap:
 
 - `ContactForm` currently has only a sent state. It should get loading,
   validation, and error copy before being treated as a reusable form pattern.
+- `CtaBlock` (`GET IN TOUCH`) and the contact submit still use bespoke classes;
+  migrate them to `<Cta variant="solid">` when next touched.
 
 ### Work Card
 
@@ -321,7 +395,7 @@ Contract:
 | --- | --- | --- |
 | High | Form states are not system-complete. | Upgrade `ContactForm` with explicit status machine and accessible errors. |
 | High | Token adoption is partial. | When touching CSS, replace local hard-coded color/ease/radius values with canonical tokens. |
-| Medium | Button/link variants exist in Framer but not as Next primitives. | Add small `ButtonLike`/`TextLink` conventions or CSS classes before more pages are added. |
+| Medium | Standalone CTAs are being migrated to the `<Cta>` primitive. | `.cta` classes + `components/ui/cta.tsx` exist and are used in the featured section; migrate `CtaBlock` and contact submit next. |
 | Medium | Work card overlay behavior is repeated as local CSS. | Extract a reusable overlay contract or class group for project previews. |
 | Medium | Focus states lag behind hover states in art-directed components. | Audit `FeaturedWindows`, `WorkCard`, nav drawer, and CTA for keyboard parity. |
 | Low | Some older aliases duplicate canonical tokens. | Keep aliases for compatibility; slowly migrate touched rules to canonical names. |
@@ -336,4 +410,6 @@ Contract:
 - Does every effect clean up after itself?
 - Does mobile collapse into a calm, readable single column?
 - Did we avoid adding a generic card where a rule, image, or empty space works?
+- Did we define the Muller-Brockmann grid: container, margins, columns/modules,
+  gutters, and baseline?
 - If this touches a measured section, did we compare against `DESIGN.md`?

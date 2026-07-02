@@ -4,18 +4,21 @@ import { projects } from "@/data/projects";
 import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond-lazy";
-import { MoonDial } from "@/components/moon-dial";
+import { FeaturedGate } from "@/components/featured-gate";
 import { RoofTransition } from "@/components/roof-transition";
 import { HowDecorParallax } from "@/components/how-decor-parallax";
 import { CtaBlock } from "@/components/cta-block";
 import { ValueCard } from "@/components/value-card";
 
 export default function Home() {
+  const liteScenesEnabled = process.env.NEXT_PUBLIC_LITE_SCENES === "1";
+
   return (
     <>
       <Loader />
 
       <HeroScene
+        liteMode={liteScenesEnabled}
         mobileBgUrl="/assets/framerusercontent.com/images/oOEkORPGPOFnemDEDLO72iBOZKU.png"
         heroWord1={site.greeting[0]}
         heroWord2={site.greeting[1]}
@@ -26,34 +29,37 @@ export default function Home() {
         scrollHint={site.scrollHint}
         page2Title={site.brandmark}
         page2Subtitle={site.blackPage.body}
-        page2Footer="Keep scrolling. The true craft lives in the transitions."
+        page2Footer="The craft lives in the transitions."
         photoUrl="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
       />
 
       <RoofTransition />
 
-      {/* Phase 1 preview: moon-dial project selector (not yet wired into the
-          hero scroll choreography) */}
-      <section id="featured" className="home-featured home-featured-live">
-        <MoonDial projects={projects} />
-      </section>
+      {/* Selected Work — the moon gate: an editorial index whose preview is
+          framed in a round opening in the white garden wall beneath the eaves.
+          Replaces the earlier moon-dial selector. */}
+      <div id="featured">
+        <FeaturedGate projects={projects} />
+      </div>
 
-      <section className="home-koi-section" aria-label="Interactive koi pond">
-        <div className="home-koi-frame">
-          <div className="home-koi-inner">
-            <KoiPondScene
-              eyebrow="INTERLUDE / INK ECOSYSTEM"
-              titleMain="A small pond"
-              titleSub="for the wandering eye"
-              tag="MOVE THE CURSOR. FEED THE FISH."
-              feedText="Why not feed the fish?"
-              showScrollTip
-              introDurationMs={800}
-              heroBoxXvw={50}
-            />
+      {!liteScenesEnabled ? (
+        <section className="home-koi-section" aria-label="Interactive koi pond">
+          <div className="home-koi-frame">
+            <div className="home-koi-inner" data-nav-dark>
+              <KoiPondScene
+                eyebrow="INTERLUDE / INK ECOSYSTEM"
+                titleMain="A small pond"
+                titleSub="for the wandering eye"
+                tag="MOVE THE CURSOR. FEED THE FISH."
+                feedText="Why not feed the fish?"
+                showScrollTip
+                introDurationMs={800}
+                heroBoxXvw={50}
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* live layout: 96px title right-of-center, antique-screen decor on both
           edges, three glassy method cards staggered left/right/left with ink

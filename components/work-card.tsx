@@ -6,12 +6,23 @@ import { RevealText } from "@/components/text-reveal";
 export function WorkCard({ project }: { project: Project }) {
   const displayTitle =
     project.slug === "froghire-ai" ? "FROGHIRE. AI" : project.title;
+  const listTitle =
+    project.slug === "vr-education" ? (
+      <>
+        <span className="work-title-line">VR MONARCH</span>
+        <br />
+        <span className="work-title-line">BUTTERFLY</span>
+      </>
+    ) : (
+      displayTitle
+    );
 
   return (
     <Link
       href={`/work/${project.slug}`}
       className="project-card work-feature-card fade-up"
       data-fade
+      data-project-slug={project.slug}
     >
       <div className={`project-cover ${project.coverClass ?? ""}`.trim()}>
         {project.cover ? (
@@ -29,7 +40,14 @@ export function WorkCard({ project }: { project: Project }) {
 
       <div className="work-card-shade" />
       <div className="work-card-title">
-        <RevealText text={displayTitle} mode="char" direction="right" delay={120} />
+        <span className="work-title-index">{listTitle}</span>
+        <RevealText
+          text={displayTitle}
+          className="work-title-card"
+          mode="char"
+          direction="right"
+          delay={120}
+        />
       </div>
       <div className="work-card-copy">
         {(project.cardBlurb ?? project.blurb).split("\n\n").map((paragraph, index) => (
@@ -37,7 +55,7 @@ export function WorkCard({ project }: { project: Project }) {
             <RevealText
               text={paragraph}
               mode="line"
-              direction="left"
+              direction="up"
               delay={220 + index * 120}
             />
           </p>

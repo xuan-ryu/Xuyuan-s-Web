@@ -39,22 +39,31 @@ export function GsapReveal() {
       const right = el.classList.contains("text-reveal-right");
       const isChar = el.classList.contains("text-reveal-char");
       const isLine = el.classList.contains("text-reveal-line");
+      const isAboutReveal = Boolean(
+        el.closest(
+          ".about-header, .about-essay, .about-dark, .about-activities, .about-habits",
+        ),
+      );
+      const travelX = isAboutReveal ? 28 : 64;
+      const travelY = isAboutReveal ? 72 : 116;
+      const blur = isAboutReveal ? 4 : 8;
+
       gsap.fromTo(
         items,
         {
           opacity: 0,
-          filter: "blur(8px)",
-          yPercent: left || right ? 0 : 116,
-          xPercent: left ? -64 : right ? 64 : 0,
+          filter: `blur(${blur}px)`,
+          yPercent: left || right ? 0 : travelY,
+          x: left ? -travelX : right ? travelX : 0,
         },
         {
           opacity: 1,
           filter: "blur(0px)",
           yPercent: 0,
-          xPercent: 0,
-          duration: isLine ? 0.82 : 0.92,
-          ease: "power3.out",
-          stagger: isChar ? 0.026 : isLine ? 0 : 0.05,
+          x: 0,
+          duration: isAboutReveal ? (isLine ? 1.05 : 0.96) : isLine ? 0.82 : 0.92,
+          ease: isAboutReveal ? "power4.out" : "power3.out",
+          stagger: isChar ? (isAboutReveal ? 0.018 : 0.026) : isLine ? 0 : 0.05,
         },
       );
     };
