@@ -4107,23 +4107,18 @@ body.hero-night .nav-links a.active {
   height: 1555px;
   min-height: 1180px;
   position: relative;
-  background: var(--paper);
+  /* full-bleed ink (owner decision): the moon-gate crossing dissolves black
+     into black — the pond IS the other side of the gate, no paper card */
+  background: #020305;
 }
-/* live construction: a #fafafa card with 141px side insets and the pond
-   canvas inset 52px uniformly — the pond's own frame/pinstripe is drawn
-   inside the canvas component */
 .home-koi-frame {
   position: absolute;
-  left: 141px;
-  right: 141px;
-  top: -19px;
-  height: 1318px;
-  background: var(--paper-warm);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+  inset: 0;
+  background: #020305;
 }
 .home-koi-inner {
   position: absolute;
-  inset: 52px;
+  inset: 0 0 237px 0; /* the pond keeps its ~1318px stage inside the band */
   background: #020305;
   overflow: hidden;
 }
@@ -4158,19 +4153,19 @@ body.hero-night .nav-links a.active {
     height: 455px;
   }
 
-  /* live mobile: pond canvas 303x809 at x45 — card inset 25px, pond 20px */
+  /* mobile: same full-bleed ink band, pond stage keeps its height */
   .home-koi-section {
     height: 972px;
     min-height: 900px;
   }
   .home-koi-frame {
-    left: 25px;
-    right: 25px;
-    top: 4px;
-    height: 849px;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 100%;
   }
   .home-koi-inner {
-    inset: 20px;
+    inset: 0 0 119px 0;
   }
   /* live mobile How-I-Work: same absolute collage, scaled (rel section top) */
   .home-how {

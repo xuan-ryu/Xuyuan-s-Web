@@ -313,7 +313,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       <div className="fg-shell">
         <header className="fg-head" ref={headRef}>
           <h2 id="fg-heading" className="fg-title">Selected Work</h2>
-          <Cta href="/work" variant="line" large className="fg-allwork">
+          <Cta href="/work" variant="quiet" large className="fg-allwork">
             All Work
           </Cta>
         </header>
@@ -434,6 +434,12 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       <style
         dangerouslySetInnerHTML={{
           __html: `
+        /* The ScrollTrigger pin-spacer otherwise swallows pointer events over
+           the risen koi section after the crossing (the pond was unfeedable).
+           The spacer goes transparent to events; the section re-enables its
+           own until the crossing hands off (inline pointer-events past 85%). */
+        .pin-spacer-fg-gate { pointer-events: none; }
+        .pin-spacer-fg-gate > .fg-section { pointer-events: auto; }
         .fg-section {
           position: relative;
           /* the wall is painted by .fg-bg (a child) so the pond handoff can
