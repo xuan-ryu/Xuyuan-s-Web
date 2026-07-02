@@ -16,7 +16,7 @@ scratchpad (`specs/spec-*.json`) — if gone, regenerate from the
 | /about | done | **interrupted** | film-roll rebuild; needs QA pass |
 | /work/pulse | done | **full QA ✓** | specimen document; values traced to the real Pulse repo (private Pulse repo); 2 iterations + reduced-motion/phone verified; copy trims deferred to owner pass |
 | /work/froghire-ai | done | **interrupted** | triage ledger + affinity map + trade ledger; needs QA |
-| /work/roper-center | done | **interrupted** | ledger/weathervane + GuessVsAmerica (keyboard Reveal to verify!) |
+| /work/roper-center | done | **full QA ✓** | poll figures verified by frame-grabbing the project's own video (80/16/4 women's-status sample question, NOT the spec's assumed 45/52/4); keyboard-only GuessVsAmerica passed; composed connective copy flagged for owner review |
 | /work/vr-education | done | **interrupted** | field folio + particle strip (40-sprite cap to verify) + public/media/vrmb/ derived assets |
 | /work/vicino-ai | done | **interrupted** | --vicino-*→--text-* mapping, LayerMap SVGs, khaki retired; contrast probe (alpha ≥0.82) to verify |
 
