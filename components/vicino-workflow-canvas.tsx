@@ -4,10 +4,10 @@ import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 
-type HandleType = "text" | "storyboard" | "image" | "video";
-type NodeKind = "script" | "storyboard" | "shoot" | "video";
+export type HandleType = "text" | "storyboard" | "image" | "video";
+export type NodeKind = "script" | "storyboard" | "shoot" | "video";
 
-type CanvasNode = {
+export type CanvasNode = {
   id: string;
   kind: NodeKind;
   label: string;
@@ -22,7 +22,7 @@ type CanvasNode = {
   outputY?: number;
 };
 
-type OffsetMap = Record<string, { x: number; y: number }>;
+export type OffsetMap = Record<string, { x: number; y: number }>;
 
 // Coordinate space of the node stage. Re-spaced from the old 900x640 board so
 // the four nodes fill the hero frame edge-to-edge (no dead dot-grid), scaled
@@ -34,21 +34,21 @@ const STAGE_BLEED = 24; // soft clamp: dragged nodes may bleed this far past the
 // Exact connection colors from the product's typed-edge model
 // (src/core/connections/the connection types): TEXT #F1A0FA, STORYBOARD and
 // IMAGE #6EDDB3, VIDEO #FFB347.
-const handleColor: Record<HandleType, string> = {
+export const handleColor: Record<HandleType, string> = {
   text: "#F1A0FA",
   storyboard: "#6EDDB3",
   image: "#6EDDB3",
   video: "#FFB347",
 };
 
-const productClassName: Record<NodeKind, string> = {
+export const productClassName: Record<NodeKind, string> = {
   script: "base-node-wrapper text-node-root",
   storyboard: "base-node-wrapper storyboard-node-root",
   shoot: "base-node-wrapper shooting-studio-node-root",
   video: "base-node-wrapper video-node-v3-root",
 };
 
-const productShellClassName: Record<NodeKind, string> = {
+export const productShellClassName: Record<NodeKind, string> = {
   script: "base-node-container text-node-card",
   storyboard: "base-node-container storyboard-node-card",
   shoot: "base-node-container shooting-studio-node-card",
@@ -65,7 +65,7 @@ const productHeaderClassName: Record<NodeKind, string> = {
 // The product's narrative pipeline with the real dataflow types:
 // Script Generator -TEXT-> Story Board Generator -STORYBOARD-> Shot Node
 // -IMAGE-> Video Generator.
-const edges: Array<[string, string, HandleType]> = [
+export const canvasEdges: Array<[string, string, HandleType]> = [
   ["script", "storyboard", "text"],
   ["storyboard", "shoot", "storyboard"],
   ["shoot", "video", "image"],
@@ -74,10 +74,15 @@ const edges: Array<[string, string, HandleType]> = [
 // Labels are the product's real create-menu names (the create menu: "Script
 // Generator", "Story Board Generator", "Shot Node", "Video Generator" —
 // registry types script / storyImage / shoot / video). Handle slots follow
-// the product's handle positions: first slot centered 56px from node top.
-const HANDLE_SLOT_Y = 56;
+// the product's handle positions: first slot centered 56px from node top,
+// additional slots every 40px.
+export const HANDLE_SLOT_Y = 56;
+export const HANDLE_SLOT_SPACING = 40;
 
-const nodes: CanvasNode[] = [
+// Exported as the single source of node anatomy (real create-menu labels,
+// measured sizes, typed handles). The hero board uses these coordinates;
+// the model board (vicino-model-board.tsx) re-positions the same nodes.
+export const canvasNodes: CanvasNode[] = [
   {
     id: "script",
     kind: "script",
@@ -130,17 +135,23 @@ const nodes: CanvasNode[] = [
   },
 ];
 
-function offsetFor(node: CanvasNode, offsets: OffsetMap) {
+export function offsetFor(node: CanvasNode, offsets: OffsetMap) {
   return offsets[node.id] ?? { x: 0, y: 0 };
 }
 
 // Soft-clamp a node's drag/nudge offset so the node stays on (or just past)
 // the stage — dragged nodes can't be lost outside the visible frame.
-function clampOffset(node: CanvasNode, x: number, y: number) {
+export function clampOffset(
+  node: CanvasNode,
+  x: number,
+  y: number,
+  stageW: number = VICINO_STAGE_W,
+  stageH: number = VICINO_STAGE_H,
+) {
   const minX = -STAGE_BLEED - node.x;
-  const maxX = VICINO_STAGE_W - node.w + STAGE_BLEED - node.x;
+  const maxX = stageW - node.w + STAGE_BLEED - node.x;
   const minY = -STAGE_BLEED - node.y;
-  const maxY = VICINO_STAGE_H - node.h + STAGE_BLEED - node.y;
+  const maxY = stageH - node.h + STAGE_BLEED - node.y;
   return {
     x: Math.min(Math.max(x, minX), maxX),
     y: Math.min(Math.max(y, minY), maxY),
@@ -160,7 +171,7 @@ function anchor(node: CanvasNode, offsets: OffsetMap, side: "left" | "right") {
   };
 }
 
-function connectorPath(from: CanvasNode, to: CanvasNode, offsets: OffsetMap) {
+export function connectorPath(from: CanvasNode, to: CanvasNode, offsets: OffsetMap) {
   const a = anchor(from, offsets, "right");
   const b = anchor(to, offsets, "left");
   const dx = Math.max(34, Math.abs(b.x - a.x) * 0.46);
@@ -174,7 +185,7 @@ function NodeIcon({ kind }: { kind: NodeKind }) {
   return <span className="vicino-story-icon-grid" aria-hidden="true" />;
 }
 
-function ProductHeader({ node }: { node: CanvasNode }) {
+export function ProductHeader({ node }: { node: CanvasNode }) {
   const showPlayButton = node.kind === "storyboard" || node.kind === "video";
 
   return (
@@ -303,7 +314,7 @@ function VideoNodeBody() {
   );
 }
 
-function NodeContent({ node }: { node: CanvasNode }) {
+export function NodeContent({ node }: { node: CanvasNode }) {
   if (node.kind === "script") return <ScriptNodeBody />;
   if (node.kind === "storyboard") return <StoryboardNodeBody />;
   if (node.kind === "shoot") return <ShootNodeBody />;
@@ -323,7 +334,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
   const [offsets, setOffsets] = useState<OffsetMap>({});
   const [isPaused, setIsPaused] = useState(false);
 
-  const byId = useMemo(() => new Map(nodes.map((node) => [node.id, node])), []);
+  const byId = useMemo(() => new Map(canvasNodes.map((node) => [node.id, node])), []);
 
   // Pause the infinite canvas animations (edge flow, shimmer, preview pan)
   // while the frame is offscreen — .is-paused sets animation-play-state.
@@ -407,7 +418,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
           viewBox={`0 0 ${VICINO_STAGE_W} ${VICINO_STAGE_H}`}
           aria-hidden="true"
         >
-          {edges.map(([fromId, toId, type]) => {
+          {canvasEdges.map(([fromId, toId, type]) => {
             const from = byId.get(fromId);
             const to = byId.get(toId);
             if (!from || !to) return null;
@@ -422,7 +433,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
           })}
         </svg>
 
-        {nodes.map((node) => {
+        {canvasNodes.map((node) => {
           const offset = offsetFor(node, offsets);
           return (
             <div

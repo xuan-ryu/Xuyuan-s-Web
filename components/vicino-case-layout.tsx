@@ -1,142 +1,21 @@
 import Image from "next/image";
-import type { CSSProperties } from "react";
-import type { Project } from "@/data/projects";
+import Link from "next/link";
+import { adjacent, type Project } from "@/data/projects";
 import { OffscreenVideo } from "./ui/offscreen-video";
+import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
 
 const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
-// Product handle palette — sanctioned product-UI color, used only inside the
-// canvas motif (node handles, flow chips, layer-map owned regions). Exact
-// values from the product's typed-connection model
-// (src/core/connections/the connection types).
-const HANDLE = {
-  text: "#F1A0FA",
-  storyboard: "#6EDDB3",
-  image: "#6EDDB3",
-  video: "#FFB347",
-};
-
-// Step labels are the product's real create-menu names (the create menu);
-// `conn` quotes each node's typed output connection with its shipped color.
-const workflow = [
-  {
-    label: "Script Generator",
-    handle: HANDLE.text,
-    conn: "Output · Text #F1A0FA",
-    title: "Intent Becomes Editable",
-    copy: "The workflow starts as a script object, so intent can be revised before it turns into visual production work.",
-  },
-  {
-    label: "Story Board Generator",
-    handle: HANDLE.storyboard,
-    conn: "Output · Storyboard #6EDDB3",
-    title: "Pacing Becomes Visible",
-    copy: "The script becomes a sketch storyboard first, giving the creator a low-cost place to inspect sequence and rhythm.",
-  },
-  {
-    label: "Shot Node",
-    handle: HANDLE.image,
-    conn: "Output · Image #6EDDB3",
-    title: "Shots Become Concrete",
-    copy: "The rough board resolves into a production-ready shot board with reference frames and camera intent.",
-  },
-  {
-    label: "Video Generator",
-    handle: HANDLE.video,
-    conn: "Output · Video #FFB347",
-    title: "Motion Becomes Output",
-    copy: "The final node turns approved shots into video, keeping the source chain visible instead of burying it in a feed.",
-  },
-];
-
-type LayerKind = "canvas" | "sidebar" | "panel" | "editor";
-
-const layers: Array<{
-  label: string;
-  kind: LayerKind;
-  color: string;
-  title: string;
-  owns: string;
-  avoids: string;
-}> = [
-  {
-    label: "Canvas",
-    kind: "canvas",
-    color: HANDLE.text,
-    title: "Workflow Structure",
-    owns: "Stages, outputs, selection, and visible state.",
-    avoids: "Prompt forms and dense parameters.",
-  },
-  {
-    // The shipped build splits this room across two rails: the left create
-    // rail (create menu + asset/community libraries) and the right inspector
-    // (the inspector panel: model dropdown, parameters, run).
-    label: "Side rails",
-    kind: "sidebar",
-    color: HANDLE.storyboard,
-    title: "Creation and Configuration",
-    owns: "The left rail's create menu and asset libraries; the right inspector's model choice, parameters, and run controls.",
-    avoids: "Node media input and deep edits.",
-  },
-  {
-    label: "Sliding panel",
-    kind: "panel",
-    color: HANDLE.image,
-    title: "Local Input",
-    owns: "Prompts, references, frame input, and current-node controls — slid out from the node's left edge on 15 of the shipped node types.",
-    avoids: "Deep editing tools.",
-  },
-  {
-    label: "Editor",
-    kind: "editor",
-    color: HANDLE.video,
-    title: "Deep Revision",
-    owns: "Timeline work, image editing, 3D refinement, and complex operations.",
-    avoids: "Basic node display.",
-  },
-];
-
-// Station-02 evidence: real dates and commit subjects quoted from the
-// the-product-codebase repo's git log — the product team's build history that this
-// design work fed (the owner's contribution is design/design-system work, not
-// commits to that repo).
-const canvasLedger: Array<[string, string]> = [
-  [
-    "2025-09-11",
-    "“AI board” — the first canvas commit: one ReactFlow board with a single node type.",
-  ],
-  [
-    "2025-12-02",
-    "“Board Refactor” — the node plugin architecture lands: a registry of node definitions.",
-  ],
-  ["2026-04-16", "Sliding panels ship for all node types."],
-  [
-    "2026-05-01",
-    "Panel animation and handle polish land “according to requests from uiux designers.”",
-  ],
-  ["2026-06-29", "Post-login default routes to Pulse — the newer flagship surface."],
-];
-
-// Render-level copy refreshes grounded in the builder repo: the shipped build
-// puts creation in the left rail (create menu + asset/community libraries)
-// and model/run configuration in the right inspector (the inspector panel), so
-// the older "sidebar = global settings + model controls" phrasing is
-// superseded at render time. data/projects.ts is orchestrator-owned; the
-// matching data edits are reported for the batched pass.
-const factRefresh: Array<[string, string]> = [
-  [
-    "The sidebar handled global settings and model-level controls.",
-    "The side rails handled creation and configuration — the create menu and asset library on the left, model and run controls in the right inspector.",
-  ],
-  [
-    "the sidebar handled global settings and model controls",
-    "the side rails handled creation and configuration — the create menu on the left, model and run controls in the right inspector",
-  ],
-];
-
+// Render-level fact refresh grounded in the builder repo: the shipped build
+// splits the old "sidebars" phrasing into two rails — creation on the left
+// (CreateRail), model/run configuration in the right inspector
+// (the inspector panel). data/projects.ts is orchestrator-owned; the matching
+// data edit is reported for the batched pass.
 function refreshFacts(copy: string) {
-  return factRefresh.reduce((text, [from, to]) => text.split(from).join(to), copy);
+  return copy.split("editor logic, sidebars, sliding panels").join(
+    "editor logic, the two side rails, sliding panels",
+  );
 }
 
 // Figcaptions for the prototype reels. The a teammate credit is render-filtered
@@ -148,20 +27,18 @@ const reelCaptions = [
   "Video 2 Node prototype — a teammate",
 ];
 
-// The two densest annotated screenshots break to full width below their copy
-// so the node graphs are actually inspectable.
-const wideDecisionCaptions: Record<string, string> = {
-  "4jRCSVcAkbGd6SEr97GpwZUnOkk":
-    "Main-path exploration — image stays a preview checkpoint before video.",
-  iqfmdKGdZXFBgs29aUVK7AiR40:
-    "Layer responsibilities annotated across the live canvas.",
-};
-
-function wideDecisionCaption(image?: string) {
-  if (!image) return undefined;
-  const match = Object.keys(wideDecisionCaptions).find((id) => image.includes(id));
-  return match ? wideDecisionCaptions[match] : undefined;
-}
+// Station-04 evidence ledger: the chapter decisions, tightened. Rows whose
+// argument the station-03 interactive now carries are dropped per the
+// redundancy rule (the main-path row = the checkpoints, the four-layers row
+// = the rooms); the previously unrendered prototype section supplies the
+// station intro, and the design-system section joins the ledger. `body`
+// picks the paragraphs that do not restate the interactive or the heading.
+const evidenceRows: Array<{ section: number; body: number[] }> = [
+  { section: 1, body: [0] },
+  { section: 3, body: [0] },
+  { section: 4, body: [0, 1] },
+  { section: 7, body: [0, 1] },
+];
 
 // Chapter-2 headings arrive Title Cased; the decision claims read as
 // sentence-case editorial claims (family rule), so normalize at render time
@@ -191,115 +68,6 @@ function sentenceCase(heading: string) {
       return word;
     })
     .join(" ");
-}
-
-// 168x104 wireframes of the product surface — the owned region of each
-// interaction layer tinted in its handle color, so the "four rooms" argument
-// is visible instead of purely verbal. Static evidence; hidden below 810px.
-// Anatomy matches the shipped build: the sidebar room is two rails (left
-// create rail + right inspector — second strip drawn in the sidebar <g>),
-// and the sliding panel is node-local, opening to the node's LEFT with a
-// slim toggle tab and its height synced to the node.
-const layerOwnedRegion: Record<LayerKind, { x: number; y: number; w: number; h: number }> = {
-  canvas: { x: 8, y: 8, w: 152, h: 88 },
-  sidebar: { x: 8, y: 8, w: 26, h: 88 },
-  panel: { x: 58, y: 34, w: 40, h: 36 },
-  editor: { x: 5, y: 5, w: 158, h: 94 },
-};
-
-function LayerMap({ kind, color }: { kind: LayerKind; color: string }) {
-  const owned = layerOwnedRegion[kind];
-  return (
-    <svg
-      className="vicino-layer-map"
-      viewBox="0 0 168 104"
-      width="168"
-      height="104"
-      aria-hidden="true"
-    >
-      <rect
-        x="1.5"
-        y="1.5"
-        width="165"
-        height="101"
-        rx="4"
-        fill="none"
-        stroke="rgba(255,255,255,0.28)"
-      />
-      <rect
-        className="vicino-layer-owned"
-        x={owned.x}
-        y={owned.y}
-        width={owned.w}
-        height={owned.h}
-        rx="4"
-        fill={color}
-        fillOpacity="0.12"
-        stroke={color}
-        strokeOpacity="0.55"
-      />
-      {kind === "canvas" ? (
-        <g fill="none" stroke="rgba(255,255,255,0.34)">
-          <rect x="24" y="34" width="26" height="18" rx="2" />
-          <rect x="70" y="22" width="30" height="20" rx="2" />
-          <rect x="118" y="42" width="28" height="18" rx="2" />
-          <path d="M50 43 C 60 43, 60 32, 70 32" />
-          <path d="M100 32 C 109 32, 109 51, 118 51" />
-        </g>
-      ) : null}
-      {kind === "sidebar" ? (
-        <>
-          {/* the room's second rail: the right inspector (the inspector panel) */}
-          <rect
-            className="vicino-layer-owned"
-            x="134"
-            y="8"
-            width="26"
-            height="88"
-            rx="4"
-            fill={color}
-            fillOpacity="0.12"
-            stroke={color}
-            strokeOpacity="0.55"
-          />
-          <g fill="none" stroke="rgba(255,255,255,0.2)">
-            <rect x="52" y="30" width="28" height="18" rx="2" />
-            <rect x="92" y="52" width="28" height="18" rx="2" />
-          </g>
-          <g stroke={color} strokeOpacity="0.55">
-            <line x1="14" y1="20" x2="28" y2="20" />
-            <line x1="14" y1="30" x2="28" y2="30" />
-            <line x1="14" y1="40" x2="24" y2="40" />
-            <line x1="140" y1="20" x2="154" y2="20" />
-            <line x1="140" y1="30" x2="154" y2="30" />
-            <line x1="140" y1="44" x2="154" y2="44" />
-          </g>
-        </>
-      ) : null}
-      {kind === "panel" ? (
-        <>
-          {/* panel slides out LEFT of its node, height synced to the node;
-              the slim colored rect is the product's toggle tab */}
-          <g fill="none" stroke="rgba(255,255,255,0.34)">
-            <rect x="106" y="34" width="34" height="36" rx="2" />
-          </g>
-          <rect x="101" y="46" width="3" height="12" rx="1" fill={color} fillOpacity="0.9" />
-          <g stroke={color} strokeOpacity="0.55">
-            <line x1="66" y1="44" x2="90" y2="44" />
-            <line x1="66" y1="52" x2="90" y2="52" />
-            <line x1="66" y1="60" x2="84" y2="60" />
-          </g>
-        </>
-      ) : null}
-      {kind === "editor" ? (
-        <g fill="none" stroke="rgba(255,255,255,0.3)">
-          <rect x="16" y="16" width="136" height="48" rx="2" />
-          <line x1="16" y1="76" x2="152" y2="76" />
-          <line x1="16" y1="85" x2="118" y2="85" />
-        </g>
-      ) : null}
-    </svg>
-  );
 }
 
 const vicinoCriticalCss = `
@@ -1374,129 +1142,777 @@ const vicinoCriticalCss = `
 
 /* ---- ink-900 stations bleed full width ---- */
 .vicino-brief,
-.vicino-flow,
-.vicino-reels,
-.vicino-decisions {
+.vicino-evidence {
   background: var(--ink-900);
   box-shadow: 0 0 0 100vmax var(--ink-900);
   clip-path: inset(0 -100vmax);
 }
 
-/* ---- station 02 — brief ---- */
+/* ---- station 02 — context & problem ---- */
 .vicino-brief h2 {
   grid-column: 1 / span 6;
 }
-.vicino-brief-copy {
+.vicino-brief-copy,
+.vicino-model-copy,
+.vicino-evidence-copy {
   grid-column: 8 / span 5;
   display: grid;
   gap: 20px;
 }
 
-/* ---- station 02 — repo evidence: team commit ledger + product-arc figures ---- */
-.vicino-brief-evidence {
+/* Full-width artifact figures (context chains, responsibility PDRs, the
+   main-path deck) — dense node graphs stay big enough to inspect. */
+.vicino-wide-figure {
   grid-column: 1 / -1;
-  margin-top: var(--v-head-gap);
-  padding-top: clamp(28px, 3vw, 40px);
-  border-top: 1px solid var(--v-line-soft);
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--v-gutter);
-  row-gap: clamp(28px, 3vw, 40px);
-}
-.vicino-brief-ledger {
-  grid-column: 1 / span 4;
+  margin: var(--v-head-gap) 0 0;
   min-width: 0;
+  display: grid;
+  gap: 12px;
 }
-.vicino-ledger-label {
-  margin: 0 0 20px;
+.vicino-wide-figure.is-tight {
+  margin-top: clamp(28px, 3vw, 44px);
+}
+
+/* ---- station 03 — the model: one interactive board, four rooms ---- */
+.vicino-model {
+  background: var(--ink-950);
+}
+.vicino-model h2 {
+  grid-column: 1 / span 6;
+}
+.vicino-model-invite {
+  margin: 4px 0 0;
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--accent-gold);
 }
-.vicino-brief-ledger dl {
+.vicino-model-board-wrap {
+  grid-column: 1 / -1;
+  margin-top: var(--v-head-gap);
+  min-width: 0;
+}
+
+/* board shell — same night-canvas frame language as the hero board */
+.v-mb-root {
+  display: grid;
+  gap: clamp(20px, 2.4vw, 32px);
+}
+.v-mb-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1620 / 700;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, rgba(255,255,255,0.14));
+  background: #050506;
+  box-shadow: 0 30px 92px rgba(0,0,0,0.38);
+  container-type: inline-size;
+}
+/* 1620x700 stage scaled to the container width (frame shows >=1080px only;
+   below that the stacked variant takes over). Stepped rules are the
+   fallback; the atan2/tan division is the exact fit. */
+.v-mb-stage {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1620px;
+  height: 700px;
+  transform: translateX(-50%) scale(0.62);
+  transform-origin: top center;
+}
+@container (min-width: 1120px) {
+  .v-mb-stage { transform: translateX(-50%) scale(0.69); }
+}
+@container (min-width: 1240px) {
+  .v-mb-stage { transform: translateX(-50%) scale(0.76); }
+}
+@container (min-width: 1340px) {
+  .v-mb-stage { transform: translateX(-50%) scale(0.82); }
+}
+@supports (transform: scale(calc(tan(atan2(100cqw, 1620px))))) {
+  .v-mb-stage {
+    transform: translateX(-50%) scale(calc(tan(atan2(100cqw, 1620px))));
+  }
+}
+.v-mb-stage .vicino-product-node {
+  touch-action: none;
+  transition: opacity 0.35s var(--ease-silk);
+}
+.v-mb-stage.has-open .vicino-product-node:not(.is-open):not(:hover):not(:focus-visible) {
+  opacity: 0.55;
+}
+.v-mb-stage .vicino-product-node.is-open {
+  z-index: 30;
+}
+/* focus mode: while a panel is open the edge flow freezes and the open
+   node's typed connections carry the light */
+.v-mb-stage.has-open .vicino-live-edges path {
+  animation: none;
+  opacity: 0.22;
+}
+.v-mb-stage.has-open .vicino-live-edges path.is-live {
+  animation: none;
+  opacity: 0.9;
+}
+
+/* the product's slim panel-toggle tab on the node's left edge */
+.v-mb-tab {
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  z-index: 3;
+  width: 4px;
+  height: 26px;
+  border-radius: 4px 2px 2px 4px;
+  opacity: 0.85;
+  transform: translateY(-50%);
+  transition: transform 0.3s var(--ease-spring), opacity 0.3s var(--ease-standard);
+}
+.vicino-product-node:hover .v-mb-tab,
+.vicino-product-node.is-open .v-mb-tab {
+  opacity: 1;
+  transform: translateY(-50%) scaleY(1.4);
+}
+
+/* sliding panel — opens to the node's LEFT, height synced to the node */
+.v-mb-panel {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  min-height: 100%;
+  margin-right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--node-panel-radius);
+  background: rgba(11, 11, 13, 0.97);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  cursor: default;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(16px);
+  transition:
+    transform 0.34s var(--ease-silk),
+    opacity 0.34s var(--ease-silk),
+    visibility 0s linear 0.34s;
+}
+.vicino-product-node.is-open .v-mb-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition:
+    transform 0.34s var(--ease-silk),
+    opacity 0.34s var(--ease-silk),
+    visibility 0s;
+}
+/* the two low nodes sit near the frame's bottom edge — their panels anchor
+   to the node's bottom and grow upward into open canvas instead */
+.vicino-product-node.is-storyboard .v-mb-panel,
+.vicino-product-node.is-video .v-mb-panel {
+  top: auto;
+  bottom: 0;
+}
+.v-mb-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.v-mb-panel-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.v-mb-panel-head p {
   margin: 0;
-  display: grid;
-  gap: 16px;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-body);
+  font-weight: 600;
+  color: var(--vicino-node-text);
 }
-.vicino-brief-ledger dl div {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  column-gap: 14px;
-  align-items: baseline;
+.v-mb-panel-variant {
+  margin: -4px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.45);
 }
-.vicino-brief-ledger dt {
+.v-mb-panel-fields {
+  display: grid;
+  gap: 8px;
+}
+.v-mb-field {
+  display: grid;
+  gap: 5px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: var(--image-node-prompt-input-bg);
+  box-shadow: var(--glass-btn-shadow);
+}
+.v-mb-field-label {
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+.v-mb-field-value {
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-node-textarea-text);
+}
+.v-mb-field-value.is-select {
+  position: relative;
+  padding: 6px 22px 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+}
+.v-mb-field-value.is-select::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.55);
+}
+.v-mb-field-thumbs {
+  display: flex;
+  gap: 6px;
+}
+.v-mb-field-thumbs img {
+  width: 44px;
+  height: 30px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  filter: grayscale(1) contrast(1.05);
+  opacity: 0.9;
+}
+.v-mb-versions {
+  display: grid;
+  gap: 4px;
+}
+.v-mb-versions em {
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  font-style: normal;
+  color: rgba(255, 255, 255, 0.5);
+}
+.v-mb-versions em.is-current {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+/* the case's annotation voice inside a product room: which layer this is,
+   and what it must never absorb */
+.v-mb-room-note {
+  margin-top: auto;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.52);
+}
+.v-mb-room-note span {
+  display: block;
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--vicino-node-detail);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.v-mb-editor-open {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: var(--play-btn-glass-bg);
+  box-shadow: var(--glass-btn-shadow);
+  color: var(--node-header-label-color);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s var(--ease-standard);
+}
+.v-mb-editor-open:hover {
+  background: var(--play-btn-glass-bg-hover);
+}
+.v-mb-editor-open:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* shared close button (rails + editor) */
+.v-mb-close {
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: var(--play-btn-glass-bg);
+  box-shadow: var(--glass-btn-shadow);
+  cursor: pointer;
+  transition: background 0.25s var(--ease-standard);
+}
+.v-mb-close:hover {
+  background: var(--play-btn-glass-bg-hover);
+}
+.v-mb-close:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+.v-mb-close span::before,
+.v-mb-close span::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.75);
+}
+.v-mb-close span::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.v-mb-close span::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* side rails: collapsed hints pinned to the frame edges (unscaled) */
+.v-mb-rail-hint {
+  position: absolute;
+  top: 50%;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 44px;
+  padding: 14px 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(11, 11, 13, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    border-color 0.25s var(--ease-standard),
+    background 0.25s var(--ease-standard),
+    opacity 0.25s var(--ease-standard);
+}
+.v-mb-rail-hint.is-left {
+  left: 14px;
+}
+.v-mb-rail-hint.is-right {
+  right: 14px;
+}
+.v-mb-rail-hint:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(20, 20, 24, 0.92);
+}
+.v-mb-rail-hint:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+/* the expanded rail covers its hint — fade the hint out fully */
+.v-mb-rail-hint[aria-expanded="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+.v-mb-rail-hint-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stone);
+  writing-mode: vertical-rl;
+}
+.v-mb-rail-glyph {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+.v-mb-rail-glyph.is-plus::before,
+.v-mb-rail-glyph.is-plus::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: currentColor;
+}
+.v-mb-rail-glyph.is-plus::before {
+  width: 12px;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+}
+.v-mb-rail-glyph.is-plus::after {
+  width: 1.5px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+}
+.v-mb-rail-glyph.is-grid::before,
+.v-mb-rail-glyph.is-grid::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid currentColor;
+}
+.v-mb-rail-glyph.is-grid::before {
+  left: 0;
+  top: 0;
+  box-shadow: 8px 0 0 -1px transparent;
+}
+.v-mb-rail-glyph.is-grid::after {
+  right: 0;
+  bottom: 0;
+}
+.v-mb-rail-glyph.is-sliders::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 1px;
+  background: currentColor;
+  box-shadow:
+    0 5px 0 currentColor,
+    0 10px 0 currentColor;
+}
+.v-mb-rail-glyph.is-sliders::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 3px;
+  height: 5px;
+  border-radius: 1px;
+  background: currentColor;
+  box-shadow: 6px 5px 0 currentColor;
+}
+
+/* side rails: expanded rooms */
+.v-mb-rail {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  z-index: 40;
+  box-sizing: border-box;
+  width: min(300px, 42%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: rgba(8, 8, 10, 0.96);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    transform 0.34s var(--ease-silk),
+    opacity 0.34s var(--ease-silk),
+    visibility 0s linear 0.34s;
+}
+.v-mb-rail.is-left {
+  left: 12px;
+  transform: translateX(-16px);
+}
+.v-mb-rail.is-right {
+  right: 12px;
+  transform: translateX(16px);
+}
+.v-mb-rail.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition:
+    transform 0.34s var(--ease-silk),
+    opacity 0.34s var(--ease-silk),
+    visibility 0s;
+}
+.v-mb-rail > .v-mb-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.v-mb-rail-label {
+  margin: 0;
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: var(--track-label);
+  text-transform: uppercase;
   color: var(--accent-gold);
 }
-.vicino-brief-ledger dd {
+.v-mb-rail h4,
+.v-mb-editor h4 {
+  margin: 6px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--paper);
+}
+.v-mb-rail-list {
+  list-style: none;
   margin: 0;
-  max-width: 44ch;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.v-mb-rail-list li {
   font-family: var(--font-sans);
   font-size: var(--text-meta);
-  line-height: 1.5;
-  color: var(--v-meta-ink);
+  font-weight: 300;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
 }
-.vicino-brief-figure {
-  grid-column: span 4;
-  margin: 0;
-  min-width: 0;
-  display: grid;
-  gap: 10px;
-  align-content: start;
+.v-mb-rail-list strong {
+  display: block;
+  font-weight: 500;
+  color: var(--node-header-label-color);
+}
+.v-mb-rail .v-mb-room-note,
+.v-mb-editor .v-mb-room-note {
+  font-size: var(--vicino-node-small);
+}
+.v-mb-rail .v-mb-room-note span,
+.v-mb-editor .v-mb-room-note span {
+  font-size: var(--vicino-node-small);
+}
+/* the inspector's run affordance, in the product's own video amber */
+.v-mb-run {
+  padding: 10px;
+  border: 1px solid rgba(255, 166, 19, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 179, 71, 0.12);
+  color: var(--handle-video);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
 }
 
-/* ---- station 03 — checkpoints ---- */
-.vicino-flow h2 {
-  grid-column: 1 / span 8;
+/* canvas room annotation + caption */
+.v-mb-canvas-note {
+  position: absolute;
+  left: 74px;
+  top: 16px;
+  z-index: 5;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--stone);
+  pointer-events: none;
 }
-.vicino-flow-map {
-  grid-column: 1 / -1;
-  margin-top: var(--v-head-gap);
+
+/* editor overlay: the fourth room, covering the whole board */
+.v-mb-editor {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 24px);
+  padding: clamp(18px, 2.6vw, 36px);
+  background: #050506;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s var(--ease-standard),
+    visibility 0s linear 0.3s;
+}
+.v-mb-editor.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.3s var(--ease-standard),
+    visibility 0s;
+}
+.v-mb-editor-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.v-mb-editor-head .v-mb-rail-label {
+  margin: 0;
+}
+.v-mb-timeline {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+.v-mb-timeline-ruler {
+  height: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  background: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.22) 0 1px,
+    transparent 1px 40px
+  );
+}
+.v-mb-timeline-track {
+  display: flex;
+  gap: 6px;
+  height: clamp(38px, 6cqw, 60px);
+}
+.v-mb-timeline-track.is-audio {
+  height: 20px;
+}
+.v-mb-clip {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex-basis: 0;
+  padding: 0 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 166, 19, 0.45);
+  border-radius: 6px;
+  background: rgba(255, 179, 71, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.v-mb-clip.is-audio {
+  border-color: rgba(110, 221, 179, 0.4);
+  background: rgba(110, 221, 179, 0.08);
+}
+.v-mb-playhead {
+  position: absolute;
+  left: 38%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--handle-video);
+}
+
+/* checkpoint strip: the station-03 narrative doubles as board controls */
+.v-mb-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--v-gutter);
   border-top: 1px solid var(--v-line-soft);
 }
-.vicino-flow-node {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--v-gutter);
-  align-items: start;
-  padding: clamp(32px, 3.4vw, 48px) 0;
-  border-bottom: 1px solid var(--v-line-soft);
+.v-mb-stop {
+  position: relative;
+  min-width: 0;
+  padding: 22px 0 8px;
 }
-.vicino-flow-chip {
-  grid-column: 1;
-  justify-self: start;
-  width: 6px;
-  height: 26px;
-  margin-left: -3px;
-  margin-top: 4px;
-  border-radius: 2px 4px 4px 2px;
-  background: var(--chip-color);
+.v-mb-stop::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.34s var(--ease-silk);
 }
-.vicino-flow-node h3 {
-  grid-column: 2 / span 3;
-  margin: 0;
+.v-mb-stop.is-active::before {
+  transform: scaleX(1);
+}
+.v-mb-stop h3,
+.v-mb-stack-item h3 {
+  margin: 0 0 12px;
+}
+.v-mb-stop h3 button,
+.v-mb-stack-item h3 button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
   font-family: var(--font-sans);
   font-size: var(--text-title);
   font-weight: 400;
   line-height: 1.2;
   color: var(--paper);
+  transition: color 0.25s var(--ease-standard);
 }
-.vicino-flow-detail {
-  grid-column: 5 / span 7;
+.v-mb-stop h3 button:hover,
+.v-mb-stop.is-active h3 button,
+.v-mb-stack-item h3 button:hover,
+.v-mb-stack-item.is-active h3 button {
+  color: var(--accent-amber);
 }
-.vicino-flow-claim {
-  margin: 0 0 10px;
+.v-mb-stop h3 button:focus-visible,
+.v-mb-stack-item h3 button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+.v-mb-stop-chip {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 26px;
+  border-radius: 2px 4px 4px 2px;
+  transition: transform 0.3s var(--ease-spring);
+}
+.v-mb-stop h3 button:hover .v-mb-stop-chip,
+.v-mb-stop.is-active .v-mb-stop-chip {
+  transform: scaleY(1.3);
+}
+.v-mb-stop-index {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  color: var(--accent-gold);
+}
+.v-mb-stop-claim {
+  margin: 0 0 8px;
   font-family: var(--font-sans);
   font-size: var(--text-body);
   font-weight: 500;
   line-height: 1.4;
   color: var(--paper);
 }
-.vicino-flow-conn {
+.v-mb-stop-copy {
+  margin: 0;
+  max-width: 40ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--v-meta-ink);
+}
+.v-mb-stop-conn {
   margin: 12px 0 0;
   font-family: var(--font-mono);
   font-size: var(--text-micro);
@@ -1505,76 +1921,98 @@ const vicinoCriticalCss = `
   color: var(--stone);
 }
 
-/* ---- station 04 — interface layers ---- */
-.vicino-layers {
-  background: var(--ink-950);
-}
-.vicino-layers-intro {
-  grid-column: 1 / span 5;
-  align-self: start;
-  position: sticky;
-  top: 128px;
-}
-.vicino-layers-intro h2 {
-  margin-bottom: 24px;
-}
-.vicino-layer-list {
-  grid-column: 6 / -1;
+/* stacked variant (phones + narrow tablets): one node + its panel at a time */
+.v-mb-stack {
+  display: none;
   border-top: 1px solid var(--v-line-soft);
 }
-.vicino-layer-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 168px;
-  column-gap: var(--v-gutter);
-  align-items: start;
-  padding: clamp(28px, 3vw, 40px) 0;
+.v-mb-stack-item {
   border-bottom: 1px solid var(--v-line-soft);
 }
-.vicino-layer-row h3 {
-  margin: 10px 0 10px;
-  font-family: var(--font-sans);
-  font-size: var(--text-title);
+.v-mb-stack-item h3 {
+  margin: 0;
+}
+.v-mb-stack-item h3 button {
+  width: 100%;
+  padding: 18px 0;
+}
+.v-mb-stack-item h3 button .v-mb-stop-claim {
+  margin: 0 0 0 auto;
+  padding-left: 12px;
+  font-size: var(--text-label);
   font-weight: 400;
-  line-height: 1.2;
-  color: var(--paper);
+  text-align: right;
+  color: var(--stone);
 }
-.vicino-layer-aside {
-  margin: 14px 0 0;
-  padding-left: 14px;
-  border-left: 1px solid color-mix(in srgb, var(--accent-gold) 28%, transparent);
-  max-width: 52ch;
-  font-family: var(--font-sans);
-  font-size: var(--text-meta);
-  line-height: 1.5;
-  color: var(--v-meta-ink);
+.v-mb-stack-body {
+  display: grid;
+  gap: 16px;
+  padding: 4px 0 26px;
 }
-.vicino-layer-aside span {
-  display: block;
-  margin-bottom: 4px;
+.v-mb-stack-nodebox {
+  position: relative;
+  width: 100%;
+  margin-inline: auto;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.v-mb-stack-nodebox .vicino-product-node.is-static {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  cursor: pointer;
+  transform: translateX(-50%);
+}
+@supports (transform: scale(calc(tan(atan2(100cqw, 100px))))) {
+  .v-mb-stack-nodebox .vicino-product-node.is-static {
+    left: 0;
+    transform-origin: top left;
+    transform: scale(min(1, tan(atan2(100cqw, var(--stack-node-w, 320px)))));
+  }
+}
+.v-mb-stack-panel,
+.v-mb-stack-editor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(11, 11, 13, 0.9);
+}
+.v-mb-stack-editor .v-mb-timeline {
+  min-height: 130px;
+}
+.v-mb-stack-rails {
+  display: grid;
+}
+.v-mb-stack-rails .v-mb-stack-panel {
+  margin-bottom: 22px;
+}
+.v-mb-canvas-note.is-stack {
+  position: static;
+  margin: 20px 0 0;
+  pointer-events: auto;
+}
+
+/* ---- station 04 — evidence: reels, artifacts, decision ledger ---- */
+.vicino-evidence h2 {
+  grid-column: 1 / span 6;
+}
+.vicino-sub-label {
+  grid-column: 1 / -1;
+  margin: var(--v-head-gap) 0 0;
+  padding-left: 18px;
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--accent-gold);
 }
-.vicino-layer-map {
-  justify-self: end;
-  margin-top: 6px;
-}
-.vicino-layer-owned {
-  transition: fill-opacity 0.3s var(--ease-silk);
-}
-.vicino-layer-row:hover .vicino-layer-owned {
-  fill-opacity: 0.2;
-}
-
-/* ---- station 05 — prototype reels ---- */
-.vicino-reels h2 {
-  grid-column: 1 / span 8;
-}
 .vicino-reel-grid {
   grid-column: 1 / -1;
-  margin-top: var(--v-head-gap);
+  margin-top: 26px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: var(--v-gutter);
@@ -1607,13 +2045,10 @@ const vicinoCriticalCss = `
   color: var(--stone);
 }
 
-/* ---- station 06 — decisions ---- */
-.vicino-decisions h2 {
-  grid-column: 1 / span 8;
-}
+/* ---- station 04 — decision ledger ---- */
 .vicino-decision-list {
   grid-column: 1 / -1;
-  margin-top: var(--v-head-gap);
+  margin-top: 26px;
   border-top: 1px solid var(--v-line);
 }
 .vicino-decision {
@@ -1671,12 +2106,8 @@ const vicinoCriticalCss = `
   width: 100%;
   height: auto;
 }
-.vicino-decision.is-wide .vicino-decision-figure {
-  grid-column: 2 / -1;
-  margin-top: clamp(24px, 3vw, 44px);
-}
 .vicino-decision-figure figcaption,
-.vicino-brief-figure figcaption {
+.vicino-wide-figure figcaption {
   font-family: var(--font-sans);
   font-size: var(--text-micro);
   line-height: 1.5;
@@ -1734,10 +2165,55 @@ h2.vicino-closing-title {
   margin-top: clamp(64px, 8vw, 120px);
 }
 
+/* ---- adjacent case — quiet close ---- */
+.vicino-next {
+  box-sizing: border-box;
+  width: min(100%, var(--vicino-section-max));
+  margin-inline: auto;
+  padding: clamp(48px, 6vw, 84px) var(--v-margin);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--v-gutter);
+  align-items: baseline;
+  background: var(--ink-950);
+}
+.vicino-next-label {
+  grid-column: 1 / span 3;
+  margin: 0;
+  padding-left: 18px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.vicino-next-link {
+  grid-column: 4 / span 8;
+  justify-self: start;
+  text-decoration: none;
+}
+.vicino-next-link:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+.vicino-next-title {
+  font-family: var(--font-condensed);
+  font-size: var(--text-heading);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: var(--paper);
+  white-space: normal;
+}
+
 /* ---- canvas pause + reduced motion ---- */
 .vicino-live-canvas.is-paused *,
 .vicino-live-canvas.is-paused *::before,
-.vicino-live-canvas.is-paused *::after {
+.vicino-live-canvas.is-paused *::after,
+.v-mb-root.is-paused *,
+.v-mb-root.is-paused *::before,
+.v-mb-root.is-paused *::after {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1762,7 +2238,23 @@ h2.vicino-closing-title {
     animation: none;
     transform: scale(2.35);
   }
-  .vicino-layer-owned {
+  /* model board: rooms open instantly, nothing idles (the .is-open state
+     selectors are repeated so they cannot out-specify this reset) */
+  .v-mb-panel,
+  .vicino-product-node.is-open .v-mb-panel,
+  .v-mb-rail,
+  .v-mb-rail.is-open,
+  .v-mb-editor,
+  .v-mb-editor.is-open,
+  .v-mb-tab,
+  .v-mb-stop::before,
+  .v-mb-stop-chip,
+  .v-mb-stop h3 button,
+  .v-mb-stack-item h3 button,
+  .v-mb-close,
+  .v-mb-editor-open,
+  .v-mb-rail-hint,
+  .v-mb-stage .vicino-product-node {
     transition: none;
   }
 }
@@ -1784,39 +2276,24 @@ h2.vicino-closing-title {
   }
   .vicino-thesis,
   .vicino-brief h2,
-  .vicino-flow h2,
-  .vicino-reels h2,
-  .vicino-decisions h2 {
+  .vicino-model h2,
+  .vicino-evidence h2 {
     grid-column: 1 / -1;
   }
   .vicino-opening-copy,
-  .vicino-brief-copy {
+  .vicino-brief-copy,
+  .vicino-model-copy,
+  .vicino-evidence-copy {
     grid-column: 1 / -1;
     margin-top: 34px;
   }
-  .vicino-brief-ledger {
-    grid-column: 1 / -1;
+  /* below 1080 the full board hands over to the stacked interactive */
+  .v-mb-frame,
+  .v-mb-strip {
+    display: none;
   }
-  .vicino-brief-figure {
-    grid-column: span 6;
-  }
-  .vicino-layers-intro {
-    grid-column: 1 / -1;
-    position: static;
-    margin-bottom: 40px;
-  }
-  .vicino-layer-list {
-    grid-column: 1 / -1;
-  }
-  .vicino-flow-node {
-    grid-template-columns: 18px minmax(0, 200px) minmax(0, 1fr);
-    column-gap: clamp(16px, 3vw, 28px);
-  }
-  .vicino-flow-node h3 {
-    grid-column: 2;
-  }
-  .vicino-flow-detail {
-    grid-column: 3;
+  .v-mb-stack {
+    display: block;
   }
   .vicino-decision {
     grid-template-columns: 1fr;
@@ -1824,16 +2301,12 @@ h2.vicino-closing-title {
   }
   .vicino-decision-index,
   .vicino-decision-copy,
-  .vicino-decision-figure,
-  .vicino-decision.is-wide .vicino-decision-figure {
+  .vicino-decision-figure {
     grid-column: 1;
   }
   .vicino-decision-figure {
     max-width: 720px;
     margin-top: 12px;
-  }
-  .vicino-decision.is-wide .vicino-decision-figure {
-    max-width: none;
   }
   .vicino-seal {
     grid-column: 1 / -1;
@@ -1845,6 +2318,14 @@ h2.vicino-closing-title {
   .vicino-closing-copy {
     grid-column: 1 / -1;
     margin-top: 28px;
+  }
+  .vicino-next-label {
+    grid-column: 1 / -1;
+    margin-bottom: 14px;
+    padding-left: 0;
+  }
+  .vicino-next-link {
+    grid-column: 1 / -1;
   }
 }
 
@@ -1870,24 +2351,16 @@ h2.vicino-closing-title {
   .vicino-hero-meta div:last-child {
     border-bottom: 0;
   }
-  .vicino-flow-node {
-    grid-template-columns: 18px minmax(0, 1fr);
+  /* stacked-interactive headers: claim drops under the node name */
+  .v-mb-stack-item h3 button {
+    flex-wrap: wrap;
+    row-gap: 6px;
   }
-  .vicino-flow-node h3 {
-    grid-column: 2;
-  }
-  .vicino-flow-detail {
-    grid-column: 2;
-    margin-top: 10px;
-  }
-  .vicino-layer-row {
-    grid-template-columns: 1fr;
-  }
-  .vicino-layer-map {
-    display: none;
-  }
-  .vicino-brief-figure {
-    grid-column: 1 / -1;
+  .v-mb-stack-item h3 button .v-mb-stop-claim {
+    flex-basis: 100%;
+    margin: 0;
+    padding-left: 16px;
+    text-align: left;
   }
   .vicino-reel-grid {
     grid-template-columns: 1fr;
@@ -1900,20 +2373,34 @@ h2.vicino-closing-title {
 
 export function VicinoCaseLayout({ project }: { project: Project }) {
   const sections = project.chapters?.flatMap((chapter) => chapter.sections) ?? [];
-  const decisions = sections.slice(0, 6);
   const videos = project.moment?.videos ?? [];
+  const { next } = adjacent(project.slug);
   const meta = [
     ["Role", project.role],
     ["Duration", project.duration],
     ["Team", project.teams],
   ];
-  // Redundancy check: summary[0] restates the station-01 thesis, so the brief
-  // renders only the responsibility framing. That paragraph (summary[1]) is
-  // superseded here with the shipped surface names — creation in the left
-  // rail, model/run configuration in the right inspector (see factRefresh).
-  const briefCopy = [
-    "I helped frame the product around responsibility, not feature count. Nodes should represent meaningful stages and outputs. The side rails should hold creation and global configuration — the left rail for creating nodes and pulling in assets, the right inspector for model choice, parameters, and run controls. Sliding panels should carry node-specific input, references, and version context. Editors should handle deep revision work. That separation gave the team a clearer language for deciding where new functionality belonged.",
-  ];
+  // Arc: hero (product) -> 01 overview (role/scope) -> 02 context & problem
+  // -> 03 the model (merged interactive) -> 04 evidence (reels + artifacts +
+  // tightened ledger) -> the moment (seal) -> next case.
+  //
+  // Data reuse map (data/projects.ts stays orchestrator-owned):
+  //   blurb ¶1        -> station 02 copy (expansion/problem framing)
+  //   blurb ¶2        -> station 01 copy (role growth), "sidebars" refreshed
+  //   sections[0]     -> station 02 copy + figure (structural ambiguity)
+  //   sections[2]     -> its checkpoint argument lives in the interactive;
+  //                      its deck image becomes an evidence artifact
+  //   sections[5]     -> its rooms argument lives in the interactive; its
+  //                      annotated-PDR image grounds station 03
+  //   sections[6]     -> station 04 intro (prototype working style)
+  //   summary[]       -> unrendered here (hero/overview already carry it)
+  const overviewCopy = refreshFacts(project.blurb.split("\n\n")[1] ?? "");
+  const contextCopy = project.blurb.split("\n\n")[0] ?? "";
+  const ambiguityCopy = sections[0]?.body[0];
+  const contextFigure = sections[0]?.image;
+  const roomsFigure = sections[5]?.image;
+  const mainPathFigure = sections[2]?.image;
+  const evidenceIntro = sections[6]?.body[0];
 
   return (
     <article className="vicino-case-page">
@@ -1947,7 +2434,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       >
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
-          01 · Workflow question
+          01 · Overview
         </p>
         <h2 className="vicino-thesis" id="vicino-opening-title" data-fade>
           A canvas people could understand, correct, and continue.
@@ -1958,183 +2445,166 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             was where a person could read the work in progress and know what to
             change next.
           </p>
-          <p className="vicino-body-copy">
-            I helped turn a fast-growing set of 3D, image, storyboard, video,
-            and editing capabilities into a workflow language the team could
-            share.
-          </p>
+          {overviewCopy ? <p className="vicino-body-copy">{overviewCopy}</p> : null}
         </div>
       </section>
 
       <section className="vicino-station vicino-brief">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
-          02 · Brief
+          02 · Context &amp; problem
         </p>
         <h2 data-fade>From Feature Pile-Up to Workflow Architecture</h2>
         <div className="vicino-brief-copy" data-fade>
-          {briefCopy.map((p) => (
-            <p className="vicino-body-copy" key={p}>
-              {p}
-            </p>
-          ))}
+          {contextCopy ? <p className="vicino-body-copy">{contextCopy}</p> : null}
+          {ambiguityCopy ? <p className="vicino-body-copy">{ambiguityCopy}</p> : null}
         </div>
-        <div className="vicino-brief-evidence">
-          <div className="vicino-brief-ledger" data-fade>
-            <p className="vicino-ledger-label">The canvas, in the team&rsquo;s commits</p>
-            <dl>
-              {canvasLedger.map(([date, event]) => (
-                <div key={date}>
-                  <dt>{date}</dt>
-                  <dd>{event}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-          <figure className="vicino-brief-figure" data-fade>
+        {contextFigure && (
+          <figure className="vicino-wide-figure" data-fade>
             <div className="vicino-decision-media">
               <Image
-                src="/media/vicino/origin-3d-landing.webp"
-                alt="Vicino.AI's original landing page — 'Ultimate Solution for 3D' beside a white robot render"
+                src={contextFigure}
+                alt="Two node-graph chains labeled TO 3D and TO VIDEO — text prompts flowing through assistant, image, multi-view, 3D, and video nodes"
                 width={1600}
-                height={925}
-                sizes="(max-width: 809.98px) 100vw, (max-width: 1079.98px) 50vw, 420px"
+                height={1187}
+                sizes="(max-width: 1080px) 100vw, 1280px"
                 style={{ height: "auto" }}
               />
             </div>
             <figcaption>
-              Where the product started — the &ldquo;Ultimate Solution for 3D&rdquo;
-              positioning, kept in the builder&rsquo;s user docs.
+              The pile-up, mapped: a to-3D chain and a to-video chain sharing
+              the same text-to-image spine — capable pieces, no single model
+              holding them together.
             </figcaption>
           </figure>
-          <figure className="vicino-brief-figure" data-fade>
+        )}
+      </section>
+
+      <section className="vicino-station vicino-model">
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          03 · The model
+        </p>
+        <h2 data-fade>Four Checkpoints, Four Rooms</h2>
+        <div className="vicino-model-copy" data-fade>
+          <p className="vicino-body-copy">
+            The main path holds four checkpoints — script, storyboard, shot,
+            video. Each exists because the models cannot reliably skip it, and
+            each is a place to inspect and redirect before the next, more
+            expensive step.
+          </p>
+          <p className="vicino-body-copy">
+            Around that path, the canvas could not become a drawer for every
+            control. Each surface had to answer what it owned, when it
+            appeared, and what it should never absorb — so the complexity moved
+            into rooms.
+          </p>
+          <p className="vicino-model-invite">
+            Open the nodes, the rails, and the editor — every room answers for
+            itself
+          </p>
+        </div>
+        <div className="vicino-model-board-wrap" data-fade>
+          <VicinoModelBoard />
+        </div>
+        {roomsFigure && (
+          <figure className="vicino-wide-figure" data-fade>
             <div className="vicino-decision-media">
               <Image
-                src="/media/vicino/landing-v3-hero.webp"
-                alt="Vicino landing v3 hero — 'Your competitors use the same AI as everyone else'"
-                width={1440}
-                height={832}
-                sizes="(max-width: 809.98px) 100vw, (max-width: 1079.98px) 50vw, 420px"
+                src={roomsFigure}
+                alt="Annotated map of Vicino's workspace: four responsibility write-ups — Floating Bar, Sidebar, Sliding Panel, Node Panel — pinned around a live canvas screenshot"
+                width={1600}
+                height={1010}
+                sizes="(max-width: 1080px) 100vw, 1280px"
                 style={{ height: "auto" }}
               />
             </div>
             <figcaption>
-              Landing v3, May 2026 — the marketing-agents repositioning, checked
-              into the repo as a single-file HTML design draft.
+              The rooms as the team kept them — per-surface responsibility
+              PDRs annotated around the live workspace: what goes here, and
+              what never does.
             </figcaption>
           </figure>
-        </div>
+        )}
       </section>
 
-      <section className="vicino-station vicino-flow">
+      <section className="vicino-station vicino-evidence">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
-          03 · Checkpoints
-        </p>
-        <h2 data-fade>Checkpoints Made the Canvas Usable</h2>
-        <div className="vicino-flow-map">
-          {workflow.map((step) => (
-            <div className="vicino-flow-node" key={step.label} data-fade>
-              <span
-                className="vicino-flow-chip"
-                style={{ "--chip-color": step.handle } as CSSProperties}
-                aria-hidden="true"
-              />
-              <h3>{step.label}</h3>
-              <div className="vicino-flow-detail">
-                <p className="vicino-flow-claim">{step.title}</p>
-                <p className="vicino-body-copy">{step.copy}</p>
-                <p className="vicino-flow-conn">{step.conn}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="vicino-station vicino-layers">
-        <span className="vicino-station-rule" aria-hidden="true" />
-        <p className="vicino-station-index" data-fade>
-          04 · Interface layers
-        </p>
-        <div className="vicino-layers-intro" data-fade>
-          <h2>Complexity Needed Different Rooms</h2>
-          <p className="vicino-body-copy">
-            The canvas could not become a drawer for every control. I treated
-            interface layers as responsibilities: each layer had to answer what
-            it owned, when it appeared, and what it should never absorb.
-          </p>
-        </div>
-        <div className="vicino-layer-list">
-          {layers.map((layer, index) => (
-            <div className="vicino-layer-row" key={layer.label} data-fade>
-              <div>
-                <p className="vicino-row-index">
-                  {String(index + 1).padStart(2, "0")} · {layer.label}
-                </p>
-                <h3>{layer.title}</h3>
-                <p className="vicino-body-copy">{layer.owns}</p>
-                <p className="vicino-layer-aside">
-                  <span>Not for</span>
-                  {layer.avoids}
-                </p>
-              </div>
-              <LayerMap kind={layer.kind} color={layer.color} />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {videos.length > 0 && (
-        <section className="vicino-station vicino-reels">
-          <span className="vicino-station-rule" aria-hidden="true" />
-          <p className="vicino-station-index" data-fade>
-            05 · Prototype reels
-          </p>
-          <h2 data-fade>Prototypes Had to Move Fast and Still Align the Team</h2>
-          <div className="vicino-reel-grid">
-            {videos.map((video, index) => (
-              <figure
-                className={`vicino-reel${video.wide ? " is-wide" : ""}`}
-                key={video.src}
-                data-fade
-              >
-                <OffscreenVideo src={video.src} />
-                <figcaption>
-                  {reelCaptions[index] ?? `Prototype reel ${index + 1}`}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="vicino-station vicino-decisions">
-        <span className="vicino-station-rule" aria-hidden="true" />
-        <p className="vicino-station-index" data-fade>
-          06 · Decisions
+          04 · Evidence
         </p>
         <h2 data-fade>The Work Was Deciding Where Complexity Should Live</h2>
+        {evidenceIntro && (
+          <div className="vicino-evidence-copy" data-fade>
+            <p className="vicino-body-copy">{evidenceIntro}</p>
+          </div>
+        )}
+
+        {videos.length > 0 && (
+          <>
+            <p className="vicino-sub-label" data-fade>
+              Prototype reels
+            </p>
+            <div className="vicino-reel-grid">
+              {videos.map((video, index) => (
+                <figure
+                  className={`vicino-reel${video.wide ? " is-wide" : ""}`}
+                  key={video.src}
+                  data-fade
+                >
+                  <OffscreenVideo src={video.src} />
+                  <figcaption>
+                    {reelCaptions[index] ?? `Prototype reel ${index + 1}`}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </>
+        )}
+
+        {mainPathFigure && (
+          <figure className="vicino-wide-figure" data-fade>
+            <div className="vicino-decision-media">
+              <Image
+                src={mainPathFigure}
+                alt="Deck slide: 'I rebuilt the main path around what the models could actually support at each step' — Script, Storyboard, Shot breakdown, and Video, each with its model-constraint rationale"
+                width={1600}
+                height={2141}
+                sizes="(max-width: 1080px) 100vw, 1280px"
+                style={{ height: "auto" }}
+              />
+            </div>
+            <figcaption>
+              The main-path argument as it was presented — each step exists
+              because the models cannot skip it reliably; a recommended
+              structure, not a forced pipeline.
+            </figcaption>
+          </figure>
+        )}
+
+        <p className="vicino-sub-label" data-fade>
+          Decision ledger
+        </p>
         <div className="vicino-decision-list">
-          {decisions.map((section, index) => {
-            const wideCaption = wideDecisionCaption(section.image);
-            const isWide = Boolean(wideCaption);
+          {evidenceRows.map(({ section: sectionIndex, body }, index) => {
+            const section = sections[sectionIndex];
+            if (!section) return null;
             return (
-              <section
-                className={`vicino-decision${isWide ? " is-wide" : ""}`}
-                key={section.heading}
-                data-fade
-              >
+              <section className="vicino-decision" key={section.heading} data-fade>
                 <p className="vicino-row-index vicino-decision-index">
                   {String(index + 1).padStart(2, "0")}
                 </p>
                 <div className="vicino-decision-copy">
                   <h3>{sentenceCase(section.heading)}</h3>
                   <p className="vicino-decision-tags">{section.tags}</p>
-                  {section.body.slice(0, 2).map((p) => (
-                    <p className="vicino-body-copy vicino-decision-body" key={p}>
-                      {refreshFacts(p)}
-                    </p>
-                  ))}
+                  {body
+                    .map((i) => section.body[i])
+                    .filter((p): p is string => Boolean(p))
+                    .map((p) => (
+                      <p className="vicino-body-copy vicino-decision-body" key={p}>
+                        {p}
+                      </p>
+                    ))}
                 </div>
                 {section.image && (
                   <figure className="vicino-decision-figure">
@@ -2142,17 +2612,12 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
                       <Image
                         src={section.image}
                         alt=""
-                        width={isWide ? 1600 : 840}
-                        height={isWide ? 1000 : 560}
-                        sizes={
-                          isWide
-                            ? "(max-width: 1080px) 100vw, 1260px"
-                            : "(max-width: 1080px) 100vw, 560px"
-                        }
+                        width={840}
+                        height={560}
+                        sizes="(max-width: 1080px) 100vw, 560px"
                         style={{ height: "auto" }}
                       />
                     </div>
-                    {wideCaption ? <figcaption>{wideCaption}</figcaption> : null}
                   </figure>
                 )}
               </section>
@@ -2171,15 +2636,26 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           </h2>
           <div className="vicino-closing-copy" data-fade>
             {/* body[3] is the a teammate credit — render-filtered into the
-                station-05 reel figcaption instead of a closing paragraph */}
+                station-04 reel figcaption instead of a closing paragraph */}
             {project.moment.body.slice(0, 3).map((p) => (
               <p className="vicino-body-copy" key={p}>
-                {refreshFacts(p)}
+                {p}
               </p>
             ))}
           </div>
           <span className="vicino-closing-rule" aria-hidden="true" />
         </section>
+      )}
+
+      {next && (
+        <aside className="vicino-next">
+          <p className="vicino-next-label" data-fade>
+            Next case
+          </p>
+          <Link className="vicino-next-link" href={`/work/${next.slug}`} data-fade>
+            <span className="cta cta--quiet vicino-next-title">{next.title}</span>
+          </Link>
+        </aside>
       )}
     </article>
   );
