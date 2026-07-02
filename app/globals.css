@@ -469,10 +469,15 @@ body.hero-night .nav-links a.active {
 /* ============================================================
    Footer
    ============================================================ */
+/* Full-bleed ink band (owner: the inset rounded card read as a harsh floating
+   black box). Edge-to-edge like the koi band; content keeps the old rail. */
 .site-footer {
   margin-top: -1px;
-  padding: 0 20px;
-  background: var(--paper);
+  position: relative;
+  background:
+    linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.92)),
+    url("/assets/framerusercontent.com/images/rR6HYXBrMmX4cRpXfXUOvpvpB0.png");
+  background-size: auto, 100px 100px;
   color: var(--paper);
 }
 .footer-inner {
@@ -485,12 +490,6 @@ body.hero-night .nav-links a.active {
   margin: 0 auto;
   padding: 56px 28px 36px;
   position: relative;
-  overflow: hidden;
-  border-radius: 22px 22px 0 0;
-  background:
-    linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.92)),
-    url("/assets/framerusercontent.com/images/rR6HYXBrMmX4cRpXfXUOvpvpB0.png");
-  background-size: auto, 100px 100px;
 }
 .footer-socials-row {
   position: absolute;
@@ -560,14 +559,10 @@ body.hero-night .nav-links a.active {
   letter-spacing: 0.04em;
 }
 @media (max-width: 600px) {
-  .site-footer {
-    padding: 0 10px;
-  }
   .footer-inner {
     min-height: 261px;
     gap: 18px;
     padding: 64px 20px 26px;
-    border-radius: 18px 18px 0 0;
     text-align: center;
   }
   .footer-socials-row {
@@ -3962,13 +3957,27 @@ body.hero-night .nav-links a.active {
   min-height: 1180px;
   position: relative;
   /* full-bleed ink (owner decision): the moon-gate crossing dissolves black
-     into black — the pond IS the other side of the gate, no paper card */
-  background: #020305;
+     into black — the pond IS the other side of the gate, no paper card.
+     The band's tail washes back into paper so the next section doesn't hit
+     a hard black edge (owner: the black boundary read harsh). */
+  background: linear-gradient(
+    180deg,
+    #020305 0%,
+    #020305 calc(100% - 220px),
+    var(--paper) 100%
+  );
 }
 .home-koi-frame {
   position: absolute;
   inset: 0;
-  background: #020305;
+  /* the visible band layer carries the tail wash (the section gradient sits
+     beneath and would be covered) */
+  background: linear-gradient(
+    180deg,
+    #020305 0%,
+    #020305 calc(100% - 220px),
+    var(--paper) 100%
+  );
 }
 .home-koi-inner {
   position: absolute;
