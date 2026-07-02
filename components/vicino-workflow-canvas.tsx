@@ -41,24 +41,30 @@ export const handleColor: Record<HandleType, string> = {
   video: "#FFB347",
 };
 
+// Real wrapper/shell/header class names from the product's node components:
+// the script-node styles (.script-node / .script-node-card / .script-node-header),
+// the storyboard-node styles (.story-image-card / .story-image-header),
+// the shot-node styles (.shoot-node-card / .shoot-node-header),
+// the video-node styles (.video-node-v3 family). Styling for the recreation lives in
+// the .vicino-product-* rules; these names keep the anatomy legible.
 export const productClassName: Record<NodeKind, string> = {
-  script: "base-node-wrapper text-node-root",
-  storyboard: "base-node-wrapper storyboard-node-root",
-  shoot: "base-node-wrapper shooting-studio-node-root",
+  script: "base-node-wrapper script-node",
+  storyboard: "base-node-wrapper story-image-node",
+  shoot: "base-node-wrapper shoot-node",
   video: "base-node-wrapper video-node-v3-root",
 };
 
 export const productShellClassName: Record<NodeKind, string> = {
-  script: "base-node-container text-node-card",
-  storyboard: "base-node-container storyboard-node-card",
-  shoot: "base-node-container shooting-studio-node-card",
+  script: "base-node-container script-node-card",
+  storyboard: "base-node-container story-image-card",
+  shoot: "base-node-container shoot-node-card",
   video: "base-node-container video-node-v3",
 };
 
 const productHeaderClassName: Record<NodeKind, string> = {
-  script: "node-header text-node-header",
-  storyboard: "node-header storyboard-node-header",
-  shoot: "node-header shooting-studio-node-header",
+  script: "node-header script-node-header",
+  storyboard: "node-header story-image-header",
+  shoot: "node-header shoot-node-header",
   video: "node-header video-node-v3-header",
 };
 
@@ -80,17 +86,18 @@ export const HANDLE_SLOT_Y = 56;
 export const HANDLE_SLOT_SPACING = 40;
 
 // Exported as the single source of node anatomy (real create-menu labels,
-// measured sizes, typed handles). The hero board uses these coordinates;
-// the model board (vicino-model-board.tsx) re-positions the same nodes.
+// scaled-down node sizes, typed handles). The hero board uses these
+// coordinates; the model board (vicino-model-board.tsx) re-positions the
+// same nodes.
 export const canvasNodes: CanvasNode[] = [
   {
     id: "script",
     kind: "script",
     label: "Script Generator",
-    x: 28,
-    y: 216,
-    w: 214,
-    h: 230,
+    x: 24,
+    y: 210,
+    w: 280,
+    h: 236,
     output: "text",
     outputY: HANDLE_SLOT_Y,
   },
@@ -98,7 +105,7 @@ export const canvasNodes: CanvasNode[] = [
     id: "storyboard",
     kind: "storyboard",
     label: "Story Board Generator",
-    x: 306,
+    x: 344,
     y: 44,
     w: 326,
     h: 302,
@@ -111,7 +118,7 @@ export const canvasNodes: CanvasNode[] = [
     id: "shoot",
     kind: "shoot",
     label: "Shot Node",
-    x: 700,
+    x: 712,
     y: 56,
     w: 252,
     h: 330,
@@ -124,7 +131,7 @@ export const canvasNodes: CanvasNode[] = [
     id: "video",
     kind: "video",
     label: "Video Generator",
-    x: 992,
+    x: 1000,
     y: 330,
     w: 344,
     h: 260,
@@ -186,7 +193,9 @@ function NodeIcon({ kind }: { kind: NodeKind }) {
 }
 
 export function ProductHeader({ node }: { node: CanvasNode }) {
-  const showPlayButton = node.kind === "storyboard" || node.kind === "video";
+  // Every generator header ships the glass play/generate button
+  // (the node header .node-header-play-button; ScriptNode has its own).
+  const showPlayButton = true;
 
   return (
     <div className={`vicino-product-node-header ${productHeaderClassName[node.kind]}`}>
@@ -226,67 +235,85 @@ export function ProductHeader({ node }: { node: CanvasNode }) {
   );
 }
 
+// ScriptNode look (the script node): a near-black card holding a column of
+// scene cards — each scene a title row plus its beat text. Values are
+// specimen data; the anatomy (scene cards, duration tags) is the product's.
+const scriptScenes = [
+  {
+    name: "Scene 1",
+    duration: "2.4s",
+    text: "Interior studio. A figure enters frame, camera drifts from wide to close.",
+  },
+  {
+    name: "Scene 2",
+    duration: "3.1s",
+    text: "Close on hands at the desk; the monitor light shifts as the cut widens.",
+  },
+];
+
 function ScriptNodeBody() {
   return (
     <div className="vicino-script-node-body">
-      <div className="vicino-script-source">
-        <span>Prompt</span>
-        <strong>Interior studio. A figure enters frame, camera drifts from wide to close.</strong>
-      </div>
-      <div className="vicino-script-lines" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </div>
+      {scriptScenes.map((scene) => (
+        <div className="vicino-script-scene-card script-node-scene-card" key={scene.name}>
+          <div className="vicino-script-scene-head">
+            <strong>{scene.name}</strong>
+            <span>{scene.duration}</span>
+          </div>
+          <p>{scene.text}</p>
+        </div>
+      ))}
+      <p className="vicino-script-scene-more">+ 4 more scenes</p>
     </div>
   );
 }
 
+// StoryImageNode look: the always-2-rows scene grid (story-scenes-container),
+// each scene block a glass card with the numbered green circle header and its
+// sketch frame.
 function StoryboardNodeBody() {
   return (
     <div className="vicino-storyboard-node-body">
-      <div className="vicino-storyboard-grid storyboard-scene-grid cols-3">
+      <div className="vicino-storyboard-grid story-scenes-container">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div
-            className="vicino-storyboard-scene-card storyboard-scene-card nodrag has-image"
-            key={index}
-            style={{ "--scene-index": index } as CSSProperties}
-          >
-            <span className="storyboard-scene-num">Scene {index + 1}</span>
-            <div className="storyboard-scene-img-area">
-              <img
-                className="storyboard-scene-thumb"
-                src="/media/vicino-storyboard-sketch.png"
-                alt=""
-              />
+          <div className="vicino-storyboard-scene-block story-scene-block nodrag" key={index}>
+            <div className="vicino-storyboard-scene-head story-scene-header">
+              <span className="vicino-storyboard-scene-num story-scene-number">{index + 1}</span>
+              <span className="vicino-storyboard-scene-label story-scene-label">
+                Scene {index + 1}
+              </span>
+            </div>
+            <div className="vicino-storyboard-scene-img">
+              <img src="/media/vicino-storyboard-sketch.png" alt="" />
             </div>
           </div>
         ))}
       </div>
-      <div className="vicino-storyboard-progress">
-        <span />
-      </div>
-      <div className="vicino-storyboard-toolbar">
-        <span>6 sketch scenes</span>
-        <strong>Generate Shots</strong>
-      </div>
     </div>
   );
 }
 
+// ShootNode look: one shot sub-card ("Shot N" title row) holding the labeled
+// First Frame box and the Video Prompt box.
 function ShootNodeBody() {
   return (
-    <div className="vicino-shoot-node-body shooting-studio-node-content">
-      <div className="shooting-studio-node-preview-area">
-        <img
-          className="shooting-studio-node-preview"
-          src="/media/vicino-shootnode-board.png"
-          alt="Cinematic shot board preview"
-        />
-        <div className="image-node-reference-thumbnails-container" aria-hidden="true">
-          <div className="image-node-reference-thumbnail">
-            <img src="/media/vicino-storyboard-sketch.png" alt="" />
-          </div>
+    <div className="vicino-shoot-node-body shoot-node-body">
+      <div className="vicino-shoot-shot-card shoot-node-shot-card">
+        <div className="vicino-shoot-shot-title-row">
+          <strong>Shot 3</strong>
+          <span aria-hidden="true" className="vicino-shoot-refresh" />
+        </div>
+        <div className="vicino-shoot-frame-box shoot-node-frame-box">
+          <span className="vicino-shoot-box-label shoot-node-box-label">First Frame</span>
+          <img
+            className="vicino-shoot-frame-image shoot-node-frame-image"
+            src="/media/vicino-shootnode-board.png"
+            alt="Cinematic shot board preview"
+          />
+        </div>
+        <div className="vicino-shoot-prompt-box shoot-node-prompt-box">
+          <span className="vicino-shoot-box-label shoot-node-box-label">Video Prompt</span>
+          <p>Slow push-in, 35mm. Practical warm key; hold on the hands.</p>
         </div>
       </div>
     </div>
@@ -336,8 +363,8 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
 
   const byId = useMemo(() => new Map(canvasNodes.map((node) => [node.id, node])), []);
 
-  // Pause the infinite canvas animations (edge flow, shimmer, preview pan)
-  // while the frame is offscreen — .is-paused sets animation-play-state.
+  // Pause the infinite canvas animations (edge flow) while the frame is
+  // offscreen — .is-paused sets animation-play-state.
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;

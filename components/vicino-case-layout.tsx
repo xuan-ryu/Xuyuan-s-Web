@@ -2,19 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
 import { OffscreenVideo } from "./ui/offscreen-video";
+import { VicinoFlowStrip } from "./vicino-flow-strip";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
 
 const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
-// Render-level fact refresh grounded in the builder repo: the shipped build
-// splits the old "sidebars" phrasing into two rails — creation on the left
-// (CreateRail), model/run configuration in the right inspector
-// (the inspector panel). data/projects.ts is orchestrator-owned; the matching
-// data edit is reported for the batched pass.
+// Render-level fact refresh grounded in the owner's own zoning vocabulary
+// (the "Detail PDR" board figured in station 04): the generic "sidebars"
+// phrasing becomes the design model's named layers. data/projects.ts is
+// orchestrator-owned; the matching data edit is reported for the batched
+// pass.
 function refreshFacts(copy: string) {
   return copy.split("editor logic, sidebars, sliding panels").join(
-    "editor logic, the two side rails, sliding panels",
+    "editor logic, the Sidebar and Floating Bar layers, sliding panels",
   );
 }
 
@@ -87,7 +88,6 @@ const vicinoCriticalCss = `
      recreation of Vicino's product UI and keeps its own 14/12/10px ladder
      (product type does not map onto the portfolio role tokens).
      ------------------------------------------------------------------ */
-  --vicino-hero-max: 1440px;
   --vicino-section-max: 1440px;
   --vicino-reading-max: 68ch;
   --vicino-node-body: 14px;
@@ -119,45 +119,23 @@ const vicinoCriticalCss = `
   --play-btn-glass-bg: rgba(255, 255, 255, 0.10);
   --play-btn-glass-bg-hover: rgba(255, 255, 255, 0.18);
   --node-header-play-btn-bg: rgba(255, 255, 255, 0.06);
-  --node-header-play-btn-hover-bg: rgba(255, 255, 255, 0.12);
   --node-header-play-btn-icon-color: #F5F5F7;
   --node-shell-bg: #0b0b0d;
   --node-shell-radius: 16px;
   --node-shell-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 12px 24px rgba(0, 0, 0, 0.18);
   --node-shell-selected-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
-  --node-panel-bg: #0b0b0d;
-  --node-panel-radius: 12px;
   --node-shell-edge: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-  --text-node-card-bg: #0b0b0d;
-  --text-node-card-border: rgba(241, 160, 250, 0.30);
-  --text-node-card-selected-border: #F1A0FA;
-  --text-node-prompt-input-bg: #0b0b0d;
   --text-node-textarea-text: #F5F5F7;
-  --text-node-preview-text: #d9d9d9;
   --image-node-card-bg: #0b0b0d;
   --image-node-card-border: rgba(255, 255, 255, 0.07);
-  --image-node-card-selected-border: rgba(255, 255, 255, 0.5);
-  --image-node-card-shadow: 0 18px 32px rgba(0, 0, 0, 0.25);
-  --image-node-header-bg: #0b0b0d;
   --image-node-prompt-input-bg: #303030;
-  --image-node-text-color: #8b8b8b;
   --image-node-toolbar-btn-text: #D9D9D9;
-  --image-node-thumbnail-bg: #303030;
-  --image-node-reference-thumbnail-border: rgba(255, 255, 255, 0.2);
-  --image-node-reference-thumbnail-bg: rgba(0, 0, 0, 0.5);
   --video-node-card-bg: #0b0b0d;
   --video-node-card-border: rgba(255, 255, 255, 0.07);
   --video-node-card-selected-border: rgba(255, 255, 255, 0.5);
-  --video-node-header-bg: #0b0b0d;
   --video-node-video-area-bg: #0b0b0d;
   --video-node-stage-bg: #0b0b0d;
-  --vicino-node-bg: var(--node-shell-bg);
-  --vicino-node-panel: var(--image-node-prompt-input-bg);
-  --vicino-node-line: var(--image-node-card-border);
-  --vicino-node-line-strong: var(--image-node-card-selected-border);
   --vicino-node-text: var(--node-header-label-color);
-  --vicino-node-muted: var(--image-node-text-color);
-  --vicino-node-glass: var(--glass-btn-shadow);
   background: var(--ink-950);
   color: var(--paper);
   overflow: hidden;
@@ -479,7 +457,7 @@ const vicinoCriticalCss = `
   pointer-events: none;
 }
 
-/* ---- product nodes (measured recreation of Vicino's UI) ---- */
+/* ---- product nodes (recreation of Vicino's shipped node components) ---- */
 .vicino-product-node {
   position: absolute;
   left: 0;
@@ -506,19 +484,56 @@ const vicinoCriticalCss = `
   background: var(--node-shell-bg);
   box-shadow: var(--node-shell-shadow);
   box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.2s ease;
 }
+/* Per-kind card surfaces and borders — the shipped values:
+   the script-node styles (near-black card, #404040 border), the storyboard-node styles
+   (2px teal multiview border), the shot-node styles and VideoNode (hairline
+   white 0.07). */
 .vicino-product-node.is-script .vicino-product-node-shell {
-  border: 2px solid var(--text-node-card-border);
-  background: var(--text-node-card-bg);
+  border: 1px solid #404040;
+  background: rgba(0, 0, 0, 0.9);
 }
 .vicino-product-node.is-storyboard .vicino-product-node-shell {
+  border: 2px solid rgba(139, 214, 217, 0.5);
+  background: var(--image-node-card-bg);
+}
+.vicino-product-node.is-shoot .vicino-product-node-shell {
   border: 1px solid var(--image-node-card-border);
   background: var(--image-node-card-bg);
 }
-.vicino-product-node.is-video .vicino-product-node-shell,
-.vicino-product-node.is-shoot .vicino-product-node-shell {
-  border: 2px solid rgba(255, 166, 19, 0.5);
-  background: var(--image-node-card-bg);
+.vicino-product-node.is-video .vicino-product-node-shell {
+  border: 1px solid var(--video-node-card-border);
+  background: var(--video-node-card-bg);
+}
+/* Hover + selection borders — the shipped selection language
+   (script rgba(232,232,232,.9); storyImage #8BD6D9; shoot teal 0.6;
+   video white 0.5) with the shared selected shadow. */
+.vicino-product-node.is-script:hover .vicino-product-node-shell {
+  border-color: #555555;
+}
+.vicino-product-node.is-shoot:hover .vicino-product-node-shell,
+.vicino-product-node.is-video:hover .vicino-product-node-shell {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+.vicino-product-node.is-storyboard:hover .vicino-product-node-shell {
+  border-color: #8BD6D9;
+}
+.vicino-product-node.is-script.is-open .vicino-product-node-shell {
+  border-color: rgba(232, 232, 232, 0.9);
+  box-shadow: var(--node-shell-selected-shadow);
+}
+.vicino-product-node.is-storyboard.is-open .vicino-product-node-shell {
+  border-color: #8BD6D9;
+  box-shadow: var(--node-shell-selected-shadow);
+}
+.vicino-product-node.is-shoot.is-open .vicino-product-node-shell {
+  border-color: rgba(139, 214, 217, 0.6);
+  box-shadow: var(--node-shell-selected-shadow);
+}
+.vicino-product-node.is-video.is-open .vicino-product-node-shell {
+  border-color: var(--video-node-card-selected-border);
+  box-shadow: var(--node-shell-selected-shadow);
 }
 .vicino-product-node-shell::after {
   content: "";
@@ -551,11 +566,24 @@ const vicinoCriticalCss = `
   border-bottom: 1px solid var(--node-header-border);
   background: var(--node-header-bg);
 }
-.vicino-product-node.is-script .vicino-product-node-header,
-.vicino-product-node.is-storyboard .vicino-product-node-header,
-.vicino-product-node.is-shoot .vicino-product-node-header,
-.vicino-product-node.is-video .vicino-product-node-header {
+/* ScriptNode ships its own compact 42px transparent header
+   (the script-node styles .script-node-header); the other three use the shared
+   node-header with its #333 bottom rule. */
+.vicino-product-node.is-script .vicino-product-node-header {
+  height: 42px;
+  padding: 10px 8px 8px;
+  background: transparent;
   border-bottom: none;
+  border-radius: 0;
+}
+.vicino-product-node.is-script .vicino-product-node-label-row p {
+  color: rgba(255, 255, 255, 0.92);
+}
+.vicino-product-node.is-script .vicino-product-node-right button {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(24, 24, 24, 0.96);
 }
 .vicino-product-node-label-row {
   display: flex;
@@ -765,216 +793,216 @@ const vicinoCriticalCss = `
 }
 .vicino-script-node-body {
   display: flex;
-  height: calc(100% - 53px);
+  height: calc(100% - 42px);
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  padding: 0 12px 12px;
 }
-.vicino-script-source {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px;
-  border: 0;
-  border-radius: var(--node-panel-radius);
-  background: var(--text-node-prompt-input-bg);
-  box-shadow: var(--glass-btn-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-.vicino-script-source span {
-  color: rgba(255,255,255,0.5);
-  font-family: var(--font-sans);
-  font-size: var(--vicino-node-small);
-  letter-spacing: 0;
-  text-transform: none;
-}
-.vicino-script-source strong {
-  color: var(--text-node-textarea-text);
-  font-family: var(--font-sans);
-  font-size: var(--vicino-node-body);
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: 0;
-}
-.vicino-script-lines {
+/* ScriptNode scene cards — the scenes column, compacted to two cards */
+.vicino-script-scene-card {
   display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: rgba(48, 48, 48, 0.28);
+}
+.vicino-script-scene-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 8px;
 }
-.vicino-script-lines i {
-  display: block;
-  height: 7px;
-  border-radius: 4px;
-  background: rgba(241,160,250,0.28);
+.vicino-script-scene-head strong {
+  color: #F5F5F7;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-weight: 600;
+  letter-spacing: 0;
 }
-.vicino-script-lines i:nth-child(1) {
-  width: 92%;
+.vicino-script-scene-head span {
+  color: rgba(255, 255, 255, 0.42);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  letter-spacing: 0;
 }
-.vicino-script-lines i:nth-child(2) {
-  width: 76%;
-}
-.vicino-script-lines i:nth-child(3) {
-  width: 58%;
-}
-.vicino-storyboard-scene-card {
-  position: relative;
+.vicino-script-scene-card p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  aspect-ratio: 3 / 2;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background: #1c1c1c;
-  animation: vicino-story-card-border 7.2s ease-in-out infinite;
-  animation-delay: calc(var(--scene-index) * 0.34s);
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+.vicino-script-scene-more {
+  margin: auto 0 0;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  letter-spacing: 0;
+}
+/* StoryImageNode scenes — the always-2-rows grid (story-scenes-container:
+   3 cols x 2 rows, 12px/5px gap) of glass scene blocks, each with the
+   numbered green circle header. */
+.vicino-storyboard-node-body {
+  padding: 0;
 }
 .vicino-storyboard-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 12px 5px;
   flex: 1;
   min-height: 0;
-  padding: 0 8px;
+  padding: 4px 16px 16px;
 }
-.vicino-storyboard-scene-card img {
+.vicino-storyboard-scene-block {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgba(35, 35, 35, 0.3);
+  box-shadow: var(--glass-btn-shadow);
+}
+.vicino-storyboard-scene-head {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 7px;
+}
+.vicino-storyboard-scene-num {
+  display: flex;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--handle-storyboard);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.vicino-storyboard-scene-label {
+  overflow: hidden;
+  color: #F5F5F7;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  font-weight: 600;
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.vicino-storyboard-scene-img {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.vicino-storyboard-scene-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: grayscale(1) contrast(1.08);
   opacity: 0.88;
 }
-.vicino-storyboard-scene-card .storyboard-scene-img-area {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: #1c1c1c;
-}
-.vicino-storyboard-scene-card .storyboard-scene-thumb {
-  display: block;
-}
-.vicino-storyboard-scene-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 45%, transparent 88%),
-    rgba(255,255,255,0.025);
-  background-size: 220% 100%;
-  animation: vicino-story-shimmer 7.2s ease-in-out infinite;
-  animation-delay: calc(var(--scene-index) * 0.34s);
-}
-.vicino-storyboard-scene-card::after {
-  content: none;
-}
-.vicino-storyboard-scene-card span {
-  position: absolute;
-  left: 6px;
-  top: 6px;
-  z-index: 2;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(110,221,179,0.75);
-  color: rgba(255,255,255,0.94);
-  font-family: var(--font-sans);
-  font-size: var(--vicino-node-detail);
-  font-weight: 600;
-  letter-spacing: 0;
-}
-.vicino-storyboard-scene-card i {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  z-index: 2;
-  width: 32px;
-  height: 20px;
-  border: 1px solid rgba(255,255,255,0.18);
-  opacity: 0.55;
-}
-.vicino-storyboard-progress {
-  height: 4px;
-  margin-top: 12px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.09);
-}
-.vicino-storyboard-progress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--handle-image);
-  transform-origin: left center;
-  animation: vicino-story-progress 8.4s ease-in-out infinite;
-}
-.vicino-storyboard-toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 10px;
-  color: rgba(255,255,255,0.5);
-  font-family: var(--font-sans);
-  font-size: var(--vicino-node-small);
-}
-.vicino-storyboard-toolbar strong {
-  color: rgba(255,255,255,0.78);
-  font-size: var(--vicino-node-small);
-  font-weight: 400;
-}
-.vicino-shoot-node-body.shooting-studio-node-content {
+/* ShootNode — one shot sub-card with its labeled First Frame and Video
+   Prompt boxes (the shot-node styles: glass shot card, --glass-border boxes,
+   11px/600 box labels). */
+.vicino-shoot-node-body {
   display: flex;
   height: calc(100% - 53px);
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
   box-sizing: border-box;
+  padding: 0 12px 12px;
   background: var(--image-node-card-bg);
 }
-.shooting-studio-node-preview-area {
-  position: relative;
+.vicino-shoot-shot-card {
   display: flex;
   flex: 1;
-  width: 100%;
-  max-width: 100%;
   min-height: 0;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: var(--image-node-thumbnail-bg);
-  box-shadow: var(--glass-btn-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid rgba(139, 214, 217, 0.5);
+  border-radius: 10px;
+  background: rgba(35, 35, 35, 0.3);
+  box-shadow: 0 0 0 1px rgba(139, 214, 217, 0.2), var(--glass-btn-shadow);
 }
-.shooting-studio-node-preview {
-  width: 100%;
-  height: 100%;
+.vicino-shoot-shot-title-row {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.vicino-shoot-shot-title-row strong {
+  color: #F5F5F7;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.vicino-shoot-refresh {
+  position: relative;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+.vicino-shoot-frame-box,
+.vicino-shoot-prompt-box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  background: var(--image-node-prompt-input-bg);
+  box-shadow: var(--glass-btn-shadow);
+}
+.vicino-shoot-frame-box {
+  flex: 1;
+  min-height: 0;
+}
+.vicino-shoot-box-label {
+  flex-shrink: 0;
+  padding: 8px 8px 6px;
+  color: #aaaaaa;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.vicino-shoot-frame-image {
+  flex: 1;
+  width: calc(100% - 16px);
+  min-height: 0;
+  margin: 0 8px 8px;
+  border-radius: 4px;
   object-fit: cover;
   filter: saturate(0.92) contrast(1.04);
 }
-.image-node-reference-thumbnails-container {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  display: flex;
-  gap: 6px;
-  z-index: 2;
-}
-.image-node-reference-thumbnail {
-  width: 38px;
-  height: 28px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 4px;
-  background: rgba(0,0,0,0.5);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.24);
-}
-.image-node-reference-thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(1) contrast(1.08);
-  opacity: 0.9;
+.vicino-shoot-prompt-box p {
+  margin: 0;
+  padding: 0 8px 8px;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
 }
 .vicino-video-output-node-body.video-node-v3-video-area {
   width: 100%;
@@ -1034,8 +1062,6 @@ const vicinoCriticalCss = `
   object-fit: cover;
   filter: saturate(0.92) contrast(1.05) brightness(0.78);
   pointer-events: none;
-  transform-origin: 64% 48%;
-  animation: vicino-video-preview-pan 8.4s ease-in-out infinite;
 }
 .vicino-video-play-overlay {
   position: absolute;
@@ -1074,54 +1100,6 @@ const vicinoCriticalCss = `
 .vicino-story-video-controls i:nth-child(2) {
   background: linear-gradient(90deg, var(--handle-video) 0 62%, rgba(255,255,255,0.14) 62%);
 }
-@keyframes vicino-story-shimmer {
-  0%,
-  18% {
-    background-position: 180% 0;
-    opacity: 1;
-  }
-  42%,
-  100% {
-    background-position: -80% 0;
-    opacity: 0.1;
-  }
-}
-@keyframes vicino-story-card-border {
-  0%,
-  22% {
-    border-color: transparent;
-  }
-  34%,
-  54% {
-    border-color: rgba(110,221,179,0.58);
-  }
-  82%,
-  100% {
-    border-color: rgba(110,221,179,0.16);
-  }
-}
-@keyframes vicino-story-progress {
-  0% {
-    transform: scaleX(0.02);
-  }
-  68% {
-    transform: scaleX(1);
-  }
-  100% {
-    transform: scaleX(0.02);
-  }
-}
-@keyframes vicino-video-preview-pan {
-  0%,
-  50% {
-    transform: scale(2.35) translateX(0);
-  }
-  78%,
-  100% {
-    transform: scale(2.35) translateX(-12px);
-  }
-}
-
 /* ---- station 01 — workflow question ---- */
 .vicino-opening-statement {
   background: var(--ink-950);
@@ -1173,7 +1151,100 @@ const vicinoCriticalCss = `
   margin-top: clamp(28px, 3vw, 44px);
 }
 
-/* ---- station 03 — the model: one interactive board, four rooms ---- */
+/* ---- station 03 — Block A: the flow, told once ---- */
+.vicino-flow {
+  background: var(--ink-950);
+}
+.vicino-flow h2 {
+  grid-column: 1 / span 6;
+}
+.vicino-flow-strip-wrap {
+  grid-column: 1 / -1;
+  margin-top: var(--v-head-gap);
+  min-width: 0;
+}
+/* Alignment contract (owner note: the four entries must sit level at 1536
+   and below): the strip is one grid, each stop spans four shared row tracks
+   via subgrid, so name/claim/copy/connection rows line up even when a step
+   name wraps to two lines. */
+.v-fs-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, auto);
+  column-gap: var(--v-gutter);
+  border-top: 1px solid var(--v-line-soft);
+}
+.v-fs-stop {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  min-width: 0;
+  padding-top: 22px;
+}
+@supports not (grid-template-rows: subgrid) {
+  .v-fs-stop {
+    grid-template-rows: repeat(4, auto);
+    align-content: start;
+  }
+  /* fallback: reserve two title lines so single-line names stay level */
+  .v-fs-name {
+    min-height: 2.4em;
+  }
+}
+.v-fs-name {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--paper);
+}
+.v-fs-chip {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 2px 4px 4px 2px;
+}
+.v-fs-index {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: 2;
+  letter-spacing: var(--track-label);
+  color: var(--accent-gold);
+}
+.v-fs-claim {
+  margin: 0 0 8px;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--paper);
+}
+.v-fs-copy {
+  margin: 0;
+  max-width: 40ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--v-meta-ink);
+}
+.v-fs-conn {
+  align-self: end;
+  margin: 14px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* ---- station 04 — Block B: the interface, one interactive board ---- */
 .vicino-model {
   background: var(--ink-950);
 }
@@ -1256,26 +1327,28 @@ const vicinoCriticalCss = `
   opacity: 0.9;
 }
 
-/* the product's slim panel-toggle tab on the node's left edge */
+/* the product's panel-toggle tab (the sliding panel .sp-toggle-bar: 5px x
+   72px pill in the connection-type color) on the node's left edge */
 .v-mb-tab {
   position: absolute;
-  left: -5px;
+  left: -2px;
   top: 50%;
   z-index: 3;
-  width: 4px;
-  height: 26px;
-  border-radius: 4px 2px 2px 4px;
-  opacity: 0.85;
+  width: 5px;
+  height: 72px;
+  border-radius: 999px;
+  opacity: 0.9;
   transform: translateY(-50%);
-  transition: transform 0.3s var(--ease-spring), opacity 0.3s var(--ease-standard);
+  transition: opacity 0.3s var(--ease-standard);
 }
 .vicino-product-node:hover .v-mb-tab,
 .vicino-product-node.is-open .v-mb-tab {
   opacity: 1;
-  transform: translateY(-50%) scaleY(1.4);
 }
 
-/* sliding panel — opens to the node's LEFT, height synced to the node */
+/* Sliding Panel — opens flush to the node's LEFT at node height, with the
+   shipped surface: 10px rgba(32,32,32,.94) border, 16px radius, frosted
+   rgba(48,46,48,.93) glass (the sliding panel). */
 .v-mb-panel {
   position: absolute;
   right: 100%;
@@ -1283,39 +1356,64 @@ const vicinoCriticalCss = `
   z-index: 2;
   box-sizing: border-box;
   min-height: 100%;
-  margin-right: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--node-panel-radius);
-  background: rgba(11, 11, 13, 0.97);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  gap: 9px;
+  padding: 12px;
+  border: 10px solid rgba(32, 32, 32, 0.94);
+  border-radius: 16px;
+  background: rgba(48, 46, 48, 0.93);
+  backdrop-filter: blur(4px) saturate(120%);
+  -webkit-backdrop-filter: blur(4px) saturate(120%);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
   cursor: default;
   opacity: 0;
   visibility: hidden;
   transform: translateX(16px);
   transition:
-    transform 0.34s var(--ease-silk),
-    opacity 0.34s var(--ease-silk),
-    visibility 0s linear 0.34s;
+    transform 0.3s var(--ease-silk),
+    opacity 0.3s var(--ease-silk),
+    visibility 0s linear 0.3s;
 }
 .vicino-product-node.is-open .v-mb-panel {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
   transition:
-    transform 0.34s var(--ease-silk),
-    opacity 0.34s var(--ease-silk),
+    transform 0.3s var(--ease-silk),
+    opacity 0.3s var(--ease-silk),
     visibility 0s;
 }
-/* the two low nodes sit near the frame's bottom edge — their panels anchor
-   to the node's bottom and grow upward into open canvas instead */
-.vicino-product-node.is-storyboard .v-mb-panel,
-.vicino-product-node.is-video .v-mb-panel {
-  top: auto;
-  bottom: 0;
+/* the panel's first row in the shipped build: the auto-open preference */
+.v-mb-panel-autoopen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.66);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  letter-spacing: 0;
+}
+.v-mb-toggle {
+  position: relative;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.v-mb-toggle::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
 }
 .v-mb-panel-head {
   display: flex;
@@ -1437,27 +1535,282 @@ const vicinoCriticalCss = `
   text-transform: uppercase;
   color: var(--accent-gold);
 }
-.v-mb-editor-open {
-  display: block;
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* the Sidebar's aspect-ratio option list (the inspector panel look) */
+.v-mb-ratio-list {
+  display: grid;
+  gap: 4px;
+  margin-top: 4px;
+}
+.v-mb-ratio-list em {
+  padding: 5px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  font-style: normal;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+.v-mb-ratio-list em.is-current {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Floating Bar — the node-adjacent next-step layer, recreated from the
+   shipped toolbar (the base-node styles .base-node-toolbar: glass strip 6px above
+   the node; icon utilities, divider, iridescent action buttons from
+   the image-node styles). Appears when its node is selected. */
+.v-mb-floatbar {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 25;
+  display: flex;
+  height: 36px;
+  width: max-content;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: var(--play-btn-glass-bg);
+  background: var(--node-header-play-btn-bg);
   box-shadow: var(--glass-btn-shadow);
-  color: var(--node-header-label-color);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: default;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(6px);
+  transition:
+    transform 0.3s var(--ease-silk),
+    opacity 0.3s var(--ease-silk),
+    visibility 0s linear 0.3s;
+}
+.vicino-product-node.is-open .v-mb-floatbar {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  transition:
+    transform 0.3s var(--ease-silk),
+    opacity 0.3s var(--ease-silk),
+    visibility 0s;
+}
+.v-mb-fb-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.v-mb-fb-ic {
+  position: relative;
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--node-header-play-btn-bg);
+  box-shadow: var(--glass-btn-shadow);
+  color: #F5F5F7;
+}
+.v-mb-fb-ic::before,
+.v-mb-fb-ic::after {
+  content: "";
+  position: absolute;
+}
+.v-mb-fb-ic.is-duplicate::before {
+  left: 7px;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+}
+.v-mb-fb-ic.is-duplicate::after {
+  left: 10px;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  background: var(--node-header-play-btn-bg);
+}
+.v-mb-fb-ic.is-download::before {
+  left: 12px;
+  top: 6px;
+  width: 1.5px;
+  height: 9px;
+  background: currentColor;
+  box-shadow: -3px 6px 0 -0.5px currentColor, 3px 6px 0 -0.5px currentColor;
+}
+.v-mb-fb-ic.is-download::after {
+  left: 7px;
+  bottom: 6px;
+  width: 12px;
+  height: 1.5px;
+  background: currentColor;
+}
+.v-mb-fb-ic.is-delete::before {
+  left: 9px;
+  top: 9px;
+  width: 8px;
+  height: 10px;
+  border: 1px solid currentColor;
+  border-top: 0;
+  border-radius: 0 0 2px 2px;
+}
+.v-mb-fb-ic.is-delete::after {
+  left: 7px;
+  top: 7px;
+  width: 12px;
+  height: 1.5px;
+  background: currentColor;
+}
+.v-mb-fb-divider {
+  width: 1px;
+  height: 26px;
+  flex: 0 0 auto;
+  background: #404040;
+}
+.v-mb-fb-action {
+  display: flex;
+  height: 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: linear-gradient(
+    115deg,
+    rgba(219, 255, 254, 0.35) 0%,
+    rgba(229, 212, 181, 0.35) 17%,
+    rgba(247, 178, 133, 0.35) 32%,
+    rgba(131, 127, 255, 0.35) 51%,
+    rgba(239, 151, 230, 0.35) 82%,
+    rgba(252, 151, 153, 0.35) 100%
+  );
+  box-shadow: var(--glass-btn-shadow);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--image-node-toolbar-btn-text);
   font-family: var(--font-sans);
   font-size: var(--vicino-node-small);
-  font-weight: 600;
+  font-weight: 400;
+  line-height: 16px;
+  letter-spacing: 0;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 0.25s var(--ease-standard);
+  transition: opacity 0.2s ease, filter 0.2s ease;
 }
-.v-mb-editor-open:hover {
-  background: var(--play-btn-glass-bg-hover);
+.v-mb-fb-action:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  filter: grayscale(0.2);
 }
-.v-mb-editor-open:focus-visible {
+.v-mb-fb-action:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* the open node's zoning annotation — the case's voice, below the node */
+.v-mb-nodenote {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 12px);
+  display: grid;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-standard);
+  pointer-events: none;
+}
+.vicino-product-node.is-open .v-mb-nodenote {
+  opacity: 1;
+}
+.v-mb-nodenote span:first-child {
+  color: var(--accent-gold);
+}
+.v-mb-nodenote span:last-child {
+  color: var(--stone);
+}
+
+/* the product's left toolbar (CreateRail) — visual only */
+.v-mb-createstrip {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(11, 11, 13, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.v-mb-cs-btn {
+  position: relative;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  font-style: normal;
+}
+.v-mb-cs-btn.is-plus {
+  background: #ffffff;
+  color: #000000;
+}
+.v-mb-cs-btn.is-plus::before,
+.v-mb-cs-btn.is-plus::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: currentColor;
+}
+.v-mb-cs-btn.is-plus::before {
+  width: 10px;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+}
+.v-mb-cs-btn.is-plus::after {
+  width: 1.5px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+}
+.v-mb-cs-btn.is-box::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+}
+.v-mb-cs-btn.is-chat::before {
+  content: "";
+  width: 10px;
+  height: 8px;
+  border: 1px solid currentColor;
+  border-radius: 3px 3px 3px 0;
+}
+.v-mb-cs-btn.is-v {
+  background: rgba(197, 132, 241, 0.35);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 /* shared close button (rails + editor) */
@@ -1521,9 +1874,6 @@ const vicinoCriticalCss = `
     background 0.25s var(--ease-standard),
     opacity 0.25s var(--ease-standard);
 }
-.v-mb-rail-hint.is-left {
-  left: 14px;
-}
 .v-mb-rail-hint.is-right {
   right: 14px;
 }
@@ -1553,41 +1903,6 @@ const vicinoCriticalCss = `
   display: block;
   width: 14px;
   height: 14px;
-}
-.v-mb-rail-glyph.is-plus::before,
-.v-mb-rail-glyph.is-plus::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  background: currentColor;
-}
-.v-mb-rail-glyph.is-plus::before {
-  width: 12px;
-  height: 1.5px;
-  transform: translate(-50%, -50%);
-}
-.v-mb-rail-glyph.is-plus::after {
-  width: 1.5px;
-  height: 12px;
-  transform: translate(-50%, -50%);
-}
-.v-mb-rail-glyph.is-grid::before,
-.v-mb-rail-glyph.is-grid::after {
-  content: "";
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border: 1px solid currentColor;
-}
-.v-mb-rail-glyph.is-grid::before {
-  left: 0;
-  top: 0;
-  box-shadow: 8px 0 0 -1px transparent;
-}
-.v-mb-rail-glyph.is-grid::after {
-  right: 0;
-  bottom: 0;
 }
 .v-mb-rail-glyph.is-sliders::before {
   content: "";
@@ -1629,16 +1944,13 @@ const vicinoCriticalCss = `
   border-radius: 12px;
   background: rgba(8, 8, 10, 0.96);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  overflow-y: auto;
   opacity: 0;
   visibility: hidden;
   transition:
     transform 0.34s var(--ease-silk),
     opacity 0.34s var(--ease-silk),
     visibility 0s linear 0.34s;
-}
-.v-mb-rail.is-left {
-  left: 12px;
-  transform: translateX(-16px);
 }
 .v-mb-rail.is-right {
   right: 12px;
@@ -1818,38 +2130,10 @@ const vicinoCriticalCss = `
   background: var(--handle-video);
 }
 
-/* checkpoint strip: the station-03 narrative doubles as board controls */
-.v-mb-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: var(--v-gutter);
-  border-top: 1px solid var(--v-line-soft);
-}
-.v-mb-stop {
-  position: relative;
-  min-width: 0;
-  padding: 22px 0 8px;
-}
-.v-mb-stop::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent-amber);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.34s var(--ease-silk);
-}
-.v-mb-stop.is-active::before {
-  transform: scaleX(1);
-}
-.v-mb-stop h3,
+/* stacked variant (phones + narrow tablets): one ROOM at a time */
 .v-mb-stack-item h3 {
   margin: 0 0 12px;
 }
-.v-mb-stop h3 button,
 .v-mb-stack-item h3 button {
   display: flex;
   align-items: center;
@@ -1866,13 +2150,10 @@ const vicinoCriticalCss = `
   color: var(--paper);
   transition: color 0.25s var(--ease-standard);
 }
-.v-mb-stop h3 button:hover,
-.v-mb-stop.is-active h3 button,
 .v-mb-stack-item h3 button:hover,
 .v-mb-stack-item.is-active h3 button {
   color: var(--accent-amber);
 }
-.v-mb-stop h3 button:focus-visible,
 .v-mb-stack-item h3 button:focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-offset);
@@ -1882,46 +2163,16 @@ const vicinoCriticalCss = `
   width: 6px;
   height: 26px;
   border-radius: 2px 4px 4px 2px;
-  transition: transform 0.3s var(--ease-spring);
-}
-.v-mb-stop h3 button:hover .v-mb-stop-chip,
-.v-mb-stop.is-active .v-mb-stop-chip {
-  transform: scaleY(1.3);
-}
-.v-mb-stop-index {
-  flex: 0 0 auto;
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  letter-spacing: var(--track-label);
-  color: var(--accent-gold);
-}
-.v-mb-stop-claim {
-  margin: 0 0 8px;
-  font-family: var(--font-sans);
-  font-size: var(--text-body);
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--paper);
 }
 .v-mb-stop-copy {
   margin: 0;
-  max-width: 40ch;
+  max-width: 52ch;
   font-family: var(--font-sans);
   font-size: var(--text-meta);
   font-weight: 300;
   line-height: 1.55;
   color: var(--v-meta-ink);
 }
-.v-mb-stop-conn {
-  margin: 12px 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--stone);
-}
-
-/* stacked variant (phones + narrow tablets): one node + its panel at a time */
 .v-mb-stack {
   display: none;
   border-top: 1px solid var(--v-line-soft);
@@ -1935,14 +2186,6 @@ const vicinoCriticalCss = `
 .v-mb-stack-item h3 button {
   width: 100%;
   padding: 18px 0;
-}
-.v-mb-stack-item h3 button .v-mb-stop-claim {
-  margin: 0 0 0 auto;
-  padding-left: 12px;
-  font-size: var(--text-label);
-  font-weight: 400;
-  text-align: right;
-  color: var(--stone);
 }
 .v-mb-stack-body {
   display: grid;
@@ -1984,15 +2227,24 @@ const vicinoCriticalCss = `
 .v-mb-stack-editor .v-mb-timeline {
   min-height: 130px;
 }
-.v-mb-stack-rails {
-  display: grid;
+.v-mb-stack-floatbar {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 6px 0;
 }
-.v-mb-stack-rails .v-mb-stack-panel {
-  margin-bottom: 22px;
+.v-mb-floatbar.is-static {
+  position: static;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+.v-mb-floatbar.is-static .v-mb-fb-action {
+  cursor: default;
 }
 .v-mb-canvas-note.is-stack {
   position: static;
-  margin: 20px 0 0;
+  margin: 18px 0 20px;
   pointer-events: auto;
 }
 
@@ -2222,38 +2474,24 @@ h2.vicino-closing-title {
     stroke-dasharray: none;
     opacity: 0.46;
   }
-  .vicino-storyboard-scene-card {
-    animation: none;
-    border-color: rgba(110, 221, 179, 0.3);
-  }
-  .vicino-storyboard-scene-card::before {
-    animation: none;
-    opacity: 0;
-  }
-  .vicino-storyboard-progress span {
-    animation: none;
-    transform: none;
-  }
-  .vicino-product-node.is-video .video-node-v3-player {
-    animation: none;
-    transform: scale(2.35);
-  }
   /* model board: rooms open instantly, nothing idles (the .is-open state
      selectors are repeated so they cannot out-specify this reset) */
   .v-mb-panel,
   .vicino-product-node.is-open .v-mb-panel,
+  .v-mb-floatbar,
+  .vicino-product-node.is-open .v-mb-floatbar,
+  .v-mb-nodenote,
   .v-mb-rail,
   .v-mb-rail.is-open,
   .v-mb-editor,
   .v-mb-editor.is-open,
   .v-mb-tab,
-  .v-mb-stop::before,
   .v-mb-stop-chip,
-  .v-mb-stop h3 button,
   .v-mb-stack-item h3 button,
   .v-mb-close,
-  .v-mb-editor-open,
+  .v-mb-fb-action,
   .v-mb-rail-hint,
+  .vicino-product-node-shell,
   .v-mb-stage .vicino-product-node {
     transition: none;
   }
@@ -2276,6 +2514,7 @@ h2.vicino-closing-title {
   }
   .vicino-thesis,
   .vicino-brief h2,
+  .vicino-flow h2,
   .vicino-model h2,
   .vicino-evidence h2 {
     grid-column: 1 / -1;
@@ -2287,13 +2526,20 @@ h2.vicino-closing-title {
     grid-column: 1 / -1;
     margin-top: 34px;
   }
-  /* below 1080 the full board hands over to the stacked interactive */
-  .v-mb-frame,
-  .v-mb-strip {
+  /* below 1080 the full board hands over to the stacked rooms */
+  .v-mb-frame {
     display: none;
   }
   .v-mb-stack {
     display: block;
+  }
+  /* flow strip: two level pairs (each stop still spans the shared rows) */
+  .v-fs-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(8, auto);
+  }
+  .v-fs-stop {
+    padding-bottom: 30px;
   }
   .vicino-decision {
     grid-template-columns: 1fr;
@@ -2351,16 +2597,15 @@ h2.vicino-closing-title {
   .vicino-hero-meta div:last-child {
     border-bottom: 0;
   }
-  /* stacked-interactive headers: claim drops under the node name */
-  .v-mb-stack-item h3 button {
-    flex-wrap: wrap;
-    row-gap: 6px;
+  /* flow strip: one column, natural stacking */
+  .v-fs-strip {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
   }
-  .v-mb-stack-item h3 button .v-mb-stop-claim {
-    flex-basis: 100%;
-    margin: 0;
-    padding-left: 16px;
-    text-align: left;
+  .v-fs-stop {
+    grid-row: auto;
+    grid-template-rows: none;
+    padding-bottom: 26px;
   }
   .vicino-reel-grid {
     grid-template-columns: 1fr;
@@ -2381,18 +2626,21 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
     ["Team", project.teams],
   ];
   // Arc: hero (product) -> 01 overview (role/scope) -> 02 context & problem
-  // -> 03 the model (merged interactive) -> 04 evidence (reels + artifacts +
-  // tightened ledger) -> the moment (seal) -> next case.
+  // -> 03 the flow (Block A: main path told once — strip + deck artifact)
+  // -> 04 the interface (Block B: the zoning rooms — interactive board + PDR
+  // artifact, scale-up as the claim) -> 05 evidence (reels + tightened
+  // ledger) -> the moment (seal) -> next case.
   //
   // Data reuse map (data/projects.ts stays orchestrator-owned):
   //   blurb ¶1        -> station 02 copy (expansion/problem framing)
   //   blurb ¶2        -> station 01 copy (role growth), "sidebars" refreshed
   //   sections[0]     -> station 02 copy + figure (structural ambiguity)
-  //   sections[2]     -> its checkpoint argument lives in the interactive;
-  //                      its deck image becomes an evidence artifact
-  //   sections[5]     -> its rooms argument lives in the interactive; its
-  //                      annotated-PDR image grounds station 03
-  //   sections[6]     -> station 04 intro (prototype working style)
+  //   sections[2]     -> its per-step argument lives in station 03's flow
+  //                      strip; its deck image is that station's artifact
+  //   sections[5]     -> its rooms argument lives in station 04's interactive
+  //                      board; its "Detail PDR" zoning-board image is that
+  //                      station's artifact
+  //   sections[6]     -> station 05 intro (prototype working style)
   //   summary[]       -> unrendered here (hero/overview already carry it)
   const overviewCopy = refreshFacts(project.blurb.split("\n\n")[1] ?? "");
   const contextCopy = project.blurb.split("\n\n")[0] ?? "";
@@ -2480,12 +2728,12 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         )}
       </section>
 
-      <section className="vicino-station vicino-model">
+      <section className="vicino-station vicino-flow">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
-          03 · The model
+          03 · The flow
         </p>
-        <h2 data-fade>Four Checkpoints, Four Rooms</h2>
+        <h2 data-fade>The Main Path, Rebuilt Around What the Models Could Support</h2>
         <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
             The main path holds four checkpoints — script, storyboard, shot,
@@ -2493,15 +2741,55 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             each is a place to inspect and redirect before the next, more
             expensive step.
           </p>
+        </div>
+        <div className="vicino-flow-strip-wrap" data-fade>
+          <VicinoFlowStrip />
+        </div>
+        {mainPathFigure && (
+          <figure className="vicino-wide-figure" data-fade>
+            <div className="vicino-decision-media">
+              <Image
+                src={mainPathFigure}
+                alt="Deck slide: 'I rebuilt the main path around what the models could actually support at each step' — Script, Storyboard, Shot breakdown, and Video, each with its model-constraint rationale"
+                width={1600}
+                height={2141}
+                sizes="(max-width: 1080px) 100vw, 1280px"
+                style={{ height: "auto" }}
+              />
+            </div>
+            <figcaption>
+              The same argument as it was presented — each step exists because
+              the models cannot skip it reliably; a recommended structure, not
+              a forced pipeline.
+            </figcaption>
+          </figure>
+        )}
+      </section>
+
+      <section className="vicino-station vicino-model">
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          04 · The interface
+        </p>
+        <h2 data-fade>A Designated Home for Every Kind of Function</h2>
+        <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
-            Around that path, the canvas could not become a drawer for every
-            control. Each surface had to answer what it owned, when it
-            appeared, and what it should never absorb — so the complexity moved
-            into rooms.
+            The zoning around that path exists to scale the product up.
+            Instead of answering each new feature with one more control on the
+            same surface, every kind of function got a designated home: the
+            Work Space stages the nodes, the Floating Bar carries the next
+            step, the Sidebar holds global settings and model selection, the
+            Sliding Panel takes node-level adjustment, the Node Panel stays
+            minimal, and deep revision leaves for an Editor.
+          </p>
+          <p className="vicino-body-copy">
+            Each room keeps a one-sentence rule and a list of what never goes
+            there — so future features arrive with a place to live instead of
+            a new structural debate.
           </p>
           <p className="vicino-model-invite">
-            Open the nodes, the rails, and the editor — every room answers for
-            itself
+            Select a node, open the Sidebar, enter the Editor — every room
+            answers for itself
           </p>
         </div>
         <div className="vicino-model-board-wrap" data-fade>
@@ -2512,7 +2800,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             <div className="vicino-decision-media">
               <Image
                 src={roomsFigure}
-                alt="Annotated map of Vicino's workspace: four responsibility write-ups — Floating Bar, Sidebar, Sliding Panel, Node Panel — pinned around a live canvas screenshot"
+                alt="The Detail PDR zoning board: a dark canvas labeled Work Space in the middle, with four annotated frames — Floating Bar, Sidebar, Sliding Panel, Node Panel — each carrying what goes here, what does not go here, a one-sentence rule, and a designer checklist"
                 width={1600}
                 height={1010}
                 sizes="(max-width: 1080px) 100vw, 1280px"
@@ -2520,9 +2808,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               />
             </div>
             <figcaption>
-              The rooms as the team kept them — per-surface responsibility
-              PDRs annotated around the live workspace: what goes here, and
-              what never does.
+              The zoning as it is kept — the &ldquo;Detail PDR&rdquo; board:
+              Work Space in the middle; Floating Bar, Sidebar, Sliding Panel,
+              and Node Panel framed around it, each with what goes here, what
+              does not, its one-sentence rule, and a designer checklist.
             </figcaption>
           </figure>
         )}
@@ -2531,7 +2820,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       <section className="vicino-station vicino-evidence">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
-          04 · Evidence
+          05 · Evidence
         </p>
         <h2 data-fade>The Work Was Deciding Where Complexity Should Live</h2>
         {evidenceIntro && (
@@ -2560,26 +2849,6 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               ))}
             </div>
           </>
-        )}
-
-        {mainPathFigure && (
-          <figure className="vicino-wide-figure" data-fade>
-            <div className="vicino-decision-media">
-              <Image
-                src={mainPathFigure}
-                alt="Deck slide: 'I rebuilt the main path around what the models could actually support at each step' — Script, Storyboard, Shot breakdown, and Video, each with its model-constraint rationale"
-                width={1600}
-                height={2141}
-                sizes="(max-width: 1080px) 100vw, 1280px"
-                style={{ height: "auto" }}
-              />
-            </div>
-            <figcaption>
-              The main-path argument as it was presented — each step exists
-              because the models cannot skip it reliably; a recommended
-              structure, not a forced pipeline.
-            </figcaption>
-          </figure>
         )}
 
         <p className="vicino-sub-label" data-fade>
