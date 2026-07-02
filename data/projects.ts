@@ -114,10 +114,10 @@ export const projects: Project[] = [
           {
             tags: "TEAM CODE · PARKED PAGES · AUDIT",
             heading:
-              "Single-file prototypes, parked pages, parallel universes",
+              "Single-file prototypes, parked pages, drifting copies",
             body: [
-              "The team's work arrived the way single files do: whole prototypes uploaded to the repo root, one 13,020 lines long, and pages queuing behind the missing foundation. One teammate's commit message reads, in full, “Design is ready. Only waiting to run with new design system.”",
-              "The mess was measurable. The single-source audit put numbers on it: a 557 KB stylesheet carrying three hand-reconciled copies of the token set, and 94 page partials that imported nothing from the system. That was the situation the system had to answer.",
+              "The team's work arrived the way single files do: whole prototypes uploaded to the repo root, one 13,020 lines long, and pages queuing behind the missing foundation. One teammate's design sat finished for weeks, waiting only for a system to exist before it could ship.",
+              "The mess was measurable. An audit put numbers on it: a 557 KB stylesheet carrying three hand-reconciled copies of the token set, and 94 page partials that imported nothing from the system. That was the situation the system had to answer.",
             ],
           },
         ],
@@ -127,7 +127,7 @@ export const projects: Project[] = [
         title: "I built the system before the screens.",
         sections: [
           {
-            tags: "TOKENS · COMPONENTS · CANONICAL",
+            tags: "TOKENS · COMPONENTS · ONE SOURCE",
             heading:
               "One source of truth, not a folder of one-offs",
             body: [
@@ -141,14 +141,14 @@ export const projects: Project[] = [
             heading: "The standard became commits, not advice",
             body: [
               "In one June wave I Prettier-normalized the codebase — the 13,020-line upload included — repaired the ESLint config, forced LF line endings, converted oversized PNGs to WebP at 94% smaller, and moved the loose prototypes out of the tracked root. I wrote the contracts down as documents — an app UI standard, then the single-source migration plan. A teammate stood up the CI that runs the consistency checks; I greened the token gate and kept extending it.",
-              "Then the parallel universes converged. The single-file prototypes were split into partials and page modules through late June, the hardest clusters extracted last, and the best pieces graduated into the library itself. Four days of slice-by-slice adoption after the audit, eight system components owned the app's UI and 1,905 verified-dead lines were gone.",
+              "Then the two worlds converged. The single-file prototypes were split into partials and page modules through late June, the hardest clusters extracted last, and the best pieces graduated into the library itself. Four days of slice-by-slice adoption after the audit, eight system components owned the app's UI and 1,905 verified-dead lines were gone.",
             ],
           },
           {
-            tags: "LIBRARY · NPM · NO DRIFT",
+            tags: "LIBRARY · PACKAGE · NO DRIFT",
             heading: "One canonical library, wrapped for every consumer",
             body: [
-              "That canonical layer is what made a package safe. Over June 23–25 a teammate wrapped the library as internal-package/react — typed React components on the team's private registry — where the JSX wrappers are the only authored layer. A build step copies the canonical CSS straight into the package, in the script's own words, so the components “style themselves from the truth source and can never drift.”",
+              "That canonical layer is what made a package safe. A teammate wrapped the library as an internal, typed React component package on the team's private registry, where the JSX wrappers are the only authored layer. A build step copies the canonical CSS straight into the package, so the components style themselves from that one source and cannot drift out of sync.",
             ],
           },
           {
@@ -160,10 +160,10 @@ export const projects: Project[] = [
             ],
           },
           {
-            tags: "GIT LOG · EVIDENCE",
-            heading: "The paper trail, dated from the log",
+            tags: "TIMELINE · EVIDENCE",
+            heading: "The paper trail, start to finish",
             body: [
-              "The record is the repository: 656 of my commits between May 30 and July 2, 2026, alongside a team shipping prototypes of its own. Eight entries below carry the arc — two of them teammates' work, and their notes say so.",
+              "The record is the work itself: five weeks of daily commits carrying the system from that first prototype to a shipped product, alongside a team shipping prototypes of its own. The milestones below carry the arc — a couple of them a teammate's work.",
               "By the end, the system had stopped being cleanup work. It was the infrastructure that let the product grow without re-litigating the same patterns.",
             ],
           },
@@ -186,8 +186,8 @@ export const projects: Project[] = [
             tags: "STATIC EXPORT · FILE:// · DEMOS",
             heading: "Demos the team could open from disk",
             body: [
-              "Standards alone don't align a team — runnable demos do. The first week of June was a React sprint: a Calendar workspace, the homepage post queue, a 1:1 port of the campaigns workspace — real surfaces for the team to react to within days. By June 24 the demos were unified into a single vanilla-HTML product, draft/pulse-app: Home, Calendar, Campaign, Analytics, Signal, Strategy, and Onboarding as routable pages on the system's tokens.",
-              "The engineering constraint is the point: the app builds to plain HTML that renders from a double-click. The README states it as a rule — “Preserve file:// support because designers may open this export directly.” Every product screenshot on this page was captured from a file:// address: no server, no toolchain, no account.",
+              "Standards alone don't align a team — runnable demos do. The first week of June was a React sprint: a Calendar workspace, the homepage post queue, a 1:1 port of the campaigns workspace — real surfaces for the team to react to within days. By late June the demos were unified into a single vanilla-HTML product: Home, Calendar, Campaign, Analytics, Signal, Strategy, and Onboarding as routable pages on the system's tokens.",
+              "The engineering constraint is the point: the app builds to plain HTML that renders from a double-click. It's a standing rule — keep file:// support, because designers may open the export directly. Every product screenshot on this page was captured from a file:// address: no server, no toolchain, no account.",
             ],
           },
           {
@@ -268,7 +268,7 @@ export const projects: Project[] = [
         "What stayed with me most from this project was the moment I realized the product did not need one more feature. It needed a clearer structure.",
         "During one review, we walked through a long creation chain: camera, 3D, image, prompt, and then video. On paper, each part was already becoming more capable. But when I tried to trace the flow from input to output, I realized the problem was no longer feature depth. The problem was that the system itself was becoming harder to explain. Even within the team, people were beginning to describe the same workflow in different ways. That was the moment I stopped treating the project as a series of screen problems and started treating it as a workflow problem.",
         "From then on, I became much more focused on where complexity should live. What belongs in a node? What belongs in an editor? What should stay global, and what should stay local? If the models could not reliably do everything in one shot, then the product should not pretend otherwise. That shift shaped the prototype direction I helped push forward: nodes represented meaningful stages and outputs; the Sidebar handled global settings and model selection; the Floating Bar carried the next-step actions; sliding panels supported more local adjustments, input management, and version history; and editors took on the deeper work that did not belong on the main canvas. More importantly, that structure gave the team a stronger foundation for iteration and a shared way to think about how new features should enter the product as it kept growing.",
-        "(note: Video 2 Node prototype made by a teammate)",
+        "(note: the Video 2 Node prototype was made by a teammate)",
       ],
       videos: [
         { src: `${MEDIA}/2sxQz0YH0U9dhtJQiQQ0plKSR8U.mp4` },

@@ -4,12 +4,13 @@ import { adjacent, type CaseSection, type Project } from "@/data/projects";
 
 // Pulse — "the design system documents itself." A printed specimen document:
 // the page typesets Pulse's real tokens as ink-and-hairline specimen sheets on
-// the portfolio's paper. Every specimen value below is transcribed from the
-// Pulse design-system truth source (design-system/handoff/components/tokens.css
-// and design-system/component-library.md in the Pulse repo) — nothing is
-// invented. Dates, hashes, and quotes are transcribed from the repo's git log
-// and docs (internal-host/the-product/prototype); screenshots are real
-// captures of the project's static file:// surfaces (public/media/pulse/).
+// the portfolio's paper. The specimen values below reflect the project's actual
+// design system — the token set, type scale, spacing rhythm, and component
+// inventory are the ones I shipped, not invented. The build timeline is my own
+// account of how the work happened; screenshots are real captures of the
+// prototype's static file:// surfaces (public/media/pulse/). Confidential
+// details (exact package identity, teammate names, internal filenames, and
+// commit hashes) are deliberately kept off the public page.
 //
 // Narrative arc (standard case-study structure, owner-sanctioned restructure):
 //   hero (token sheet) → overview (scope + figures ledger) →
@@ -17,7 +18,7 @@ import { adjacent, type CaseSection, type Project } from "@/data/projects";
 //   03 Act II · the product → 04 Act III · the rescue →
 //   the belief (ink band, the one seal-red moment) → closer.
 // Chapter copy lives in data/projects.ts; this layout attaches the specimen
-// figures positionally. Scoped styles only (.pulse-*), vicino precedent.
+// figures positionally. Scoped styles only (.pulse-*), sibling-case precedent.
 
 // ── Specimen data (traced to the Pulse system source) ──────────────────────
 
@@ -78,7 +79,7 @@ const ramps = [
 ];
 
 // Component inventory — 37 real names from the Pulse component registry
-// (component-library.md, shipped HTML sources + placeable slice sources).
+// (the component index, shipped component sources + placeable slices).
 // The registry holds a few more tab variants, so the sheet is labeled
 // "inventory, abridged" — names are never invented.
 const inventory = [
@@ -163,78 +164,70 @@ const ledger: Array<[string, string]> = [
   ["1", "publish rule"],
 ];
 
-// ── Engineering evidence (Act I). Every date, hash, count, and quote
-//    below is transcribed from the Pulse repo (git log, internal-doc,
-//    ds-single-source-migration.md, packages/react) — nothing is invented. ──
-
-// Commit ledger — subjects quoted verbatim from the repo log. Rows 2 and 7
-// are teammates' commits; their notes say so.
-const engineeringLog = [
+// ── Build timeline (Act I). My own account of how the work happened,
+//    over roughly five weeks. Eight milestones carry the arc; two of them
+//    were a teammate's or the team's work, and their notes say so. General
+//    timeframes only — no commit hashes, no names. ──
+const milestones = [
   {
-    date: "2026-05-30",
-    ref: "56e86d5",
-    subject: "Refine action calendar and campaign overflow",
-    note: "First product commit: an 8,626-line single-file prototype, a 1,863-line design-system.html already beside it.",
+    date: "Late May",
+    title: "Day one: a prototype and a system, together",
+    note: "The first thing I shipped was a complete single-file prototype — and, sitting beside it, the first design-system page. The system was explored as code before any process asked for one.",
   },
   {
-    date: "2026-06-04",
-    ref: "63086af",
-    subject: "Design is ready. Only waiting to run with new design system.",
-    note: "A teammate's page, parked until the system could carry it.",
+    date: "Early June",
+    title: "A finished design, waiting on a foundation",
+    note: "A teammate's page was done and idle, blocked on a system that didn't exist yet. It was the plainest argument for building the foundation before the screens.",
   },
   {
-    date: "2026-06-12",
-    ref: "d60b348",
-    subject: "Rebuild visual component library as self-contained HTML page",
-    note: "The designer-facing boards become one portable file.",
+    date: "Mid-June",
+    title: "The boards became one portable file",
+    note: "I rebuilt the visual component library as a single self-contained page, so the designer-facing boards travelled as one file anyone could open.",
   },
   {
-    date: "2026-06-17",
-    ref: "4ed3935",
-    subject: "Drop React as the source of truth; de-dup ConfirmBar",
-    note: "The pivot: standalone HTML/CSS becomes the canonical layer.",
+    date: "Mid-June",
+    title: "HTML and CSS became the source of truth",
+    note: "The pivot that stuck: I made the standalone HTML and CSS the canonical layer and demoted the React copy to a consumer of it.",
   },
   {
-    date: "2026-06-18",
-    ref: "728a660",
-    subject: "Prettier-normalize the codebase + add root config",
-    note: "The standards wave — format, lint, line endings, asset weight.",
+    date: "Mid-June",
+    title: "Standards, written as commits",
+    note: "A formatting and lint pass, consistent line endings, lighter assets, and a CI token gate turned the conventions into something the repo enforced — not something I had to keep asking for.",
   },
   {
-    date: "2026-06-24",
-    ref: "8807110",
-    subject: "Rename draft/home-calendar-html -> draft/pulse-app (the unified product)",
-    note: "The demos unify into one static product export.",
+    date: "Late June",
+    title: "The demos converged into one product",
+    note: "The scattered prototypes unified into a single static product export — one set of routable pages, all on the system's tokens.",
   },
   {
-    date: "2026-06-25",
-    ref: "react-v0.6.0",
-    subject: "Pulse design system as React components",
-    note: "A teammate tags the npm wrapper; its build syncs my canonical CSS.",
+    date: "Late June",
+    title: "Wrapped for every consumer",
+    note: "A teammate packaged the library as an internal, typed React set on a private registry; a build step syncs the canonical CSS in, so the two can never fall out of step.",
   },
   {
-    date: "2026-07-01",
-    ref: "be50105",
-    subject: "sync(ds): propagate the type/progress decisions to the designer surfaces",
-    note: "System decisions flow back out to the designer surfaces.",
+    date: "Early July",
+    title: "The payoff: 1,905 dead lines gone",
+    note: "As the surfaces adopted the system, the parallel copies the styles had drifted into collapsed back to one — 1,905 verified-dead lines removed.",
   },
 ];
 
-// Truth-source table — internal-doc, quoted rows.
+// Truth-source map — my own restatement of the rule: one place owns each
+// layer, and everything downstream reads from it (no private filenames).
 const truthRows: Array<[string, string]> = [
-  ["tokens", "handoff/components/tokens.css"],
-  ["component", "its <Name>/ folder"],
-  ["inventory", "component-library.md"],
-  ["preview", "html-component-preview.html"],
-  ["figma board", "figma-component-library.html"],
+  ["tokens", "one shared token sheet"],
+  ["component", "its own source folder"],
+  ["inventory", "the component index"],
+  ["preview", "the live preview page"],
+  ["figma board", "the single-file Figma board"],
 ];
 
-// Package plate — packages/react/package.json + README facts.
+// Package plate — genericized: the story (typed React wrappers on a private
+// registry, styles synced from the canonical CSS) with nothing that would
+// identify the exact package, version, or registry.
 const plateRows: Array<[string, string]> = [
-  ["package", "internal-package/react"],
-  ["version", "0.6.0"],
-  ["exports", "37"],
-  ["registry", "GitLab · private"],
+  ["package", "internal, typed React set"],
+  ["distribution", "private registry"],
+  ["authored", "typed JSX wrappers"],
   ["peer", "react ≥ 18"],
   ["styles", "synced from the canonical CSS"],
 ];
@@ -453,7 +446,7 @@ const pulseCss = `
   row-gap: clamp(26px, 3vw, 42px);
   background: var(--ink-950);
   color: var(--paper);
-  /* full-bleed within the centered shell (vicino precedent) */
+  /* full-bleed within the centered shell (sibling-case precedent) */
   box-shadow: 0 0 0 100vmax var(--ink-950);
   clip-path: inset(0 -100vmax);
 }
@@ -1068,13 +1061,13 @@ const pulseCss = `
   order: 2;
 }
 
-/* ── Fig. 10 — engineering ledger (commit log specimen, closes Act I) ───── */
+/* ── Fig. 10 — build timeline (milestone narrative, closes Act I) ───────── */
 .pulse-log {
   border-top: 1px solid var(--accent-gold);
 }
 .pulse-log-row {
   display: grid;
-  grid-template-columns: 110px minmax(96px, 110px) minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(96px, 120px) minmax(0, 1.1fr) minmax(0, 1fr);
   column-gap: var(--work-grid-gap);
   align-items: baseline;
   padding: 14px 0;
@@ -1083,16 +1076,12 @@ const pulseCss = `
 .pulse-log-row p {
   margin: 0;
 }
-.pulse-log-date,
-.pulse-log-ref {
+.pulse-log-date {
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: 0.04em;
   white-space: nowrap;
-  color: rgba(5, 5, 5, 0.48);
-}
-.pulse-log-ref {
-  /* static gold detail — the hash column */
+  /* static gold detail — the timeframe markers along the spine */
   color: var(--accent-gold);
 }
 .pulse-log-subject {
@@ -1304,7 +1293,7 @@ const pulseCss = `
     max-width: 480px;
   }
   .pulse-log-row {
-    grid-template-columns: 96px minmax(84px, 100px) minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-columns: minmax(84px, 104px) minmax(0, 1.1fr) minmax(0, 1fr);
   }
   .pulse-next-label {
     grid-column: 1 / 3;
@@ -1422,8 +1411,7 @@ const pulseCss = `
     display: block;
     padding: 16px 0;
   }
-  .pulse-log-date,
-  .pulse-log-ref {
+  .pulse-log-date {
     display: inline-block;
     margin-right: 14px;
   }
@@ -1614,12 +1602,13 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <SectionProse section={ctx.sections[0]} />
               <figure className="pulse-doc-quote pulse-section-inset" data-fade>
                 <blockquote>
-                  &ldquo;Today pulse-app does not consume the DS at all &mdash;
-                  they are parallel universes.&rdquo;
+                  The audit&rsquo;s finding was blunt: the product and the
+                  design system had become two separate worlds &mdash; the app
+                  consumed nothing from the system it was meant to stand on.
                 </blockquote>
                 <figcaption>
-                  ds-single-source-migration.md, June 29 &mdash; the
-                  audit&rsquo;s core finding.
+                  The single-source audit, late June &mdash; the finding that
+                  set the whole convergence in motion.
                 </figcaption>
               </figure>
             </div>
@@ -1686,40 +1675,40 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <figure className="pulse-section-aside" data-fade>
                 <div className="pulse-spec-card pulse-truth">
                   <header className="pulse-spec-head">
-                    <span>internal-doc &middot; truth sources</span>
+                    <span>Single source of truth</span>
                   </header>
                   <p className="pulse-truth-epigraph">
-                    &ldquo;Before changing anything, confirm you are editing
-                    the truth source.&rdquo;
+                    The rule I held: before you change anything, make sure
+                    you&rsquo;re editing the source &mdash; not a copy of it.
                   </p>
                   <div className="pulse-kv">
-                    {truthRows.map(([layer, file]) => (
+                    {truthRows.map(([layer, where]) => (
                       <div className="pulse-kv-row" key={layer}>
                         <span>{layer}</span>
-                        <em>{file}</em>
+                        <em>{where}</em>
                       </div>
                     ))}
                   </div>
                   <p className="pulse-spec-foot">
-                    self-check &middot; node scripts/verify.mjs
+                    reconciled by a dependency-free check
                   </p>
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 04</em> The truth-source table
-                  &mdash; one file may define each layer, and a script checks it
+                  <em className="pulse-fig">Fig. 04</em> One place owns each
+                  layer &mdash; and a check keeps them honest
                 </figcaption>
               </figure>
             </div>
           )}
 
-          {/* §3 — the npm wrapper (teammate's packaging; my canonical CSS) */}
+          {/* §3 — the React package (a teammate's packaging; my canonical CSS) */}
           {actSystem.sections[2] && (
             <div className="pulse-section">
               <SectionProse section={actSystem.sections[2]} />
               <figure className="pulse-section-aside" data-fade>
                 <div className="pulse-spec-card">
                   <header className="pulse-spec-head">
-                    <span>packages/react &middot; manifest</span>
+                    <span>React package &middot; manifest</span>
                   </header>
                   <div className="pulse-kv">
                     {plateRows.map(([key, value]) => (
@@ -1730,13 +1719,14 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     ))}
                   </div>
                   <p className="pulse-spec-foot">
-                    published on react-v* tags &middot; CI rebuilds from the
-                    design system
+                    versioned releases &middot; CI rebuilds from the design
+                    system
                   </p>
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 05</em> The npm wrapper&rsquo;s
-                  plate, from packages/react &mdash; styles synced at build time
+                  <em className="pulse-fig">Fig. 05</em> The React package&rsquo;s
+                  plate &mdash; an internal wrapper whose styles sync from the
+                  canonical CSS at build time
                 </figcaption>
               </figure>
               <figure className="pulse-section-full" data-fade>
@@ -1751,9 +1741,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   />
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 06</em>{" "}
-                  html-component-preview.html &mdash; the live component
-                  browser: 40 components, one standalone source each; the
+                  <em className="pulse-fig">Fig. 06</em> The live component
+                  browser &mdash; 40 components, one standalone source each; the
                   AIPanel specimen open with its 21 slices
                 </figcaption>
               </figure>
@@ -1793,17 +1782,16 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   />
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 08</em>{" "}
-                  figma-component-library.html &mdash; PostChip states (default,
-                  hover, active, keyboard focus) over the campaign anatomy map,
-                  one section of the single-file Figma board
+                  <em className="pulse-fig">Fig. 08</em> The single-file Figma
+                  board &mdash; PostChip states (default, hover, active, keyboard
+                  focus) over the campaign anatomy map
                 </figcaption>
               </figure>
               <figure className="pulse-section-inset" data-fade>
                 <div className="pulse-shot">
                   <Image
                     src="/media/pulse/foundations-handbook.png"
-                    alt="Pulse / Post Design System foundations page with status, scope, accent, and export chips and the section index"
+                    alt="Pulse design system foundations page with status, scope, accent, and export chips and the section index"
                     width={SHOT_W}
                     height={SHOT_H}
                     sizes="(max-width: 1080px) 100vw, 1030px"
@@ -1811,36 +1799,33 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   />
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 09</em> The Pulse / Post
-                  foundations handbook &mdash; working spec, the accent law
-                  (&ldquo;cyan replaces green&rdquo;), and the export path to
-                  Figma
+                  <em className="pulse-fig">Fig. 09</em> The foundations
+                  handbook &mdash; the brand-facing working spec, its accent
+                  rule where cyan takes green&rsquo;s role, and the export path
+                  to Figma
                 </figcaption>
               </figure>
             </div>
           )}
 
-          {/* §5 — the act's evidence: the commit ledger closes Act I */}
+          {/* §5 — the act's evidence: the build timeline closes Act I */}
           {actSystem.sections[4] && (
             <div className="pulse-section">
               <SectionProse section={actSystem.sections[4]} />
               <figure className="pulse-section-full" data-fade>
                 <div className="pulse-log">
-                  {engineeringLog.map((row) => (
-                    <div className="pulse-log-row" key={row.ref}>
-                      <span className="pulse-log-date">{row.date}</span>
-                      <span className="pulse-log-ref">{row.ref}</span>
-                      <p className="pulse-log-subject">
-                        &ldquo;{row.subject}&rdquo;
-                      </p>
-                      <p className="pulse-log-note">{row.note}</p>
+                  {milestones.map((m) => (
+                    <div className="pulse-log-row" key={m.title}>
+                      <span className="pulse-log-date">{m.date}</span>
+                      <p className="pulse-log-subject">{m.title}</p>
+                      <p className="pulse-log-note">{m.note}</p>
                     </div>
                   ))}
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 10</em> Engineering ledger
-                  &mdash; commit subjects quoted from the repo log, May 30
-                  &rarr; July 1, 2026
+                  <em className="pulse-fig">Fig. 10</em> Build timeline &mdash;
+                  the milestones that carried the system from prototype to
+                  shipped product, late May to early July 2026
                 </figcaption>
               </figure>
             </div>
@@ -1886,8 +1871,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   />
                 </div>
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 12</em> draft/pulse-app, Home
-                  &mdash; the demo brand&rsquo;s live brief, action items,
+                  <em className="pulse-fig">Fig. 12</em> The unified Pulse app,
+                  Home &mdash; the demo brand&rsquo;s live brief, action items,
                   content queue, signals, and the assistant dock
                 </figcaption>
               </figure>
