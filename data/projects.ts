@@ -79,16 +79,16 @@ export const projects: Project[] = [
     coverClass: "cover-pulse",
     tags: ["Product Design", "Design System", "AI"],
     oneliner:
-      "Designing and building an AI marketing platform — from a token-driven design system to the Creative Brief flow that takes a brand goal to a publish-ready post, with a human in every loop.",
+      "Designing and building an AI marketing platform end to end — the design system, the core surfaces from Home to Calendar, and the quality of what the AI hands back to users — with a human in every loop.",
     blurb:
-      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end — a token-driven design system of ~37 components, a multi-surface React application, and high-fidelity prototypes for the campaign production flow. The throughline of the work is one belief: AI should draft, humans should decide. Every generative step is wrapped in an editable brief, a review, or an approval gate, so speed never comes at the cost of brand safety.",
+      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end — a token-driven design system of ~37 components and the core surfaces themselves: Home with its docked assistant, the marketing Calendar, Signal, Analytics, Studio. I owned the quality of what the AI hands back to users too — onboarding that turns a new brand into usable visual assets and a starter design system — and when the campaign production flow ran into trouble, I took it over mid-flight from another designer and rebuilt it on the system. The throughline of the work is one belief: AI should draft, humans should decide. Every generative step is wrapped in an editable brief, a review, or an approval gate, so speed never comes at the cost of brand safety.",
     role: "Product Designer · Design System · Front-end",
     duration: "2025 - present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team",
     summary: [
-      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end: a token-driven design system, a multi-surface React application, and a set of high-fidelity prototypes for the part that matters most — the campaign production flow.",
-      "The throughline is one belief: AI should draft, humans should decide. Every generative step in Pulse is wrapped in a review, an editable brief, or an approval gate, so speed never comes at the cost of brand safety. I worked across the whole stack of the problem — tokens and components, the product surfaces, the AI Creative Brief flow, the assistant chat, and the approval model — keeping the system itself as the source of generation so the product stayed consistent the longer it grew.",
+      "Pulse is an AI marketing platform that helps brand teams move from a strategic signal to a published social post without giving up human judgment. Over five intensive weeks I designed and built it end to end: a token-driven design system, the core product surfaces — Home and its assistant, Calendar, Signal, Analytics, Studio — and the quality of what the AI hands back to users, from an onboarding that generates a brand's visual assets and starter design system, to the campaign production flow, which I inherited mid-flight from another designer and rebuilt on the system.",
+      "The throughline is one belief: AI should draft, humans should decide. Every generative step in Pulse is wrapped in a review, an editable brief, or an approval gate, so speed never comes at the cost of brand safety. I worked across the whole stack of the problem — tokens and components, the product surfaces, the assistant chat, the approval model, and the user-facing generation itself — and picked up the campaign flow as a rescue, rebuilding another designer's stalled start on the same system so the product stayed consistent the longer it grew.",
     ],
     moment: {
       title:
@@ -121,20 +121,21 @@ export const projects: Project[] = [
             body: [
               "On top of the system sits the application — a sidebar-driven workspace spanning Home (a dashboard with a context-aware AI assistant), a marketing Calendar, a Signal feed of live brand trends, Analytics, Strategy, Campaigns, and the production Studio.",
               "The design language is deliberately quiet: hierarchy comes from tone, spacing, and reading rhythm before borders, and the AI assistant docks beside the work instead of pulling the user away from it. The goal was a tool that feels like a focused studio rather than a wall of equal-weight cards.",
+              "The output is a design surface too. Onboarding doesn't end at a configured account — it turns a new brand into working material, generating on-brand visual assets and a starter design system the team can use from day one, and the brand vault feeds every generative step after that, so what the AI drafts already speaks the brand's language instead of arriving generic.",
             ],
           },
         ],
       },
       {
         number: "Chapter 2",
-        title: "Designing the Create-with-AI flow.",
+        title: "The campaign flow: inherited as a rescue, rebuilt on the system.",
         sections: [
           {
             tags: "AI FLOW · CREATIVE BRIEF",
             heading:
               "A light brief, drafted by the AI, owned by the human",
             body: [
-              "A post belongs to a campaign, so it starts inside that campaign's Posts page — New Post, then Create with AI — and the rest is a conversation, not a form. Instead of a long upfront questionnaire, the user gives a goal, an optional note, and a few assets. The detailed brief is the AI's job.",
+              "The campaign production flow reached me as firefighting — another designer's work I took over mid-flight and rebuilt on the system. A post belongs to a campaign, so it starts inside that campaign's Posts page — New Post, then Create with AI — and the rest is a conversation, not a form. Instead of a long upfront questionnaire, the user gives a goal, an optional note, and a few assets. The detailed brief is the AI's job.",
               "Pulse analyses the goal, the selected assets, the brand vault, and the campaign, then drafts a structured Creative Brief as editable fields inside the chat. The user edits any field, talks to refine, and sees the budget before committing. Approving the brief hands off to generation, and the post lands in Content Review.",
             ],
           },
