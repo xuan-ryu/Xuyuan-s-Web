@@ -501,16 +501,22 @@ body.hero-night .nav-links a.active {
   justify-content: space-between;
 }
 .footer-socials-row a {
-  font-family: var(--font-serif);
-  font-size: var(--text-meta);
+  font-family: var(--font-text);
+  font-size: var(--text-label);
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--track-caps);
   color: var(--paper);
   text-transform: uppercase;
-  transition: color 0.2s;
+  transition: color var(--dur-fast) ease;
 }
 .footer-socials-row a:hover {
   color: var(--accent-amber);
+}
+.footer-socials-row a:focus-visible,
+.footer-nav a:focus-visible,
+.footer-email:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 .footer-mark {
   width: 36px;
@@ -527,15 +533,24 @@ body.hero-night .nav-links a.active {
   align-items: center;
 }
 .footer-nav a {
-  font-family: var(--font-serif);
-  font-size: var(--text-meta);
+  font-family: var(--font-text);
+  font-size: var(--text-label);
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--track-caps);
   color: var(--paper);
   text-transform: uppercase;
-  transition: color 0.2s;
+  transition: color var(--dur-fast) ease;
 }
 .footer-nav a:hover {
+  color: var(--accent-amber);
+}
+.footer-email {
+  font-family: var(--font-text);
+  font-size: var(--text-meta);
+  color: rgba(255, 255, 255, 0.72);
+  transition: color var(--dur-fast) ease;
+}
+.footer-email:hover {
   color: var(--accent-amber);
 }
 .footer-copy {

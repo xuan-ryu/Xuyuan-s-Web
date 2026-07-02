@@ -83,8 +83,6 @@ export default function WorkIndex() {
         numeral: String(++counter).padStart(2, "0"),
       })),
   }));
-  const total = counter;
-
   return (
     <div className="wki-page">
       <header className="wki-header">
@@ -102,16 +100,10 @@ export default function WorkIndex() {
               variant="quiet"
               className="wki-jump-link"
             >
-              <span className="wki-jump-num" aria-hidden="true">
-                {group.index}
-              </span>
-              {group.title} · {group.rows.length}
+              {group.title}
             </Cta>
           ))}
         </nav>
-        <span className="wki-cjk" lang="zh-Hans" aria-hidden="true">
-          作品目录
-        </span>
       </header>
 
       <div className="wki-list">
@@ -124,15 +116,9 @@ export default function WorkIndex() {
           >
             {/* sticky thumb-tab in the left margin (cols 1–2) */}
             <header className="wki-rail">
-              <span className="wki-rail-index" aria-hidden="true">
-                {group.index}
-              </span>
               <h2 className="wki-rail-title" id={`work-category-${group.id}-title`}>
                 {group.title}
               </h2>
-              <span className="wki-rail-count">
-                {group.rows.length} project{group.rows.length === 1 ? "" : "s"}
-              </span>
             </header>
 
             <ol className="wki-rows">
@@ -169,9 +155,6 @@ export default function WorkIndex() {
         {/* index colophon — the quiet exit on the same table span */}
         <div className="wki-colophon" data-fade>
           <div className="wki-colophon-inner">
-            <span className="wki-colophon-note">
-              {String(total).padStart(2, "0")} Projects · Index Ends
-            </span>
             <Cta href="/contact" variant="quiet">
               Get in Touch
             </Cta>
@@ -244,22 +227,6 @@ export default function WorkIndex() {
           align-items: flex-start;
           gap: var(--space-3);
         }
-        .wki-jump-num {
-          font-family: var(--font-mono);
-          font-weight: 400;
-          color: var(--wki-meta-ink);
-        }
-        .wki-cjk {
-          grid-column: 12 / -1;
-          grid-row: 2;
-          align-self: start;
-          justify-self: end;
-          writing-mode: vertical-rl;
-          font-size: var(--text-label);
-          letter-spacing: 0.2em;
-          color: var(--stone);
-        }
-
         /* ── 2/3 · the catalogue table ────────────────────────────── */
         .wki-list {
           width: 100%;
@@ -283,27 +250,12 @@ export default function WorkIndex() {
           top: 96px;
           padding-top: calc(var(--wki-row-pad) + var(--wki-cap-nudge));
         }
-        .wki-rail-index {
-          display: block;
-          font-family: var(--font-mono);
-          font-size: var(--text-label);
-          font-weight: 400;
-          letter-spacing: 0.08em;
-          color: var(--stone);
-        }
         .wki-rail-title {
-          margin: var(--space-4) 0 var(--space-2);
+          margin: 0;
           font-size: var(--text-title);
           font-weight: 400;
           line-height: var(--leading-tight);
           color: var(--ink-950);
-        }
-        .wki-rail-count {
-          display: block;
-          font-size: var(--text-label);
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--stone);
         }
 
         .wki-rows {
@@ -480,12 +432,6 @@ export default function WorkIndex() {
           gap: var(--space-6);
           padding-top: var(--space-6);
         }
-        .wki-colophon-note {
-          font-size: var(--text-micro);
-          letter-spacing: var(--track-eyebrow);
-          text-transform: uppercase;
-          color: var(--stone);
-        }
 
         /* ── entrance: quiet fade-rise, 60ms stagger (overrides the
               global 60px fadeUp for these rows) ─────────────────────── */
@@ -519,10 +465,6 @@ export default function WorkIndex() {
           }
           .wki-title {
             grid-column: 1 / 8;
-          }
-          .wki-cjk {
-            grid-column: 8 / -1;
-            grid-row: 1 / 3;
           }
           .wki-jump {
             grid-column: 1 / -1;
@@ -604,9 +546,6 @@ export default function WorkIndex() {
             flex-wrap: wrap;
             gap: var(--space-4) var(--space-7);
             padding-top: var(--space-4);
-          }
-          .wki-cjk {
-            display: none;
           }
           .wki-category {
             grid-template-columns: minmax(0, 1fr);

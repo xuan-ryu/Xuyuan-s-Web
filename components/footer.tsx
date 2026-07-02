@@ -37,7 +37,10 @@ export function Footer() {
             </Link>
           ))}
         </nav>
-        <p className="footer-copy">&copy; Xuyuan Liu</p>
+        <a className="footer-email" href={`mailto:${site.email}`}>
+          {site.email}
+        </a>
+        <p className="footer-copy">&copy; 2026 Xuyuan Liu</p>
       </div>
     </footer>
   );

@@ -20,6 +20,33 @@ scratchpad (`specs/spec-*.json`) — if gone, regenerate from the
 | /work/vr-education | done | **interrupted** | field folio + particle strip (40-sprite cap to verify) + public/media/vrmb/ derived assets |
 | /work/vicino-ai | done | **interrupted** | --vicino-*→--text-* mapping, LayerMap SVGs, khaki retired; contrast probe (alpha ≥0.82) to verify |
 
+## Owner-directed follow-ups (2026-07-02 evening, specs from the owner)
+
+1. **Koi feed UI**: redesign the "Why not feed the fish?" pill AND fix the
+   dock behavior — after the first click it should shrink/dock to the side;
+   today it stays centered (koi-pond.tsx, feed intro UI around the
+   feedIntroAppear keyframes). Verify with real clicks.
+2. **How I Work over the pond**: after ~2-3 feeds, the "How I Work" title +
+   the three ValueCards surface ON the koi pond itself (fade in over the
+   water); the separate home-how screens/vase/bamboo collage section is then
+   REMOVED from app/page.tsx. The current screens form is preserved at git
+   tag `backup/home-how-screens` (checkout that tag to recover the section
+   markup + its globals.css rules). Wire: koi-pond exposes a feed-count
+   callback (or DOM event) → home page mounts the cards overlay.
+3. **Pulse case material expansion** (owner sanction for pulse copy edits in
+   data/projects.ts): source material = the private prototype repo
+   AND the local repo at `private Pulse repo`. Add interactive pages/components
+   as evidence (screenshots or embedded specimens). Narrative arc to write
+   from the owner's own git commit history + work history, five beats:
+   (a) starting to explore a code design-system component library;
+   (b) discovering messy team code quality → starting engineering
+   standardization; (c) shipping fast HTML/React demos the team could use;
+   (d) refactoring the mess into a maintainable component library, up to npm
+   packaging; (e) serving non-coding designers throughout — Figma export and
+   easy hand-around previews. Mine `git -C "private Pulse repo" log` for real
+   dates/commit subjects; screenshots of the component library/handoff pages
+   can be captured from that repo's own preview surfaces.
+
 ## Resume checklist (Wave 2)
 
 1. QA the six interrupted pages against their specs: viewport screenshots
