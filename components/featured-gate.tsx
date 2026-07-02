@@ -62,7 +62,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                         <span className="fg-row-desc">{p.oneliner}</span>
                         <span className="fg-row-meta">
                           <span className="fg-row-tags">{p.tags.join(" · ")}</span>
-                          <span className="fg-row-cta">View Project</span>
+                          <span className="fg-row-cta cta cta--quiet">View Project</span>
                         </span>
                       </span>
                     </span>
@@ -220,17 +220,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           color: rgba(20,20,22,0.5);
         }
         /* no arrow — a hairline that wipes in under the label carries the hover */
-        .fg-row-cta {
-          position: relative;
-          font-size: var(--text-label); text-transform: uppercase; letter-spacing: 0.14em;
-          color: #141414; white-space: nowrap;
-        }
-        .fg-row-cta::after {
-          content: ""; position: absolute; left: 0; right: 0; bottom: -0.32em; height: 1px;
-          background: var(--seal-red, #d10000);
-          transform: scaleX(0); transform-origin: left;
-          transition: transform 0.42s var(--ease-silk, cubic-bezier(0.16,1,0.3,1));
-        }
+        /* label chrome + seal-red rule come from .cta--quiet (globals.css);
+           only the row-level hover trigger is local — the wipe fires when the
+           whole row is hovered, not just the label */
         .fg-row-link:hover .fg-row-cta::after,
         .fg-row-link:focus-visible .fg-row-cta::after { transform: scaleX(1); }
 

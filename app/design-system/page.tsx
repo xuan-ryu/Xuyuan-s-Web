@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { Cta } from "@/components/ui/cta";
 
 export const metadata: Metadata = {
   title: "Design System",
@@ -21,12 +22,15 @@ const colors = [
   ["accent-gold", "#d4941e", "Dates and formal details"],
 ] as const;
 
+// mirrors the --text-* ladder in app/globals.css @theme — keep in sync
 const typeRows = [
-  ["Display 1", "clamp(82px, 12vw, 168px)", "About hero scale"],
-  ["Display 2", "clamp(58px, 8.4vw, 120px)", "Page and case titles"],
-  ["Display 3", "clamp(52px, 7.8vw, 112px)", "Chapter and CTA scale"],
-  ["Heading", "clamp(42px, 5.1vw, 55px)", "Editorial sections"],
-  ["Body", "clamp(18px, 1.55vw, 22px)", "Long-form reading"],
+  ["Display 1", "clamp(72px, 11vw, 144px)", "Hero / about opener"],
+  ["Display 2", "clamp(56px, 8vw, 110px)", "Page and case major titles"],
+  ["Display 3", "clamp(48px, 6.5vw, 80px)", "Chapter banners, CTA, section display"],
+  ["Heading", "clamp(32px, 3.4vw, 46px)", "Editorial section headings"],
+  ["Title", "clamp(24px, 2vw, 28px)", "Card / sub-section titles"],
+  ["Body", "clamp(17px, 1.25vw, 20px)", "Long-form reading"],
+  ["Meta / Label / Micro", "15 / 13 / 11px", "Nav, eyebrows, fine print"],
 ] as const;
 
 const pages = [
@@ -160,8 +164,9 @@ export default function DesignSystemPage() {
           </div>
           <div className="ds-type-copy">
             <p>
-              Cormorant carries display moments. Newsreader carries reading
-              texture. Murecho is the compact UI handrail.
+              Manrope (via <code>--font-text</code>) carries all reading and UI
+              text. Saira Condensed is the ink-wash display wordmark voice; the
+              brush face marks calligraphy moments only.
             </p>
             <dl>
               {typeRows.map(([name, size, use]) => (
@@ -193,6 +198,23 @@ export default function DesignSystemPage() {
               </nav>
             </div>
             <p>Black strip, amber active item, short labels, compact rhythm.</p>
+          </article>
+
+          <article className="ds-specimen">
+            <h3>Call to action — the real component</h3>
+            <div className="ds-cta-row">
+              <Cta href="/contact" variant="solid">
+                Solid
+              </Cta>
+              <Cta href="/work" variant="line">
+                Line
+              </Cta>
+              <span className="cta cta--quiet">Quiet</span>
+            </div>
+            <p>
+              One affordance, three emphases: 4px ink slab, hairline rectangle,
+              rule-wipe label. The pill is retired.
+            </p>
           </article>
 
           <article className="ds-specimen">

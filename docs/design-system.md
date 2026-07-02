@@ -115,7 +115,11 @@ Motion rules:
 | `--radius-media` | `26px` | Media frames, preview panels. |
 | `--radius-glass` | `18px` | Glass method cards and floating overlays. |
 | `--radius-card` | `12px` | Smaller generic cards and form surfaces. |
-| `4px` to `8px` | local | Buttons, chips, controls, exact Framer clones. |
+| `--radius-thumb` | `8px` | Small media thumbs, inner panels. |
+| `--radius-control` | `4px` | Buttons, inputs, chips (exact Framer clones may keep literals). |
+
+Pill radius (`999px`) is retired for rectangular controls; `50%` stays
+reserved for true circles (view toggles, dots, the moon gate).
 
 Surface rules:
 
@@ -237,17 +241,28 @@ CTA look per section — reach for this and pick the emphasis level.
 Contract:
 
 - **No arrows.** `→`/`&rarr;` glyphs read as generic and AI-generated. The
-  shape (lozenge / pill) or the seal-red rule carries the affordance instead.
+  slab, the hairline rectangle, or the seal-red rule carries the affordance
+  instead.
+- **No pills.** The lozenge/pill CTA is retired (owner decision); it also
+  contradicted this document's own radii table. Controls use
+  `--radius-control` (4px) — the shape the rest of the site already used
+  (work-card button, resume link, form submit, the ds specimens).
 - Emphasis ladder (one component, three variants):
-  - `solid` — filled ink lozenge (`--ink-950` on `--paper`), pill radius. The
-    primary page action. Hover accent is `--accent-amber`.
-  - `line` — hairline pill outline, transparent; fills to ink on hover. The
-    secondary action (e.g. `All Work` beside a section title).
+  - `solid` — filled ink slab (`--ink-900` on `--paper`), 52px tall,
+    `--radius-control`. The primary page action. Hover is `--accent-amber`
+    fill flipping the label to ink (never white-on-amber).
+  - `line` — hairline rectangle (`1px var(--rule)`), transparent; fills to ink
+    on hover. The secondary action (e.g. `All Work` beside a section title).
   - `quiet` — no box; an uppercase label with a seal-red rule that wipes in on
     hover/focus. Contextual actions, including a label inside a row that is
     itself a link (apply `cta cta--quiet` to a `span`, not a nested `<a>`).
-- Type: `--font-sans`, uppercase, weight 500, `0.14em` tracking. `.cta--lg`
-  bumps the label from `--text-label` to `--text-meta` for prominent placements.
+- Type: `--font-text`, uppercase, weight 500, `var(--track-label)` (0.14em).
+  `.cta--lg` bumps the label from `--text-label` to `--text-meta` for
+  prominent placements; `.cta--full` stretches form submits.
+- Renders as `<Link>` with `href`, `<button>` without (`type="submit"` for
+  forms); the disabled state ships with the component.
+- Every variant shares one `:focus-visible` contract: `var(--focus-ring)`
+  (2px amber) at `var(--focus-offset)`.
 - Seal red is reserved for the `quiet` indicator rule (see the skill's hover
   /focus-indicator rule); amber is the `solid` hover accent. No new colors.
 - Links inside body copy still use a plain text underline or amber hover, not
@@ -264,8 +279,6 @@ Gap:
 
 - `ContactForm` currently has only a sent state. It should get loading,
   validation, and error copy before being treated as a reusable form pattern.
-- `CtaBlock` (`GET IN TOUCH`) and the contact submit still use bespoke classes;
-  migrate them to `<Cta variant="solid">` when next touched.
 
 ### Work Card
 

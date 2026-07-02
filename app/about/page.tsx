@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { about } from "@/data/about";
+import { site } from "@/data/site";
 import { CtaBlock } from "@/components/cta-block";
+import { Cta } from "@/components/ui/cta";
 import HongyadongScene from "@/components/hongyadong";
 import { RevealText } from "@/components/text-reveal";
 
@@ -69,14 +71,15 @@ export default function About() {
             <h2>
               <RevealText text={about.resumeNote} mode="line" direction="right" />
             </h2>
-            <a
-              className="about-resume-link"
-              href="/assets/framerusercontent.com/assets/VXxmU8xrCkbdBVKix29pBF2kVeY.pdf"
+            <Cta
+              variant="solid"
+              href={site.resumeUrl}
               target="_blank"
               rel="noreferrer"
+              prefetch={false}
             >
               Resume
-            </a>
+            </Cta>
           </div>
         </div>
       </section>

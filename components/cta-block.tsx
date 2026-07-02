@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Cta } from "@/components/ui/cta";
 
 const SEAL = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
@@ -19,9 +19,9 @@ export function CtaBlock() {
           ))}
         </div>
       </div>
-      <Link href="/contact" className="cta-marquee-button">
+      <Cta href="/contact" variant="solid" className="cta-marquee-button">
         GET IN TOUCH
-      </Link>
+      </Cta>
     </section>
   );
 }

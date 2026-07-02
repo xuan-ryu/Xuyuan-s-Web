@@ -61,7 +61,7 @@ export function WorkCard({ project }: { project: Project }) {
           </p>
         ))}
       </div>
-      <span className="work-card-button">View Project</span>
+      <span className="work-card-button cta cta--solid">View Project</span>
     </Link>
   );
 }

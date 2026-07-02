@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { site } from "@/data/site";
+import { Cta } from "@/components/ui/cta";
 
 const SERVICES = [
   "Branding",
@@ -42,10 +43,13 @@ export function ContactForm() {
 
     setErrors({});
     setStatus("submitting");
-    const body = `Name: ${name}%0D%0AService: ${data.get(
-      "service",
-    )}%0D%0A%0D%0A${message}`;
-    window.location.href = `mailto:${site.email}?subject=Portfolio inquiry from ${name}&body=${body}`;
+    // encodeURIComponent, not hand-rolled %0D%0A: unescaped '&'/'#'/newlines in
+    // user input would otherwise truncate or flatten the mailto body.
+    const body = encodeURIComponent(
+      `Name: ${name}\r\nService: ${data.get("service")}\r\n\r\n${message}`,
+    );
+    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
+    window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
     setStatus("success");
   }
 
@@ -116,9 +120,12 @@ export function ContactForm() {
           </p>
         )}
       </div>
-      <button
+      <Cta
         type="submit"
-        className="btn contact-submit"
+        variant="solid"
+        large
+        full
+        className="contact-submit"
         disabled={submitting}
       >
         {submitting
@@ -126,7 +133,7 @@ export function ContactForm() {
           : status === "success"
             ? "Email opened"
             : "Submit"}
-      </button>
+      </Cta>
       <p className="form-status" role="status" aria-live="polite">
         {status === "success"
           ? `Your email app should have opened with the message ready. If it didn't, write to ${site.email} directly.`
