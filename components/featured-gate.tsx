@@ -11,14 +11,15 @@
 // opening. Media FILLS the circle (you look through a garden gate at the
 // scene, not at a mounted print) — a soft radial vignette keeps the rim round.
 //
-// Scroll choreography (desktop, motion-safe): the section pins for ~3.6
-// viewports. The first four beats drive the index 01→04 (the strip follows);
-// then the gate scales until the round opening swallows the viewport and its
-// interior sinks to ink; in the final stretch the koi section (pulled up
-// -100vh so it waits right behind) rises into place while the ink dissolves —
-// you pass through the moon gate and you're AT the pond, no dead scroll in
-// between. Reduced-motion / mobile keep the plain stacked layout, where an
-// idle timer walks the index instead.
+// Scroll choreography (desktop, motion-safe): browsing the index is HOVER
+// only (owner decision — scroll-driven index switching read as noise). The
+// section pins for ~2 viewports and scroll owns just the crossing: past a
+// short runway the gate scales until the round opening swallows the viewport
+// and sinks to ink, and the koi section (pulled up -100vh so it waits right
+// behind) rises while the ink dissolves — one flick passes through the moon
+// gate straight to the pond; an up-flick restores the wall. Reduced-motion /
+// mobile keep the plain stacked layout, where an idle timer walks the index
+// instead (touch has no hover).
 //
 // English copy, Arabic numerals, one seal-red accent. Prefix fg-.
 
@@ -28,15 +29,18 @@ import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { subscribeLenis } from "@/lib/lenis-bus";
 
-const BEATS = 4;
-const BEAT_END = 0.4; // share of the pin devoted to the index beats
-const BEAT_SPAN = BEAT_END / BEATS;
-const ZOOM_END = 0.72; // gate fully ink by here; the rest is the pond handoff
+const FEATURED = 4;
+const ZOOM_START = 0.12; // short runway so the pin doesn't feel grabby
+const ZOOM_END = 0.5; // gate fully ink by here
+const FADE_AT = 0.62; // ink starts dissolving over the risen pond
+const SNAP_FREE = 0.18; // below this progress there is no snap — rest and read
 
 export function FeaturedGate({ projects }: { projects: Project[] }) {
   // only the product / UI-UX / AI work (the first four); the game + VR pieces
   // live on the full Work page, reached via the CTA below the list
-  const list = [...projects].sort((a, b) => a.order - b.order).slice(0, BEATS);
+  const list = [...projects]
+    .sort((a, b) => a.order - b.order)
+    .slice(0, FEATURED);
   const firstWithVideo = Math.max(0, list.findIndex((p) => p.previewVideo));
   const [active, setActive] = useState(firstWithVideo);
   const [tickY, setTickY] = useState<number | null>(null);
@@ -144,13 +148,13 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               (gate.offsetWidth / 2)) *
             1.05;
 
-          // ── directional snap, executed by Lenis ──
-          // beat centers → full ink → pond. A flick always glides to the NEXT
-          // point in the scroll direction (and back one on up-scroll): with
-          // nearest-point snapping, slow scrollers whose per-flick travel
-          // (~200px under Lenis) never beat half a gap kept getting yanked
-          // back to the same beat and could never cross the zoom.
-          const SNAPS = [0.05, 0.15, 0.25, 0.35, ZOOM_END, 1];
+          // ── the crossing snap, executed by Lenis ──
+          // Below SNAP_FREE there is no snap at all — the pinned section can
+          // be rested on and browsed by hover. Once the zoom is visibly under
+          // way, the crossing always completes in the direction of travel
+          // (down → the pond, up → back to the wall); executed via
+          // lenis.scrollTo because a ScrollTrigger snap tween fights Lenis's
+          // rAF and stalls on long glides.
           let snapGliding = false;
           let snapClear = 0;
           let idleTimer = 0;
@@ -161,13 +165,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             const lenis = currentLenis;
             if (!lenis || snapGliding) return;
             const p = self.progress;
-            if (p <= 0.001 || p >= 0.999) return;
-            const dir = self.direction;
-            const target =
-              dir >= 0
-                ? SNAPS.find((s) => s > p + 0.005)
-                : [...SNAPS].reverse().find((s) => s < p - 0.005);
-            if (target === undefined) return;
+            if (p <= SNAP_FREE || p >= 0.999) return;
+            const target = self.direction >= 0 ? 1 : 0;
             const y = self.start + target * (self.end - self.start);
             const dist = Math.abs(y - window.scrollY);
             if (dist < 2) return;
@@ -197,20 +196,17 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               id: "fg-gate",
               trigger: section,
               start: "top top",
-              end: "+=360%",
+              end: "+=200%",
               pin: true,
               scrub: 0.6,
               invalidateOnRefresh: true,
               onUpdate(self) {
                 const p = self.progress;
-                if (p < BEAT_END) {
-                  setActive(Math.min(BEATS - 1, Math.floor(p / BEAT_SPAN)));
-                }
                 // once the ink starts dissolving, the (transparent) fixed
                 // section must stop swallowing the pond's pointer events
-                section.style.pointerEvents = p > 0.9 ? "none" : "";
+                section.style.pointerEvents = p > 0.85 ? "none" : "";
                 // idle-detect: when scroll emission stops for a beat and no
-                // glide is in flight, snap toward the next point
+                // glide is in flight, complete the crossing
                 if (!snapGliding) {
                   window.clearTimeout(idleTimer);
                   idleTimer = window.setTimeout(() => trySnap(self), 140);
@@ -223,27 +219,23 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             .to(
               [leftRef.current, headRef.current],
               { opacity: 0, duration: 0.08 },
-              BEAT_END,
+              ZOOM_START,
             )
             .to(
               gate,
               {
                 scale: coverScale,
-                duration: ZOOM_END - BEAT_END,
+                duration: ZOOM_END - ZOOM_START,
                 ease: "power2.in",
                 force3D: true,
               },
-              BEAT_END,
+              ZOOM_START,
             )
-            .to(veil, { opacity: 1, duration: 0.2 }, BEAT_END + 0.05)
+            .to(veil, { opacity: 1, duration: 0.24 }, ZOOM_START + 0.06)
             // the handoff: ink (and the white wall) dissolve while the koi
             // section rises behind — autoAlpha so the faded layers also stop
             // hit-testing
-            .to(
-              [bg, gate],
-              { autoAlpha: 0, duration: 0.16 },
-              ZOOM_END + 0.02,
-            );
+            .to([bg, gate], { autoAlpha: 0, duration: 0.2 }, FADE_AT);
 
           return () => {
             pinnedRef.current = false;
@@ -301,7 +293,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         holdTicksRef.current -= 1;
         return;
       }
-      setActive((a) => (a + 1) % BEATS);
+      setActive((a) => (a + 1) % FEATURED);
     }, 4800);
     return () => {
       io.disconnect();
@@ -450,7 +442,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           background: transparent;
           z-index: 2;
           color: #141414;
-          padding-block: clamp(96px, 14vh, 172px);
+          /* vh-elastic paddings: the whole composition must FIT one viewport
+             while pinned — content below the fold is unreachable during a pin
+             (the circle's bottom was getting cropped at short viewports) */
+          padding-block: clamp(48px, 7vh, 172px);
           min-height: 100vh;
           display: flex; align-items: center;
           font-family: var(--font-text);
@@ -485,7 +480,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
           align-items: start;
           gap: clamp(32px, 5vw, 128px);
-          padding-top: clamp(34px, 5vh, 84px);
+          padding-top: clamp(20px, 3.5vh, 84px);
         }
 
         /* ---- accordion index: big condensed names, active unfolds its story ---- */
@@ -570,7 +565,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-right { position: relative; display: flex; justify-content: flex-end; }
         .fg-gate {
           position: relative; display: block;
-          width: clamp(380px, 40vw, 720px); aspect-ratio: 1 / 1;
+          /* diameter is capped by the viewport HEIGHT too — while pinned the
+             circle must never hang below the fold (it can't be scrolled to) */
+          width: min(clamp(380px, 40vw, 720px), calc(100vh - 290px));
+          aspect-ratio: 1 / 1;
           margin-right: clamp(-56px, -3vw, 0px);
           border-radius: 50%; text-decoration: none; color: inherit;
           transform-origin: center;
