@@ -13,13 +13,18 @@
 //
 // Scroll choreography (desktop, motion-safe): browsing the index is HOVER
 // only (owner decision — scroll-driven index switching read as noise). The
-// section pins for ~2 viewports and scroll owns just the crossing: past a
+// section pins for ~2.7 viewports and scroll owns just the crossing: past a
 // short runway the gate scales until the round opening swallows the viewport
-// and sinks to ink, and the koi section (pulled up -100vh so it waits right
-// behind) rises while the ink dissolves — one flick passes through the moon
-// gate straight to the pond; an up-flick restores the wall. Reduced-motion /
+// and sinks to ink; lotus leaves then condense over the ink (the ink is now
+// the pond's water) until the viewport is covered; continued scroll parts
+// the pads outward from the center while a lotus blossom blooms between
+// them; at the very end the blossom and the last chrome dissolve and the
+// koi section (pulled up -100vh so it waits right behind) has risen into
+// place — one flick passes through the moon gate, through the lotus, onto
+// the pond; an up-flick folds the leaves shut and restores the wall (the
+// whole arrival is scrubbed, nothing is time-driven). Reduced-motion /
 // mobile keep the plain stacked layout, where an idle timer walks the index
-// instead (touch has no hover).
+// instead (touch has no hover) and the lotus layer never mounts.
 //
 // English copy, Arabic numerals, one seal-red accent. Prefix fg-.
 
@@ -27,13 +32,32 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
+import { FgLotusLayer, FG_LEAVES } from "@/components/fg-lotus-layer";
 import { subscribeLenis } from "@/lib/lenis-bus";
 
 const FEATURED = 4;
-const ZOOM_START = 0.12; // short runway so the pin doesn't feel grabby
-const ZOOM_END = 0.5; // gate fully ink by here
-const FADE_AT = 0.62; // ink starts dissolving over the risen pond
-const SNAP_FREE = 0.18; // below this progress there is no snap — rest and read
+// the pin + lotus layer run only here; the same query gates the layer mount
+const CROSSING_MEDIA =
+  "(min-width: 901px) and (prefers-reduced-motion: no-preference)";
+// ── crossing fraction map (of the 270% pin) ──
+// The pin grew 200% → 270% for the lotus arrival; runway/zoom/ink keep their
+// old ABSOLUTE scroll lengths (0.12 of 200% ≈ 0.09 of 270%, etc.) so the
+// approach feels identical — the added travel is all arrival.
+const PIN_END = "+=270%";
+const ZOOM_START = 0.09; // short runway so the pin doesn't feel grabby
+const ZOOM_END = 0.37; // gate fully scaled by here (hidden under full ink)
+const INK_AT = 0.13; // veil starts…
+const INK_DUR = 0.18; // …and the gate is solid ink by 0.31
+const LEAF_IN = 0.33; // pads condense over the ink until the water is covered
+const LEAF_IN_SPREAD = 0.07; // per-pad start scatter
+const LEAF_IN_DUR = 0.08;
+const PART_AT = 0.5; // the canopy parts from the center…
+const PART_STAGGER = 0.12; // …center pads first, edges last
+const PART_DUR = 0.26;
+const BLOOM_OUTER = 0.54; // the blossom opens while the pads drift out
+const BLOOM_INNER = 0.63;
+const FADE_AT = 0.88; // ink + wall dissolve over the (by now) risen pond
+const SNAP_FREE = 0.13; // below this progress there is no snap — rest and read
 
 export function FeaturedGate({ projects }: { projects: Project[] }) {
   // only the product / UI-UX / AI work (the first four); the game + VR pieces
@@ -48,6 +72,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
   // is-visible painted onto re-rendered nodes gets wiped by React, and the
   // global observer only arms once per route — state survives everything
   const [revealed, setRevealed] = useState(false);
+  // the lotus layer exists only where the crossing pin runs (desktop,
+  // motion-safe) — reduced-motion / mobile / SSR never even mount it
+  const [lotusOn, setLotusOn] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
   const bgRef = useRef<HTMLSpanElement>(null);
@@ -92,7 +119,18 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     };
   }, [active]);
 
-  // ── scroll choreography: pin + beats + through-the-gate zoom ──
+  // ── mount/unmount the lotus layer with the same media boundary as the pin ──
+  useEffect(() => {
+    const mq = window.matchMedia(CROSSING_MEDIA);
+    const update = () => setLotusOn(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // ── scroll choreography: pin + beats + through-the-gate zoom + lotus
+  //    arrival. Re-runs when the lotus layer (un)mounts so the timeline is
+  //    always built against the DOM it will actually drive. ──
   useEffect(() => {
     let cancelled = false;
     let mm: ReturnType<typeof import("gsap").default.matchMedia> | null = null;
@@ -126,7 +164,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
 
       mm = gsap.matchMedia();
       mm.add(
-        "(min-width: 901px) and (prefers-reduced-motion: no-preference)",
+        CROSSING_MEDIA,
         () => {
           const section = sectionRef.current;
           const gate = gateRef.current;
@@ -170,7 +208,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             const y = self.start + target * (self.end - self.start);
             const dist = Math.abs(y - window.scrollY);
             if (dist < 2) return;
-            const duration = Math.min(1.1, Math.max(0.35, dist / 1600));
+            // cap raised 1.1 → 1.3 for the longer (270%) crossing distance
+            const duration = Math.min(1.3, Math.max(0.35, dist / 1600));
             snapGliding = true;
             // a user flick mid-glide retargets Lenis and onComplete never
             // fires — the fallback timer re-arms snapping either way
@@ -196,7 +235,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               id: "fg-gate",
               trigger: section,
               start: "top top",
-              end: "+=200%",
+              end: PIN_END,
               pin: true,
               scrub: 0.6,
               invalidateOnRefresh: true,
@@ -218,7 +257,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           tl.to({}, { duration: 1 }, 0) // master span: positions = fractions
             .to(
               [leftRef.current, headRef.current],
-              { opacity: 0, duration: 0.08 },
+              { opacity: 0, duration: 0.06 },
               ZOOM_START,
             )
             .to(
@@ -231,11 +270,109 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               },
               ZOOM_START,
             )
-            .to(veil, { opacity: 1, duration: 0.24 }, ZOOM_START + 0.06)
-            // the handoff: ink (and the white wall) dissolve while the koi
-            // section rises behind — autoAlpha so the faded layers also stop
-            // hit-testing
-            .to([bg, gate], { autoAlpha: 0, duration: 0.2 }, FADE_AT);
+            .to(veil, { opacity: 1, duration: INK_DUR }, INK_AT)
+            // the handoff: ink (and the white wall) dissolve at the very end,
+            // once the koi section has (mostly) risen behind — autoAlpha so
+            // the faded layers also stop hit-testing. Until then the ink
+            // veil IS the pond surface the lotus pads sit on.
+            .to([bg, gate], { autoAlpha: 0, duration: 0.09 }, FADE_AT);
+
+          // ── lotus arrival: pads condense over the ink, part from the
+          //    center, and a blossom blooms in the opening — all scrubbed,
+          //    geometry from FgLotusLayer, motion params from FG_LEAVES ──
+          const layer = section.querySelector<HTMLElement>(".fgl-layer");
+          if (layer) {
+            const rad = (deg: number) => (deg * Math.PI) / 180;
+            const leaves = gsap.utils.toArray<HTMLElement>(".fgl-leaf", layer);
+            leaves.forEach((el, i) => {
+              const cfg = FG_LEAVES[i];
+              if (!cfg) return;
+              gsap.set(el, {
+                xPercent: -50,
+                yPercent: -50,
+                rotation: cfg.rot,
+                scale: 1.12,
+                transformOrigin: "50% 50%",
+              });
+              // condense onto the water (slight settle, scattered starts)
+              tl.to(
+                el,
+                { opacity: 1, scale: 1, duration: LEAF_IN_DUR },
+                LEAF_IN + cfg.inOrder * LEAF_IN_SPREAD,
+              );
+              // part along its own radial vector — center pads first; the
+              // slow-in ease reads as surface tension letting go. x/y are
+              // function-based so invalidateOnRefresh re-measures them.
+              tl.to(
+                el,
+                {
+                  x: () =>
+                    Math.cos(rad(cfg.partAng)) * cfg.travel * window.innerWidth,
+                  y: () =>
+                    Math.sin(rad(cfg.partAng)) * cfg.travel * window.innerHeight,
+                  rotation: cfg.rot + cfg.drot,
+                  duration: PART_DUR,
+                  ease: "power2.in",
+                },
+                PART_AT + cfg.order * PART_STAGGER,
+              );
+            });
+
+            const lotus = layer.querySelector<HTMLElement>(".fgl-lotus");
+            if (lotus) {
+              gsap.set(lotus, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
+              const outer = gsap.utils.toArray<SVGGElement>(
+                ".fgl-petal-o",
+                lotus,
+              );
+              const inner = gsap.utils.toArray<SVGGElement>(
+                ".fgl-petal-i",
+                lotus,
+              );
+              const heart = lotus.querySelector<SVGGElement>(".fgl-heart");
+              // bud: petals furled into a swirl knot at the flower center.
+              // Each petal group is drawn unrotated with its base at the
+              // center (a static rotate() wrapper fans it), so its bbox
+              // bottom-center IS the flower center — scale/rotate about that.
+              // (svgOrigin is a trap here: with a negative viewBox min its
+              // global-coordinate math displaced the petals.)
+              gsap.set([...outer, ...inner], {
+                scale: 0.14,
+                rotation: -48,
+                transformOrigin: "50% 100%",
+              });
+              if (heart)
+                gsap.set(heart, {
+                  scale: 0.4,
+                  opacity: 0,
+                  transformOrigin: "50% 50%",
+                });
+              // the bud surfaces among the pads…
+              tl.to(lotus, { autoAlpha: 1, duration: 0.06 }, LEAF_IN + 0.07);
+              // …and blooms while they part: outer ring first, then inner,
+              // then the seedpod
+              outer.forEach((p, k) =>
+                tl.to(
+                  p,
+                  { scale: 1, rotation: 0, duration: 0.18, ease: "power2.out" },
+                  BLOOM_OUTER + k * 0.012,
+                ),
+              );
+              inner.forEach((p, k) =>
+                tl.to(
+                  p,
+                  { scale: 1, rotation: 0, duration: 0.16, ease: "power2.out" },
+                  BLOOM_INNER + k * 0.012,
+                ),
+              );
+              if (heart)
+                tl.to(heart, { opacity: 1, scale: 1, duration: 0.08 }, 0.72);
+            }
+
+            // the blossom (and any straggler pads) dissolve with the chrome —
+            // the unpin lands on the live pond alone
+            tl.to(layer, { autoAlpha: 0, duration: 0.08 }, 0.9);
+          }
 
           return () => {
             pinnedRef.current = false;
@@ -253,7 +390,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       unsubLenis?.();
       lenisDetach?.();
     };
-  }, []);
+    // lotusOn: rebuild once the lotus layer's DOM is mounted (or gone)
+  }, [lotusOn]);
 
   // ── entrance: arm once when the section approaches; state-driven so no
   //    re-render or HMR can un-reveal the rows ──
@@ -430,6 +568,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           </div>
         </div>
       </div>
+
+      {/* the lotus arrival — scenery for the scrubbed crossing; mounts only
+          where the pin runs (desktop, motion-safe) */}
+      {lotusOn ? <FgLotusLayer /> : null}
 
       <style
         dangerouslySetInnerHTML={{
