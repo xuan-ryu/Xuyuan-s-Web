@@ -801,76 +801,6 @@ body.hero-night .nav-links a.active {
   letter-spacing: 0.02em;
 }
 
-/* LET'S WORK TOGETHER marquee (live: 112px serif scroll, seal between
-   repetitions, GET IN TOUCH button pinned over the center) */
-.cta-marquee-section {
-  position: relative;
-  padding: clamp(120px, 14vw, 210px) 0;
-  background: var(--paper);
-  overflow: hidden;
-}
-/* live: the about page runs the marquee tighter under My Habits */
-.about-habits + .cta-marquee-section {
-  padding-top: 129px;
-}
-.cta-marquee {
-  overflow: hidden;
-  white-space: nowrap;
-}
-.cta-marquee-track {
-  display: inline-flex;
-  align-items: center;
-  animation: cta-marquee-scroll 26s linear infinite;
-}
-.cta-marquee-item {
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(56px, 7vw, 120px);
-  padding-right: clamp(56px, 7vw, 120px);
-  font-family: var(--font-serif);
-  font-size: clamp(56px, 7.8vw, 112px);
-  font-weight: 400;
-  line-height: 1;
-  color: var(--ink-900);
-  white-space: nowrap;
-}
-.cta-marquee-item img {
-  width: clamp(26px, 3.2vw, 45px);
-  height: auto;
-}
-/* positioning + halo only — button chrome comes from .cta--solid */
-.cta-marquee-button {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-/* live: the button carries a wide backdrop-blur halo over the marquee */
-.cta-marquee-button::before {
-  content: "";
-  position: absolute;
-  inset: -34px -70px;
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
-  mask: radial-gradient(ellipse at center, #000 40%, transparent 75%);
-  -webkit-mask: radial-gradient(ellipse at center, #000 40%, transparent 75%);
-  z-index: -1;
-  pointer-events: none;
-}
-@keyframes cta-marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cta-marquee-track {
-    animation: none;
-  }
-}
-
 /* ============================================================
    Work index — header + grid
    ============================================================ */
@@ -3957,27 +3887,15 @@ body.hero-night .nav-links a.active {
   min-height: 1180px;
   position: relative;
   /* full-bleed ink (owner decision): the moon-gate crossing dissolves black
-     into black — the pond IS the other side of the gate, no paper card.
-     The band's tail washes back into paper so the next section doesn't hit
-     a hard black edge (owner: the black boundary read harsh). */
-  background: linear-gradient(
-    180deg,
-    #020305 0%,
-    #020305 calc(100% - 220px),
-    var(--paper) 100%
-  );
+     into black — the pond IS the other side of the gate, and the page now
+     ENDS in the night: pond ink flows straight into the ink footer (the
+     earlier paper wash created a black-white-black sandwich). */
+  background: #020305;
 }
 .home-koi-frame {
   position: absolute;
   inset: 0;
-  /* the visible band layer carries the tail wash (the section gradient sits
-     beneath and would be covered) */
-  background: linear-gradient(
-    180deg,
-    #020305 0%,
-    #020305 calc(100% - 220px),
-    var(--paper) 100%
-  );
+  background: #020305;
 }
 .home-koi-inner {
   position: absolute;

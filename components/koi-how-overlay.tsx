@@ -17,15 +17,16 @@ type Props = {
 };
 
 // How-I-Work surfaces over the koi pond. The markup is server-rendered (SEO /
-// screen readers always get the content — it is never feed-gated); the visual
-// reveal fires on the pond's feed-count signal ("koi:feed" CustomEvent from
-// koi-pond.tsx, count >= 3) or on a fallback: ~14s of the section in view, or
-// scrolling past 75% of it. Reduced motion reveals instantly on first sight.
+// screen readers always get the content — it is never feed-gated). Visually it
+// reveals only after the visitor enters feed mode and drops food into the pond
+// a few times: "koi:feed" CustomEvent from koi-pond.tsx, count >= 3.
 //
 // koi-how-grid (desktop): the 1440 canvas of the old home-how section, kept as
-// the alignment rail — two card columns at x 192 / 608 (640-wide cards), title
-// at (192, 96), card rows at y 240 / 700 / 1060 over the 1318px pond stage.
+// the alignment rail — staggered 640-wide cards over the pond stage, offset
+// enough that the lower two cards never visually collide.
 // Only the cards catch pointer events; the water around them stays feedable.
+const FEEDS_TO_REVEAL = 3;
+
 export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(forceReveal);
@@ -34,22 +35,11 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
     if (forceReveal) return;
     const root = rootRef.current;
     if (!root) return;
-    const section = (root.closest(".home-koi-section") ?? root) as HTMLElement;
 
     let done = false;
-    let dwellTimer = 0;
-    let raf = 0;
-    let io: IntersectionObserver | null = null;
 
     const cleanupTriggers = () => {
       window.removeEventListener("koi:feed", onFeed);
-      window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-      if (dwellTimer) window.clearTimeout(dwellTimer);
-      dwellTimer = 0;
-      io?.disconnect();
-      io = null;
     };
 
     const reveal = () => {
@@ -68,56 +58,10 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
     const onFeed = (e: Event) => {
       const count =
         (e as CustomEvent<{ count?: number }>).detail?.count ?? 0;
-      if (count >= 3) reveal();
+      if (count >= FEEDS_TO_REVEAL) reveal();
     };
-
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const r = section.getBoundingClientRect();
-        if (r.height <= 0) return;
-        // How far the visitor has scrolled THROUGH the section (0 when its
-        // top reaches the viewport top, 1 when its bottom meets the viewport
-        // bottom) — not how far it has merely entered the viewport.
-        const span = r.height - window.innerHeight;
-        const progress =
-          span > 0 ? -r.top / span : (window.innerHeight - r.top) / r.height;
-        if (progress >= 0.75) reveal();
-      });
-    };
-
-    const prefersReduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (typeof IntersectionObserver !== "undefined") {
-      io = new IntersectionObserver(
-        (entries) => {
-          const entry = entries[0];
-          const inView = !!entry && entry.isIntersecting;
-          if (inView && prefersReduce) {
-            reveal();
-            return;
-          }
-          if (inView && !dwellTimer) {
-            dwellTimer = window.setTimeout(reveal, 14000);
-          } else if (!inView && dwellTimer) {
-            window.clearTimeout(dwellTimer);
-            dwellTimer = 0;
-          }
-        },
-        { threshold: 0.25 },
-      );
-      io.observe(section);
-    } else {
-      // No IO — arm the dwell timer immediately.
-      dwellTimer = window.setTimeout(reveal, 14000);
-    }
 
     window.addEventListener("koi:feed", onFeed);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
 
     return cleanupTriggers;
   }, [forceReveal]);
@@ -156,9 +100,18 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           pointer-events: none;
         }
         .koi-how.is-revealed .koi-how-card { pointer-events: auto; }
-        .koi-how-card-1 { left: 608px; top: 240px; min-height: 356px; }
-        .koi-how-card-2 { left: 192px; top: 700px; min-height: 322px; }
-        .koi-how-card-3 { left: 608px; top: 1060px; min-height: 322px; }
+        .koi-how-card-1 { left: 624px; top: 168px; min-height: 356px; }
+        .koi-how-card-2 { left: 112px; top: 612px; min-height: 322px; }
+        .koi-how-card-3 { left: 688px; top: 1038px; min-height: 322px; }
+
+        /* On the pond the cards drop ValueCard's heavy frosted glass (its
+           inline blur(28px) pops in during the fade — owner: keep them
+           essentially transparent, at most a slight blur). */
+        .koi-how-card .vibe-card {
+          background: rgba(6, 8, 10, 0.42) !important;
+          backdrop-filter: blur(4px) !important;
+          -webkit-backdrop-filter: blur(4px) !important;
+        }
 
         /* reveal — transform/opacity only, staggered */
         .koi-how-title, .koi-how-card {
@@ -187,13 +140,13 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
 
         @media (max-width: 1250px) and (min-width: 741px) {
           /* narrower shells: keep two rails but pull them inside the viewport;
-             card-2 drops a little lower so the docked feed chip (left edge,
-             pond mid-height) keeps clear water around it */
+             the lower cards keep a real vertical gap instead of stacking into
+             one dense block. */
           .koi-how-title { left: 48px; }
           .koi-how-card { width: min(640px, calc(100vw - 96px)); }
-          .koi-how-card-1 { left: auto; right: 48px; }
-          .koi-how-card-2 { left: 48px; top: 764px; }
-          .koi-how-card-3 { left: auto; right: 48px; }
+          .koi-how-card-1 { left: auto; right: 48px; top: 176px; }
+          .koi-how-card-2 { left: 48px; top: 612px; }
+          .koi-how-card-3 { left: auto; right: 48px; top: 1052px; }
         }
 
         @media (max-width: 740px) {
