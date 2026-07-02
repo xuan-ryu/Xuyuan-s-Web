@@ -610,10 +610,6 @@ export const projects: Project[] = [
         client: "Undergraduate",
         year: "12/2023-1/2024",
         services: "Digital Art, Immersive Experience, Digital Education",
-        livePreview: {
-          label: "VR MONARCH BUTTERFLY",
-          href: "https://example.com",
-        },
       },
       body: [
         "Synopsis: This collaborative project was completed with classmates during Oberlin College’s Winter Term in January 2023, utilizing Unity for the VR platform and Blender for butterfly modeling, with my primary role being scene creation. Our goal was to build a realistic virtual environment depicting the spectacular migration of monarch butterflies, exploring the educational and documentary potential of immersive VR experiences. Users can interact with and explore the scene through VR headsets.",
@@ -630,9 +626,10 @@ export const projects: Project[] = [
   },
 ];
 
-export const projectsBySlug = Object.fromEntries(
-  projects.map((p) => [p.slug, p]),
-);
+// Record<…, Project | undefined>: lookups come from the URL slug, so a miss is
+// a real case every consumer must handle (both current callers already guard).
+export const projectsBySlug: Record<string, Project | undefined> =
+  Object.fromEntries(projects.map((p) => [p.slug, p]));
 
 export function adjacent(slug: string) {
   const sorted = [...projects].sort((a, b) => a.order - b.order);

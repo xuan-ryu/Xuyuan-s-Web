@@ -983,14 +983,33 @@ export default function HongyadongFramer(props: Props) {
             }, 120)
         }
 
-        const handleVisibility = () => {
-            if (document.hidden) {
+        // Single run gate: the loop runs only while the tab is visible AND the
+        // stage's root is in the viewport. Without the IO gate, tiers 1-2 keep
+        // redrawing full frames after the user scrolls past the sticky stage.
+        let inView = true
+        let started = false
+        const updateRunState = () => {
+            if (document.hidden || !inView) {
                 cancelAnimationFrame(rafId)
                 rafId = 0
-            } else if (!rafId) {
+            } else if (!rafId && started) {
                 rafId = requestAnimationFrame(render)
             }
         }
+
+        const handleVisibility = () => updateRunState()
+
+        const viewObserver =
+            typeof IntersectionObserver !== "undefined"
+                ? new IntersectionObserver(
+                      (entries) => {
+                          inView = !!entries[0]?.isIntersecting
+                          updateRunState()
+                      },
+                      { threshold: 0 }
+                  )
+                : null
+        viewObserver?.observe(rootEl)
 
         window.addEventListener("resize", handleResize)
         window.addEventListener("scroll", syncProgress, { passive: true })
@@ -1021,9 +1040,8 @@ export default function HongyadongFramer(props: Props) {
             tier = Math.min(tier, maxTier)
             resize()
             syncProgress()
-            if (!rafId) {
-                rafId = requestAnimationFrame(render)
-            }
+            started = true
+            updateRunState()
         }
 
         if (
@@ -1047,6 +1065,7 @@ export default function HongyadongFramer(props: Props) {
             window.removeEventListener("mouseleave", handlePointerLeave)
             window.removeEventListener("touchend", handlePointerLeave)
             document.removeEventListener("visibilitychange", handleVisibility)
+            viewObserver?.disconnect()
             sourceImageEl.removeEventListener("load", start)
             sourceImageEl.removeEventListener("error", start)
         }

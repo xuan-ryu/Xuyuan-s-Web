@@ -1254,7 +1254,14 @@ export default function DigitalLandscape(props: Props) {
             sceneReadyRef.current = true
             tryReveal()
             return () => {
+                // Must mirror the full-path teardown below: the Lenis
+                // subscription outlives route changes, so leaking it keeps
+                // handleScroll toggling body.hero-night on other pages.
+                isMounted = false
+                document.body.classList.remove("hero-night")
                 cancelAnimationFrame(scrollPollRaf)
+                unsubLenis?.()
+                lenisDetach?.()
                 document.removeEventListener("scroll", onScrollRaf, {
                     capture: true,
                 })

@@ -26,12 +26,14 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        {/* Cormorant Garamond + Newsreader are fully self-hosted now (@font-face
-            in globals.css, incl. the 300/200/italic weights) — no Google link, no
-            render-block. Noto Serif SC (CJK, impractical to self-host) + JetBrains
-            Mono load async via a script-CREATED link: it lives outside React's
-            tree, so flipping media print→all on load can't cause a hydration
-            mismatch. media="print" keeps it off the render path; display=swap. */}
+        {/* Self-hosted faces (@font-face in globals.css): the brush fonts
+            (LiuJian, CloudXingCaoGBK) and Murecho. Everything else — Manrope
+            (the main UI face; --font-newsreader/--font-serif alias it),
+            Noto Sans SC (CJK, impractical to self-host), Saira Condensed,
+            Oswald, JetBrains Mono — loads async via a script-CREATED link: it
+            lives outside React's tree, so flipping media print→all on load
+            can't cause a hydration mismatch. media="print" keeps it off the
+            render path; display=swap. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
