@@ -7,36 +7,44 @@ import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
 const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
 // Product handle palette — sanctioned product-UI color, used only inside the
-// canvas motif (node handles, flow chips, layer-map owned regions).
+// canvas motif (node handles, flow chips, layer-map owned regions). Exact
+// values from the product's typed-connection model
+// (src/core/connections/the connection types).
 const HANDLE = {
-  text: "#9B9CF1",
-  storyboard: "#8BD6D9",
-  image: "#8BD6D9",
-  video: "#FFB366",
+  text: "#F1A0FA",
+  storyboard: "#6EDDB3",
+  image: "#6EDDB3",
+  video: "#FFB347",
 };
 
+// Step labels are the product's real create-menu names (the create menu);
+// `conn` quotes each node's typed output connection with its shipped color.
 const workflow = [
   {
-    label: "Script",
+    label: "Script Generator",
     handle: HANDLE.text,
+    conn: "Output · Text #F1A0FA",
     title: "Intent Becomes Editable",
     copy: "The workflow starts as a script object, so intent can be revised before it turns into visual production work.",
   },
   {
-    label: "Storyboard",
+    label: "Story Board Generator",
     handle: HANDLE.storyboard,
+    conn: "Output · Storyboard #6EDDB3",
     title: "Pacing Becomes Visible",
     copy: "The script becomes a sketch storyboard first, giving the creator a low-cost place to inspect sequence and rhythm.",
   },
   {
-    label: "ShootNode",
+    label: "Shot Node",
     handle: HANDLE.image,
+    conn: "Output · Image #6EDDB3",
     title: "Shots Become Concrete",
     copy: "The rough board resolves into a production-ready shot board with reference frames and camera intent.",
   },
   {
-    label: "Video",
+    label: "Video Generator",
     handle: HANDLE.video,
+    conn: "Output · Video #FFB347",
     title: "Motion Becomes Output",
     copy: "The final node turns approved shots into video, keeping the source chain visible instead of burying it in a feed.",
   },
@@ -61,19 +69,22 @@ const layers: Array<{
     avoids: "Prompt forms and dense parameters.",
   },
   {
-    label: "Sidebar",
+    // The shipped build splits this room across two rails: the left create
+    // rail (create menu + asset/community libraries) and the right inspector
+    // (the inspector panel: model dropdown, parameters, run).
+    label: "Side rails",
     kind: "sidebar",
     color: HANDLE.storyboard,
-    title: "Global Control",
-    owns: "Project-level settings, model defaults, and broad context.",
-    avoids: "Node-specific inputs.",
+    title: "Creation and Configuration",
+    owns: "The left rail's create menu and asset libraries; the right inspector's model choice, parameters, and run controls.",
+    avoids: "Node media input and deep edits.",
   },
   {
     label: "Sliding panel",
     kind: "panel",
     color: HANDLE.image,
     title: "Local Input",
-    owns: "Prompts, references, frame input, versions, and current-node controls.",
+    owns: "Prompts, references, frame input, and current-node controls — slid out from the node's left edge on 15 of the shipped node types.",
     avoids: "Deep editing tools.",
   },
   {
@@ -85,6 +96,48 @@ const layers: Array<{
     avoids: "Basic node display.",
   },
 ];
+
+// Station-02 evidence: real dates and commit subjects quoted from the
+// the-product-codebase repo's git log — the product team's build history that this
+// design work fed (the owner's contribution is design/design-system work, not
+// commits to that repo).
+const canvasLedger: Array<[string, string]> = [
+  [
+    "2025-09-11",
+    "“AI board” — the first canvas commit: one ReactFlow board with a single node type.",
+  ],
+  [
+    "2025-12-02",
+    "“Board Refactor” — the node plugin architecture lands: a registry of node definitions.",
+  ],
+  ["2026-04-16", "Sliding panels ship for all node types."],
+  [
+    "2026-05-01",
+    "Panel animation and handle polish land “according to requests from uiux designers.”",
+  ],
+  ["2026-06-29", "Post-login default routes to Pulse — the newer flagship surface."],
+];
+
+// Render-level copy refreshes grounded in the builder repo: the shipped build
+// puts creation in the left rail (create menu + asset/community libraries)
+// and model/run configuration in the right inspector (the inspector panel), so
+// the older "sidebar = global settings + model controls" phrasing is
+// superseded at render time. data/projects.ts is orchestrator-owned; the
+// matching data edits are reported for the batched pass.
+const factRefresh: Array<[string, string]> = [
+  [
+    "The sidebar handled global settings and model-level controls.",
+    "The side rails handled creation and configuration — the create menu and asset library on the left, model and run controls in the right inspector.",
+  ],
+  [
+    "the sidebar handled global settings and model controls",
+    "the side rails handled creation and configuration — the create menu on the left, model and run controls in the right inspector",
+  ],
+];
+
+function refreshFacts(copy: string) {
+  return factRefresh.reduce((text, [from, to]) => text.split(from).join(to), copy);
+}
 
 // Figcaptions for the prototype reels. The a teammate credit is render-filtered
 // out of the closing moment (body[3] in data/projects.ts) and lives here as
@@ -143,10 +196,14 @@ function sentenceCase(heading: string) {
 // 168x104 wireframes of the product surface — the owned region of each
 // interaction layer tinted in its handle color, so the "four rooms" argument
 // is visible instead of purely verbal. Static evidence; hidden below 810px.
+// Anatomy matches the shipped build: the sidebar room is two rails (left
+// create rail + right inspector — second strip drawn in the sidebar <g>),
+// and the sliding panel is node-local, opening to the node's LEFT with a
+// slim toggle tab and its height synced to the node.
 const layerOwnedRegion: Record<LayerKind, { x: number; y: number; w: number; h: number }> = {
   canvas: { x: 8, y: 8, w: 152, h: 88 },
-  sidebar: { x: 8, y: 8, w: 38, h: 88 },
-  panel: { x: 118, y: 8, w: 42, h: 88 },
+  sidebar: { x: 8, y: 8, w: 26, h: 88 },
+  panel: { x: 58, y: 34, w: 40, h: 36 },
   editor: { x: 5, y: 5, w: 158, h: 94 },
 };
 
@@ -192,27 +249,45 @@ function LayerMap({ kind, color }: { kind: LayerKind; color: string }) {
       ) : null}
       {kind === "sidebar" ? (
         <>
+          {/* the room's second rail: the right inspector (the inspector panel) */}
+          <rect
+            className="vicino-layer-owned"
+            x="134"
+            y="8"
+            width="26"
+            height="88"
+            rx="4"
+            fill={color}
+            fillOpacity="0.12"
+            stroke={color}
+            strokeOpacity="0.55"
+          />
           <g fill="none" stroke="rgba(255,255,255,0.2)">
-            <rect x="62" y="30" width="28" height="18" rx="2" />
-            <rect x="110" y="48" width="30" height="20" rx="2" />
+            <rect x="52" y="30" width="28" height="18" rx="2" />
+            <rect x="92" y="52" width="28" height="18" rx="2" />
           </g>
           <g stroke={color} strokeOpacity="0.55">
-            <line x1="15" y1="20" x2="36" y2="20" />
-            <line x1="15" y1="30" x2="36" y2="30" />
-            <line x1="15" y1="40" x2="30" y2="40" />
+            <line x1="14" y1="20" x2="28" y2="20" />
+            <line x1="14" y1="30" x2="28" y2="30" />
+            <line x1="14" y1="40" x2="24" y2="40" />
+            <line x1="140" y1="20" x2="154" y2="20" />
+            <line x1="140" y1="30" x2="154" y2="30" />
+            <line x1="140" y1="44" x2="154" y2="44" />
           </g>
         </>
       ) : null}
       {kind === "panel" ? (
         <>
-          <g fill="none" stroke="rgba(255,255,255,0.2)">
-            <rect x="20" y="26" width="28" height="18" rx="2" />
-            <rect x="64" y="46" width="30" height="20" rx="2" />
+          {/* panel slides out LEFT of its node, height synced to the node;
+              the slim colored rect is the product's toggle tab */}
+          <g fill="none" stroke="rgba(255,255,255,0.34)">
+            <rect x="106" y="34" width="34" height="36" rx="2" />
           </g>
+          <rect x="101" y="46" width="3" height="12" rx="1" fill={color} fillOpacity="0.9" />
           <g stroke={color} strokeOpacity="0.55">
-            <line x1="126" y1="22" x2="153" y2="22" />
-            <line x1="126" y1="34" x2="153" y2="34" />
-            <line x1="126" y1="46" x2="146" y2="46" />
+            <line x1="66" y1="44" x2="90" y2="44" />
+            <line x1="66" y1="52" x2="90" y2="52" />
+            <line x1="66" y1="60" x2="84" y2="60" />
           </g>
         </>
       ) : null}
@@ -259,10 +334,11 @@ const vicinoCriticalCss = `
   --v-pad-top: clamp(64px, 8vw, 128px);
   --v-pad-bottom: clamp(80px, 9vw, 152px);
   --v-head-gap: clamp(40px, 5vw, 64px);
-  --handle-text: #9B9CF1;
-  --handle-image: #8BD6D9;
-  --handle-storyboard: #8BD6D9;
-  --handle-video: #FFB366;
+  /* exact shipped connection colors — src/core/connections/the connection types */
+  --handle-text: #F1A0FA;
+  --handle-image: #6EDDB3;
+  --handle-storyboard: #6EDDB3;
+  --handle-video: #FFB347;
   --node-header-bg: #0b0b0d;
   --node-header-border: #333;
   --node-header-label-color: #F5F5F7;
@@ -285,8 +361,8 @@ const vicinoCriticalCss = `
   --node-panel-radius: 12px;
   --node-shell-edge: linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
   --text-node-card-bg: #0b0b0d;
-  --text-node-card-border: rgba(155, 156, 241, 0.30);
-  --text-node-card-selected-border: #9B9CF1;
+  --text-node-card-border: rgba(241, 160, 250, 0.30);
+  --text-node-card-selected-border: #F1A0FA;
   --text-node-prompt-input-bg: #0b0b0d;
   --text-node-textarea-text: #F5F5F7;
   --text-node-preview-text: #d9d9d9;
@@ -585,6 +661,12 @@ const vicinoCriticalCss = `
 .vicino-story-edge {
   stroke-dasharray: 7 9;
   animation: vicino-story-edge-flow 8.4s linear infinite;
+}
+/* STORYBOARD connections ship heavier than the default edge
+   (strokeWidth 3 vs 2 in the connection types) — same ratio at
+   recreation stroke scale. */
+.vicino-live-edges path.is-storyboard {
+  stroke-width: 2.4;
 }
 .vicino-story-edge.is-text {
   animation-delay: 0s;
@@ -957,7 +1039,7 @@ const vicinoCriticalCss = `
   display: block;
   height: 7px;
   border-radius: 4px;
-  background: rgba(155,156,241,0.28);
+  background: rgba(241,160,250,0.28);
 }
 .vicino-script-lines i:nth-child(1) {
   width: 92%;
@@ -1310,6 +1392,63 @@ const vicinoCriticalCss = `
   gap: 20px;
 }
 
+/* ---- station 02 — repo evidence: team commit ledger + product-arc figures ---- */
+.vicino-brief-evidence {
+  grid-column: 1 / -1;
+  margin-top: var(--v-head-gap);
+  padding-top: clamp(28px, 3vw, 40px);
+  border-top: 1px solid var(--v-line-soft);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--v-gutter);
+  row-gap: clamp(28px, 3vw, 40px);
+}
+.vicino-brief-ledger {
+  grid-column: 1 / span 4;
+  min-width: 0;
+}
+.vicino-ledger-label {
+  margin: 0 0 20px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.vicino-brief-ledger dl {
+  margin: 0;
+  display: grid;
+  gap: 16px;
+}
+.vicino-brief-ledger dl div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: baseline;
+}
+.vicino-brief-ledger dt {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  color: var(--accent-gold);
+}
+.vicino-brief-ledger dd {
+  margin: 0;
+  max-width: 44ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  line-height: 1.5;
+  color: var(--v-meta-ink);
+}
+.vicino-brief-figure {
+  grid-column: span 4;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
 /* ---- station 03 — checkpoints ---- */
 .vicino-flow h2 {
   grid-column: 1 / span 8;
@@ -1356,6 +1495,14 @@ const vicinoCriticalCss = `
   font-weight: 500;
   line-height: 1.4;
   color: var(--paper);
+}
+.vicino-flow-conn {
+  margin: 12px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--stone);
 }
 
 /* ---- station 04 — interface layers ---- */
@@ -1528,7 +1675,8 @@ const vicinoCriticalCss = `
   grid-column: 2 / -1;
   margin-top: clamp(24px, 3vw, 44px);
 }
-.vicino-decision-figure figcaption {
+.vicino-decision-figure figcaption,
+.vicino-brief-figure figcaption {
   font-family: var(--font-sans);
   font-size: var(--text-micro);
   line-height: 1.5;
@@ -1646,6 +1794,12 @@ h2.vicino-closing-title {
     grid-column: 1 / -1;
     margin-top: 34px;
   }
+  .vicino-brief-ledger {
+    grid-column: 1 / -1;
+  }
+  .vicino-brief-figure {
+    grid-column: span 6;
+  }
   .vicino-layers-intro {
     grid-column: 1 / -1;
     position: static;
@@ -1700,6 +1854,11 @@ h2.vicino-closing-title {
     padding-top: 112px;
     row-gap: 36px;
   }
+  /* the long recreation-metadata caption wraps over the tiny node stage on
+     phones — keep only the "Drag nodes" affordance hint there */
+  .vicino-live-caption span:first-child {
+    display: none;
+  }
   .vicino-hero-meta {
     grid-template-columns: 1fr;
     gap: 0;
@@ -1727,6 +1886,9 @@ h2.vicino-closing-title {
   .vicino-layer-map {
     display: none;
   }
+  .vicino-brief-figure {
+    grid-column: 1 / -1;
+  }
   .vicino-reel-grid {
     grid-template-columns: 1fr;
   }
@@ -1746,8 +1908,12 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
     ["Team", project.teams],
   ];
   // Redundancy check: summary[0] restates the station-01 thesis, so the brief
-  // renders only the responsibility framing (render-filter, data untouched).
-  const briefCopy = (project.summary ?? [project.blurb]).slice(-1);
+  // renders only the responsibility framing. That paragraph (summary[1]) is
+  // superseded here with the shipped surface names — creation in the left
+  // rail, model/run configuration in the right inspector (see factRefresh).
+  const briefCopy = [
+    "I helped frame the product around responsibility, not feature count. Nodes should represent meaningful stages and outputs. The side rails should hold creation and global configuration — the left rail for creating nodes and pulling in assets, the right inspector for model choice, parameters, and run controls. Sliding panels should carry node-specific input, references, and version context. Editors should handle deep revision work. That separation gave the team a clearer language for deciding where new functionality belonged.",
+  ];
 
   return (
     <article className="vicino-case-page">
@@ -1813,6 +1979,51 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             </p>
           ))}
         </div>
+        <div className="vicino-brief-evidence">
+          <div className="vicino-brief-ledger" data-fade>
+            <p className="vicino-ledger-label">The canvas, in the team&rsquo;s commits</p>
+            <dl>
+              {canvasLedger.map(([date, event]) => (
+                <div key={date}>
+                  <dt>{date}</dt>
+                  <dd>{event}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <figure className="vicino-brief-figure" data-fade>
+            <div className="vicino-decision-media">
+              <Image
+                src="/media/vicino/origin-3d-landing.webp"
+                alt="Vicino.AI's original landing page — 'Ultimate Solution for 3D' beside a white robot render"
+                width={1600}
+                height={925}
+                sizes="(max-width: 809.98px) 100vw, (max-width: 1079.98px) 50vw, 420px"
+                style={{ height: "auto" }}
+              />
+            </div>
+            <figcaption>
+              Where the product started — the &ldquo;Ultimate Solution for 3D&rdquo;
+              positioning, kept in the builder&rsquo;s user docs.
+            </figcaption>
+          </figure>
+          <figure className="vicino-brief-figure" data-fade>
+            <div className="vicino-decision-media">
+              <Image
+                src="/media/vicino/landing-v3-hero.webp"
+                alt="Vicino landing v3 hero — 'Your competitors use the same AI as everyone else'"
+                width={1440}
+                height={832}
+                sizes="(max-width: 809.98px) 100vw, (max-width: 1079.98px) 50vw, 420px"
+                style={{ height: "auto" }}
+              />
+            </div>
+            <figcaption>
+              Landing v3, May 2026 — the marketing-agents repositioning, checked
+              into the repo as a single-file HTML design draft.
+            </figcaption>
+          </figure>
+        </div>
       </section>
 
       <section className="vicino-station vicino-flow">
@@ -1833,6 +2044,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               <div className="vicino-flow-detail">
                 <p className="vicino-flow-claim">{step.title}</p>
                 <p className="vicino-body-copy">{step.copy}</p>
+                <p className="vicino-flow-conn">{step.conn}</p>
               </div>
             </div>
           ))}
@@ -1920,7 +2132,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
                   <p className="vicino-decision-tags">{section.tags}</p>
                   {section.body.slice(0, 2).map((p) => (
                     <p className="vicino-body-copy vicino-decision-body" key={p}>
-                      {p}
+                      {refreshFacts(p)}
                     </p>
                   ))}
                 </div>
@@ -1962,7 +2174,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
                 station-05 reel figcaption instead of a closing paragraph */}
             {project.moment.body.slice(0, 3).map((p) => (
               <p className="vicino-body-copy" key={p}>
-                {p}
+                {refreshFacts(p)}
               </p>
             ))}
           </div>

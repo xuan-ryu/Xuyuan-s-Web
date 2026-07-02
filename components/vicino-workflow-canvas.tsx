@@ -31,11 +31,14 @@ export const VICINO_STAGE_W = 1360;
 export const VICINO_STAGE_H = 620;
 const STAGE_BLEED = 24; // soft clamp: dragged nodes may bleed this far past the stage
 
+// Exact connection colors from the product's typed-edge model
+// (src/core/connections/the connection types): TEXT #F1A0FA, STORYBOARD and
+// IMAGE #6EDDB3, VIDEO #FFB347.
 const handleColor: Record<HandleType, string> = {
-  text: "#9B9CF1",
-  storyboard: "#8BD6D9",
-  image: "#8BD6D9",
-  video: "#FFB366",
+  text: "#F1A0FA",
+  storyboard: "#6EDDB3",
+  image: "#6EDDB3",
+  video: "#FFB347",
 };
 
 const productClassName: Record<NodeKind, string> = {
@@ -59,62 +62,71 @@ const productHeaderClassName: Record<NodeKind, string> = {
   video: "node-header video-node-v3-header",
 };
 
+// The product's narrative pipeline with the real dataflow types:
+// Script Generator -TEXT-> Story Board Generator -STORYBOARD-> Shot Node
+// -IMAGE-> Video Generator.
 const edges: Array<[string, string, HandleType]> = [
   ["script", "storyboard", "text"],
   ["storyboard", "shoot", "storyboard"],
   ["shoot", "video", "image"],
 ];
 
+// Labels are the product's real create-menu names (the create menu: "Script
+// Generator", "Story Board Generator", "Shot Node", "Video Generator" —
+// registry types script / storyImage / shoot / video). Handle slots follow
+// the product's handle positions: first slot centered 56px from node top.
+const HANDLE_SLOT_Y = 56;
+
 const nodes: CanvasNode[] = [
   {
     id: "script",
     kind: "script",
-    label: "Script",
+    label: "Script Generator",
     x: 28,
     y: 216,
     w: 214,
     h: 230,
     output: "text",
-    outputY: 82,
+    outputY: HANDLE_SLOT_Y,
   },
   {
     id: "storyboard",
     kind: "storyboard",
-    label: "Storyboard",
+    label: "Story Board Generator",
     x: 306,
     y: 44,
     w: 326,
     h: 302,
     input: "text",
     output: "storyboard",
-    inputY: 86,
-    outputY: 118,
+    inputY: HANDLE_SLOT_Y,
+    outputY: HANDLE_SLOT_Y,
   },
   {
     id: "shoot",
     kind: "shoot",
-    label: "Shooting Studio",
+    label: "Shot Node",
     x: 700,
     y: 56,
     w: 252,
     h: 330,
     input: "storyboard",
     output: "image",
-    inputY: 146,
-    outputY: 168,
+    inputY: HANDLE_SLOT_Y,
+    outputY: HANDLE_SLOT_Y,
   },
   {
     id: "video",
     kind: "video",
-    label: "Video",
+    label: "Video Generator",
     x: 992,
     y: 330,
     w: 344,
     h: 260,
     input: "image",
     output: "video",
-    inputY: 130,
-    outputY: 130,
+    inputY: HANDLE_SLOT_Y,
+    outputY: HANDLE_SLOT_Y,
   },
 ];
 
@@ -454,7 +466,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
       </div>
 
       <div className="vicino-live-caption">
-        <span>Interactive canvas</span>
+        <span>Board recreation — 4 of 23 node types</span>
         <span>Drag nodes</span>
       </div>
     </div>
