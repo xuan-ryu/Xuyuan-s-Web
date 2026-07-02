@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { site } from "@/data/site";
 import { Cta } from "@/components/ui/cta";
+
+const SEAL_SRC =
+  "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
 const SERVICES = [
   "Branding",
@@ -60,9 +64,9 @@ export function ContactForm() {
       : {};
 
   return (
-    <form className="contact-form" onSubmit={handleSubmit} noValidate>
-      <div className="form-row">
-        <div className="form-group">
+    <form className="ctc-form" onSubmit={handleSubmit} noValidate>
+      <div className="ctc-form-row">
+        <div className="ctc-field">
           <label htmlFor="name">Name</label>
           <input
             id="name"
@@ -72,12 +76,12 @@ export function ContactForm() {
             {...fieldProps("name")}
           />
           {errors.name && (
-            <p className="form-error" id="name-error" role="alert">
+            <p className="ctc-error" id="name-error" role="alert">
               {errors.name}
             </p>
           )}
         </div>
-        <div className="form-group">
+        <div className="ctc-field">
           <label htmlFor="email">Email</label>
           <input
             id="email"
@@ -87,13 +91,13 @@ export function ContactForm() {
             {...fieldProps("email")}
           />
           {errors.email && (
-            <p className="form-error" id="email-error" role="alert">
+            <p className="ctc-error" id="email-error" role="alert">
               {errors.email}
             </p>
           )}
         </div>
       </div>
-      <div className="form-group">
+      <div className="ctc-field">
         <label htmlFor="service">Service</label>
         <select id="service" name="service" defaultValue="">
           <option value="" disabled>
@@ -106,7 +110,7 @@ export function ContactForm() {
           ))}
         </select>
       </div>
-      <div className="form-group">
+      <div className="ctc-field">
         <label htmlFor="message">Message</label>
         <textarea
           id="message"
@@ -115,26 +119,41 @@ export function ContactForm() {
           {...fieldProps("message")}
         />
         {errors.message && (
-          <p className="form-error" id="message-error" role="alert">
+          <p className="ctc-error" id="message-error" role="alert">
             {errors.message}
           </p>
         )}
       </div>
-      <Cta
-        type="submit"
-        variant="solid"
-        large
-        full
-        className="contact-submit"
-        disabled={submitting}
-      >
-        {submitting
-          ? "Opening email…"
-          : status === "success"
-            ? "Email opened"
-            : "Submit"}
-      </Cta>
-      <p className="form-status" role="status" aria-live="polite">
+      <div className="ctc-submit-row">
+        <Cta
+          type="submit"
+          variant="solid"
+          large
+          full
+          className="ctc-submit"
+          disabled={submitting}
+        >
+          {submitting
+            ? "Opening email…"
+            : status === "success"
+              ? "Email opened"
+              : "Submit"}
+        </Cta>
+        {/* seal-on-send — the letter is sealed when the mailto hands off;
+            decorative (aria-hidden), the aria-live line below announces. */}
+        <span className="ctc-seal-slot" aria-hidden="true">
+          {status === "success" && (
+            <Image
+              src={SEAL_SRC}
+              alt=""
+              width={40}
+              height={84}
+              className="ctc-seal-stamp"
+            />
+          )}
+        </span>
+      </div>
+      <p className="ctc-status" role="status" aria-live="polite">
         {status === "success"
           ? `Your email app should have opened with the message ready. If it didn't, write to ${site.email} directly.`
           : status === "error"

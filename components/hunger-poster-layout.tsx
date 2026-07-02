@@ -1,9 +1,852 @@
-import { PosterLayout } from "@/components/poster-layout";
-import type { Project } from "@/data/projects";
+import Image from "next/image";
+import Link from "next/link";
+import { adjacent, type Project } from "@/data/projects";
+import { Cta } from "@/components/ui/cta";
+import { HungerLoupeFrame } from "@/components/hunger-loupe-frame";
+import { OffscreenVideo } from "@/components/ui/offscreen-video";
 
-// Stub: Hunger 1942's bespoke "the 1942 edition" broadsheet layout lands here
-// (art-direction spec: scratchpad specs/spec-hunger1942.json). Until then it
-// renders the shared poster template unchanged.
+// "The 1942 Edition" (spec-hunger1942): the project printed its own broadsheet,
+// so the case page becomes the desk it lies on — an archival reading room.
+// Folio rules + dateline metadata run the sections; the broadsheet and the four
+// art boards are handled as documents (hairline frames, reading loupe, numbered
+// plates on a newsprint band). Seal red is rationed to the pull-quote rule and
+// the quiet-CTA contract; gold marks static plate numbers. Plate titles and
+// captions are hardcoded here (data/projects.ts additions are deferred to the
+// serialized data pass).
+
+const SHEET_ALT =
+  "Back to History — an aged 1942-style broadsheet dated 2023-04-20, the game-design document appendix. Its columns carry the oral histories the levels are built from: the Henan disaster, the storylines of Wan Shouren, Xuchang, and Zhengzhou.";
+
+// Captions stay factual to each board's own printed text (transliterations:
+// Wan Shouren, Jiayan Wan). Order matches poster.gallery in data/projects.ts.
+const PLATES = [
+  {
+    title: "Wan Shouren — the protagonist",
+    caption:
+      "Moral value drives the mechanics: violating human ethics attacks the character's heart, while keeping morality high threatens his survival. Expression studies, turnarounds, and the pixel build sit beside the archival reference photographs.",
+    width: 1246,
+    height: 1759,
+    alt: "Character concept sheet for Wan Shouren: full-figure concept art, four expression studies, turnaround views, pixel-art sprites, and archival famine reference photographs.",
+  },
+  {
+    title: "Jiayan Wan — the younger sister",
+    caption:
+      "Sold to Zhengzhou in 1938, she is the goal of the first act and its hardest choice: trade her away for survival supplies, or live together and consume twice as much.",
+    width: 1243,
+    height: 1764,
+    alt: "Character concept sheet for Jiayan Wan with biography and gameplay notes, refugee reference photographs, pixel sprites, and famine-victim character studies.",
+  },
+  {
+    title: "Scenes & storyboards",
+    caption:
+      "The interface takes its layout from The Oregon Trail; the storyboards restage the documented disasters — the blown dam, the flood, the bombing, the flight from famine, the train south.",
+    width: 1242,
+    height: 1770,
+    alt: "Storyboard and concept board: Oregon Trail interface references and staged scenes including the plane bombing, the dyke-break flood, fleeing famine, victims climbing onto a train, and a camping point.",
+  },
+  {
+    title: "In-game scenes",
+    caption:
+      "Level one in pixels — plundering the landlord's burning granary, the protagonist's home, dialogue choices, and the inventory that meters every day of survival.",
+    width: 1246,
+    height: 1746,
+    alt: "In-game pixel-art scenes: the landlord's burning granary, prototype level landscapes, the protagonist's home, a dialogue scene with choices, and the inventory system.",
+  },
+];
+
 export function HungerPosterLayout({ project }: { project: Project }) {
-  return <PosterLayout project={project} />;
+  const poster = project.poster;
+  if (!poster) return null;
+
+  const { prev, next } = adjacent(project.slug);
+  const youtubeHref = poster.details.livePreview?.href;
+  const plates = PLATES.slice(0, poster.gallery.length).map((plate, i) => ({
+    ...plate,
+    src: poster.gallery[i],
+  }));
+
+  return (
+    <article className="poster-page hunger-page">
+      <style dangerouslySetInnerHTML={{ __html: hungerCss }} />
+
+      {/* ── 1 · Dateline masthead ─────────────────────────────── */}
+      <header className="hunger-hero" id="header">
+        <p className="hunger-folio" data-fade>
+          <span>Henan, China — 1942</span>
+          <span className="hunger-folio-mid">2D Survival RPG</span>
+          <span>09/2022–04/2024</span>
+        </p>
+        <h1 data-fade>{project.title}</h1>
+        <p className="hunger-lede" data-fade>
+          {poster.lede}
+        </p>
+        <dl className="hunger-meta" data-fade>
+          {/* Duration is omitted: the folio dateline above already carries
+              09/2022–04/2024 — one fact, one place (redundancy rule). */}
+          <div>
+            <dt>Role</dt>
+            <dd>{project.role}</dd>
+          </div>
+          <div>
+            <dt>Type</dt>
+            <dd>{project.type}</dd>
+          </div>
+          <div>
+            <dt>Team</dt>
+            <dd>{project.teams}</dd>
+          </div>
+        </dl>
+      </header>
+
+      {/* ── 2 · The broadsheet ────────────────────────────────── */}
+      <section className="hunger-sheet" aria-label="The printed broadsheet">
+        <div className="hunger-sheet-media" data-fade>
+          <HungerLoupeFrame
+            src={poster.image}
+            alt={SHEET_ALT}
+            width={1243}
+            height={1762}
+            sizes="(max-width: 809px) 100vw, 1296px"
+            priority
+          />
+        </div>
+        <p className="hunger-sheet-caption">
+          Back to History — the game-design document appendix printed as a
+          1942-style broadsheet; its columns carry the oral histories the
+          levels are built from.
+        </p>
+        <Cta
+          variant="quiet"
+          href={poster.image}
+          target="_blank"
+          rel="noreferrer"
+          className="hunger-sheet-cta"
+        >
+          Read the full sheet
+        </Cta>
+      </section>
+
+      {/* ── 3 · Dispatch — the claim ──────────────────────────── */}
+      <section className="hunger-section hunger-dispatch" aria-labelledby="hunger-dispatch-title">
+        <span className="hunger-rule" aria-hidden="true" />
+        <p className="hunger-kicker" data-fade>
+          01 · Dispatch
+        </p>
+        <h2 id="hunger-dispatch-title" className="hunger-claim" data-fade>
+          A survival RPG built from the oral histories of the 1942 Henan
+          famine.
+        </h2>
+        <div className="hunger-copy hunger-dispatch-copy">
+          {poster.intro.map((p, i) => (
+            <p key={i} data-fade>
+              {p}
+            </p>
+          ))}
+        </div>
+        <Image
+          className="hunger-stamp"
+          src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+          alt=""
+          width={304}
+          height={641}
+          data-fade
+        />
+      </section>
+
+      {/* ── 4 · The game in motion ────────────────────────────── */}
+      <section className="hunger-section hunger-motion" aria-labelledby="hunger-motion-title">
+        <span className="hunger-rule" aria-hidden="true" />
+        <p className="hunger-kicker" data-fade>
+          02 · In Motion
+        </p>
+        <h3 id="hunger-motion-title" className="hunger-motion-title" data-fade>
+          The first act, playable
+        </h3>
+        {project.previewVideo && (
+          <div className="hunger-reel" data-fade>
+            <OffscreenVideo
+              src={project.previewVideo}
+              threshold={0.5}
+              aria-label="Silent gameplay capture of the first act of Hunger 1942"
+            />
+          </div>
+        )}
+        <p className="hunger-reel-caption">
+          Level 1 — entering the landlord&rsquo;s house to plunder food;
+          prototype capture.
+        </p>
+        {youtubeHref && (
+          <Cta
+            variant="quiet"
+            href={youtubeHref}
+            target="_blank"
+            rel="noreferrer"
+            className="hunger-reel-cta"
+          >
+            Watch the full preview
+          </Cta>
+        )}
+      </section>
+
+      {/* ── 5 · Editorial — why this history became a game ───── */}
+      <section className="hunger-section hunger-editorial" aria-labelledby="hunger-editorial-title">
+        <span className="hunger-rule" aria-hidden="true" />
+        <p className="hunger-kicker" data-fade>
+          03 · Editorial
+        </p>
+        <h2 id="hunger-editorial-title" className="hunger-claim" data-fade>
+          Ordinary suffering deserves more than one sentence of history.
+        </h2>
+        <div className="hunger-copy hunger-essay-lead">
+          <p data-fade>{poster.body[0]}</p>
+        </div>
+        <aside className="hunger-pull" data-fade>
+          <p className="hunger-pull-quote">
+            &ldquo;the people lived in misery&rdquo;
+          </p>
+          <p className="hunger-pull-source">How textbooks summarize 1942</p>
+        </aside>
+        <div className="hunger-copy hunger-essay-rest">
+          {poster.body.slice(1).map((p, i) => (
+            <p key={i} data-fade>
+              {p}
+            </p>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 6 · The archive — numbered plates ────────────────── */}
+      <section className="hunger-archive" aria-labelledby="hunger-archive-title">
+        <div className="hunger-archive-inner">
+          <p className="hunger-kicker" data-fade>
+            04 · The Archive
+          </p>
+          <h2 id="hunger-archive-title" className="hunger-claim hunger-archive-claim" data-fade>
+            From character sheets to playable scenes.
+          </h2>
+          <ol className="hunger-plates">
+            {plates.map((plate, i) => (
+              <li className="hunger-plate" key={plate.src}>
+                <div className="hunger-plate-caption">
+                  <p className="hunger-plate-no">
+                    Plate {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="hunger-plate-title">{plate.title}</h3>
+                  <p className="hunger-plate-note">{plate.caption}</p>
+                  <Cta
+                    variant="quiet"
+                    href={plate.src}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View full plate
+                  </Cta>
+                </div>
+                <div className="hunger-plate-media" data-fade>
+                  <HungerLoupeFrame
+                    src={plate.src}
+                    alt={plate.alt}
+                    width={plate.width}
+                    height={plate.height}
+                    sizes="(max-width: 809px) 100vw, (max-width: 1079px) 75vw, 980px"
+                  />
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ── 7 · Adjacent projects (shared poster-nav contract) ── */}
+      <nav className="poster-nav" aria-label="Adjacent projects">
+        {prev ? (
+          <Link href={`/work/${prev.slug}`} className="poster-nav-item prev">
+            {prev.cover && (
+              <span className="poster-nav-thumb">
+                <Image src={prev.cover} alt="" width={120} height={88} />
+              </span>
+            )}
+            <span>
+              <span className="poster-nav-label">Previous</span>
+              <span className="poster-nav-title">{prev.title}</span>
+            </span>
+          </Link>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link href={`/work/${next.slug}`} className="poster-nav-item next">
+            <span>
+              <span className="poster-nav-label">Next</span>
+              <span className="poster-nav-title">{next.title}</span>
+            </span>
+            {next.cover && (
+              <span className="poster-nav-thumb">
+                <Image src={next.cover} alt="" width={120} height={88} />
+              </span>
+            )}
+          </Link>
+        ) : (
+          <span />
+        )}
+      </nav>
+    </article>
+  );
 }
+
+const hungerCss = `
+/* ============================================================
+   Hunger 1942 — "The 1942 Edition" archival broadsheet layout.
+   Scoped to .hunger-page; grid/type/color come from the shared
+   case-shell tokens (--work-shell-max, --work-gutter, --work-grid-gap,
+   --work-rule) already declared on .poster-page.
+   ============================================================ */
+.hunger-page {
+  background: var(--paper);
+  color: var(--ink-950);
+}
+
+/* — shared 12-column case shell — */
+.hunger-hero,
+.hunger-sheet,
+.hunger-section,
+.hunger-archive-inner,
+.hunger-plate {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--work-shell-max);
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--work-grid-gap);
+}
+
+/* folio rule — the newspaper's running head, reused by every section */
+.hunger-rule {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--work-rule);
+}
+
+.hunger-kicker {
+  grid-column: 1 / 3;
+  margin: 14px 0 clamp(32px, 4vw, 56px);
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.48);
+}
+
+.hunger-claim {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: 0;
+  color: var(--ink-950);
+  text-wrap: balance;
+}
+
+.hunger-copy p {
+  margin: 0;
+  max-width: 68ch;
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: 1.62;
+  color: rgba(5, 5, 5, 0.76);
+}
+.hunger-copy p + p {
+  margin-top: 22px;
+}
+
+/* quiet CTAs carry a resting hairline so the full-asset path stays obvious
+   on touch/keyboard; the seal-red rule still wipes over it on hover/focus */
+.hunger-page .cta--quiet {
+  box-shadow: inset 0 -1px 0 var(--work-rule);
+}
+
+/* ── 1 · Dateline masthead ─────────────────────────────────── */
+.hunger-hero {
+  padding: clamp(160px, 18vw, 235px) var(--work-gutter) clamp(40px, 4vw, 56px);
+}
+.hunger-folio {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--work-grid-gap);
+  margin: 0 0 clamp(36px, 4vw, 60px);
+  padding-top: 14px;
+  border-top: 1px solid var(--work-rule);
+}
+.hunger-folio span {
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.48);
+}
+.hunger-hero h1 {
+  grid-column: 1 / 9;
+  grid-row: 2;
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: var(--text-display-2);
+  font-weight: 300;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: var(--ink-950);
+}
+.hunger-lede {
+  grid-column: 1 / 7;
+  grid-row: 3;
+  max-width: 62ch;
+  margin: clamp(28px, 3vw, 44px) 0 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lead);
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(5, 5, 5, 0.68);
+}
+.hunger-meta {
+  grid-column: 9 / -1;
+  grid-row: 2 / span 2;
+  align-self: start;
+  margin: 0;
+  display: grid;
+  border-top: 1px solid var(--work-rule);
+}
+.hunger-meta div {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--work-rule);
+}
+.hunger-meta dt {
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.48);
+}
+.hunger-meta dd {
+  margin: 5px 0 0;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(5, 5, 5, 0.78);
+}
+
+/* ── 2 · The broadsheet ────────────────────────────────────── */
+.hunger-sheet {
+  padding: 0 var(--work-gutter);
+  row-gap: clamp(16px, 1.8vw, 24px);
+}
+.hunger-sheet-media {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+.hunger-sheet-caption {
+  grid-column: 1 / 7;
+  grid-row: 2;
+  margin: 0;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(5, 5, 5, 0.6);
+}
+.hunger-sheet-cta {
+  grid-column: 10 / -1;
+  grid-row: 2;
+  justify-self: end;
+  align-self: start;
+  margin-top: 4px;
+}
+
+/* document frame + reading loupe */
+.hunger-loupe-frame {
+  position: relative;
+  container-type: inline-size;
+  border: 1px solid var(--work-rule);
+  background: var(--paper);
+}
+.hunger-loupe-frame img {
+  display: block;
+}
+.hunger-loupe {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px solid var(--work-rule);
+  box-shadow: 0 14px 34px rgba(5, 5, 5, 0.18);
+  background-color: var(--paper);
+  background-repeat: no-repeat;
+  background-size: 240cqw auto;
+  background-position: var(--lx, 50%) var(--ly, 50%);
+  transform: translate3d(calc(var(--px, -600px) - 50%), calc(var(--py, -600px) - 50%), 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s var(--ease-standard);
+  will-change: transform, opacity;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hunger-loupe {
+    display: block;
+  }
+  .hunger-loupe-frame {
+    cursor: zoom-in;
+  }
+}
+.hunger-loupe-on .hunger-loupe {
+  opacity: 1;
+}
+
+/* ── 3 · Dispatch ──────────────────────────────────────────── */
+.hunger-section {
+  padding: clamp(76px, 8vw, 124px) var(--work-gutter);
+}
+.hunger-dispatch {
+  margin-top: clamp(64px, 7vw, 108px);
+}
+.hunger-dispatch .hunger-claim {
+  grid-column: 1 / 6;
+  grid-row: 3;
+}
+.hunger-dispatch-copy {
+  grid-column: 6 / 11;
+  grid-row: 3;
+}
+.hunger-stamp {
+  grid-column: 11 / -1;
+  grid-row: 3;
+  align-self: start;
+  justify-self: start;
+  width: clamp(74px, 8vw, 118px);
+  height: auto;
+}
+
+/* ── 4 · In motion ─────────────────────────────────────────── */
+.hunger-motion {
+  padding: clamp(64px, 7vw, 104px) var(--work-gutter);
+}
+.hunger-motion-title {
+  grid-column: 1 / 5;
+  grid-row: 3;
+  margin: 0 0 clamp(28px, 3vw, 44px);
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.28;
+  color: var(--ink-950);
+}
+.hunger-reel {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  border: 1px solid var(--work-rule);
+  background: var(--ink-950);
+}
+.hunger-reel video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.hunger-reel-caption {
+  grid-column: 1 / 5;
+  grid-row: 5;
+  margin: 16px 0 0;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(5, 5, 5, 0.6);
+}
+.hunger-reel-cta {
+  grid-column: 10 / -1;
+  grid-row: 5;
+  justify-self: end;
+  align-self: start;
+  margin-top: 20px;
+}
+
+/* ── 5 · Editorial ─────────────────────────────────────────── */
+.hunger-editorial .hunger-claim {
+  grid-column: 1 / 6;
+  grid-row: 3;
+  margin-bottom: clamp(36px, 4vw, 60px);
+}
+.hunger-essay-lead {
+  grid-column: 5 / 11;
+  grid-row: 4;
+}
+.hunger-pull {
+  grid-column: 1 / 4;
+  grid-row: 5;
+  align-self: start;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 2px solid var(--seal-red);
+}
+.hunger-pull-quote {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--ink-950);
+}
+.hunger-pull-source {
+  margin: 14px 0 0;
+  font-size: var(--text-micro);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(5, 5, 5, 0.48);
+}
+.hunger-essay-rest {
+  grid-column: 5 / 11;
+  grid-row: 5;
+}
+.hunger-essay-rest p:first-child {
+  margin-top: 22px;
+}
+
+/* ── 6 · The archive — newsprint band + numbered plates ────── */
+.hunger-archive {
+  border-top: 1px solid var(--work-rule);
+  border-bottom: 1px solid var(--work-rule);
+  background-color: var(--paper-warm);
+  background-image: radial-gradient(rgba(5, 5, 5, 0.035) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+.hunger-archive-inner {
+  padding: clamp(76px, 8vw, 124px) var(--work-gutter);
+}
+.hunger-archive-inner .hunger-kicker {
+  margin-top: 0;
+}
+.hunger-archive-claim {
+  grid-column: 1 / 7;
+  grid-row: 2;
+}
+.hunger-plates {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin: clamp(48px, 5vw, 76px) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  row-gap: clamp(64px, 7vw, 104px);
+}
+.hunger-plate {
+  align-items: start;
+}
+.hunger-plate-caption {
+  grid-column: 1 / 4;
+  position: sticky;
+  top: 120px;
+  align-self: start;
+}
+.hunger-plate-no {
+  margin: 0 0 12px;
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.hunger-plate-title {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.28;
+  color: var(--ink-950);
+}
+.hunger-plate-note {
+  margin: 0 0 20px;
+  max-width: 36ch;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(5, 5, 5, 0.62);
+}
+.hunger-plate-media {
+  grid-column: 4 / -1;
+}
+
+/* ── tablet · 8 columns (810–1079) ─────────────────────────── */
+@media (max-width: 1079px) {
+  .hunger-hero,
+  .hunger-sheet,
+  .hunger-section,
+  .hunger-archive-inner,
+  .hunger-plate {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .hunger-hero h1 {
+    grid-column: 1 / -1;
+  }
+  .hunger-lede {
+    grid-column: 1 / 6;
+  }
+  .hunger-meta {
+    grid-column: 6 / -1;
+    grid-row: 3;
+    margin-top: clamp(28px, 3vw, 44px);
+  }
+  .hunger-sheet-caption {
+    grid-column: 1 / 6;
+  }
+  .hunger-sheet-cta {
+    grid-column: 6 / -1;
+  }
+  .hunger-kicker {
+    grid-column: 1 / 4;
+  }
+  .hunger-dispatch .hunger-claim {
+    grid-column: 1 / -1;
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+  .hunger-dispatch-copy {
+    grid-column: 3 / -1;
+    grid-row: 4;
+  }
+  .hunger-stamp {
+    display: none;
+  }
+  .hunger-motion-title {
+    grid-column: 1 / 6;
+  }
+  .hunger-reel-caption {
+    grid-column: 1 / 6;
+  }
+  .hunger-reel-cta {
+    grid-column: 6 / -1;
+  }
+  .hunger-editorial .hunger-claim {
+    grid-column: 1 / -1;
+  }
+  .hunger-essay-lead {
+    grid-column: 3 / -1;
+  }
+  .hunger-pull {
+    grid-column: 1 / 3;
+  }
+  .hunger-essay-rest {
+    grid-column: 3 / -1;
+  }
+  .hunger-archive-claim {
+    grid-column: 1 / -1;
+  }
+  .hunger-plate-caption {
+    grid-column: 1 / 3;
+  }
+  .hunger-plate-media {
+    grid-column: 3 / -1;
+  }
+}
+
+/* ── phone · one reading column (≤809) ─────────────────────── */
+@media (max-width: 809px) {
+  .hunger-hero,
+  .hunger-sheet,
+  .hunger-section,
+  .hunger-archive-inner,
+  .hunger-plate {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hunger-hero {
+    padding-top: 132px;
+  }
+  .hunger-folio,
+  .hunger-hero h1,
+  .hunger-lede,
+  .hunger-meta,
+  .hunger-sheet-media,
+  .hunger-sheet-caption,
+  .hunger-sheet-cta,
+  .hunger-rule,
+  .hunger-kicker,
+  .hunger-claim,
+  .hunger-dispatch .hunger-claim,
+  .hunger-dispatch-copy,
+  .hunger-motion-title,
+  .hunger-reel,
+  .hunger-reel-caption,
+  .hunger-reel-cta,
+  .hunger-editorial .hunger-claim,
+  .hunger-essay-lead,
+  .hunger-pull,
+  .hunger-essay-rest,
+  .hunger-archive-claim,
+  .hunger-plates,
+  .hunger-plate-caption,
+  .hunger-plate-media {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .hunger-folio-mid {
+    display: none;
+  }
+  .hunger-meta {
+    margin-top: 28px;
+  }
+  .hunger-section,
+  .hunger-archive-inner {
+    padding-top: 62px;
+    padding-bottom: 62px;
+  }
+  .hunger-dispatch {
+    margin-top: 56px;
+  }
+  .hunger-sheet-caption {
+    margin-top: 4px;
+  }
+  .hunger-sheet-cta,
+  .hunger-reel-cta {
+    justify-self: start;
+    margin-top: 14px;
+  }
+  .hunger-dispatch .hunger-claim,
+  .hunger-editorial .hunger-claim,
+  .hunger-archive-claim {
+    margin-bottom: 28px;
+  }
+  .hunger-dispatch-copy {
+    margin-top: 0;
+  }
+  .hunger-motion-title {
+    margin-bottom: 22px;
+  }
+  .hunger-pull {
+    margin: 30px 0 8px;
+    max-width: 30ch;
+  }
+  .hunger-plates {
+    margin-top: 40px;
+    row-gap: 56px;
+  }
+  .hunger-plate-caption {
+    position: static;
+    margin-bottom: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hunger-loupe {
+    transition: none;
+  }
+}
+`;

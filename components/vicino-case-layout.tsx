@@ -1,83 +1,264 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import type { Project } from "@/data/projects";
+import { OffscreenVideo } from "./ui/offscreen-video";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
+
+const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
+
+// Product handle palette — sanctioned product-UI color, used only inside the
+// canvas motif (node handles, flow chips, layer-map owned regions).
+const HANDLE = {
+  text: "#9B9CF1",
+  storyboard: "#8BD6D9",
+  image: "#8BD6D9",
+  video: "#FFB366",
+};
 
 const workflow = [
   {
     label: "Script",
+    handle: HANDLE.text,
     title: "Intent Becomes Editable",
     copy: "The workflow starts as a script object, so intent can be revised before it turns into visual production work.",
   },
   {
     label: "Storyboard",
+    handle: HANDLE.storyboard,
     title: "Pacing Becomes Visible",
     copy: "The script becomes a sketch storyboard first, giving the creator a low-cost place to inspect sequence and rhythm.",
   },
   {
     label: "ShootNode",
+    handle: HANDLE.image,
     title: "Shots Become Concrete",
     copy: "The rough board resolves into a production-ready shot board with reference frames and camera intent.",
   },
   {
     label: "Video",
+    handle: HANDLE.video,
     title: "Motion Becomes Output",
     copy: "The final node turns approved shots into video, keeping the source chain visible instead of burying it in a feed.",
   },
 ];
 
-const layers = [
+type LayerKind = "canvas" | "sidebar" | "panel" | "editor";
+
+const layers: Array<{
+  label: string;
+  kind: LayerKind;
+  color: string;
+  title: string;
+  owns: string;
+  avoids: string;
+}> = [
   {
     label: "Canvas",
+    kind: "canvas",
+    color: HANDLE.text,
     title: "Workflow Structure",
     owns: "Stages, outputs, selection, and visible state.",
     avoids: "Prompt forms and dense parameters.",
   },
   {
     label: "Sidebar",
+    kind: "sidebar",
+    color: HANDLE.storyboard,
     title: "Global Control",
     owns: "Project-level settings, model defaults, and broad context.",
     avoids: "Node-specific inputs.",
   },
   {
     label: "Sliding panel",
+    kind: "panel",
+    color: HANDLE.image,
     title: "Local Input",
     owns: "Prompts, references, frame input, versions, and current-node controls.",
     avoids: "Deep editing tools.",
   },
   {
     label: "Editor",
+    kind: "editor",
+    color: HANDLE.video,
     title: "Deep Revision",
     owns: "Timeline work, image editing, 3D refinement, and complex operations.",
     avoids: "Basic node display.",
   },
 ];
 
+// Figcaptions for the prototype reels. The a teammate credit is render-filtered
+// out of the closing moment (body[3] in data/projects.ts) and lives here as
+// evidence metadata instead.
+const reelCaptions = [
+  "Sliding-panel structure — React prototype",
+  "Sidebar-only previous version",
+  "Video 2 Node prototype — a teammate",
+];
+
+// The two densest annotated screenshots break to full width below their copy
+// so the node graphs are actually inspectable.
+const wideDecisionCaptions: Record<string, string> = {
+  "4jRCSVcAkbGd6SEr97GpwZUnOkk":
+    "Main-path exploration — image stays a preview checkpoint before video.",
+  iqfmdKGdZXFBgs29aUVK7AiR40:
+    "Layer responsibilities annotated across the live canvas.",
+};
+
+function wideDecisionCaption(image?: string) {
+  if (!image) return undefined;
+  const match = Object.keys(wideDecisionCaptions).find((id) => image.includes(id));
+  return match ? wideDecisionCaptions[match] : undefined;
+}
+
+// Chapter-2 headings arrive Title Cased; the decision claims read as
+// sentence-case editorial claims (family rule), so normalize at render time
+// instead of editing data/projects.ts.
+const KEEP_CAPS = new Set([
+  "I",
+  "AI",
+  "3D",
+  "PM",
+  "PMs",
+  "React",
+  "Vicino",
+  "Script",
+  "Storyboard",
+  "Image",
+  "Video",
+]);
+
+function sentenceCase(heading: string) {
+  return heading
+    .split(" ")
+    .map((word, index) => {
+      if (index === 0) return word;
+      const base = word.replace(/[^A-Za-z0-9'']/g, "");
+      if (KEEP_CAPS.has(base)) return word;
+      if (/^[A-Z][a-z]/.test(word)) return word.charAt(0).toLowerCase() + word.slice(1);
+      return word;
+    })
+    .join(" ");
+}
+
+// 168x104 wireframes of the product surface — the owned region of each
+// interaction layer tinted in its handle color, so the "four rooms" argument
+// is visible instead of purely verbal. Static evidence; hidden below 810px.
+const layerOwnedRegion: Record<LayerKind, { x: number; y: number; w: number; h: number }> = {
+  canvas: { x: 8, y: 8, w: 152, h: 88 },
+  sidebar: { x: 8, y: 8, w: 38, h: 88 },
+  panel: { x: 118, y: 8, w: 42, h: 88 },
+  editor: { x: 5, y: 5, w: 158, h: 94 },
+};
+
+function LayerMap({ kind, color }: { kind: LayerKind; color: string }) {
+  const owned = layerOwnedRegion[kind];
+  return (
+    <svg
+      className="vicino-layer-map"
+      viewBox="0 0 168 104"
+      width="168"
+      height="104"
+      aria-hidden="true"
+    >
+      <rect
+        x="1.5"
+        y="1.5"
+        width="165"
+        height="101"
+        rx="4"
+        fill="none"
+        stroke="rgba(255,255,255,0.28)"
+      />
+      <rect
+        className="vicino-layer-owned"
+        x={owned.x}
+        y={owned.y}
+        width={owned.w}
+        height={owned.h}
+        rx="4"
+        fill={color}
+        fillOpacity="0.12"
+        stroke={color}
+        strokeOpacity="0.55"
+      />
+      {kind === "canvas" ? (
+        <g fill="none" stroke="rgba(255,255,255,0.34)">
+          <rect x="24" y="34" width="26" height="18" rx="2" />
+          <rect x="70" y="22" width="30" height="20" rx="2" />
+          <rect x="118" y="42" width="28" height="18" rx="2" />
+          <path d="M50 43 C 60 43, 60 32, 70 32" />
+          <path d="M100 32 C 109 32, 109 51, 118 51" />
+        </g>
+      ) : null}
+      {kind === "sidebar" ? (
+        <>
+          <g fill="none" stroke="rgba(255,255,255,0.2)">
+            <rect x="62" y="30" width="28" height="18" rx="2" />
+            <rect x="110" y="48" width="30" height="20" rx="2" />
+          </g>
+          <g stroke={color} strokeOpacity="0.55">
+            <line x1="15" y1="20" x2="36" y2="20" />
+            <line x1="15" y1="30" x2="36" y2="30" />
+            <line x1="15" y1="40" x2="30" y2="40" />
+          </g>
+        </>
+      ) : null}
+      {kind === "panel" ? (
+        <>
+          <g fill="none" stroke="rgba(255,255,255,0.2)">
+            <rect x="20" y="26" width="28" height="18" rx="2" />
+            <rect x="64" y="46" width="30" height="20" rx="2" />
+          </g>
+          <g stroke={color} strokeOpacity="0.55">
+            <line x1="126" y1="22" x2="153" y2="22" />
+            <line x1="126" y1="34" x2="153" y2="34" />
+            <line x1="126" y1="46" x2="146" y2="46" />
+          </g>
+        </>
+      ) : null}
+      {kind === "editor" ? (
+        <g fill="none" stroke="rgba(255,255,255,0.3)">
+          <rect x="16" y="16" width="136" height="48" rx="2" />
+          <line x1="16" y1="76" x2="152" y2="76" />
+          <line x1="16" y1="85" x2="118" y2="85" />
+        </g>
+      ) : null}
+    </svg>
+  );
+}
+
 const vicinoCriticalCss = `
 .vicino-case-page {
+  /* ------------------------------------------------------------------
+     Type ladder: the old private --vicino-h1..detail ladder is retired
+     and mapped onto the global role tokens:
+       --vicino-h1     -> --text-display-2  (hero H1, condensed)
+       --vicino-h2     -> --text-display-3  (station H2 claims, condensed)
+       --vicino-h3     -> --text-title      (station names, layer titles)
+                          --text-heading    (decision sentence-claims, moment)
+       --vicino-h4     -> --text-body @ 500 (flow claim lines)
+       --vicino-body   -> --text-body
+       --vicino-small  -> --text-meta
+       --vicino-detail -> --text-label / --text-micro
+     Measured exception: the node anatomy inside the workflow canvas is a
+     recreation of Vicino's product UI and keeps its own 14/12/10px ladder
+     (product type does not map onto the portfolio role tokens).
+     ------------------------------------------------------------------ */
   --vicino-hero-max: 1440px;
   --vicino-section-max: 1440px;
   --vicino-reading-max: 68ch;
-  --vicino-h1: clamp(68px, 7.2vw, 112px);
-  --vicino-h2: clamp(42px, 4.6vw, 72px);
-  --vicino-h3: clamp(27px, 2.35vw, 36px);
-  --vicino-h4: clamp(20px, 1.5vw, 23px);
-  --vicino-body: clamp(17px, 1.2vw, 20px);
-  --vicino-small: 14px;
-  --vicino-detail: 12px;
   --vicino-node-body: 14px;
   --vicino-node-small: 12px;
   --vicino-node-detail: 10px;
-  --v-paper: var(--ink-950);
-  --v-paper-2: var(--ink-900);
-  --v-ink: var(--paper);
-  --v-ink-deep: #f8fbff;
-  --v-soft: rgba(255, 255, 255, 0.76);
-  --v-muted: rgba(255, 255, 255, 0.62);
   --v-line: rgba(255, 255, 255, 0.18);
-  --v-line-soft: rgba(255, 255, 255, 0.08);
-  --v-coral: var(--accent-amber);
-  --v-coral-deep: var(--accent-gold);
-  --v-cyan: var(--handle-image);
+  --v-line-soft: rgba(255, 255, 255, 0.14);
+  --v-body-ink: rgba(255, 255, 255, 0.85);
+  --v-meta-ink: rgba(255, 255, 255, 0.64);
+  --v-margin: clamp(20px, 5vw, 82px);
+  --v-gutter: clamp(18px, 2vw, 28px);
+  --v-pad-top: clamp(64px, 8vw, 128px);
+  --v-pad-bottom: clamp(80px, 9vw, 152px);
+  --v-head-gap: clamp(40px, 5vw, 64px);
   --handle-text: #9B9CF1;
   --handle-image: #8BD6D9;
   --handle-storyboard: #8BD6D9;
@@ -134,13 +315,8 @@ const vicinoCriticalCss = `
   --vicino-node-muted: var(--image-node-text-color);
   --vicino-node-glass: var(--glass-btn-shadow);
   background: var(--ink-950);
-  color: var(--v-ink);
+  color: var(--paper);
   overflow: hidden;
-}
-.vicino-case-page [data-fade] {
-  opacity: 1;
-  transform: none;
-  animation: none;
 }
 .vicino-case-page p {
   text-wrap: pretty;
@@ -149,216 +325,185 @@ const vicinoCriticalCss = `
 .vicino-case-page video {
   display: block;
 }
+
+/* ---- shell: hero + stations share one 12-col grid ---- */
 .vicino-hero,
-.vicino-opening-statement,
-.vicino-brief,
-.vicino-flow,
-.vicino-layers,
-.vicino-reels,
-.vicino-decisions,
-.vicino-closing {
+.vicino-station {
   box-sizing: border-box;
   width: min(100%, var(--vicino-section-max));
   margin-inline: auto;
-  padding-left: clamp(20px, 5vw, 82px);
-  padding-right: clamp(20px, 5vw, 82px);
+  padding-left: var(--v-margin);
+  padding-right: var(--v-margin);
 }
-.vicino-hero {
-  width: min(100%, var(--vicino-hero-max));
-  min-height: 0;
+.vicino-station {
   position: relative;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: clamp(18px, 2vw, 28px);
-  row-gap: clamp(52px, 6vw, 86px);
+  column-gap: var(--v-gutter);
+  align-content: start;
+  align-items: start;
+  padding-top: var(--v-pad-top);
+  padding-bottom: var(--v-pad-bottom);
+}
+
+/* Chain rail: the canvas's dashed dataflow edge carried down the column-1
+   left edge from station 01 to the closing seal. Static by design. */
+.vicino-station::before {
+  content: "";
+  position: absolute;
+  left: var(--v-margin);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent-gold) 30%, transparent) 0 7px,
+    transparent 7px 16px
+  );
+  pointer-events: none;
+}
+.vicino-closing::before {
+  bottom: auto;
+  height: calc(var(--v-pad-top) - 12px);
+}
+
+.vicino-station-rule {
+  display: block;
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--v-line);
+  margin-bottom: 24px;
+}
+.vicino-station-index {
+  position: relative;
+  grid-column: 1 / span 3;
+  align-self: start;
+  margin: 0 0 16px;
+  padding-left: 18px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.vicino-station-index::before {
+  /* node-handle-shaped tick marking the station on the rail */
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -2px;
+  width: 6px;
+  height: 26px;
+  border-radius: 2px 4px 4px 2px;
+  background: rgba(255, 255, 255, 0.4);
+}
+.vicino-station h2 {
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: var(--text-display-3);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--paper);
+}
+.vicino-row-index {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.vicino-body-copy {
+  margin: 0;
+  max-width: var(--vicino-reading-max);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--v-body-ink);
+}
+
+/* ---- hero — station 00, canvas first ---- */
+.vicino-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--v-gutter);
+  row-gap: clamp(44px, 5vw, 72px);
   align-items: start;
   padding-top: clamp(126px, 10vw, 172px);
-  padding-bottom: clamp(70px, 8vw, 118px);
+  padding-bottom: clamp(64px, 7vw, 104px);
   background: var(--ink-950);
 }
 .vicino-hero-copy {
-  position: relative;
-  z-index: 1;
-  align-self: start;
   grid-column: 1 / span 5;
-  padding-top: 0;
-}
-.vicino-hero h1,
-.vicino-brief h2,
-.vicino-flow h2,
-.vicino-layers h2,
-.vicino-reels h2,
-.vicino-decisions h2,
-.vicino-closing h2 {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--v-ink);
+  min-width: 0;
 }
 .vicino-hero h1 {
-  margin-top: 0;
-  max-width: 600px;
-  font-size: var(--vicino-h1);
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: var(--text-display-2);
+  font-weight: 300;
   line-height: 0.92;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: var(--paper);
 }
 .vicino-hero-deck {
   max-width: 440px;
   margin: clamp(18px, 2.2vw, 28px) 0 0;
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-body);
+  font-family: var(--font-sans);
+  font-size: var(--text-lead);
   font-weight: 300;
-  line-height: 1.45;
-  color: color-mix(in srgb, var(--accent-gold) 42%, rgba(255,255,255,0.72));
-}
-.vicino-thesis {
-  grid-column: 4 / span 7;
-  max-width: 820px;
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: var(--vicino-h2);
-  font-weight: 400;
-  line-height: 1.06;
-  text-wrap: wrap;
-  overflow-wrap: break-word;
-  color: rgba(255,255,255,0.9);
-}
-.vicino-opening-copy {
-  grid-column: 8 / span 4;
-  max-width: 470px;
-  margin: clamp(18px, 2vw, 28px) 0 0;
-  display: grid;
-  gap: 18px;
-}
-.vicino-opening-copy p {
-  margin: 0;
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-body);
-  line-height: 1.58;
-  text-wrap: wrap;
-  overflow-wrap: break-word;
-  color: var(--v-soft);
-}
-.vicino-meta {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 760px;
-  margin: clamp(34px, 4.5vw, 58px) 0 0;
-  border-top: 1px solid var(--v-line);
-  border-bottom: 1px solid var(--v-line);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.76);
 }
 .vicino-hero-meta {
   grid-column: 8 / -1;
   align-self: center;
-  width: 100%;
-  margin: 0;
-  max-width: none;
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(16px, 2.4vw, 34px);
-  border: 0;
-}
-.vicino-meta div {
-  min-width: 0;
-  padding: 14px 18px 16px 0;
-  border-right: 1px solid var(--v-line);
+  margin: 0;
 }
 .vicino-hero-meta div {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   align-content: start;
-  padding: 0;
-  border-right: 0;
-  border-bottom: 0;
-}
-.vicino-meta div:last-child {
-  border-right: 0;
-}
-.vicino-hero-meta div:last-child {
-  border-bottom: 0;
-}
-.vicino-meta dt {
-  margin-bottom: 8px;
-  font-family: var(--font-sans);
-  font-size: var(--vicino-detail);
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--v-muted);
+  min-width: 0;
 }
 .vicino-hero-meta dt {
   margin: 0;
-  font-size: var(--vicino-detail);
-  letter-spacing: 0;
-  color: color-mix(in srgb, var(--accent-gold) 74%, rgba(255,255,255,0.62));
-}
-.vicino-meta dd {
-  margin: 0;
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-small);
-  line-height: 1.35;
-  color: var(--v-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
 }
 .vicino-hero-meta dd {
-  font-size: var(--vicino-small);
-  color: rgba(255,255,255,0.86);
-}
-.vicino-system-board {
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-  align-self: start;
-  justify-self: stretch;
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: none;
-  margin-top: 0;
-}
-.vicino-opening-statement {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: clamp(18px, 2vw, 28px);
-  row-gap: clamp(24px, 4vw, 54px);
-  padding-top: clamp(78px, 8vw, 132px);
-  padding-bottom: clamp(86px, 10vw, 160px);
-  border-top: 1px solid color-mix(in srgb, var(--accent-gold) 34%, transparent);
-}
-.vicino-opening-index {
-  grid-column: 1 / span 2;
   margin: 0;
   font-family: var(--font-sans);
-  font-size: var(--vicino-small);
+  font-size: var(--text-meta);
   line-height: 1.45;
-  color: color-mix(in srgb, var(--accent-gold) 78%, rgba(255,255,255,0.64));
+  color: rgba(255, 255, 255, 0.86);
 }
-.vicino-product-frame {
-  position: relative;
-  min-height: clamp(420px, 58vw, 720px);
-  overflow: hidden;
-  border: 1px solid var(--v-line);
-  background: #080b12;
-  box-shadow: 0 34px 94px rgba(0, 0, 0, 0.38);
+.vicino-system-board {
+  grid-column: 1 / -1;
+  min-width: 0;
 }
-.vicino-product-frame::before {
-  content: "workflow prototype";
-  position: absolute;
-  left: 18px;
-  top: 16px;
-  z-index: 2;
-  color: rgba(255,255,255,0.62);
-}
-.vicino-product-frame video,
-.vicino-product-frame img {
-  width: 100%;
-  height: 100%;
-  min-height: inherit;
-  object-fit: cover;
-}
-.vicino-product-frame img {
-  position: relative !important;
-}
+
+/* ---- live workflow canvas ---- */
 .vicino-live-canvas {
   position: relative;
   width: 100%;
-  aspect-ratio: 900 / 640;
+  aspect-ratio: 1360 / 620;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, rgba(255,255,255,0.14));
   background: #050506;
@@ -380,23 +525,47 @@ const vicinoCriticalCss = `
   background-size: 28px 28px;
   opacity: 0.3;
 }
+/* 1360x620 stage scaled to the container width. The atan2/tan division is
+   the exact fit; the stepped @container rules below are the fallback. */
 .vicino-live-stage {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 900px;
-  height: 640px;
-  transform: translateX(-50%) scale(0.72);
+  width: 1360px;
+  height: 620px;
+  transform: translateX(-50%) scale(0.26);
   transform-origin: top center;
 }
-@container (min-width: 820px) {
-  .vicino-live-stage {
-    transform: translateX(-50%) scale(0.82);
-  }
+@container (min-width: 420px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.3); }
 }
-@container (min-width: 900px) {
+@container (min-width: 520px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.37); }
+}
+@container (min-width: 640px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.46); }
+}
+@container (min-width: 760px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.55); }
+}
+@container (min-width: 880px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.63); }
+}
+@container (min-width: 1000px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.72); }
+}
+@container (min-width: 1120px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.81); }
+}
+@container (min-width: 1240px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.9); }
+}
+@container (min-width: 1340px) {
+  .vicino-live-stage { transform: translateX(-50%) scale(0.97); }
+}
+@supports (transform: scale(calc(tan(atan2(100cqw, 1360px))))) {
   .vicino-live-stage {
-    transform: translateX(-50%) scale(0.9);
+    transform: translateX(-50%) scale(calc(tan(atan2(100cqw, 1360px))));
   }
 }
 .vicino-live-edges {
@@ -443,6 +612,24 @@ const vicinoCriticalCss = `
     stroke-dashoffset: 0;
   }
 }
+.vicino-live-caption {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--stone);
+  pointer-events: none;
+}
+
+/* ---- product nodes (measured recreation of Vicino's UI) ---- */
 .vicino-product-node {
   position: absolute;
   left: 0;
@@ -454,6 +641,11 @@ const vicinoCriticalCss = `
 }
 .vicino-product-node:active {
   cursor: grabbing;
+}
+.vicino-product-node:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--node-shell-radius);
 }
 .vicino-product-node-shell {
   position: absolute;
@@ -776,41 +968,6 @@ const vicinoCriticalCss = `
 .vicino-script-lines i:nth-child(3) {
   width: 58%;
 }
-.vicino-generated-preview {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  background: rgba(255,255,255,0.025);
-}
-.vicino-generated-preview.is-sketch,
-.vicino-generated-preview.is-shoot {
-  height: 144px;
-}
-.vicino-product-node.is-shoot .vicino-generated-preview.is-shoot {
-  height: 116px;
-}
-.vicino-generated-preview.is-sketch img {
-  filter: grayscale(1) contrast(1.08);
-}
-.vicino-generated-preview.is-shoot img {
-  filter: saturate(0.92) contrast(1.04);
-}
-.vicino-generated-preview::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background:
-    linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent),
-    rgba(255,255,255,0.025);
-  transform: translateX(-100%);
-  animation: vicino-preview-generate-sweep 8.4s ease-in-out infinite;
-}
-.vicino-generated-preview.is-shoot::after {
-  animation-delay: 2.8s;
-}
 .vicino-storyboard-scene-card {
   position: relative;
   overflow: hidden;
@@ -1052,77 +1209,6 @@ const vicinoCriticalCss = `
   border-left: 7px solid rgba(255,255,255,0.78);
   border-top: 5px solid transparent;
 }
-.vicino-video-output-stage {
-  position: relative;
-  display: flex;
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  aspect-ratio: 16 / 9;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 8px;
-  background: var(--video-node-stage-bg);
-  box-shadow:
-    inset 0 0 0 1px var(--video-node-card-border),
-    var(--glass-btn-shadow);
-}
-.vicino-video-output-stage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform-origin: 64% 48%;
-  filter: saturate(0.92) contrast(1.05) brightness(0.78);
-  animation: vicino-video-preview-pan 8.4s ease-in-out infinite;
-}
-.vicino-video-output-stage span {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 24px;
-  height: 24px;
-  border: 1px solid rgba(255,255,255,0.42);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-.vicino-video-output-stage span::after {
-  content: "";
-  position: absolute;
-  left: 9px;
-  top: 6px;
-  width: 0;
-  height: 0;
-  border-bottom: 5px solid transparent;
-  border-left: 7px solid rgba(255,255,255,0.78);
-  border-top: 5px solid transparent;
-}
-.vicino-story-video-stage {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  height: 54px;
-  padding: 5px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  background: rgba(255,255,255,0.025);
-}
-.vicino-story-video-stage span {
-  display: block;
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 5px;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,179,71,0.22), transparent 34%),
-    rgba(255,255,255,0.03);
-  animation: vicino-story-video-frame 7.2s ease-in-out infinite;
-}
-.vicino-story-video-stage span:nth-child(2) {
-  animation-delay: 0.16s;
-}
-.vicino-story-video-stage span:nth-child(3) {
-  animation-delay: 0.32s;
-}
 .vicino-story-video-controls {
   display: grid;
   grid-template-columns: 20px 1fr;
@@ -1150,19 +1236,6 @@ const vicinoCriticalCss = `
     opacity: 0.1;
   }
 }
-@keyframes vicino-story-image-fill {
-  0%,
-  24% {
-    opacity: 0;
-  }
-  38%,
-  82% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.42;
-  }
-}
 @keyframes vicino-story-card-border {
   0%,
   22% {
@@ -1188,22 +1261,6 @@ const vicinoCriticalCss = `
     transform: scaleX(0.02);
   }
 }
-@keyframes vicino-preview-generate-sweep {
-  0%,
-  18% {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-  30%,
-  62% {
-    opacity: 1;
-  }
-  76%,
-  100% {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-}
 @keyframes vicino-video-preview-pan {
   0%,
   50% {
@@ -1214,630 +1271,467 @@ const vicinoCriticalCss = `
     transform: scale(2.35) translateX(-12px);
   }
 }
-@keyframes vicino-story-video-frame {
-  0%,
-  56% {
-    opacity: 0.28;
-    transform: translateY(0);
-  }
-  72%,
-  90% {
-    opacity: 1;
-    transform: translateY(-1px);
-  }
-  100% {
-    opacity: 0.42;
-    transform: translateY(0);
-  }
+
+/* ---- station 01 — workflow question ---- */
+.vicino-opening-statement {
+  background: var(--ink-950);
 }
-.vicino-node-prompt {
+.vicino-opening-statement .vicino-station-index {
+  grid-column: 1 / span 2;
+  margin-bottom: 0;
+}
+.vicino-thesis {
+  grid-column: 3 / span 8;
+}
+.vicino-opening-copy {
+  grid-column: 8 / span 5;
+  margin-top: var(--v-head-gap);
   display: grid;
-  gap: 5px;
+  gap: 18px;
 }
-.vicino-node-prompt span {
-  color: rgba(255,255,255,0.38);
-  font-family: var(--font-sans);
-  font-size: var(--vicino-node-detail);
-  letter-spacing: 0;
-  text-transform: none;
-}
-.vicino-node-prompt p {
-  margin: 0;
-  color: rgba(255,255,255,0.72);
-  font-size: var(--vicino-node-detail);
-  line-height: 1.32;
-}
-.vicino-node-model-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.42);
-  font-family: var(--font-sans);
-  font-size: var(--vicino-node-detail);
-}
-.vicino-image-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px;
-  gap: 7px;
-  margin-top: 8px;
-}
-.vicino-image-main,
-.vicino-image-refs span,
-.vicino-video-stage,
-.vicino-preview-pane,
-.vicino-preview-panel,
-.vicino-model-stage,
-.vicino-model-thumbs i {
-  border: 1px solid rgba(255,255,255,0.12);
-  background:
-    radial-gradient(circle at 30% 24%, color-mix(in srgb, var(--node-color) 22%, transparent), transparent 30%),
-    rgba(255,255,255,0.025);
-}
-.vicino-image-main {
-  position: relative;
-  min-height: 76px;
-  border-radius: 8px;
-}
-.vicino-image-main span {
-  position: absolute;
-  left: 16px;
-  top: 18px;
-  width: 44px;
-  height: 42px;
-  border: 1px solid rgba(255,255,255,0.24);
-  transform: rotate(-5deg);
-}
-.vicino-image-main i {
-  position: absolute;
-  right: 14px;
-  bottom: 13px;
-  width: 34px;
-  height: 28px;
-  border: 1px solid rgba(255,255,255,0.28);
-  transform: rotate(7deg);
-}
-.vicino-image-refs {
-  display: grid;
-  gap: 6px;
-}
-.vicino-image-refs span {
-  border-radius: 6px;
-}
-.vicino-video-stage {
-  position: relative;
-  height: 58px;
-  margin-top: 8px;
-  overflow: hidden;
-  border-radius: 8px;
-}
-.vicino-video-stage i {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  border: 1px solid rgba(255,255,255,0.42);
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-}
-.vicino-video-stage i::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 6px;
-  width: 0;
-  height: 0;
-  border-bottom: 5px solid transparent;
-  border-left: 7px solid rgba(255,255,255,0.7);
-  border-top: 5px solid transparent;
-}
-.vicino-video-frame-a,
-.vicino-video-frame-b {
-  position: absolute;
-  width: 38px;
-  height: 40px;
-  border: 1px solid color-mix(in srgb, var(--node-color) 36%, rgba(255,255,255,0.18));
-  background: rgba(255,255,255,0.025);
-}
-.vicino-video-frame-a {
-  left: 18px;
-  top: 9px;
-}
-.vicino-video-frame-b {
-  right: 18px;
-  top: 12px;
-}
-.vicino-video-controls {
-  display: grid;
-  grid-template-columns: 18px 1fr 18px;
-  gap: 7px;
-  margin-top: 8px;
-}
-.vicino-video-controls span {
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.16);
-}
-.vicino-video-controls span:nth-child(2) {
-  background: linear-gradient(90deg, var(--node-color) 0 44%, rgba(255,255,255,0.14) 44%);
-}
-.vicino-preview-node-body {
-  display: grid;
-  grid-template-columns: 1fr 58px;
-  gap: 8px;
-}
-.vicino-preview-pane {
-  position: relative;
-  min-height: 62px;
-  border-radius: 8px;
-}
-.vicino-preview-pane span {
-  position: absolute;
-  left: 16px;
-  top: 15px;
-  width: 44px;
-  height: 32px;
-  border: 1px solid rgba(255,255,255,0.25);
-}
-.vicino-preview-pane i {
-  position: absolute;
-  right: 13px;
-  bottom: 12px;
-  width: 30px;
-  height: 20px;
-  border: 1px solid color-mix(in srgb, var(--node-color) 42%, rgba(255,255,255,0.24));
-}
-.vicino-preview-panel {
-  display: grid;
-  gap: 6px;
-  padding: 7px;
-  border-radius: 8px;
-}
-.vicino-preview-panel span {
-  display: block;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.12);
-}
-.vicino-model-stage {
-  position: relative;
-  height: 62px;
-  border-radius: 8px;
-  background:
-    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px),
-    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-    rgba(255,255,255,0.025);
-  background-size: 16px 16px;
-}
-.vicino-model-stage span {
-  position: absolute;
-  display: block;
-  border: 1px solid color-mix(in srgb, var(--node-color) 54%, rgba(255,255,255,0.36));
-  transform: rotateX(58deg) rotateZ(-34deg);
-}
-.vicino-model-stage span:nth-child(1) {
-  left: 36px;
-  top: 18px;
-  width: 64px;
-  height: 42px;
-}
-.vicino-model-stage span:nth-child(2) {
-  left: 56px;
-  top: 30px;
-  width: 44px;
-  height: 30px;
-}
-.vicino-model-stage span:nth-child(3) {
-  left: 74px;
-  top: 40px;
-  width: 28px;
-  height: 18px;
-}
-.vicino-model-thumbs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 8px;
-}
-.vicino-model-thumbs i {
-  height: 18px;
-  border-radius: 5px;
-}
-.vicino-live-caption {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: 22px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  color: color-mix(in srgb, var(--accent-gold) 46%, rgba(255,255,255,0.52));
-  font-family: var(--font-sans);
-  font-size: var(--vicino-detail);
-  letter-spacing: 0;
-  text-transform: none;
-  pointer-events: none;
-}
-.vicino-layer-index,
-.vicino-decision-index {
-  font-style: normal;
-  color: var(--v-coral-deep);
-}
+
+/* ---- ink-900 stations bleed full width ---- */
 .vicino-brief,
 .vicino-flow,
 .vicino-reels,
 .vicino-decisions {
-  position: relative;
   background: var(--ink-900);
   box-shadow: 0 0 0 100vmax var(--ink-900);
   clip-path: inset(0 -100vmax);
 }
-.vicino-brief > *,
-.vicino-flow > *,
-.vicino-layers > *,
-.vicino-reels > *,
-.vicino-decisions > *,
-.vicino-closing > * {
-  position: relative;
-  z-index: 1;
+
+/* ---- station 02 — brief ---- */
+.vicino-brief h2 {
+  grid-column: 1 / span 6;
 }
-.vicino-brief::before,
-.vicino-flow::before,
-.vicino-layers::before,
-.vicino-reels::before,
-.vicino-decisions::before,
-.vicino-closing::before {
-  position: absolute;
-  left: clamp(20px, 5vw, 82px);
-  top: clamp(44px, 5vw, 78px);
-  z-index: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(86px, 13vw, 190px);
-  font-weight: 400;
-  line-height: 0.8;
-  color: color-mix(in srgb, var(--accent-gold) 18%, transparent);
-  pointer-events: none;
-}
-.vicino-brief::before {
-  content: "02";
-}
-.vicino-flow::before {
-  content: "03";
-}
-.vicino-layers::before {
-  content: "04";
-}
-.vicino-reels::before {
-  content: "05";
-}
-.vicino-decisions::before {
-  content: "06";
-}
-.vicino-closing::before {
-  content: "07";
-}
-.vicino-brief {
-  padding-top: clamp(82px, 10vw, 150px);
-  padding-bottom: clamp(80px, 11vw, 160px);
-}
-.vicino-brief-grid {
+.vicino-brief-copy {
+  grid-column: 8 / span 5;
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(34px, 7vw, 120px);
-  align-items: start;
-  margin-top: clamp(26px, 4vw, 58px);
+  gap: 20px;
 }
-.vicino-brief h2,
-.vicino-flow h2,
-.vicino-layers h2,
-.vicino-reels h2,
-.vicino-decisions h2,
-.vicino-closing h2 {
-  max-width: 920px;
-  font-size: var(--vicino-h2);
-  line-height: 1.02;
-}
-.vicino-brief-copy p,
-.vicino-layer-copy p,
-.vicino-closing-copy p {
-  max-width: var(--vicino-reading-max);
-  margin: 0 0 22px;
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-body);
-  font-weight: 300;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.76);
-}
-.vicino-flow-node span,
-.vicino-layer-row > span,
-.vicino-decision-tags {
-  font-family: var(--font-sans);
-  font-size: var(--vicino-small);
-  letter-spacing: 0;
-  text-transform: none;
-  color: color-mix(in srgb, var(--accent-amber) 68%, rgba(255,255,255,0.68));
-}
-.vicino-flow-node p,
-.vicino-layer-row p,
-.vicino-decision-copy p:not(.vicino-decision-tags) {
-  margin: 0;
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-body);
-  line-height: 1.56;
-  color: var(--v-soft);
-}
-.vicino-flow {
-  padding-top: clamp(86px, 11vw, 168px);
-  padding-bottom: clamp(88px, 12vw, 176px);
-}
-.vicino-flow-head,
-.vicino-reels-head,
-.vicino-decisions-head {
-  max-width: 960px;
-  margin-bottom: clamp(34px, 5vw, 76px);
-}
-.vicino-flow-head h2,
-.vicino-reels-head h2,
-.vicino-decisions-head h2 {
-  margin-top: 0;
+
+/* ---- station 03 — checkpoints ---- */
+.vicino-flow h2 {
+  grid-column: 1 / span 8;
 }
 .vicino-flow-map {
-  display: grid;
-  border-top: 1px solid var(--v-line);
+  grid-column: 1 / -1;
+  margin-top: var(--v-head-gap);
+  border-top: 1px solid var(--v-line-soft);
 }
 .vicino-flow-node {
-  min-height: 0;
-  padding: clamp(24px, 3vw, 42px) 0;
-  border-bottom: 1px solid var(--v-line);
   display: grid;
-  grid-template-columns: 88px minmax(140px, 0.42fr) minmax(0, 1fr);
-  gap: clamp(18px, 4vw, 64px);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--v-gutter);
   align-items: start;
+  padding: clamp(32px, 3.4vw, 48px) 0;
+  border-bottom: 1px solid var(--v-line-soft);
 }
-.vicino-flow-node span {
-  color: var(--v-coral-deep);
+.vicino-flow-chip {
+  grid-column: 1;
+  justify-self: start;
+  width: 6px;
+  height: 26px;
+  margin-left: -3px;
+  margin-top: 4px;
+  border-radius: 2px 4px 4px 2px;
+  background: var(--chip-color);
 }
 .vicino-flow-node h3 {
+  grid-column: 2 / span 3;
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: var(--vicino-h3);
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
   font-weight: 400;
-  line-height: 1.04;
+  line-height: 1.2;
+  color: var(--paper);
 }
-.vicino-flow-subtitle {
+.vicino-flow-detail {
+  grid-column: 5 / span 7;
+}
+.vicino-flow-claim {
   margin: 0 0 10px;
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-h4);
-  font-weight: 300;
-  letter-spacing: 0;
-  line-height: 1.25;
-  color: color-mix(in srgb, var(--accent-gold) 34%, var(--v-ink));
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--paper);
 }
-.vicino-layers,
-.vicino-closing {
-  position: relative;
-  background: var(--ink-950);
-  /* --v-ink is the TEXT color on this inverted page (--v-paper is the ink
-     background alias — using it as text renders #050505 on #050505) */
-  color: var(--v-ink);
-}
+
+/* ---- station 04 — interface layers ---- */
 .vicino-layers {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(42px, 8vw, 128px);
-  padding-top: clamp(82px, 10vw, 150px);
-  padding-bottom: clamp(88px, 12vw, 178px);
+  background: var(--ink-950);
 }
-.vicino-layers h2,
-.vicino-closing h2 {
-  color: var(--v-ink);
-  margin-top: 0;
+.vicino-layers-intro {
+  grid-column: 1 / span 5;
+  align-self: start;
+  position: sticky;
+  top: 128px;
 }
-.vicino-layer-copy p,
-.vicino-closing-copy p {
-  color: rgba(247,243,235,0.78);
+.vicino-layers-intro h2 {
+  margin-bottom: 24px;
 }
 .vicino-layer-list {
-  border-top: 1px solid rgba(247,243,235,0.16);
+  grid-column: 6 / -1;
+  border-top: 1px solid var(--v-line-soft);
 }
 .vicino-layer-row {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1fr) minmax(220px, 0.6fr);
-  gap: clamp(18px, 3vw, 46px);
-  padding: clamp(24px, 3vw, 40px) 0;
-  border-bottom: 1px solid rgba(247,243,235,0.16);
+  grid-template-columns: minmax(0, 1fr) 168px;
+  column-gap: var(--v-gutter);
   align-items: start;
-}
-.vicino-layer-row > span {
-  color: var(--v-coral-deep);
+  padding: clamp(28px, 3vw, 40px) 0;
+  border-bottom: 1px solid var(--v-line-soft);
 }
 .vicino-layer-row h3 {
-  margin: 0 0 10px;
-  font-family: var(--font-serif);
-  font-size: var(--vicino-h3);
-  font-weight: 400;
-  line-height: 1.04;
-  color: var(--v-ink);
-}
-.vicino-layer-row p {
-  color: rgba(247,243,235,0.76);
-}
-.vicino-layer-avoid {
-  padding: 14px;
-  border: 1px solid color-mix(in srgb, var(--accent-gold) 28%, rgba(247,243,235,0.2));
-  color: rgba(247,243,235,0.7);
-  font-family: var(--font-newsreader);
-  font-size: var(--vicino-small);
-  line-height: 1.4;
-}
-.vicino-layer-avoid strong {
-  display: block;
-  margin-bottom: 6px;
-  color: color-mix(in srgb, var(--accent-gold) 42%, rgba(247,243,235,0.9));
+  margin: 10px 0 10px;
   font-family: var(--font-sans);
-  font-size: var(--vicino-detail);
-  letter-spacing: 0;
-  text-transform: none;
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--paper);
 }
-.vicino-reels {
-  padding-top: clamp(84px, 10vw, 160px);
-  padding-bottom: clamp(90px, 11vw, 170px);
+.vicino-layer-aside {
+  margin: 14px 0 0;
+  padding-left: 14px;
+  border-left: 1px solid color-mix(in srgb, var(--accent-gold) 28%, transparent);
+  max-width: 52ch;
+  font-family: var(--font-sans);
+  font-size: var(--text-meta);
+  line-height: 1.5;
+  color: var(--v-meta-ink);
+}
+.vicino-layer-aside span {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.vicino-layer-map {
+  justify-self: end;
+  margin-top: 6px;
+}
+.vicino-layer-owned {
+  transition: fill-opacity 0.3s var(--ease-silk);
+}
+.vicino-layer-row:hover .vicino-layer-owned {
+  fill-opacity: 0.2;
+}
+
+/* ---- station 05 — prototype reels ---- */
+.vicino-reels h2 {
+  grid-column: 1 / span 8;
 }
 .vicino-reel-grid {
+  grid-column: 1 / -1;
+  margin-top: var(--v-head-gap);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 28px);
+  column-gap: var(--v-gutter);
+  row-gap: clamp(28px, 3vw, 44px);
 }
-.vicino-reel-grid video {
+.vicino-reel {
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+.vicino-reel.is-wide {
+  grid-column: 1 / -1;
+}
+.vicino-reel video {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  background: #080b12;
   border: 1px solid var(--v-line);
+  border-radius: var(--radius-thumb);
+  background: #080b12;
 }
-.vicino-reel-grid video.is-wide {
-  grid-column: 1 / -1;
+.vicino-reel.is-wide video {
   aspect-ratio: 16 / 9;
 }
-.vicino-decisions {
-  padding-top: clamp(88px, 12vw, 190px);
-  padding-bottom: clamp(90px, 12vw, 190px);
+.vicino-reel figcaption {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  line-height: 1.5;
+  color: var(--stone);
+}
+
+/* ---- station 06 — decisions ---- */
+.vicino-decisions h2 {
+  grid-column: 1 / span 8;
 }
 .vicino-decision-list {
+  grid-column: 1 / -1;
+  margin-top: var(--v-head-gap);
   border-top: 1px solid var(--v-line);
 }
 .vicino-decision {
   display: grid;
-  grid-template-columns: 60px minmax(0, 1fr) minmax(280px, 0.78fr);
-  gap: clamp(28px, 5vw, 86px);
-  padding: clamp(46px, 7vw, 110px) 0;
-  border-bottom: 1px solid var(--v-line);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--v-gutter);
   align-items: start;
+  padding: clamp(48px, 5.5vw, 80px) 0;
+  border-bottom: 1px solid var(--v-line);
 }
 .vicino-decision-index {
+  grid-column: 1;
+  padding-left: 18px;
+}
+.vicino-decision-copy {
+  grid-column: 2 / span 6;
+}
+.vicino-decision h3 {
+  margin: 0 0 14px;
   font-family: var(--font-sans);
-  font-size: var(--vicino-small);
+  font-size: var(--text-heading);
+  font-weight: 300;
+  line-height: 1.2;
+  text-wrap: balance;
+  color: var(--paper);
 }
 .vicino-decision-tags {
   margin: 0 0 18px;
-  color: color-mix(in srgb, var(--accent-amber) 70%, rgba(255,255,255,0.66));
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
 }
-.vicino-decision h3 {
-  max-width: 760px;
-  margin: 0 0 14px;
-  font-family: var(--font-serif);
-  font-size: var(--vicino-h3);
-  font-weight: 400;
-  line-height: 1.08;
-}
-.vicino-decision-copy p:not(.vicino-decision-tags) {
-  max-width: var(--vicino-reading-max);
+.vicino-decision-body {
   margin: 0 0 20px;
-  font-size: var(--vicino-body);
-  color: rgba(255,255,255,0.76);
 }
-.vicino-decision-image {
+.vicino-decision-body:last-child {
+  margin-bottom: 0;
+}
+.vicino-decision-figure {
+  grid-column: 8 / span 5;
   margin: 0;
-  overflow: hidden;
-  background: #080b12;
-  border: 1px solid var(--v-line);
+  min-width: 0;
+  display: grid;
+  gap: 10px;
 }
-.vicino-decision-image img {
+.vicino-decision-media {
+  overflow: hidden;
+  border: 1px solid var(--v-line);
+  border-radius: var(--radius-thumb);
+  background: #080b12;
+}
+.vicino-decision-media img {
   width: 100%;
   height: auto;
 }
+.vicino-decision.is-wide .vicino-decision-figure {
+  grid-column: 2 / -1;
+  margin-top: clamp(24px, 3vw, 44px);
+}
+.vicino-decision-figure figcaption {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  line-height: 1.5;
+  color: var(--stone);
+}
+
+/* ---- station 07 — closing moment (the page's one red moment) ---- */
 .vicino-closing {
-  padding-top: clamp(84px, 10vw, 160px);
-  padding-bottom: clamp(90px, 12vw, 180px);
+  background: var(--ink-950);
+  padding-bottom: clamp(96px, 10vw, 160px);
 }
-.vicino-closing-grid {
+.vicino-seal {
+  position: relative;
+  grid-column: 1;
+  justify-self: start;
+  margin: 0;
+}
+.vicino-seal::before {
+  /* the rail's terminal tick — seal red, once on the page */
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -36px;
+  width: 6px;
+  height: 26px;
+  border-radius: 2px 4px 4px 2px;
+  background: var(--seal-red);
+}
+.vicino-seal img {
+  width: clamp(38px, 3.2vw, 48px);
+  height: auto;
+}
+h2.vicino-closing-title {
+  grid-column: 2 / span 6;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-heading);
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-transform: none;
+  text-wrap: balance;
+  color: var(--paper);
+}
+.vicino-closing-copy {
+  grid-column: 8 / span 5;
   display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  gap: clamp(34px, 7vw, 120px);
-  margin-top: clamp(26px, 4vw, 58px);
-  align-items: start;
+  gap: 20px;
 }
-@media (max-width: 1080px) {
-  .vicino-hero,
-  .vicino-opening-statement,
-  .vicino-brief-grid,
-  .vicino-layers,
-  .vicino-closing-grid {
-    grid-template-columns: 1fr;
+.vicino-closing-rule {
+  display: block;
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--v-line);
+  margin-top: clamp(64px, 8vw, 120px);
+}
+
+/* ---- canvas pause + reduced motion ---- */
+.vicino-live-canvas.is-paused *,
+.vicino-live-canvas.is-paused *::before,
+.vicino-live-canvas.is-paused *::after {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vicino-story-edge {
+    animation: none;
+    stroke-dasharray: none;
+    opacity: 0.46;
   }
+  .vicino-storyboard-scene-card {
+    animation: none;
+    border-color: rgba(110, 221, 179, 0.3);
+  }
+  .vicino-storyboard-scene-card::before {
+    animation: none;
+    opacity: 0;
+  }
+  .vicino-storyboard-progress span {
+    animation: none;
+    transform: none;
+  }
+  .vicino-product-node.is-video .video-node-v3-player {
+    animation: none;
+    transform: scale(2.35);
+  }
+  .vicino-layer-owned {
+    transition: none;
+  }
+}
+
+/* ---- tablet ---- */
+@media (max-width: 1079.98px) {
   .vicino-hero-copy,
   .vicino-hero-meta,
-  .vicino-system-board,
-  .vicino-opening-index,
+  .vicino-system-board {
+    grid-column: 1 / -1;
+  }
+  .vicino-hero-meta {
+    align-self: start;
+  }
+  .vicino-station-index,
+  .vicino-opening-statement .vicino-station-index {
+    grid-column: 1 / -1;
+    margin-bottom: 18px;
+  }
   .vicino-thesis,
-  .vicino-opening-copy {
+  .vicino-brief h2,
+  .vicino-flow h2,
+  .vicino-reels h2,
+  .vicino-decisions h2 {
+    grid-column: 1 / -1;
+  }
+  .vicino-opening-copy,
+  .vicino-brief-copy {
+    grid-column: 1 / -1;
+    margin-top: 34px;
+  }
+  .vicino-layers-intro {
+    grid-column: 1 / -1;
+    position: static;
+    margin-bottom: 40px;
+  }
+  .vicino-layer-list {
+    grid-column: 1 / -1;
+  }
+  .vicino-flow-node {
+    grid-template-columns: 18px minmax(0, 200px) minmax(0, 1fr);
+    column-gap: clamp(16px, 3vw, 28px);
+  }
+  .vicino-flow-node h3 {
+    grid-column: 2;
+  }
+  .vicino-flow-detail {
+    grid-column: 3;
+  }
+  .vicino-decision {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+  .vicino-decision-index,
+  .vicino-decision-copy,
+  .vicino-decision-figure,
+  .vicino-decision.is-wide .vicino-decision-figure {
     grid-column: 1;
   }
-  .vicino-flow-map,
+  .vicino-decision-figure {
+    max-width: 720px;
+    margin-top: 12px;
+  }
+  .vicino-decision.is-wide .vicino-decision-figure {
+    max-width: none;
+  }
+  .vicino-seal {
+    grid-column: 1 / -1;
+  }
+  h2.vicino-closing-title {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+  }
+  .vicino-closing-copy {
+    grid-column: 1 / -1;
+    margin-top: 28px;
+  }
+}
+
+/* ---- phone ---- */
+@media (max-width: 809.98px) {
+  .vicino-hero {
+    padding-top: 112px;
+    row-gap: 36px;
+  }
+  .vicino-hero-meta {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .vicino-hero-meta div {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--v-line-soft);
+  }
+  .vicino-hero-meta div:last-child {
+    border-bottom: 0;
+  }
+  .vicino-flow-node {
+    grid-template-columns: 18px minmax(0, 1fr);
+  }
+  .vicino-flow-node h3 {
+    grid-column: 2;
+  }
+  .vicino-flow-detail {
+    grid-column: 2;
+    margin-top: 10px;
+  }
+  .vicino-layer-row {
+    grid-template-columns: 1fr;
+  }
+  .vicino-layer-map {
+    display: none;
+  }
   .vicino-reel-grid {
     grid-template-columns: 1fr;
   }
-  .vicino-system-board {
-    justify-self: stretch;
-    max-width: none;
-  }
-  .vicino-layer-row,
-  .vicino-decision {
-    grid-template-columns: 1fr;
-  }
-  .vicino-decision-image {
-    max-width: 720px;
-  }
-}
-@media (max-width: 720px) {
-  .vicino-hero {
-    padding-top: 112px;
-    row-gap: 34px;
-  }
-  .vicino-opening-statement {
-    padding-top: 64px;
-    padding-bottom: 82px;
-  }
-  .vicino-meta {
-    grid-template-columns: 1fr;
-  }
-  .vicino-meta div {
-    border-right: 0;
-    border-bottom: 1px solid var(--v-line);
-  }
-  .vicino-meta div:last-child {
-    border-bottom: 0;
-  }
-  .vicino-product-frame {
-    min-height: 320px;
-  }
-  .vicino-thesis,
-  .vicino-opening-copy {
-    max-width: none;
-  }
-  .vicino-live-stage {
-    transform: translateX(-50%) scale(0.58);
-  }
-  .vicino-flow-node {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    min-height: 0;
-  }
-  .vicino-reel-grid video.is-wide {
+  .vicino-reel.is-wide video {
     aspect-ratio: 16 / 10;
-  }
-}
-@media (max-width: 560px) {
-  .vicino-live-stage {
-    transform: translateX(-50%) scale(0.48);
-  }
-}
-@media (max-width: 480px) {
-  .vicino-live-stage {
-    transform: translateX(-50%) scale(0.38);
   }
 }
 `;
@@ -1851,6 +1745,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
     ["Duration", project.duration],
     ["Team", project.teams],
   ];
+  // Redundancy check: summary[0] restates the station-01 thesis, so the brief
+  // renders only the responsibility framing (render-filter, data untouched).
+  const briefCopy = (project.summary ?? [project.blurb]).slice(-1);
 
   return (
     <article className="vicino-case-page">
@@ -1864,7 +1761,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           </p>
         </div>
 
-        <dl className="vicino-meta vicino-hero-meta" data-fade>
+        <dl className="vicino-hero-meta" data-fade>
           {meta.map(([label, value]) => (
             <div key={label}>
               <dt>{label}</dt>
@@ -1873,25 +1770,29 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           ))}
         </dl>
 
-        <div className="vicino-system-board" data-fade>
+        <div className="vicino-system-board">
           <VicinoWorkflowCanvas project={project} />
         </div>
       </section>
 
-      <section className="vicino-opening-statement" aria-labelledby="vicino-opening-title">
-        <p className="vicino-opening-index" data-fade>
-          01 / Workflow question
+      <section
+        className="vicino-station vicino-opening-statement"
+        aria-labelledby="vicino-opening-title"
+      >
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          01 · Workflow question
         </p>
         <h2 className="vicino-thesis" id="vicino-opening-title" data-fade>
           A canvas people could understand, correct, and continue.
         </h2>
         <div className="vicino-opening-copy" data-fade>
-          <p>
+          <p className="vicino-body-copy">
             The design problem was not how many tools the canvas could hold. It
             was where a person could read the work in progress and know what to
             change next.
           </p>
-          <p>
+          <p className="vicino-body-copy">
             I helped turn a fast-growing set of 3D, image, storyboard, video,
             and editing capabilities into a workflow language the team could
             share.
@@ -1899,39 +1800,53 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         </div>
       </section>
 
-      <section className="vicino-brief">
-        <div className="vicino-brief-grid">
-          <h2 data-fade>From Feature Pile-Up to Workflow Architecture</h2>
-          <div className="vicino-brief-copy" data-fade>
-            {(project.summary ?? [project.blurb]).slice(0, 2).map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-          </div>
+      <section className="vicino-station vicino-brief">
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          02 · Brief
+        </p>
+        <h2 data-fade>From Feature Pile-Up to Workflow Architecture</h2>
+        <div className="vicino-brief-copy" data-fade>
+          {briefCopy.map((p) => (
+            <p className="vicino-body-copy" key={p}>
+              {p}
+            </p>
+          ))}
         </div>
       </section>
 
-      <section className="vicino-flow">
-        <div className="vicino-flow-head" data-fade>
-          <h2>Checkpoints Made the Canvas Usable</h2>
-        </div>
+      <section className="vicino-station vicino-flow">
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          03 · Checkpoints
+        </p>
+        <h2 data-fade>Checkpoints Made the Canvas Usable</h2>
         <div className="vicino-flow-map">
-          {workflow.map((step, index) => (
+          {workflow.map((step) => (
             <div className="vicino-flow-node" key={step.label} data-fade>
-              <span>{String(index + 1).padStart(2, "0")}</span>
+              <span
+                className="vicino-flow-chip"
+                style={{ "--chip-color": step.handle } as CSSProperties}
+                aria-hidden="true"
+              />
               <h3>{step.label}</h3>
-              <div>
-                <h4 className="vicino-flow-subtitle">{step.title}</h4>
-                <p>{step.copy}</p>
+              <div className="vicino-flow-detail">
+                <p className="vicino-flow-claim">{step.title}</p>
+                <p className="vicino-body-copy">{step.copy}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="vicino-layers">
-        <div className="vicino-layer-copy" data-fade>
+      <section className="vicino-station vicino-layers">
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          04 · Interface layers
+        </p>
+        <div className="vicino-layers-intro" data-fade>
           <h2>Complexity Needed Different Rooms</h2>
-          <p>
+          <p className="vicino-body-copy">
             The canvas could not become a drawer for every control. I treated
             interface layers as responsibilities: each layer had to answer what
             it owned, when it appeared, and what it should never absorb.
@@ -1940,89 +1855,118 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <div className="vicino-layer-list">
           {layers.map((layer, index) => (
             <div className="vicino-layer-row" key={layer.label} data-fade>
-              <span className="vicino-layer-index">
-                {String(index + 1).padStart(2, "0")} / {layer.label}
-              </span>
               <div>
+                <p className="vicino-row-index">
+                  {String(index + 1).padStart(2, "0")} · {layer.label}
+                </p>
                 <h3>{layer.title}</h3>
-                <p>{layer.owns}</p>
+                <p className="vicino-body-copy">{layer.owns}</p>
+                <p className="vicino-layer-aside">
+                  <span>Not for</span>
+                  {layer.avoids}
+                </p>
               </div>
-              <div className="vicino-layer-avoid">
-                <strong>Not for</strong>
-                {layer.avoids}
-              </div>
+              <LayerMap kind={layer.kind} color={layer.color} />
             </div>
           ))}
         </div>
       </section>
 
       {videos.length > 0 && (
-        <section className="vicino-reels">
-          <div className="vicino-reels-head" data-fade>
-            <h2>Prototypes Had to Move Fast and Still Align the Team</h2>
-          </div>
+        <section className="vicino-station vicino-reels">
+          <span className="vicino-station-rule" aria-hidden="true" />
+          <p className="vicino-station-index" data-fade>
+            05 · Prototype reels
+          </p>
+          <h2 data-fade>Prototypes Had to Move Fast and Still Align the Team</h2>
           <div className="vicino-reel-grid">
             {videos.map((video, index) => (
-              <video
+              <figure
+                className={`vicino-reel${video.wide ? " is-wide" : ""}`}
                 key={video.src}
-                className={video.wide ? "is-wide" : ""}
-                src={video.src}
-                autoPlay
-                muted
-                loop
-                playsInline
                 data-fade
-                aria-label={`Vicino prototype reel ${index + 1}`}
-              />
+              >
+                <OffscreenVideo src={video.src} />
+                <figcaption>
+                  {reelCaptions[index] ?? `Prototype reel ${index + 1}`}
+                </figcaption>
+              </figure>
             ))}
           </div>
         </section>
       )}
 
-      <section className="vicino-decisions">
-        <div className="vicino-decisions-head" data-fade>
-          <h2>The Work Was Deciding Where Complexity Should Live</h2>
-        </div>
+      <section className="vicino-station vicino-decisions">
+        <span className="vicino-station-rule" aria-hidden="true" />
+        <p className="vicino-station-index" data-fade>
+          06 · Decisions
+        </p>
+        <h2 data-fade>The Work Was Deciding Where Complexity Should Live</h2>
         <div className="vicino-decision-list">
-          {decisions.map((section, index) => (
-            <section className="vicino-decision" key={section.heading} data-fade>
-              <div className="vicino-decision-index">
-                {String(index + 1).padStart(2, "0")}
-              </div>
-              <div className="vicino-decision-copy">
-                <h3>{section.heading}</h3>
-                <p className="vicino-decision-tags">{section.tags}</p>
-                {section.body.slice(0, 2).map((p) => (
-                  <p key={p}>{p}</p>
-                ))}
-              </div>
-              {section.image && (
-                <figure className="vicino-decision-image">
-                  <Image
-                    src={section.image}
-                    alt=""
-                    width={840}
-                    height={560}
-                    sizes="(max-width: 900px) 100vw, 34vw"
-                    style={{ height: "auto" }}
-                  />
-                </figure>
-              )}
-            </section>
-          ))}
+          {decisions.map((section, index) => {
+            const wideCaption = wideDecisionCaption(section.image);
+            const isWide = Boolean(wideCaption);
+            return (
+              <section
+                className={`vicino-decision${isWide ? " is-wide" : ""}`}
+                key={section.heading}
+                data-fade
+              >
+                <p className="vicino-row-index vicino-decision-index">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <div className="vicino-decision-copy">
+                  <h3>{sentenceCase(section.heading)}</h3>
+                  <p className="vicino-decision-tags">{section.tags}</p>
+                  {section.body.slice(0, 2).map((p) => (
+                    <p className="vicino-body-copy vicino-decision-body" key={p}>
+                      {p}
+                    </p>
+                  ))}
+                </div>
+                {section.image && (
+                  <figure className="vicino-decision-figure">
+                    <div className="vicino-decision-media">
+                      <Image
+                        src={section.image}
+                        alt=""
+                        width={isWide ? 1600 : 840}
+                        height={isWide ? 1000 : 560}
+                        sizes={
+                          isWide
+                            ? "(max-width: 1080px) 100vw, 1260px"
+                            : "(max-width: 1080px) 100vw, 560px"
+                        }
+                        style={{ height: "auto" }}
+                      />
+                    </div>
+                    {wideCaption ? <figcaption>{wideCaption}</figcaption> : null}
+                  </figure>
+                )}
+              </section>
+            );
+          })}
         </div>
       </section>
 
       {project.moment && (
-        <section className="vicino-closing">
-          <div className="vicino-closing-grid">
-            <h2 data-fade>{project.moment.title}</h2>
-            <div className="vicino-closing-copy" data-fade>
-              {project.moment.body.slice(0, 3).map((p) => (
-                <p key={p}>{p}</p>
-              ))}
-            </div>
+        <section className="vicino-station vicino-closing">
+          <figure className="vicino-seal" data-fade>
+            <Image src={SEAL_SRC} alt="" width={36} height={76} />
+          </figure>
+          <h2 className="vicino-closing-title" data-fade>
+            {project.moment.title}
+          </h2>
+          <div className="vicino-closing-copy" data-fade>
+            {/* body[3] is the a teammate credit — render-filtered into the
+                station-05 reel figcaption instead of a closing paragraph */}
+            {project.moment.body.slice(0, 3).map((p) => (
+              <p className="vicino-body-copy" key={p}>
+                {p}
+              </p>
+            ))}
           </div>
+          <span className="vicino-closing-rule" aria-hidden="true" />
         </section>
       )}
     </article>

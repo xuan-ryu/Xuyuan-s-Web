@@ -1,7 +1,7 @@
 "use client";
 
-import type { CSSProperties, PointerEvent } from "react";
-import { useMemo, useRef, useState } from "react";
+import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 
 type HandleType = "text" | "storyboard" | "image" | "video";
@@ -23,6 +23,13 @@ type CanvasNode = {
 };
 
 type OffsetMap = Record<string, { x: number; y: number }>;
+
+// Coordinate space of the node stage. Re-spaced from the old 900x640 board so
+// the four nodes fill the hero frame edge-to-edge (no dead dot-grid), scaled
+// to the container by .vicino-live-stage in the layout CSS.
+export const VICINO_STAGE_W = 1360;
+export const VICINO_STAGE_H = 620;
+const STAGE_BLEED = 24; // soft clamp: dragged nodes may bleed this far past the stage
 
 const handleColor: Record<HandleType, string> = {
   text: "#9B9CF1",
@@ -63,8 +70,8 @@ const nodes: CanvasNode[] = [
     id: "script",
     kind: "script",
     label: "Script",
-    x: 42,
-    y: 244,
+    x: 28,
+    y: 216,
     w: 214,
     h: 230,
     output: "text",
@@ -74,8 +81,8 @@ const nodes: CanvasNode[] = [
     id: "storyboard",
     kind: "storyboard",
     label: "Storyboard",
-    x: 292,
-    y: 54,
+    x: 306,
+    y: 44,
     w: 326,
     h: 302,
     input: "text",
@@ -87,8 +94,8 @@ const nodes: CanvasNode[] = [
     id: "shoot",
     kind: "shoot",
     label: "Shooting Studio",
-    x: 640,
-    y: 82,
+    x: 700,
+    y: 56,
     w: 252,
     h: 330,
     input: "storyboard",
@@ -100,19 +107,32 @@ const nodes: CanvasNode[] = [
     id: "video",
     kind: "video",
     label: "Video",
-    x: 264,
-    y: 362,
-    w: 390,
-    h: 270,
+    x: 992,
+    y: 330,
+    w: 344,
+    h: 260,
     input: "image",
     output: "video",
-    inputY: 132,
-    outputY: 132,
+    inputY: 130,
+    outputY: 130,
   },
 ];
 
 function offsetFor(node: CanvasNode, offsets: OffsetMap) {
   return offsets[node.id] ?? { x: 0, y: 0 };
+}
+
+// Soft-clamp a node's drag/nudge offset so the node stays on (or just past)
+// the stage — dragged nodes can't be lost outside the visible frame.
+function clampOffset(node: CanvasNode, x: number, y: number) {
+  const minX = -STAGE_BLEED - node.x;
+  const maxX = VICINO_STAGE_W - node.w + STAGE_BLEED - node.x;
+  const minY = -STAGE_BLEED - node.y;
+  const maxY = VICINO_STAGE_H - node.h + STAGE_BLEED - node.y;
+  return {
+    x: Math.min(Math.max(x, minX), maxX),
+    y: Math.min(Math.max(y, minY), maxY),
+  };
 }
 
 function anchor(node: CanvasNode, offsets: OffsetMap, side: "left" | "right") {
@@ -279,25 +299,47 @@ function NodeContent({ node }: { node: CanvasNode }) {
 }
 
 export function VicinoWorkflowCanvas({ project: _project }: { project: Project }) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
     id: string;
     startX: number;
     startY: number;
     baseX: number;
     baseY: number;
+    scale: number;
   } | null>(null);
   const [offsets, setOffsets] = useState<OffsetMap>({});
+  const [isPaused, setIsPaused] = useState(false);
 
   const byId = useMemo(() => new Map(nodes.map((node) => [node.id, node])), []);
 
+  // Pause the infinite canvas animations (edge flow, shimmer, preview pan)
+  // while the frame is offscreen — .is-paused sets animation-play-state.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        setIsPaused(!entries[0]?.isIntersecting);
+      },
+      { threshold: 0.05 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>, node: CanvasNode) => {
     const current = offsetFor(node, offsets);
+    // Pointer deltas are in screen px; the stage is scaled to the container,
+    // so convert deltas back into stage coordinates for accurate dragging.
+    const stageWidth = rootRef.current?.clientWidth ?? VICINO_STAGE_W;
     dragRef.current = {
       id: node.id,
       startX: event.clientX,
       startY: event.clientY,
       baseX: current.x,
       baseY: current.y,
+      scale: stageWidth > 0 ? stageWidth / VICINO_STAGE_W : 1,
     };
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -305,29 +347,54 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag) return;
-    setOffsets((current) => ({
-      ...current,
-      [drag.id]: {
-        x: drag.baseX + event.clientX - drag.startX,
-        y: drag.baseY + event.clientY - drag.startY,
-      },
-    }));
+    const node = byId.get(drag.id);
+    if (!node) return;
+    const scale = drag.scale || 1;
+    const next = clampOffset(
+      node,
+      drag.baseX + (event.clientX - drag.startX) / scale,
+      drag.baseY + (event.clientY - drag.startY) / scale,
+    );
+    setOffsets((current) => ({ ...current, [drag.id]: next }));
   };
 
   const stopDragging = () => {
     dragRef.current = null;
   };
 
+  // Keyboard parity for the drag interaction: arrow keys nudge the focused
+  // node (Shift for larger steps), soft-clamped to the stage like dragging.
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>, node: CanvasNode) => {
+    const step = event.shiftKey ? 32 : 12;
+    let dx = 0;
+    let dy = 0;
+    if (event.key === "ArrowLeft") dx = -step;
+    else if (event.key === "ArrowRight") dx = step;
+    else if (event.key === "ArrowUp") dy = -step;
+    else if (event.key === "ArrowDown") dy = step;
+    else return;
+    event.preventDefault();
+    setOffsets((current) => {
+      const base = current[node.id] ?? { x: 0, y: 0 };
+      return { ...current, [node.id]: clampOffset(node, base.x + dx, base.y + dy) };
+    });
+  };
+
   return (
     <div
-      className="vicino-live-canvas is-storyboard-animation"
+      ref={rootRef}
+      className={`vicino-live-canvas is-storyboard-animation${isPaused ? " is-paused" : ""}`}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}
       onPointerCancel={stopDragging}
     >
       <div className="vicino-live-dots" aria-hidden="true" />
       <div className="vicino-live-stage">
-        <svg className="vicino-live-edges" viewBox="0 0 900 640" aria-hidden="true">
+        <svg
+          className="vicino-live-edges"
+          viewBox={`0 0 ${VICINO_STAGE_W} ${VICINO_STAGE_H}`}
+          aria-hidden="true"
+        >
           {edges.map(([fromId, toId, type]) => {
             const from = byId.get(fromId);
             const to = byId.get(toId);
@@ -349,6 +416,9 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
             <div
               className={`vicino-product-node is-${node.kind} ${productClassName[node.kind]}`}
               key={node.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`${node.label} node — drag or use arrow keys to move`}
               style={
                 {
                   width: node.w,
@@ -360,6 +430,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
                 } as CSSProperties
               }
               onPointerDown={(event) => handlePointerDown(event, node)}
+              onKeyDown={(event) => handleKeyDown(event, node)}
             >
               {node.input ? (
                 <span
@@ -380,11 +451,11 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
             </div>
           );
         })}
+      </div>
 
-        <div className="vicino-live-caption">
-          <span>Interactive canvas</span>
-          <span>Drag nodes</span>
-        </div>
+      <div className="vicino-live-caption">
+        <span>Interactive canvas</span>
+        <span>Drag nodes</span>
       </div>
     </div>
   );
