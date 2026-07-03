@@ -15,7 +15,7 @@ export const site = {
   },
   greeting: ["Welcome,", "欢迎,", "ようこそ。"],
   heroSub:
-    "AI Design Engineer.\nI design products and build them in code — with AI as the medium.",
+    "AI Design Engineer.\nI design and build the structure around AI — for the people who use it, and the teams who ship it.",
   brandCorner: {
     // bottom-left hero caption — credits the composition's source
     zh: "构图灵感源自《潇湘八景图》\nInspired by the Eight Views of Xiaoxiang",

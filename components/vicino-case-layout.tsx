@@ -3194,7 +3194,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <p className="vicino-station-index" data-fade>
           02 · Context &amp; problem
         </p>
-        <h2 data-fade>From Feature Pile-Up to Workflow Architecture</h2>
+        <h2 data-fade>From Raw Generation to a Workflow People Could Steer</h2>
         <div className="vicino-brief-copy" data-fade>
           {contextCopy ? <p className="vicino-body-copy">{contextCopy}</p> : null}
           {ambiguityCopy ? <p className="vicino-body-copy">{ambiguityCopy}</p> : null}
