@@ -15,7 +15,7 @@ CustomEase.create("inkSoft", "0.25,1,0.5,1");
 CustomEase.create("doors", "0.76,0,0.24,1");
 
 const WORDS = ["XUYUAN", "LIU"];
-const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
+const SEAL_SRC = "/media/shared/seal.png";
 
 const BROADCAST_DELAY_MS = 750;
 const EXIT_FALLBACK_MS = 5200;

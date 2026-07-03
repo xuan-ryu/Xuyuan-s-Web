@@ -4,8 +4,6 @@
 // (hunger1942, vr-education). Copy intentionally preserves the source text,
 // including its quirks ("one more features", full-width colon).
 
-const IMG = "/assets/framerusercontent.com/images";
-const MEDIA = "/assets/framerusercontent.com/assets";
 
 export type CaseSection = {
   tags: string;
@@ -243,8 +241,8 @@ export const projects: Project[] = [
     slug: "vicino-ai",
     title: "Vicino AI",
     template: "case",
-    cover: `${IMG}/CSMKvZFRUZIIYznbJxUXsf58M.png`,
-    previewVideo: `${MEDIA}/2sxQz0YH0U9dhtJQiQQ0plKSR8U.mp4`,
+    cover: `/media/work/vicino/cover.png`,
+    previewVideo: `/media/work/vicino/preview.mp4`,
     coverClass: "cover-vicino",
     tags: ["Product Design", "PM", "AI"],
     oneliner:
@@ -271,9 +269,9 @@ export const projects: Project[] = [
         "(note: the Video 2 Node prototype was made by a teammate)",
       ],
       videos: [
-        { src: `${MEDIA}/2sxQz0YH0U9dhtJQiQQ0plKSR8U.mp4` },
-        { src: `${MEDIA}/5iOxAG6TNxFUKrbrm99nQp9VE.mp4` },
-        { src: `${MEDIA}/LkL74v7ncImwXFUrfG4CCkmh9kA.mp4`, wide: true },
+        { src: `/media/work/vicino/preview.mp4` },
+        { src: `/media/work/vicino/moment-2.mp4` },
+        { src: `/media/work/vicino/moment-3.mp4`, wide: true },
       ],
     },
     chapters: [
@@ -289,7 +287,7 @@ export const projects: Project[] = [
               "When I joined the project, the core problem was not visual polish. It was structural ambiguity. 3D, image, video, and editing tools were all advancing at the same time, but there was no shared interaction model connecting them into one readable system. Prompts, reference assets, camera inputs, and generated outputs all existed, but the logic that tied them together was still unstable. In practice, that meant even simple questions—where an asset should enter the flow, when an editor should appear, or which node should own a certain step—kept getting answered differently depending on who was in the room.",
               "The clearest signal came during review. Different teammates described the same workflow in different ways, which told me the issue was deeper than feature planning. The product did not simply need more capability. It needed a structure that people could actually hold in their heads. That became my starting point.",
             ],
-            image: `${IMG}/w7VAuq5Mdt9Q8seKnu9Q7n7RFS0.png`,
+            image: `/media/work/vicino/ch1-1.png`,
           },
           {
             tags: "WORKFLOW DESIGN · USER CAPABILITY",
@@ -299,7 +297,7 @@ export const projects: Project[] = [
               "One of the biggest shifts in my thinking came when I stopped looking at the product only through capability. A traditional studio workflow assumes multiple specialists, each owning a different part of the process. A product cannot. Even if Vicino was growing toward more professional and studio-level use cases, the people actually using it would not necessarily think like a full production team. That meant the design challenge was not to reproduce a traditional pipeline step by step. It was to redefine what a workflow should look like when one person, or a much smaller team, is trying to work through systems that used to belong to several roles.",
               "That changed the questions I asked. I stopped asking only what the product was able to generate, and started asking what kind of flow a user could actually follow, revise, and finish. That shift made the work less about exposing more power and more about making power usable.",
             ],
-            image: `${IMG}/VQq3yhEzHWYaC5RuRf5z44hxEA.png`,
+            image: `/media/work/vicino/ch1-2.png`,
           },
           {
             tags: "WORKFLOW STRUCTURE · MODEL CONSTRAINTS",
@@ -309,7 +307,7 @@ export const projects: Project[] = [
               "Once I became more focused on feasibility, the main path started to clarify. Script, Storyboard, Image, and Video did not need to collapse into one “smart” object. They needed to do different jobs clearly. Script helped organize intent. Storyboard shaped pacing and visual sequence. Image worked better as a lighter preview and revision layer before users committed to video. Video then became the step that should happen with more intention, not less.",
               "One example made that logic very concrete for me. A video-first flow looked simpler on paper, but in practice it pushed users into the slowest and most expensive step before they could even confirm whether the content was right. By keeping image as a preview layer, users could correct composition, content, and direction before moving into motion. That made the workflow longer by one step, but much easier to control. It stopped being an idealized flow and became a usable one.",
             ],
-            image: `${IMG}/4jRCSVcAkbGd6SEr97GpwZUnOkk.png`,
+            image: `/media/work/vicino/ch1-3.png`,
           },
           {
             tags: "AI LIMITS · PRODUCT LOGIC",
@@ -319,7 +317,7 @@ export const projects: Project[] = [
               "The more I worked on the system, the more I realized that design was not happening after the technology was “done.” Some paths were too expensive, too unstable, or too uneven to be presented as a default experience. Some outputs needed an intermediate step where users could inspect and redirect the result before moving on. That meant design could not simply wrap an existing capability in a nicer interface. It had to help define the form that capability should take as a product.",
               "One of the clearest examples was our decision not to compress too much into a single node. A more collapsed version often looked cleaner at first, but it also removed the checkpoints users needed to understand and correct what was happening. In several cases, splitting one broad step into two smaller ones created a better product, not because the system became simpler underneath, but because the user finally had somewhere to pause, inspect, and decide.",
             ],
-            image: `${IMG}/PAs9cYC0pYFMy5JNWi2b9MljpaE.png`,
+            image: `/media/work/vicino/ch1-4.png`,
           },
         ],
       },
@@ -335,7 +333,7 @@ export const projects: Project[] = [
               "As we started thinking more seriously about how future assistive or agent-like behaviors might fit into the product, my position became clearer rather than more optimistic. I did not think better automation meant removing people from the process. Especially if the product was going to support more professional, higher-stakes creative work, users still needed room to inspect, revise, and redirect what the system was doing. A product could help them start faster, but it could not trap them inside a black box.",
               "That changed the way I thought about “smart workflows.” For me, a smart workflow was not one that made every decision on the user’s behalf. It was one that reduced friction without taking away control. Even if more assistive behaviors were introduced later, I wanted users to have visible points of intervention—places where they could step in, correct direction, and continue shaping the work.",
             ],
-            image: `${IMG}/2p1SkcpFAaQDb0pUmRjCZ8hdK9o.png`,
+            image: `/media/work/vicino/ch2-1.png`,
           },
           {
             tags: "INTERACTION ARCHITECTURE · INTERFACE LAYERS",
@@ -354,7 +352,7 @@ export const projects: Project[] = [
               "Another big shift for me was how I worked with the team. Because the roadmap, model behavior, and implementation state were all changing at once, this project did not fit a clean handoff model. Waiting until the design looked polished before sharing it would have slowed down the very conversations that needed to happen early. So I found myself relying much more on annotated flows, rough prototypes, and working structures that made the logic visible before the UI was fully refined.",
               "In one case, I even moved directly into a lightweight React prototype for the sliding panel instead of waiting to fully package everything in static specs first. That was not about skipping design craft. It was about helping PMs and engineers react to structure while the product logic was still moving. In this project, rough but clear prototypes were often the fastest way to build alignment.",
             ],
-            image: `${IMG}/Y2anlRBHMWoIbETEdzOk5RafKp4.png`,
+            image: `/media/work/vicino/ch2-3.png`,
           },
           {
             tags: "DESIGN SYSTEMS · SCALABILITY",
@@ -364,7 +362,7 @@ export const projects: Project[] = [
               "At the same time, I stopped treating the design system as something you do after the main design work is finished. As more workflows, editors, and support layers entered the product, consistency was no longer just a visual concern. It became a way to keep the product readable, keep the team aligned, and make future iteration easier. Without a clearer system, every new feature risked reopening the same structural debates.",
               "That became even more important as the product started preparing for future expansion, including faster workflow creation and more assistive features that might be introduced later. In practice, this meant standardizing more than just colors or spacing. It meant giving the team a stable language for layers, components, and behaviors, so new workflows could enter the system without forcing everyone to renegotiate the same patterns from scratch.",
             ],
-            image: `${IMG}/w5I7Go3ueHyH98FnyiEWACBfJ8.png`,
+            image: `/media/work/vicino/ch2-4.png`,
           },
         ],
       },
@@ -376,8 +374,8 @@ export const projects: Project[] = [
     slug: "froghire-ai",
     title: "FrogHire.ai",
     template: "case",
-    cover: `${IMG}/J7KSTcOXT9GD7Wi9y09C1kQVpRY.png`,
-    previewVideo: `${MEDIA}/lX87zncxlP75HPjOuxEBjrAIMI.mp4`,
+    cover: `/media/work/froghire/cover.png`,
+    previewVideo: `/media/work/froghire/preview.mp4`,
     coverClass: "cover-froghire",
     tags: ["UX Design", "Research", "AI"],
     oneliner:
@@ -399,9 +397,9 @@ export const projects: Project[] = [
         "That pause reframed everything. I realized that in a startup, elegance doesn’t matter if the product can’t survive. We shipped tooltips—lightweight, imperfect, but alive. Looking back, that moment reshaped how I define my role. My job isn’t just to design the perfect flow, but to protect the product’s ability to move forward. Sometimes, the most meaningful design choice isn’t the one that dazzles, but the one that keeps the door open for tomorrow.",
       ],
       videos: [
-        { src: `${MEDIA}/lX87zncxlP75HPjOuxEBjrAIMI.mp4` },
-        { src: `${MEDIA}/NcrYa6VeZRsVXkl0FLlqvUyzLAc.mp4` },
-        { src: `${MEDIA}/e3Ly93zb0zMaZ8i4cHXvK7RE.mp4`, wide: true },
+        { src: `/media/work/froghire/preview.mp4` },
+        { src: `/media/work/froghire/moment-2.mp4` },
+        { src: `/media/work/froghire/moment-3.mp4`, wide: true },
       ],
     },
     chapters: [
@@ -417,7 +415,7 @@ export const projects: Project[] = [
               "At kickoff, the PM and mentor walked us through the product. It had many features, but they felt stitched together. The CEO pulled me aside and asked me to review every page, especially the negative reviews on the Chrome Web Store. Users were calling it “hard to use” and “confusing.”",
               "Reading those comments, I realized this wasn’t school anymore—it was survival. No one was waiting for a polished framework; the CEO wanted metrics back up fast. That was when I felt it: design here wasn’t about ideal portfolios, but about relieving user pain immediately with limited resources.",
             ],
-            image: `${IMG}/adocnaNIqkMGEz0fjzS61Lrzyg.png`,
+            image: `/media/work/froghire/ch1-1.png`,
           },
           {
             tags: "USABILITY TESTING · BUG LOGGING · USER FEEDBACK ANALYSIS",
@@ -426,7 +424,7 @@ export const projects: Project[] = [
               "Every week I ran through the whole dashboard—subscriptions, resumes, job recommendations—logging every bug with screenshots. The problems piled up: hidden subscription flows, unclear resume states, job lists suggesting software engineering roles to marketing students.",
               "Then I saw a review: “I honestly have no idea how to use this.” It stung, because I’d felt the same on my first try. The problem wasn’t user intelligence—it was the product’s silence. No onboarding, no guidance, no hand to hold. Users weren’t lost; they’d been abandoned.",
             ],
-            image: `${IMG}/gWzfdHCRdn4RkcUo9rx6OGajs8.png`,
+            image: `/media/work/froghire/ch1-2.png`,
           },
           {
             tags: "COMPETITIVE ANALYSIS · COST EVALUATION · PRODUCT BENCHMARKING",
@@ -435,7 +433,7 @@ export const projects: Project[] = [
               "My mentor showed me Simplify, Teal, and other competitors. They had sleek AI autofill features, and at first I thought we should too. But once we calculated costs, it was clear a startup couldn’t afford that. My mentor reminded me: “We’re past early funding. Every design decision must make financial sense.”",
               "That reframed my mindset. Startup design wasn’t about piling on flashy features, but finding leverage points—low-cost changes that could restore trust and usability. It wasn’t about chasing the AI trend; it was about knowing what not to build.",
             ],
-            image: `${IMG}/z6g5ELAZFrVWESYf8XVnH8s0.png`,
+            image: `/media/work/froghire/ch1-3.png`,
           },
           {
             tags: "BUG TRIAGE · JOURNEY MAPPING · PROBLEM DEFINITION",
@@ -445,7 +443,7 @@ export const projects: Project[] = [
               "At first it felt like whack-a-mole: fix one bug, another pops up. But then it hit me: unless we asked bigger questions, users would keep leaving faster than we could patch. Why was conversion so low? Why were features ignored? Did users lose trust on day one?",
               "That was my turning point. I wasn’t just logging issues anymore—I was learning to turn bugs into design problems. That’s where design could shift the product from firefighting toward strategy.",
             ],
-            image: `${IMG}/SpOzEq9WuEvCdyyoudss4Mdudr0.png`,
+            image: `/media/work/froghire/ch1-4.png`,
           },
         ],
       },
@@ -462,7 +460,7 @@ export const projects: Project[] = [
               "Then my mentor cut in: “The real issue isn’t which format—it’s that there’s no onboarding at all.” That line hit me. We’d been debating how, when the real problem was whether.",
               "We ended up with lightweight tooltips. Far from perfect, but better than nothing. And that was my first real startup lesson: elegant ideas rarely survive—the designs that ship are the ones that matter.",
             ],
-            image: `${IMG}/mojnu7syokMRNJ6psUnsC3naI.png`,
+            image: `/media/work/froghire/ch2-1.png`,
           },
           {
             tags: "SUBSCRIPTION REDESIGN· RESUME MANAGEMENT · FILTERING EXPERIENCE",
@@ -472,7 +470,7 @@ export const projects: Project[] = [
               "In resume management, I suggested active/inactive toggles to control recommendations. Engineering said no again, too complex. We cut it down to one highlighted resume. I knew it wasn’t flexible, but at least it gave users a little control.",
               "For filters, I insisted on adding location and salary—my mentor reminded me those mattered most to job seekers. That time, I held the line. Each round felt like bargaining. Sometimes I won clarity, sometimes only half. But I learned to prioritize: if the perfect solution won’t ship, even a partial step forward is still progress.",
             ],
-            image: `${IMG}/QYQYxvdE318lF0NjQQF4T92iY.png`,
+            image: `/media/work/froghire/ch2-2.png`,
           },
           {
             tags: "DESIGN SPECS · QA WALKTHROUGH · DEVELOPER HANDOFF",
@@ -482,7 +480,7 @@ export const projects: Project[] = [
               "So I became my own QA—running every flow, screen-recording, capturing bugs. Subscription data missing, resume states broken, misaligned tooltips—I logged nearly a hundred issues. Once, an engineer even admitted: “We thought that feature wasn’t live yet.” It was both funny and painful.",
               "Frustrating as it was, I learned something essential: in a strapped startup, the designer isn’t just a flow creator—they’re also the last line of defense for what makes it to production.",
             ],
-            image: `${IMG}/osRacTZJ0WnEBDhuwHjyHF6pV8.png`,
+            image: `/media/work/froghire/ch2-3.png`,
           },
           {
             tags: "SPRINT REVIEW · RETROSPECTIVES · DESIGN PRINCIPLES",
@@ -492,7 +490,7 @@ export const projects: Project[] = [
               "Then my mentor reminded us: “We’re still firefighting. Eventually we need standards.” That stuck with me. Yes, we were living in trade-offs. But I could still fight for clarity and consistency where it mattered.",
               "That’s when I reframed my role. Design wasn’t just about pixels—it was about helping the product survive and move forward, even if imperfect. In a startup, sometimes keeping the product alive is the most meaningful design you can deliver.",
             ],
-            image: `${IMG}/vh67bkEgGRz5dxrBoPOUJHYA.png`,
+            image: `/media/work/froghire/ch2-4.png`,
           },
         ],
       },
@@ -504,8 +502,8 @@ export const projects: Project[] = [
     slug: "roper-center",
     title: "Roper Center",
     template: "case",
-    cover: `${IMG}/hnG0x6uWkJJVksmxu5u2OIc1PkI.png`,
-    previewVideo: `${MEDIA}/0YUwmf39zv2LOjK87mSkDqwMhs.mp4`,
+    cover: `/media/work/roper/cover.png`,
+    previewVideo: `/media/work/roper/preview.mp4`,
     coverClass: "cover-roper",
     tags: ["UX Design", "Data Viz"],
     oneliner:
@@ -526,7 +524,7 @@ export const projects: Project[] = [
         "During usability tests, students smiled when the progress bar filled up and said, “I’m done, I’ve learned it.” Yet when asked follow-up questions, many couldn’t recall the key concepts. That contradiction was striking: the interface signaled success, but the learning had not happened. It wasn’t just a UI bug—it was a gap between appearance and outcome.",
         "That moment reshaped how I thought about educational design. A progress bar is not just decoration; it is a promise. As Don Norman reminds us, affordances guide expectations. For Roper Center, the real goal wasn’t “finishing a task” but “retaining knowledge.” That realization led me to redesign progress as layered checkpoints with feedback and citations, turning completion into genuine understanding.",
       ],
-      videos: [{ src: `${MEDIA}/0YUwmf39zv2LOjK87mSkDqwMhs.mp4`, wide: true }],
+      videos: [{ src: `/media/work/roper/preview.mp4`, wide: true }],
     },
     chapters: [
       {
@@ -539,7 +537,7 @@ export const projects: Project[] = [
             body: [
               "The Roper Center came to us with an educational simulation tool that looked like a quiz game. Students could click through questions, earn points, and see progress bars fill up. On the surface, it felt like learning. But in kickoff discussions, faculty admitted: “Students play, but they don’t retain.” My first realization was that this wasn’t about polishing visuals—it was about uncovering why “fun” wasn’t translating into knowledge.",
             ],
-            image: `${IMG}/u1QTK7nAxvtdYkJJUwn27XHXH0.png`,
+            image: `/media/work/roper/ch1-1.png`,
           },
           {
             tags: "Heuristic Evaluation · UX Audit",
@@ -547,7 +545,7 @@ export const projects: Project[] = [
             body: [
               "I started with a heuristic evaluation. What I found was subtle but serious: ambiguous navigation, misleading progress indicators, and no cues linking actions to learning outcomes. A progress bar suggested mastery, yet no feedback confirmed understanding. These issues weren’t just usability flaws—they revealed a deeper problem: the system measured activity, not comprehension.",
             ],
-            image: `${IMG}/y4g1iOAeZ3DbygTr4oCjhmawCI.png`,
+            image: `/media/work/roper/ch1-2.png`,
           },
           {
             tags: "User Interviews · Affinity Mapping · Jobs-to-Be-Done",
@@ -555,7 +553,7 @@ export const projects: Project[] = [
             body: [
               "User testing with high school and university students reinforced this gap. Many completed tasks quickly, but when asked to recall citations or explain reasoning, they hesitated. One student put it bluntly: “It feels like a game, not like I’m learning.” That insight reframed our challenge: the design goal was not to keep students clicking, but to give them proof of progress they could believe in.",
             ],
-            image: `${IMG}/36T8QNF6Ig8SWEUDDRbCwUKLZ8.png`,
+            image: `/media/work/roper/ch1-3.png`,
           },
           {
             tags: "Insight Synthesis · Design Principles · Evidence-Based Framing",
@@ -563,7 +561,7 @@ export const projects: Project[] = [
             body: [
               "From evaluation and testing, I distilled four design principles: clarity (navigation and progress must be unambiguous), feedback (immediate confirmation of understanding), motivation (gameplay should reinforce effort, not distract), and outcomes (design must point back to learning goals). This translation—from scattered complaints to structured principles—was the foundation for everything that followed.",
             ],
-            image: `${IMG}/4VBB9t4qjDpl67YIwX0lvwO0EWc.png`,
+            image: `/media/work/roper/ch1-4.png`,
           },
         ],
       },
@@ -577,7 +575,7 @@ export const projects: Project[] = [
             body: [
               "The first design challenge was progress. The old bar filled up no matter what, misleading students into thinking completion meant comprehension. I redesigned it as layered checkpoints: each segment unlocked only when students demonstrated understanding, with brief feedback at every step. Progress stopped being decoration—it became evidence of learning.",
             ],
-            image: `${IMG}/Q5Sry3kmQjkL2IrPJonGuWTcTs.png`,
+            image: `/media/work/roper/ch2-1.png`,
           },
           {
             tags: "Usability Testing · Feedback Loop · Cognitive Load",
@@ -585,7 +583,7 @@ export const projects: Project[] = [
             body: [
               "In usability tests, students said they clicked without thinking because the system never asked them to pause. I introduced immediate feedback—correct answers revealed sources, wrong ones showed hints and citations. This transformed clicks into moments of reflection, teaching students that learning wasn’t about speed, but about engaging with evidence.",
             ],
-            image: `${IMG}/nIVoATYHxfZZ2Add1MYY7XAzUU.png`,
+            image: `/media/work/roper/ch2-2.png`,
           },
           {
             tags: "Gamification · Rewards System · Behavior Design",
@@ -594,7 +592,7 @@ export const projects: Project[] = [
             body: [
               "Early prototypes treated citations as optional drawers, but students ignored them. I reframed citations as part of gameplay: correct answers unlocked sources, and exploring them earned small achievements. What was once a burden became motivation—students engaged with primary sources not because they had to, but because it felt rewarding.",
             ],
-            image: `${IMG}/iq5Xv9PySspri0wwc01wAsSpnso.png`,
+            image: `/media/work/roper/ch2-3.png`,
           },
           {
             tags: "Iteration · Prototype Testing · Design System Alignment",
@@ -602,7 +600,7 @@ export const projects: Project[] = [
             body: [
               "The final delivery included a high-fidelity prototype, UI kit, and research report. But the real impact was showing Roper Center their first evidence-based UX process. Every design choice traced back to a pain point, every feature mapped to a principle. The redesign didn’t just make the tool usable—it made it educational.",
             ],
-            image: `${IMG}/fpm42GkwPwxcSXlHPDBjgeaet4.png`,
+            image: `/media/work/roper/ch2-4.png`,
           },
         ],
       },
@@ -614,8 +612,8 @@ export const projects: Project[] = [
     slug: "hunger1942",
     title: "Hunger 1942",
     template: "poster",
-    cover: `${IMG}/5zyKNfQwTPjb8k4yiVdDHojwG4.png`,
-    previewVideo: `${MEDIA}/LiqN5ECGam7fIY6OPiBOTMKHOU.mp4`,
+    cover: `/media/work/hunger/cover.png`,
+    previewVideo: `/media/work/hunger/preview.mp4`,
     coverClass: "cover-hunger",
     tags: ["Game Design", "History"],
     oneliner:
@@ -628,7 +626,7 @@ export const projects: Project[] = [
     teams: "Game Design, History Research",
     poster: {
       lede: "Hunger 1942 is a 2D survival RPG set during the 1942 Henan Famine, blending real histories with gameplay to explore human struggle in disaster.",
-      image: `${IMG}/5zyKNfQwTPjb8k4yiVdDHojwG4.png`,
+      image: `/media/work/hunger/cover.png`,
       intro: [
         "Hunger 1942 is a game project that I initiated and developed with my team. It is a 2D pixel-style historical role-playing survival game inspired by The Oregon Trail, set against the backdrop of the 1942 Henan Famine. The project encompasses the game itself, artistic direction, and historical research.",
         "Launched in September 2022, the historical research and foundational game framework were completed by January 2023, with the initial demo finalized in August 2023. The game was inspired by reflections on food shortages during COVID-19 and insights from my modern Chinese history class, prompting me to explore the struggles of ordinary people during times of catastrophe.",
@@ -651,10 +649,10 @@ export const projects: Project[] = [
         "Though there is no definitive \"correct\" way to narrate history, by examining ordinary lives in past disasters—as we now experience personally during this epidemic—we can develop deeper empathy and thoughtfully reconsider concepts such as \"righteousness,\" \"justice,\" and \"humanity.\" Our project focuses specifically on the 1942 Henan famine, collecting overlooked individual narratives and using the immersive quality of games to reconstruct a realistic historical environment. Through authentic stories and personal choices, we encourage players to reflect critically and independently, striving always to maintain historical objectivity and avoid ideological bias.",
       ],
       gallery: [
-        `${IMG}/YzdvHm9fRkxjYqLmiFkgRZy2ds.png`,
-        `${IMG}/xxUlpWJIXRbMFeUYoUXXdSrePE.png`,
-        `${IMG}/vRXAT7TUi9cF4MfUqD9VOwPvj8.png`,
-        `${IMG}/RMkSRmw2XRzwPj5ekMTRNcz0c.png`,
+        `/media/work/hunger/gallery-1.png`,
+        `/media/work/hunger/gallery-2.png`,
+        `/media/work/hunger/gallery-3.png`,
+        `/media/work/hunger/gallery-4.png`,
       ],
     },
     order: 4,
@@ -663,7 +661,7 @@ export const projects: Project[] = [
     slug: "vr-education",
     title: "VR Monarch Butterfly",
     template: "poster",
-    cover: `${IMG}/NwtTH2DNikT8udqd6SMqzccrHc.png`,
+    cover: `/media/work/vr/cover.png`,
     coverClass: "cover-vr-monarch",
     tags: ["VR Design", "Unity"],
     oneliner:
@@ -676,7 +674,7 @@ export const projects: Project[] = [
     teams: "Digital Art, Immersive Experience, Digital Education",
     poster: {
       lede: "VR Monarch Butterfly is an immersive VR experience showcasing the monarch butterfly migration.",
-      image: `${IMG}/NwtTH2DNikT8udqd6SMqzccrHc.png`,
+      image: `/media/work/vr/cover.png`,
       intro: [
         "VR Monarch Butterfly is an immersive and interactive virtual reality documentary created during Winter Term in January 2023, marking my first exploration into interaction design. Working collaboratively with two fellow students, we employed Unity as our primary development tool to construct an engaging virtual environment designed to authentically recreate the spectacular journey of monarch butterflies during their annual migration. To enhance immersion, we carefully crafted detailed visual scenes depicting the butterflies' habitats, migration routes, and behaviors, aiming to evoke genuine emotional and sensory responses from users.",
         "Additionally, we integrated a documentary-style narration to provide educational context, making the experience informative as well as visually captivating. Interactive elements were intentionally designed and incorporated throughout the experience, allowing users to engage actively by exploring various scenes, triggering narrated explanations, and closely observing the butterflies' characteristics and migratory patterns. Ultimately, the project transcends traditional VR visualization by blending interactive technology, immersive storytelling, and educational documentary elements, providing an innovative approach to understanding and appreciating the monarch butterfly migration.",
@@ -692,10 +690,10 @@ export const projects: Project[] = [
         "Looking forward, we plan to further enhance the project by integrating additional visual art elements, such as transitioning butterflies into particle effects synchronized with music, evolving the experience from a purely realistic representation into a visually compelling artistic work.",
       ],
       gallery: [
-        `${IMG}/eBiTITfDvzOQi5d856eOQlnZ0.png`,
-        `${IMG}/zybECsV8b73QDuiTODGgkNl1kpU.png`,
-        `${IMG}/WLu4twUpL4jQRQUFnaixKsArCfs.png`,
-        `${IMG}/q6fhW0aDnYgQVrLeSm0az2p46g.png`,
+        `/media/work/vr/gallery-1.png`,
+        `/media/work/vr/gallery-2.png`,
+        `/media/work/vr/gallery-3.png`,
+        `/media/work/vr/gallery-4.png`,
       ],
     },
     order: 5,

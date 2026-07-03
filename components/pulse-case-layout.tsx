@@ -8,7 +8,7 @@ import { adjacent, type CaseSection, type Project } from "@/data/projects";
 // design system — the token set, type scale, spacing rhythm, and component
 // inventory are the ones I shipped, not invented. The build timeline is my own
 // account of how the work happened; screenshots are real captures of the
-// prototype's static file:// surfaces (public/media/pulse/). Confidential
+// prototype's static file:// surfaces (public/media/work/pulse/). Confidential
 // details (exact package identity, teammate names, internal filenames, and
 // commit hashes) are deliberately kept off the public page.
 //
@@ -233,7 +233,7 @@ const plateRows: Array<[string, string]> = [
 ];
 
 // Screenshots — captured from the project's static file:// surfaces
-// (1440×1000). All seven live in public/media/pulse/.
+// (1440×1000). All seven live in public/media/work/pulse/.
 const SHOT_W = 1440;
 const SHOT_H = 1000;
 
@@ -1732,7 +1732,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <figure className="pulse-section-full" data-fade>
                 <div className="pulse-shot">
                   <Image
-                    src="/media/pulse/component-preview.png"
+                    src="/media/work/pulse/component-preview.png"
                     alt="Pulse HTML Component Preview: category sidebar and the AIPanel component specimen with a live demo"
                     width={SHOT_W}
                     height={SHOT_H}
@@ -1749,7 +1749,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <figure className="pulse-section-inset" data-fade>
                 <div className="pulse-shot">
                   <Image
-                    src="/media/pulse/react-playground.png"
+                    src="/media/work/pulse/react-playground.png"
                     alt="Pulse React Component Library playground: AIPanel rendered from the npm package, with copyable usage code"
                     width={SHOT_W}
                     height={SHOT_H}
@@ -1773,7 +1773,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <figure className="pulse-section-full" data-fade>
                 <div className="pulse-shot">
                   <Image
-                    src="/media/pulse/figma-board-campaign.png"
+                    src="/media/work/pulse/figma-board-campaign.png"
                     alt="Figma component board: PostChip state matrix and a labeled campaign anatomy map"
                     width={SHOT_W}
                     height={SHOT_H}
@@ -1790,7 +1790,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <figure className="pulse-section-inset" data-fade>
                 <div className="pulse-shot">
                   <Image
-                    src="/media/pulse/foundations-handbook.png"
+                    src="/media/work/pulse/foundations-handbook.png"
                     alt="Pulse design system foundations page with status, scope, accent, and export chips and the section index"
                     width={SHOT_W}
                     height={SHOT_H}
@@ -1862,7 +1862,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <figure className="pulse-section-full" data-fade>
                 <div className="pulse-shot">
                   <Image
-                    src="/media/pulse/pulse-app-home.png"
+                    src="/media/work/pulse/pulse-app-home.png"
                     alt="Pulse app Home page: workspace sidebar for the Cider demo brand, action-item KPI tiles, content queue, and signals feed"
                     width={SHOT_W}
                     height={SHOT_H}
@@ -1887,7 +1887,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <div className="pulse-shot-pair">
                   <div className="pulse-shot">
                     <Image
-                      src="/media/pulse/pulse-app-calendar.png"
+                      src="/media/work/pulse/pulse-app-calendar.png"
                       alt="Pulse Calendar in week view with scheduled posts and a schedule-health rail"
                       width={SHOT_W}
                       height={SHOT_H}
@@ -1897,7 +1897,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <div className="pulse-shot">
                     <Image
-                      src="/media/pulse/pulse-app-analytics.png"
+                      src="/media/work/pulse/pulse-app-analytics.png"
                       alt="Pulse Analytics weekly report with KPI tiles and key signals"
                       width={SHOT_W}
                       height={SHOT_H}

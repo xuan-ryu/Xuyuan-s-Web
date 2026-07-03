@@ -16,7 +16,7 @@ export default function Home() {
 
       <HeroScene
         liteMode={liteScenesEnabled}
-        mobileBgUrl="/assets/framerusercontent.com/images/oOEkORPGPOFnemDEDLO72iBOZKU.png"
+        mobileBgUrl="/media/home/hero-mobile-bg.png"
         heroWord1={site.greeting[0]}
         heroWord2={site.greeting[1]}
         heroWord3={site.greeting[2]}
@@ -27,7 +27,7 @@ export default function Home() {
         page2Title={site.brandmark}
         page2Subtitle={site.blackPage.body}
         page2Footer="The craft lives in the transitions."
-        photoUrl="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
+        photoUrl="/media/shared/portrait.jpg"
       />
 
       <RoofTransition />

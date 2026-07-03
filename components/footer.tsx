@@ -24,7 +24,7 @@ export function Footer() {
         </div>
         <div className="footer-mark" aria-hidden="true">
           <Image
-            src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+            src="/media/shared/seal.png"
             alt=""
             width={36}
             height={76}

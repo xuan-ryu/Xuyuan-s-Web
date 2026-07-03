@@ -1,22 +1,24 @@
 @import "tailwindcss";
 
+/* Self-hosted fonts + all media now live under public/media (see repo layout). */
+
 @font-face {
   font-family: "LiuJian Mao Cao";
-  src: url("/fonts/liujian-mao-cao.woff2") format("woff2");
+  src: url("/media/fonts/liujian-mao-cao.woff2") format("woff2");
   font-display: swap;
 }
 
 /* live koan brush font (Chinese 行草 with Latin glyphs) */
 @font-face {
   font-family: "CloudXingCaoGBK";
-  src: url("/assets/framerusercontent.com/assets/imUjwEtsUuwif5zrT6p44rQetdM.woff2")
+  src: url("/media/fonts/cloud-xingcao-gbk.woff2")
     format("woff2");
   font-display: swap;
 }
 
 @font-face {
   font-family: "Murecho";
-  src: url("/assets/fonts.gstatic.com/s/murecho/v17/q5uYsoq3NOBn_I-ggCJg98TBOoNFCMo15UWeJis.woff2")
+  src: url("/media/fonts/murecho-latin.woff2")
     format("woff2");
   font-display: swap;
   font-style: normal;
@@ -28,7 +30,7 @@
 
 @font-face {
   font-family: "LiuJian-Mao-Cao Regular";
-  src: url("/assets/framerusercontent.com/assets/Hj5yJQldIe6xW2jYG3zSMXIdbMY.woff2")
+  src: url("/media/fonts/liujian-mao-cao-regular.woff2")
     format("woff2");
   font-display: swap;
   font-style: normal;
@@ -37,7 +39,7 @@
 
 @font-face {
   font-family: "Murecho Local";
-  src: url("/assets/fonts.gstatic.com/s/murecho/v17/q5uYsoq3NOBn_I-ggCJg98TBOoNFCMrr5UWeJis.woff2")
+  src: url("/media/fonts/murecho-latin-200.woff2")
     format("woff2");
   font-display: swap;
   font-style: normal;
@@ -476,7 +478,7 @@ body.hero-night .nav-links a.active {
   position: relative;
   background:
     linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.92)),
-    url("/assets/framerusercontent.com/images/rR6HYXBrMmX4cRpXfXUOvpvpB0.png");
+    url("/media/shared/footer-texture.png");
   background-size: auto, 100px 100px;
   color: var(--paper);
 }
@@ -817,7 +819,7 @@ body.hero-night .nav-links a.active {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("/assets/framerusercontent.com/images/rR6HYXBrMmX4cRpXfXUOvpvpB0.png");
+  background-image: url("/media/shared/footer-texture.png");
   background-repeat: repeat;
   background-size: 100px 100px;
   opacity: 0.1;

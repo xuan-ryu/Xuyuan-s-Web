@@ -284,7 +284,7 @@ function StoryboardNodeBody() {
               </span>
             </div>
             <div className="vicino-storyboard-scene-img">
-              <img src="/media/vicino-storyboard-sketch.png" alt="" />
+              <img src="/media/work/vicino/storyboard-sketch.png" alt="" />
             </div>
           </div>
         ))}
@@ -307,7 +307,7 @@ function ShootNodeBody() {
           <span className="vicino-shoot-box-label shoot-node-box-label">First Frame</span>
           <img
             className="vicino-shoot-frame-image shoot-node-frame-image"
-            src="/media/vicino-shootnode-board.png"
+            src="/media/work/vicino/shootnode-board.png"
             alt="Cinematic shot board preview"
           />
         </div>
@@ -327,7 +327,7 @@ function VideoNodeBody() {
         <div className="video-node-v3-media">
           <img
             className="video-node-v3-player"
-            src="/media/vicino-video-preview.png"
+            src="/media/work/vicino/video-preview.png"
             alt="Video output preview"
           />
         </div>

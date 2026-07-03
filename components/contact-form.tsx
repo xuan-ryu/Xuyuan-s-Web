@@ -6,7 +6,7 @@ import { site } from "@/data/site";
 import { Cta } from "@/components/ui/cta";
 
 const SEAL_SRC =
-  "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
+  "/media/shared/seal.png";
 
 const SERVICES = [
   "Branding",

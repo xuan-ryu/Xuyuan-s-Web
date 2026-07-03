@@ -6,7 +6,7 @@ import { VicinoFlowStrip } from "./vicino-flow-strip";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
 
-const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
+const SEAL_SRC = "/media/shared/seal.png";
 
 // Render-level fact refresh grounded in the owner's own zoning vocabulary:
 // the generic "sidebars" phrasing becomes the design model's named layers.
@@ -3139,7 +3139,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   // The main-path deck is the product's own flow overview (Script → Storyboard
   // → Shot → Image Editor → Video). Hardcoded (decoupled from data) like the
   // other declassified vicino artifacts. Owner-supplied prototype screenshot.
-  const mainPathFigure = "/media/vicino/flow-overview.png";
+  const mainPathFigure = "/media/work/vicino/flow-overview.png";
   const evidenceIntro = sections[6]?.body[0];
 
   return (

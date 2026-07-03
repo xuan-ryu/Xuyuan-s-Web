@@ -3,7 +3,7 @@
 // can never drift apart (spec-roper.json binding adjustment).
 //
 // VERIFICATION: figures read off the project's source video
-// public/assets/framerusercontent.com/assets/0YUwmf39zv2LOjK87mSkDqwMhs.mp4 —
+// public/media/work/roper/preview.mp4 —
 // the reveal screen at ~20s shows "Actual Poll Response in 1984":
 // Favor 80% / Oppose 16% / Don't know 4%, "Who: National adult; Registerd
 // voters (77%)", "When: 9/7/1984 - 9/11/1984". The 45/52/4 school-day figures

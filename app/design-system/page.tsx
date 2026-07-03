@@ -69,7 +69,7 @@ export default function DesignSystemPage() {
         <div className="ds-hero-board" aria-label="System summary">
           <div className="ds-seal-card">
             <Image
-              src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+              src="/media/shared/seal.png"
               alt=""
               width={96}
               height={190}
@@ -84,7 +84,7 @@ export default function DesignSystemPage() {
           </div>
           <div className="ds-board-window">
             <Image
-              src="/assets/framerusercontent.com/images/D6Nz1N21z7DIjWae8R8LFGCY.png"
+              src="/media/home/roof-piece-a.png"
               alt=""
               fill
               sizes="360px"
@@ -264,7 +264,7 @@ export default function DesignSystemPage() {
         <div className="ds-project-specimen">
           <div className="ds-project-image">
             <Image
-              src="/assets/framerusercontent.com/images/SUHc9j4i2q6lWCPn65FHtpIVCqw.jpg"
+              src="/media/about/dojo-wall-5-chongqing.jpg"
               alt=""
               fill
               sizes="(max-width: 809px) 100vw, 760px"

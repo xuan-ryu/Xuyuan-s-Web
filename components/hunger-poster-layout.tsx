@@ -145,7 +145,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
         </div>
         <Image
           className="hunger-stamp"
-          src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+          src="/media/shared/seal.png"
           alt=""
           width={304}
           height={641}

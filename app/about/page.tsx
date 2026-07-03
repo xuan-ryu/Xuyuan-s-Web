@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: about.heroIntro,
 };
 
-const SEAL = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
+const SEAL = "/media/shared/seal.png";
 
 // 心・技・体 hanging-scroll column + gloss, derived from the existing
 // data/about.ts caption string ("心・技・体 / mind, skill, body / Aikido ·
@@ -26,7 +26,7 @@ export default function About() {
   return (
     <>
       <HongyadongScene
-        imageSrc="/media/hongyadong.png"
+        imageSrc="/media/about/hongyadong.png"
         profilePhoto=""
         eyebrow="Profile"
         titleLine1="About"
@@ -43,7 +43,7 @@ export default function About() {
           <div className="abf-portrait" data-fade>
             <div className="about-photo">
               <Image
-                src="/assets/framerusercontent.com/images/z70LgB4OGJnzvGEUcfqCtULg4.jpg"
+                src="/media/about/portrait-meeting.jpg"
                 alt="Xuyuan Liu in a meeting"
                 fill
                 sizes="(max-width: 809px) 350px, 306px"

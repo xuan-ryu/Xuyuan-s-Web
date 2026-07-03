@@ -13,11 +13,11 @@ import { VrmbParticleStrip } from "@/components/vrmb-particle-strip";
 // skyward diptych -> dark exhibition band -> particle coda -> Plate II
 // credits -> adjacent nav.
 //
-// All derived crops in /media/vrmb were pixel-probed from the original five
+// All derived crops in /media/work/vr were pixel-probed from the original five
 // Framer assets (see the probe notes at the bottom of this file). All
 // microcopy below is hardcoded here — NOT in data/projects.ts — pending owner
 // sign-off on the migration facts and exhibition sentences.
-const MEDIA = "/media/vrmb";
+const MEDIA = "/media/work/vr";
 
 const css = `
 .vrmb-page {
@@ -754,7 +754,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
           <div className="poster-details-head">
             <p>Project Details</p>
             <Image
-              src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+              src="/media/shared/seal.png"
               alt=""
               width={157}
               height={127}
@@ -1033,7 +1033,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
   );
 }
 
-// Derived assets in public/media/vrmb (all crops pixel-probed on 2026-07-02
+// Derived assets in public/media/work/vr (all crops pixel-probed on 2026-07-02
 // with a canvas scan of the original Framer assets; rects are source-pixel
 // exact, with measured near-black letterbox bars trimmed):
 //   specimen.png        851x606 <- NwtTH2…png  x171 y52   (butterfly bbox

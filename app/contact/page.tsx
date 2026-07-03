@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const SEAL_SRC =
-  "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
+  "/media/shared/seal.png";
 
 // "Correspondence: the letter sheet" — the contact page composed as a letter:
 // condensed letterhead, opening line, a hairline address ledger (the email is
@@ -106,19 +106,6 @@ a.ctc-ledger-value:focus-visible {
   letter-spacing: 0;
   text-transform: none;
   line-height: var(--leading-tight);
-}
-
-/* hanging inscription — site.sideText as vertical marginalia in
-   the air column (col 7); decorative, hidden below 1200px. */
-.ctc-inscription {
-  grid-column: 7;
-  justify-self: center;
-  writing-mode: vertical-rl;
-  max-height: 600px;
-  font-family: var(--font-text);
-  font-size: var(--text-meta);
-  letter-spacing: 0.35em;
-  color: var(--stone);
 }
 
 /* portrait — the enclosed photograph, chop pressed on its corner.
@@ -330,14 +317,6 @@ a.ctc-ledger-value:focus-visible {
   }
 }
 
-/* narrow desktop — the inscription yields before it crowds the
-   portrait (spec: hidden below 1200px). */
-@media (max-width: 1199.98px) {
-  .ctc-inscription {
-    display: none;
-  }
-}
-
 /* tablet — single rail: intro + ledger, then the photograph at
    min(100%, 546px); the aside becomes a paragraph above the form. */
 @media (max-width: 1079.98px) {
@@ -481,14 +460,10 @@ export default function Contact() {
             </dl>
           </div>
 
-          <p className="ctc-inscription" aria-hidden="true" data-fade>
-            {site.sideText}
-          </p>
-
           <div className="ctc-portrait" data-fade>
             <div className="ctc-portrait-frame">
               <Image
-                src="/assets/framerusercontent.com/images/oVKSCPMnnMqcT6I6GkrYcVaI0U.jpg"
+                src="/media/shared/portrait.jpg"
                 alt="Xuyuan Liu"
                 fill
                 sizes="(max-width: 809px) calc(100vw - 40px), (max-width: 1079px) min(calc(100vw - 48px), 546px), 546px"

@@ -52,7 +52,7 @@ export function PosterLayout({ project }: { project: Project }) {
           <div className="poster-details-head">
             <p>Project Details</p>
             <Image
-              src="/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png"
+              src="/media/shared/seal.png"
               alt=""
               width={157}
               height={127}

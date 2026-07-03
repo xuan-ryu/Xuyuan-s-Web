@@ -55,7 +55,7 @@ const DOCK_H = 556;
 // Prompt (text) input keeps the connection pink.
 const IMAGE_ACCENT = "#8BD6D9";
 const TEXT_HANDLE = "#F1A0FA";
-const GEN_IMAGE = "/media/vicino-video-preview.png";
+const GEN_IMAGE = "/media/work/vicino/video-preview.png";
 
 // the handle positions: first slot 56px from the node top, +40px per slot.
 const SLOT_TOP = 56;

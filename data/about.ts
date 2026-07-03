@@ -2,8 +2,6 @@
 // (export-.../about/index.html); section order and media mapping follow the
 // live site DOM (audit-screenshots/outline-about.txt).
 
-const IMG = "/assets/framerusercontent.com/images";
-const MEDIA = "/assets/framerusercontent.com/assets";
 
 export const about = {
   heading: "About Me.",
@@ -33,26 +31,26 @@ export const about = {
     closing: "I Learned A Lot. The Era Keeps Moving. So Do I.",
     // 5x4 logo wall, row-major, as rendered on the live site at 1440w
     logos: [
-      `${IMG}/5J5OEzpheE8Fxt8MeKK7UkFDDe8.svg`,
-      `${IMG}/CNUyQk0XNbw3geWYbXJtlRT80.png`,
-      `${IMG}/xwnKoqiHtgolpK85ELMAZgRtBI.png`,
-      `${IMG}/x8AO0uXQ7jQm3Ygxv7EX3q1M.png`,
-      `${IMG}/3DOoUFQ2wutndQSEhQYe8drSm68.png`,
-      `${IMG}/E6rG0jQ8sKPNhH2w0hi7RAqlfxE.png`,
-      `${IMG}/ejKIC88egZahPvJJGv8El9lA6gM.png`,
-      `${IMG}/hXCW92Fo4239PgNRzvCqVUrG0.webp`,
-      `${IMG}/lg1QGHwGwPnIIM2anM62VC1x0.svg`,
-      `${IMG}/L03RNVqaBTGbQ263Pi6WDza1cM.png`,
-      `${IMG}/6Qwf6PbbFLDvYpmjUmVor3SqWM.png`,
-      `${IMG}/JO1yuHHhzuYB6RosNzzrAQ5pBeo.png`,
-      `${IMG}/EIFKHmoTOeLFSt1LxAF1wQw9fw.png`,
-      `${IMG}/eDHObwcFOAKAeWQTMcG6hrVU9A.png`,
-      `${IMG}/zt3zQspgf4m7OkqlznNpjvkcNA.png`,
-      `${IMG}/gwmgdtDtwFYraBJmFzfeVWXOSmY.png`,
-      `${IMG}/QdglYPgKGHdhJ9HbKDD621M9uHU.svg`,
-      `${IMG}/0zkeuqQ5qK8ixn7kzvQxXYtZ6rI.png`,
-      `${IMG}/HqIQCYs1x8G5tBzRn6henq97d4.webp`,
-      `${IMG}/mBcFXXR2XSpQFL5AGUm2sCQ7OnE.png`,
+      `/media/about/logos/logo-01.svg`,
+      `/media/about/logos/logo-02.png`,
+      `/media/about/logos/logo-03.png`,
+      `/media/about/logos/logo-04.png`,
+      `/media/about/logos/logo-05.png`,
+      `/media/about/logos/logo-06.png`,
+      `/media/about/logos/logo-07.png`,
+      `/media/about/logos/logo-08.webp`,
+      `/media/about/logos/logo-09.svg`,
+      `/media/about/logos/logo-10.png`,
+      `/media/about/logos/logo-11.png`,
+      `/media/about/logos/logo-12.png`,
+      `/media/about/logos/logo-13.png`,
+      `/media/about/logos/logo-14.png`,
+      `/media/about/logos/logo-15.png`,
+      `/media/about/logos/logo-16.png`,
+      `/media/about/logos/logo-17.svg`,
+      `/media/about/logos/logo-18.png`,
+      `/media/about/logos/logo-19.webp`,
+      `/media/about/logos/logo-20.png`,
     ],
   },
 
@@ -65,7 +63,7 @@ export const about = {
       "That's what I still trust about the older tools. Not slowness as virtue — slowness has nothing to do with it — but the way the constraint sharpens what you pay attention to. You eventually learn what it feels like when something has actually landed, as opposed to merely produced.",
       "Same with the AI era. You can generate a hundred prototypes before lunch; that doesn't make 恰好 cheaper, only rarer.",
     ],
-    video: `${MEDIA}/9Zq9uut6C58z0HyonvLZFxJLv0.mp4`,
+    video: `/media/about/kyoto-reel.mp4`,
     caption: "01/25/2023 Kinkakuji, Kyoto, Japan",
   },
 
@@ -84,14 +82,14 @@ export const about = {
   // staggered photo wall; positions are live-measured offsets at 1440w
   // (x relative to a 1420px-wide stage, y relative to the wall top)
   dojoWall: [
-    { src: `${IMG}/2RoUM3esMXVEKDaeQnGVXBBhOY.jpg`, x: 0, y: 0, h: 433 },
-    { src: `${IMG}/7PQHwFbGVgsuZbWOfNEzYPD7zcI.jpg`, x: 178, y: 0, h: 254, caption: "Oberlin Aikikai, OH, 2022" },
-    { src: `${IMG}/tW4R7MqkdmATxELLSr4A2SrlWw.jpg`, x: 356, y: 139, h: 130, caption: "Ikazuchi Dojo, CA, 2023" },
-    { src: `${IMG}/MF7TFCYzwRJPqsi7BNMfExGPyg.jpg`, x: 534, y: 156, h: 277 },
-    { src: `${IMG}/SUHc9j4i2q6lWCPn65FHtpIVCqw.jpg`, x: 712, y: 29, h: 333, caption: "Chongqing JiangBei Kendo Dojo, China, 2024" },
-    { src: `${IMG}/mkABAiHXQOfGwelCIF1V62j82g.jpg`, x: 890, y: 213, h: 221 },
-    { src: `${IMG}/EvOUJarrMys983wrkaajzhZpzk.jpg`, x: 1068, y: 0, h: 433 },
-    { src: `${IMG}/LLqvjwTjmeqiekQkofmdE7L6mhc.jpg`, x: 1246, y: 99, h: 195, caption: "Kyoto Hokenkai, Japan, 2024" },
+    { src: `/media/about/dojo-wall-1.jpg`, x: 0, y: 0, h: 433 },
+    { src: `/media/about/dojo-wall-2-oberlin.jpg`, x: 178, y: 0, h: 254, caption: "Oberlin Aikikai, OH, 2022" },
+    { src: `/media/about/dojo-wall-3-ikazuchi.jpg`, x: 356, y: 139, h: 130, caption: "Ikazuchi Dojo, CA, 2023" },
+    { src: `/media/about/dojo-wall-4.jpg`, x: 534, y: 156, h: 277 },
+    { src: `/media/about/dojo-wall-5-chongqing.jpg`, x: 712, y: 29, h: 333, caption: "Chongqing JiangBei Kendo Dojo, China, 2024" },
+    { src: `/media/about/dojo-wall-6.jpg`, x: 890, y: 213, h: 221 },
+    { src: `/media/about/dojo-wall-7.jpg`, x: 1068, y: 0, h: 433 },
+    { src: `/media/about/dojo-wall-8-kyoto.jpg`, x: 1246, y: 99, h: 195, caption: "Kyoto Hokenkai, Japan, 2024" },
   ],
 
   activities: [
@@ -117,21 +115,21 @@ export const about = {
 
   testimonials: [
     {
-      photo: `${IMG}/vUiz4QowRLx4HmzsIBob6ukm58.jpg`,
+      photo: `/media/about/testimonial-jiangning.jpg`,
       name: "Jiangning Lian",
       role: "UX Designer",
       quote:
         "Xuyuan is a passionate, driven UI/UX mentee who learns fast, embraces feedback, and delivers. Clear goals, strong follow-through, and great to work with.",
     },
     {
-      photo: `${IMG}/fU24djX17gR5iKkcGEDHEQ74.jpg`,
+      photo: `/media/about/testimonial-minna.jpg`,
       name: "Minna Wang",
       role: "Project Manager",
       quote:
         "Xuyuan has been reliable and resourceful, brings fresh perspectives and solid execution that strengthen our team’s UI/UX projects.",
     },
     {
-      photo: `${IMG}/fwsL143Fl9SheXSyRjQJUgLHxr4.jpg`,
+      photo: `/media/about/testimonial-yuchi.jpg`,
       name: "Yu-chi Chang",
       role: "Assistant Professor of History",
       quote:
@@ -141,22 +139,22 @@ export const about = {
 
   habits: [
     {
-      photo: `${IMG}/T5puQfALB4AjPr30dGWXFp42g.jpg`,
+      photo: `/media/about/habit-photography.jpg`,
       label: "Photography",
       sub: "Film & Camera",
     },
     {
-      photo: `${IMG}/NUBu4ucAEdyKOs1K3lT9PRplNgU.jpg`,
+      photo: `/media/about/habit-art.jpg`,
       label: "Art",
       sub: "Asian & Buddhism",
     },
     {
-      photo: `${IMG}/xgRn6oH8Cm7lOIWuESdvZGN22KU.jpg`,
+      photo: `/media/about/habit-martial-art.jpg`,
       label: "Martial Art",
       sub: "Aikido & Iaido & Kendo",
     },
     {
-      photo: `${IMG}/yM6MYbR8k8DyGO8zuZZyf3jZ19E.jpg`,
+      photo: `/media/about/habit-music.jpg`,
       label: "Music",
       sub: "Jazz&Techno&City-pop",
     },
