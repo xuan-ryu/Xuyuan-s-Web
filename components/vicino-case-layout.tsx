@@ -3136,7 +3136,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   const contextCopy = project.blurb.split("\n\n")[0] ?? "";
   const ambiguityCopy = sections[0]?.body[0];
   const contextFigure = sections[0]?.image;
-  const mainPathFigure = sections[2]?.image;
+  // The main-path deck is the product's own flow overview (Script → Storyboard
+  // → Shot → Image Editor → Video). Hardcoded (decoupled from data) like the
+  // other declassified vicino artifacts. Owner-supplied prototype screenshot.
+  const mainPathFigure = "/media/vicino/flow-overview.png";
   const evidenceIntro = sections[6]?.body[0];
 
   return (
@@ -3239,17 +3242,17 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             <div className="vicino-decision-media">
               <Image
                 src={mainPathFigure}
-                alt="Deck slide: 'I rebuilt the main path around what the models could actually support at each step' — Script, Storyboard, Shot breakdown, and Video, each with its model-constraint rationale"
-                width={1600}
-                height={2141}
+                alt="The main path as a node flow: Script Node refines or writes the script, Storyboard turns it into six sketch scenes, Shot Node generates detailed keyframes, an Image Editor refines frames, and Video Generation produces the clips — each stage a checkpoint before the next."
+                width={2049}
+                height={975}
                 sizes="(max-width: 1080px) 100vw, 1280px"
                 style={{ height: "auto" }}
               />
             </div>
             <figcaption>
-              The same argument as it was presented — each step exists because
-              the models cannot skip it reliably; a recommended structure, not
-              a forced pipeline.
+              The path as nodes on the canvas — script, storyboard, shot, image
+              refine, video — each stage a place to inspect and redirect before
+              the next, more expensive one.
             </figcaption>
           </figure>
         )}
