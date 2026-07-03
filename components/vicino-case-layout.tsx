@@ -3,8 +3,11 @@ import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { VicinoAudienceViz } from "./vicino-audience-viz";
+import { VicinoCheckpointViz } from "./vicino-checkpoint-viz";
 import { VicinoFlowStrip } from "./vicino-flow-strip";
+import { VicinoInterventionViz } from "./vicino-intervention-viz";
 import { VicinoModelBoard } from "./vicino-model-board";
+import { VicinoPipelineViz } from "./vicino-pipeline-viz";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
 
 const SEAL_SRC = "/media/shared/seal.png";
@@ -17,49 +20,6 @@ function refreshFacts(copy: string) {
   return copy.split("editor logic, sidebars, sliding panels").join(
     "editor logic, the Sidebar and Floating Bar layers, sliding panels",
   );
-}
-
-// Station-04 evidence ledger: the chapter decisions, tightened. Rows whose
-// argument the station-03 interactive now carries are dropped per the
-// redundancy rule (the main-path row = the checkpoints, the four-layers row
-// = the rooms); the previously unrendered prototype section supplies the
-// station intro, and the design-system section joins the ledger. `body`
-// picks the paragraphs that do not restate the interactive or the heading.
-const evidenceRows: Array<{ section: number; body: number[] }> = [
-  { section: 1, body: [0] },
-  { section: 3, body: [0] },
-  { section: 4, body: [0, 1] },
-  { section: 7, body: [0, 1] },
-];
-
-// Chapter-2 headings arrive Title Cased; the decision claims read as
-// sentence-case editorial claims (family rule), so normalize at render time
-// instead of editing data/projects.ts.
-const KEEP_CAPS = new Set([
-  "I",
-  "AI",
-  "3D",
-  "PM",
-  "PMs",
-  "React",
-  "Vicino",
-  "Script",
-  "Storyboard",
-  "Image",
-  "Video",
-]);
-
-function sentenceCase(heading: string) {
-  return heading
-    .split(" ")
-    .map((word, index) => {
-      if (index === 0) return word;
-      const base = word.replace(/[^A-Za-z0-9'']/g, "");
-      if (KEEP_CAPS.has(base)) return word;
-      if (/^[A-Z][a-z]/.test(word)) return word.charAt(0).toLowerCase() + word.slice(1);
-      return word;
-    })
-    .join(" ");
 }
 
 const vicinoCriticalCss = `
@@ -3148,7 +3108,6 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   // → Shot → Image Editor → Video). Hardcoded (decoupled from data) like the
   // other declassified vicino artifacts. Owner-supplied prototype screenshot.
   const mainPathFigure = "/media/work/vicino/flow-overview.png";
-  const evidenceIntro = sections[6]?.body[0];
 
   return (
     <article className="vicino-case-page">
@@ -3249,6 +3208,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <div className="vicino-brief-viz" data-fade>
           <VicinoAudienceViz />
         </div>
+        <div className="vicino-brief-viz" data-fade>
+          <VicinoPipelineViz />
+        </div>
       </section>
 
       <section className="vicino-station vicino-flow">
@@ -3264,6 +3226,12 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             step. Each also asks the person to state their intent plainly, and
             that stated intent is the clearest prompt any model can act on: the
             flow does prompt-engineering by design, and teaches it as people work.
+          </p>
+          <p className="vicino-body-copy">
+            The path splits in two: the front — Script and Storyboard — converges
+            intent into language any model can read; the back — Shot and Video —
+            turns it into generation people can steer and refine. It&rsquo;s also
+            the step-control a future full-workflow agent would need.
           </p>
         </div>
         <div className="vicino-flow-strip-wrap" data-fade>
@@ -3288,6 +3256,12 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             </figcaption>
           </figure>
         )}
+        <div className="vicino-flow-viz" data-fade>
+          <VicinoCheckpointViz />
+        </div>
+        <div className="vicino-flow-viz" data-fade>
+          <VicinoInterventionViz />
+        </div>
       </section>
 
       <section className="vicino-station vicino-model">
@@ -3319,62 +3293,6 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         </div>
         <div className="vicino-model-board-wrap" data-fade>
           <VicinoModelBoard />
-        </div>
-      </section>
-
-      <section className="vicino-station vicino-evidence">
-        <span className="vicino-station-rule" aria-hidden="true" />
-        <p className="vicino-station-index" data-fade>
-          05 · Evidence
-        </p>
-        <h2 data-fade>The Work Was Deciding Where Complexity Should Live</h2>
-        {evidenceIntro && (
-          <div className="vicino-evidence-copy" data-fade>
-            <p className="vicino-body-copy">{evidenceIntro}</p>
-          </div>
-        )}
-
-        <p className="vicino-sub-label" data-fade>
-          Decision ledger
-        </p>
-        <div className="vicino-decision-list">
-          {evidenceRows.map(({ section: sectionIndex, body }, index) => {
-            const section = sections[sectionIndex];
-            if (!section) return null;
-            return (
-              <section className="vicino-decision" key={section.heading} data-fade>
-                <p className="vicino-row-index vicino-decision-index">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <div className="vicino-decision-copy">
-                  <h3>{sentenceCase(section.heading)}</h3>
-                  <p className="vicino-decision-tags">{section.tags}</p>
-                  {body
-                    .map((i) => section.body[i])
-                    .filter((p): p is string => Boolean(p))
-                    .map((p) => (
-                      <p className="vicino-body-copy vicino-decision-body" key={p}>
-                        {p}
-                      </p>
-                    ))}
-                </div>
-                {section.image && (
-                  <figure className="vicino-decision-figure">
-                    <div className="vicino-decision-media">
-                      <Image
-                        src={section.image}
-                        alt=""
-                        width={840}
-                        height={560}
-                        sizes="(max-width: 1080px) 100vw, 560px"
-                        style={{ height: "auto" }}
-                      />
-                    </div>
-                  </figure>
-                )}
-              </section>
-            );
-          })}
         </div>
       </section>
 
