@@ -290,6 +290,36 @@ export default function About() {
           </div>
         </div>
       </section>
+      {/* Bottom-pin offset for the dark→activities cover. The dark band is
+          taller than the viewport and its height changes with width, so the
+          sticky `top` (= viewport − band height) can't be a static value.
+          This measures it and writes --dark-pin-top; a full-page load runs the
+          inline script directly, and it re-measures on resize / content reflow.
+          Only desktop (≥1080px) bottom-pins — narrower widths stack the band
+          (position: relative; top: auto via the media query below). */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){
+  var el = document.querySelector(".abf-dark");
+  if (!el) return;
+  // Write the offset through an injected stylesheet rule rather than the
+  // element's inline style: React owns this <section>, and mutating its style
+  // before hydration would trip a hydration-mismatch error. A head <style> is
+  // outside React's tree, so it stays clean. offsetHeight is unaffected by the
+  // top offset we set, so there is no measure/apply feedback loop.
+  var sheet = document.createElement("style");
+  document.head.appendChild(sheet);
+  var apply = function(){
+    if (!window.matchMedia("(min-width: 1080px)").matches) { sheet.textContent = ""; return; }
+    sheet.textContent = ".abf-dark{--dark-pin-top:" + (window.innerHeight - el.offsetHeight) + "px}";
+  };
+  apply();
+  window.addEventListener("resize", apply, { passive: true });
+  window.addEventListener("load", apply);
+  if (window.ResizeObserver) { new ResizeObserver(apply).observe(el); }
+})();`,
+        }}
+      />
       {/* ── "one roll of film" pass (.abf-) — page-owned styles ──
           globals.css .about-* rules keep styling the unchanged markup;
           everything new or overridden lives here under the abf prefix. */}
@@ -347,6 +377,15 @@ h2.about-habits-title.abf-t,
   padding: clamp(96px, 10vw, 144px) 0;
 }
 .about-testimonials.abf-voices {
+  /* VOICES follows the page-turn wrapper on the same paper. The wrapper is
+     positioned (relative), so it paints ABOVE this static section and its
+     covering box-shadow bled a grey band across the top of VOICES. Lift VOICES
+     into the same paint layer with an opaque paper fill so it seals over that
+     shadow tail — the section then flows in with no color band (the only rule
+     under the heading is the intended .abf-rule hairline). */
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
   padding-top: clamp(96px, 10vw, 144px);
 }
 .about-habits.abf-habits {
@@ -386,7 +425,20 @@ h2.about-habits-title.abf-t,
   isolation: isolate;
 }
 .about-dark.abf-dark {
-  position: relative;
+  /* Covered section for the dark-to-activities page-turn. It must pin by its
+     BOTTOM edge: the whole dark band (incl. the dojo wall at its foot) scrolls
+     through and reads first, then it holds still while ACTIVITIES slides up
+     over it, mirroring the shutter-to-dark cover above.
+     CSS sticky can only pin a bottom edge via a negative top of
+     (viewport minus element height); a bottom:0 inset only shifts the box UP
+     and never holds it here (verified). A plain top:0 is wrong too: this band
+     is taller than one viewport, so a top pin would freeze its HEADER (hiding
+     the dojo wall) and, because the band nearly fills its container, release
+     before the shorter ACTIVITIES panel reaches the seam. Height varies with
+     width (dojo clamp + text reflow: ~1788px to 2126px), so the exact offset is
+     set at runtime into --dark-pin-top; the fallback suits the 1536 canvas. */
+  position: sticky;
+  top: var(--dark-pin-top, calc(100svh - 1984px));
   z-index: 1;
   margin-top: 0;
   min-height: 100svh;
@@ -407,8 +459,7 @@ h2.about-habits-title.abf-t,
   );
 }
 .about-activities.abf-vita-sec {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 2;
   min-height: 100svh;
   margin-top: 0;
