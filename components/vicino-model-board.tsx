@@ -1,12 +1,13 @@
 "use client";
 
 // Station-04 (Block B) interactive: the owner's own PDR *schematic*, rebuilt
-// live. A centered Work Space canvas holds a single real Image node (smaller,
-// centered) with its floating bar above, its sliding panel to the left, and the
-// inspector Sidebar beside it; four corner frames annotate the zones and tie to
-// their element with a thin connector. The four-step main path already lives in
-// Block A's flow strip — this block is only the zoning: a designated home for
-// every kind of function so the product can scale.
+// live. A Work Space canvas holds the node cluster centered-left (a single real
+// Image node, smaller, with its floating bar above and its sliding panel to the
+// left) and the inspector Sidebar docked to the RIGHT as its own column — the
+// separate global-settings surface it actually is. Corner frames annotate each
+// zone and tie to it with a thin connector. The four-step main path already
+// lives in Block A's flow strip — this block is only the zoning: a designated
+// home for every kind of function so the product can scale.
 //
 // CONFIDENTIALITY: this recreates the STRUCTURE of the owner's schematic only —
 // the zone text is paraphrased in the designer's own words (no verbatim internal
@@ -26,25 +27,29 @@
 //                  Input(s) (Prompt + Images), then a Prompt box. Its toggle tab
 //                  is the panel's handle — anchored to the panel edge, slides
 //                  with it (sp-toggle-bar left animation).
-//   Sidebar      — inspector/the inspector panel + the model dropdown + the run bar: Model
-//                  ("Nano Banana Pro"), Aspect ratio (16:9), Variations, Generate.
+//   Sidebar      — inspector/the inspector panel + the model dropdown + the run bar: the
+//                  right-docked inspector — node title, Model ("Nano Banana
+//                  Pro") with its subtext, Aspect ratio (16:9), Variations, and
+//                  the bottom Total-cost + Generate run bar.
 // Handle slots follow core/connections/the handle positions (first slot 56px from
 // the top, +40px per slot). Field values are clearly-labeled specimen data.
 import type { CSSProperties, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
 // Everything below lives on a 1320×760 stage (scaled to the container width by
-// .v-mb-stage), so the whole schematic — cluster, sidebar, corner frames,
-// connectors — shares one coordinate space and stays aligned.
+// .v-mb-stage), so the whole schematic — cluster, docked inspector, corner
+// frames, connectors — shares one coordinate space and stays aligned.
 const NODE_W = 250; // smaller than the shipped 310, to free room for the frames
 const NODE_H = 320;
-const NODE_X = 545;
-const NODE_Y = 220;
+const NODE_X = 476; // node cluster sits centered-left with breathing room
+const NODE_Y = 222;
 const NODE_CX = NODE_X + NODE_W / 2;
 
-const SIDEBAR_X = 826;
-const SIDEBAR_Y = 206;
-const SIDEBAR_W = 202;
+// The inspector docked to the canvas's right edge (product-faithful width).
+const DOCK_X = 1000;
+const DOCK_Y = 128;
+const DOCK_W = 304;
+const DOCK_H = 556;
 
 // The Image node's teal (the image-node styles border / theme --handle-image); the
 // Prompt (text) input keeps the connection pink.
@@ -70,16 +75,7 @@ const frames = [
     copy:
       "Actions on the selected node — duplicate, download, and the next steps (open the editor, multi-views, make a video). Never node settings.",
     box: { left: 18, top: 44, width: 250 },
-    line: { x1: 272, y1: 150, x2: 452, y2: 196 },
-  },
-  {
-    id: "sidebar",
-    label: "Sidebar",
-    tick: "#9B9CF1",
-    copy:
-      "Whole-node settings — model selection, aspect ratio, Generate. If a control governs the node, it lives here.",
-    box: { left: 1052, top: 44, width: 250 },
-    line: { x1: 1150, y1: 188, x2: 1024, y2: 212 },
+    line: { x1: 272, y1: 150, x2: 372, y2: 190 },
   },
   {
     id: "panel",
@@ -88,7 +84,7 @@ const frames = [
     copy:
       "Node-level inputs and quick tweaks, changed in place — the prompt and its references. Not global settings or the next step.",
     box: { left: 18, top: 566, width: 250 },
-    line: { x1: 272, y1: 600, x2: 300, y2: 522 },
+    line: { x1: 250, y1: 566, x2: 238, y2: 544 },
   },
   {
     id: "node",
@@ -96,8 +92,17 @@ const frames = [
     tick: "#8BD6D9",
     copy:
       "Stays minimal — the output and Generate. Every other function moves off it and into a zone of its own.",
-    box: { left: 1052, top: 566, width: 250 },
-    line: { x1: 1050, y1: 600, x2: 706, y2: 548 },
+    box: { left: 452, top: 582, width: 250 },
+    line: { x1: 590, y1: 582, x2: 604, y2: 546 },
+  },
+  {
+    id: "sidebar",
+    label: "Sidebar",
+    tick: "#9B9CF1",
+    copy:
+      "Whole-node settings — model selection, aspect ratio, Generate. If a control governs the node, it lives here.",
+    box: { left: 1000, top: 18, width: 304 },
+    line: { x1: 1152, y1: 108, x2: 1152, y2: 128 },
   },
 ] as const;
 
@@ -206,11 +211,12 @@ function SlidingPanel({ open }: { open: boolean }) {
 }
 
 // Sidebar (inspector) content — the inspector panel / the model dropdown / the run bar.
+// PanelHeader shows the node title + type; the run bar (cost + Generate) sits at
+// the bottom of the column.
 function SidebarContent({ tabIndex }: { tabIndex: number }) {
   return (
     <>
       <div className="v-mb-side-head">
-        <p className="v-mb-rail-label">Sidebar</p>
         <h4>Image</h4>
         <span className="v-mb-side-type">Image node</span>
       </div>
@@ -231,19 +237,21 @@ function SidebarContent({ tabIndex }: { tabIndex: number }) {
           <em>4</em>
         </span>
       </div>
-      <div className="v-mb-run-row" aria-hidden="true">
-        <span>Total cost</span>
-        <span>— credits</span>
+      <div className="v-mb-side-run">
+        <div className="v-mb-run-row" aria-hidden="true">
+          <span>Total cost</span>
+          <span>— credits</span>
+        </div>
+        <button
+          className="v-mb-generate"
+          type="button"
+          tabIndex={tabIndex}
+          title="Recreation — this action is not wired"
+        >
+          <span className="v-mb-generate-glyph" aria-hidden="true" />
+          Generate
+        </button>
       </div>
-      <button
-        className="v-mb-generate"
-        type="button"
-        tabIndex={tabIndex}
-        title="Recreation — this action is not wired"
-      >
-        <span className="v-mb-generate-glyph" aria-hidden="true" />
-        Generate
-      </button>
     </>
   );
 }
@@ -301,7 +309,7 @@ export function VicinoModelBoard() {
 
   return (
     <div ref={rootRef} className={`v-mb-root${isPaused ? " is-paused" : ""}`}>
-      {/* ---- full board: desktop / wide tablet — the four-corner schematic ---- */}
+      {/* ---- full board: desktop / wide tablet — the schematic ---- */}
       <div ref={frameRef} className="v-mb-frame" onKeyDown={handleFrameKeyDown}>
         <div className="vicino-live-dots" aria-hidden="true" />
         <p className="v-mb-canvas-note" aria-hidden="true">
@@ -332,7 +340,7 @@ export function VicinoModelBoard() {
             ))}
           </svg>
 
-          {/* the four corner annotation frames */}
+          {/* the four annotation frames */}
           {frames.map((frame) => (
             <div
               className={`v-mb-fnote is-${frame.id}`}
@@ -347,7 +355,7 @@ export function VicinoModelBoard() {
             </div>
           ))}
 
-          {/* the live node cluster */}
+          {/* the live node cluster (centered-left) */}
           <div
             className={`vicino-product-node is-image${panelOpen ? " is-open" : ""}`}
             role="button"
@@ -397,11 +405,11 @@ export function VicinoModelBoard() {
             </div>
           </div>
 
-          {/* the inspector Sidebar, beside the node (part of the cluster) */}
+          {/* the inspector Sidebar, docked to the canvas's right edge */}
           <aside
             className="v-mb-sidebar"
             aria-label="Sidebar — global settings and model selection, recreation"
-            style={{ left: SIDEBAR_X, top: SIDEBAR_Y, width: SIDEBAR_W }}
+            style={{ left: DOCK_X, top: DOCK_Y, width: DOCK_W, height: DOCK_H }}
           >
             <SidebarContent tabIndex={0} />
           </aside>
@@ -412,7 +420,7 @@ export function VicinoModelBoard() {
         </div>
       </div>
 
-      {/* ---- stacked variant: phones + narrow tablets (no four-corner layout) ---- */}
+      {/* ---- stacked variant: phones + narrow tablets (no schematic layout) ---- */}
       <div className="v-mb-stack">
         <p className="v-mb-canvas-note is-stack">
           Work Space · recreation of Vicino&rsquo;s Image node · specimen data

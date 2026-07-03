@@ -2864,6 +2864,15 @@ h2.vicino-closing-title {
 .v-mb-sidebar .v-mb-side-head {
   padding-right: 0;
 }
+/* the inspector's bottom run bar (the run bar) — cost + Generate, anchored to
+   the foot of the column with a separating rule */
+.v-mb-side-run {
+  margin-top: auto;
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
 
 /* corner annotation frames — ink/hairline/gold-eyebrow chrome (NOT coloured
    borders); the product-accent lives only in the tick + connector */
