@@ -243,15 +243,18 @@ export default function WorkIndex() {
         }
         .wki-row {
           position: relative;
+          z-index: 0;
           border-bottom: 1px solid var(--work-rule);
           transition: border-color 0.24s ease;
         }
         .wki-row:hover,
         .wki-row:focus-within {
+          z-index: 4;
           border-color: var(--wki-rule-hover);
         }
         .wki-row-link {
           position: relative;
+          isolation: isolate;
           display: grid;
           grid-template-columns: repeat(10, minmax(0, 1fr));
           column-gap: var(--work-grid-gap);
@@ -286,6 +289,8 @@ export default function WorkIndex() {
           transform: scaleY(1);
         }
         .wki-row-num {
+          position: relative;
+          z-index: 1;
           grid-column: 1 / 2;
           padding-top: var(--wki-cap-nudge);
           font-family: var(--font-mono);
@@ -295,6 +300,8 @@ export default function WorkIndex() {
           color: var(--stone);
         }
         .wki-row-title {
+          position: relative;
+          z-index: 1;
           grid-column: 2 / 8;
           font-family: var(--font-condensed);
           font-size: var(--text-display-3);
@@ -310,6 +317,8 @@ export default function WorkIndex() {
           transform: translateX(20px);
         }
         .wki-row-meta {
+          position: relative;
+          z-index: 1;
           padding-top: var(--wki-cap-nudge);
           font-size: var(--text-label);
           font-weight: 400;
@@ -341,7 +350,7 @@ export default function WorkIndex() {
           position: absolute;
           top: 50%;
           right: 0;
-          z-index: 3;
+          z-index: 2;
           width: calc(
             ((100% - 9 * var(--work-grid-gap)) / 10) * 4 +
               3 * var(--work-grid-gap)
