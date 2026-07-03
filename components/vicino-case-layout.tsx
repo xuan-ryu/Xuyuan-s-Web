@@ -8,24 +8,22 @@ import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
 
 const SEAL_SRC = "/assets/framerusercontent.com/images/ntwL7wUkSslvYCLMnzXaIuQu8zU.png";
 
-// Render-level fact refresh grounded in the owner's own zoning vocabulary
-// (the "Detail PDR" board figured in station 04): the generic "sidebars"
-// phrasing becomes the design model's named layers. data/projects.ts is
-// orchestrator-owned; the matching data edit is reported for the batched
-// pass.
+// Render-level fact refresh grounded in the owner's own zoning vocabulary:
+// the generic "sidebars" phrasing becomes the design model's named layers.
+// data/projects.ts is orchestrator-owned; the matching data edit is reported
+// for the batched pass.
 function refreshFacts(copy: string) {
   return copy.split("editor logic, sidebars, sliding panels").join(
     "editor logic, the Sidebar and Floating Bar layers, sliding panels",
   );
 }
 
-// Figcaptions for the prototype reels. The a teammate credit is render-filtered
-// out of the closing moment (body[3] in data/projects.ts) and lives here as
-// evidence metadata instead.
+// Figcaptions for the prototype reels. The teammate credit stays anonymous
+// (owner confidentiality decision — the portfolio is public): no real names.
 const reelCaptions = [
   "Sliding-panel structure — React prototype",
   "Sidebar-only previous version",
-  "Video 2 Node prototype — a teammate",
+  "Video 2 Node prototype — by a teammate",
 ];
 
 // Station-04 evidence ledger: the chapter decisions, tightened. Rows whose
@@ -1273,37 +1271,41 @@ const vicinoCriticalCss = `
 .v-mb-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 1620 / 700;
+  aspect-ratio: 1320 / 760;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, rgba(255,255,255,0.14));
+  border: 1px dashed color-mix(in srgb, var(--accent-gold) 30%, rgba(255,255,255,0.16));
+  border-radius: 2px;
   background: #050506;
   box-shadow: 0 30px 92px rgba(0,0,0,0.38);
   container-type: inline-size;
 }
-/* 1620x700 stage scaled to the container width (frame shows >=1080px only;
+/* 1320x760 stage scaled to the container width (frame shows >=1080px only;
    below that the stacked variant takes over). Stepped rules are the
    fallback; the atan2/tan division is the exact fit. */
 .v-mb-stage {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 1620px;
-  height: 700px;
-  transform: translateX(-50%) scale(0.62);
+  width: 1320px;
+  height: 760px;
+  transform: translateX(-50%) scale(0.72);
   transform-origin: top center;
 }
-@container (min-width: 1120px) {
-  .v-mb-stage { transform: translateX(-50%) scale(0.69); }
-}
-@container (min-width: 1240px) {
+@container (min-width: 1000px) {
   .v-mb-stage { transform: translateX(-50%) scale(0.76); }
 }
-@container (min-width: 1340px) {
-  .v-mb-stage { transform: translateX(-50%) scale(0.82); }
+@container (min-width: 1100px) {
+  .v-mb-stage { transform: translateX(-50%) scale(0.83); }
 }
-@supports (transform: scale(calc(tan(atan2(100cqw, 1620px))))) {
+@container (min-width: 1200px) {
+  .v-mb-stage { transform: translateX(-50%) scale(0.91); }
+}
+@container (min-width: 1280px) {
+  .v-mb-stage { transform: translateX(-50%) scale(0.97); }
+}
+@supports (transform: scale(calc(tan(atan2(100cqw, 1320px))))) {
   .v-mb-stage {
-    transform: translateX(-50%) scale(calc(tan(atan2(100cqw, 1620px))));
+    transform: translateX(-50%) scale(calc(tan(atan2(100cqw, 1320px))));
   }
 }
 .v-mb-stage .vicino-product-node {
@@ -1329,9 +1331,12 @@ const vicinoCriticalCss = `
 
 /* the product's panel-toggle tab (the sliding panel .sp-toggle-bar: 5px x
    72px pill in the connection-type color) on the node's left edge */
+/* the sliding panel's handle (the sliding panel .sp-toggle-bar): sits at the
+   node's left edge when closed and rides out to the panel's outer edge when
+   open, so it reads as part of the panel and slides with it */
 .v-mb-tab {
   position: absolute;
-  left: -2px;
+  left: 0;
   top: 50%;
   z-index: 3;
   width: 5px;
@@ -1339,10 +1344,13 @@ const vicinoCriticalCss = `
   border-radius: 999px;
   opacity: 0.9;
   transform: translateY(-50%);
-  transition: opacity 0.3s var(--ease-standard);
+  transition: left 0.3s var(--ease-silk), opacity 0.3s var(--ease-standard);
 }
-.vicino-product-node:hover .v-mb-tab,
+.vicino-product-node:hover .v-mb-tab {
+  opacity: 1;
+}
 .vicino-product-node.is-open .v-mb-tab {
+  left: calc(-1 * var(--v-mb-panel-w, 250px) + 5px);
   opacity: 1;
 }
 
@@ -2030,9 +2038,9 @@ const vicinoCriticalCss = `
 /* canvas room annotation + caption */
 .v-mb-canvas-note {
   position: absolute;
-  left: 74px;
-  top: 16px;
-  z-index: 5;
+  left: 18px;
+  top: 14px;
+  z-index: 7;
   margin: 0;
   font-family: var(--font-mono);
   font-size: var(--text-micro);
@@ -2459,6 +2467,479 @@ h2.vicino-closing-title {
   white-space: normal;
 }
 
+/* ---- station 04 — the one Image node (recreation of Vicino's ImageNode) ---- */
+/* Card: the image-node styles teal border rgba(139,214,217,.5); #8BD6D9 on hover /
+   select, with the shared selected shadow. */
+.vicino-product-node.is-image {
+  cursor: pointer;
+}
+.vicino-product-node.is-image:active {
+  cursor: pointer;
+}
+.vicino-product-node.is-image .vicino-product-node-shell {
+  border: 1px solid rgba(139, 214, 217, 0.5);
+  background: var(--image-node-card-bg);
+}
+.vicino-product-node.is-image:hover .vicino-product-node-shell,
+.vicino-product-node.is-image:focus-visible .vicino-product-node-shell {
+  border-color: #8BD6D9;
+}
+.vicino-product-node.is-image.is-open .vicino-product-node-shell {
+  border-color: #8BD6D9;
+  box-shadow: var(--node-shell-selected-shadow);
+}
+.vicino-product-node.is-image.is-static {
+  cursor: default;
+}
+/* header image glyph (image-node-header-icon) */
+.vicino-img-icon {
+  position: relative;
+  display: block;
+  width: 13px;
+  height: 11px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+}
+.vicino-img-icon::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  bottom: 1px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 5px solid currentColor;
+}
+.vicino-img-icon::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+/* image area — the node body is the image only (in-node prompt is commented
+   out in the shipped ImageNode) */
+.vicino-image-node-body {
+  display: flex;
+  height: calc(100% - 53px);
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 8px 8px;
+  background: var(--image-node-card-bg);
+  border-radius: 0 0 16px 16px;
+}
+.vicino-image-node-frame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0b0b0d;
+  box-shadow: var(--glass-btn-shadow);
+}
+.vicino-image-node-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.95) contrast(1.03);
+}
+.vicino-image-node-expand {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: rgba(11, 11, 13, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0.85;
+}
+.vicino-image-node-expand::before,
+.vicino-image-node-expand::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+}
+.vicino-image-node-expand::before {
+  top: 6px;
+  right: 6px;
+  border-left: 0;
+  border-bottom: 0;
+}
+.vicino-image-node-expand::after {
+  bottom: 6px;
+  left: 6px;
+  border-right: 0;
+  border-top: 0;
+}
+/* the right output handle's label ("Image") */
+.v-mb-out-label {
+  position: absolute;
+  top: 40px;
+  left: calc(100% + 10px);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #8bd6d9;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* floating bar: the upload icon (joins the shipped duplicate/download/delete) */
+.v-mb-fb-ic.is-upload::before {
+  left: 12px;
+  top: 6px;
+  width: 1.5px;
+  height: 9px;
+  background: currentColor;
+  box-shadow: -3px 4px 0 -0.5px currentColor, 3px 4px 0 -0.5px currentColor;
+}
+.v-mb-fb-ic.is-upload::after {
+  left: 8px;
+  bottom: 6px;
+  width: 10px;
+  height: 1.5px;
+  background: currentColor;
+}
+
+/* sliding panel content — recreation of the node panel */
+.v-mb-panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+.v-mb-panel-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.v-mb-panel-group {
+  display: grid;
+  gap: 8px;
+}
+.v-mb-panel-grouptitle {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-body);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+.v-mb-panel-sublabel {
+  margin: 0 0 6px;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+}
+.v-mb-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.v-mb-chip {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #464657;
+  color: #9191de;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+}
+.v-mb-chip-add,
+.v-mb-imgbox-add {
+  position: relative;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #222222;
+}
+.v-mb-chip-add {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+}
+.v-mb-imgbox-add {
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  border-style: dashed;
+  border-width: 2px;
+}
+.v-mb-chip-add::before,
+.v-mb-chip-add::after,
+.v-mb-imgbox-add::before,
+.v-mb-imgbox-add::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: translate(-50%, -50%);
+}
+.v-mb-chip-add::before,
+.v-mb-imgbox-add::before {
+  width: 10px;
+  height: 1.5px;
+}
+.v-mb-chip-add::after,
+.v-mb-imgbox-add::after {
+  width: 1.5px;
+  height: 10px;
+}
+.v-mb-prompt {
+  min-height: 66px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: #202020;
+}
+.v-mb-prompt p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* sidebar (inspector) content — the inspector panel / the model dropdown / the run bar */
+.v-mb-side-head {
+  display: grid;
+  gap: 2px;
+  padding-right: 34px;
+}
+.v-mb-side-head h4 {
+  margin: 4px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--paper);
+}
+.v-mb-side-type {
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  color: rgba(255, 255, 255, 0.5);
+}
+.v-mb-side-field {
+  display: grid;
+  gap: 5px;
+}
+.v-mb-model-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 24px 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  color: var(--text-node-textarea-text);
+}
+.v-mb-model-trigger::after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin-top: -2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.55);
+}
+.v-mb-side-hint {
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  color: rgba(255, 255, 255, 0.4);
+}
+.v-mb-side-seg {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+}
+.v-mb-side-seg em {
+  padding: 4px 0;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-small);
+  font-style: normal;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+.v-mb-side-seg em.is-current {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+.v-mb-run-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-family: var(--font-sans);
+  font-size: var(--vicino-node-detail);
+  color: rgba(255, 255, 255, 0.55);
+}
+.v-mb-generate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  border: 1px solid color-mix(in srgb, var(--accent-amber) 55%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent-amber) 16%, transparent);
+  color: var(--accent-amber);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-standard);
+}
+.v-mb-generate:hover {
+  background: color-mix(in srgb, var(--accent-amber) 24%, transparent);
+}
+.v-mb-generate:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+.v-mb-generate-glyph {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid currentColor;
+}
+
+/* in-canvas connectors: thin lines from each corner frame to its element,
+   stroked in that zone's own product accent (set inline) */
+.v-mb-conn-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.v-mb-conn-line {
+  stroke-width: 1.4;
+  opacity: 0.5;
+}
+.v-mb-conn-dot {
+  opacity: 0.85;
+}
+
+/* the inspector Sidebar as a stage element beside the node (part of the
+   cluster). Inner styles are shared with the mobile stack via .v-mb-side-*. */
+.v-mb-sidebar {
+  position: absolute;
+  z-index: 8;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(10, 10, 12, 0.94);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+.v-mb-sidebar .v-mb-side-head {
+  padding-right: 0;
+}
+
+/* corner annotation frames — ink/hairline/gold-eyebrow chrome (NOT coloured
+   borders); the product-accent lives only in the tick + connector */
+.v-mb-fnote {
+  position: absolute;
+  z-index: 6;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid var(--v-line);
+  border-radius: 10px;
+  background: rgba(6, 6, 8, 0.72);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.v-mb-fnote-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 7px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+.v-mb-fnote-tick {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.v-mb-fnote-copy {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--v-body-ink);
+}
+
+/* keep the grid from stretching to the wide static floating bar's max-content;
+   the bar scrolls inside its own overflow box instead */
+.v-mb-root {
+  grid-template-columns: minmax(0, 1fr);
+}
+.v-mb-stack,
+.v-mb-stack-item {
+  min-width: 0;
+}
+.v-mb-stack-floatbar {
+  max-width: 100%;
+}
+/* mobile stack: plain zone headings (no accordion in the single-node board) */
+.v-mb-stack-item h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 18px 0 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--paper);
+}
+.v-mb-stack-panel.is-rail {
+  gap: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-mb-generate {
+    transition: none;
+  }
+}
+
 /* ---- canvas pause + reduced motion ---- */
 .vicino-live-canvas.is-paused *,
 .vicino-live-canvas.is-paused *::before,
@@ -2627,9 +3108,8 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   ];
   // Arc: hero (product) -> 01 overview (role/scope) -> 02 context & problem
   // -> 03 the flow (Block A: main path told once — strip + deck artifact)
-  // -> 04 the interface (Block B: the zoning rooms — interactive board + PDR
-  // artifact, scale-up as the claim) -> 05 evidence (reels + tightened
-  // ledger) -> the moment (seal) -> next case.
+  // -> 04 the interface (Block B: the zoning, shown on ONE recreated Image node)
+  // -> 05 evidence (reels + tightened ledger) -> the moment (seal) -> next case.
   //
   // Data reuse map (data/projects.ts stays orchestrator-owned):
   //   blurb ¶1        -> station 02 copy (expansion/problem framing)
@@ -2637,16 +3117,16 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   //   sections[0]     -> station 02 copy + figure (structural ambiguity)
   //   sections[2]     -> its per-step argument lives in station 03's flow
   //                      strip; its deck image is that station's artifact
-  //   sections[5]     -> its rooms argument lives in station 04's interactive
-  //                      board; its "Detail PDR" zoning-board image is that
-  //                      station's artifact
+  //   sections[5]     -> its zoning argument is retold in the designer's own
+  //                      words by station 04's interactive board; the internal
+  //                      "Detail PDR" board image is intentionally NOT featured
+  //                      (owner confidentiality: summarize, don't reproduce)
   //   sections[6]     -> station 05 intro (prototype working style)
   //   summary[]       -> unrendered here (hero/overview already carry it)
   const overviewCopy = refreshFacts(project.blurb.split("\n\n")[1] ?? "");
   const contextCopy = project.blurb.split("\n\n")[0] ?? "";
   const ambiguityCopy = sections[0]?.body[0];
   const contextFigure = sections[0]?.image;
-  const roomsFigure = sections[5]?.image;
   const mainPathFigure = sections[2]?.image;
   const evidenceIntro = sections[6]?.body[0];
 
@@ -2788,33 +3268,12 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             a new structural debate.
           </p>
           <p className="vicino-model-invite">
-            Select a node, open the Sidebar, enter the Editor — every room
-            answers for itself
+            One Image node, every zone in place — click it to open its panel and bar
           </p>
         </div>
         <div className="vicino-model-board-wrap" data-fade>
           <VicinoModelBoard />
         </div>
-        {roomsFigure && (
-          <figure className="vicino-wide-figure" data-fade>
-            <div className="vicino-decision-media">
-              <Image
-                src={roomsFigure}
-                alt="The Detail PDR zoning board: a dark canvas labeled Work Space in the middle, with four annotated frames — Floating Bar, Sidebar, Sliding Panel, Node Panel — each carrying what goes here, what does not go here, a one-sentence rule, and a designer checklist"
-                width={1600}
-                height={1010}
-                sizes="(max-width: 1080px) 100vw, 1280px"
-                style={{ height: "auto" }}
-              />
-            </div>
-            <figcaption>
-              The zoning as it is kept — the &ldquo;Detail PDR&rdquo; board:
-              Work Space in the middle; Floating Bar, Sidebar, Sliding Panel,
-              and Node Panel framed around it, each with what goes here, what
-              does not, its one-sentence rule, and a designer checklist.
-            </figcaption>
-          </figure>
-        )}
       </section>
 
       <section className="vicino-station vicino-evidence">
@@ -2904,8 +3363,8 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             {project.moment.title}
           </h2>
           <div className="vicino-closing-copy" data-fade>
-            {/* body[3] is the a teammate credit — render-filtered into the
-                station-04 reel figcaption instead of a closing paragraph */}
+            {/* body[3] is the anonymous teammate credit — render-filtered into
+                the station-04 reel figcaption instead of a closing paragraph */}
             {project.moment.body.slice(0, 3).map((p) => (
               <p className="vicino-body-copy" key={p}>
                 {p}

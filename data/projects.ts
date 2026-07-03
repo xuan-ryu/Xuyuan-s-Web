@@ -345,7 +345,6 @@ export const projects: Project[] = [
               "As the workflow became clearer, I started caring much more about where complexity should live. I did not want every new function to be solved by adding one more control to the same surface. Instead, I helped define a clearer distribution of responsibilities across the system. Nodes represented meaningful stages and outputs. The Sidebar handled global settings and model selection; the Floating Bar carried the next-step actions. Sliding panels supported local inputs, smaller adjustments, and version history. Editors took on deeper, reusable work that did not belong on the canvas.",
               "That separation mattered because it made future decisions easier. For example, version history made more sense in the Sliding Panel than in the Sidebar, because it belonged to the current node and current output—not to the broader system state. Once we started making decisions that way, the layers stopped feeling like visual containers and started working as a shared framework for where new functionality should live.",
             ],
-            image: `${IMG}/iqfmdKGdZXFBgs29aUVK7AiR40.png`,
           },
           {
             tags: "PM COLLABORATION · WORKING PROTOTYPES",

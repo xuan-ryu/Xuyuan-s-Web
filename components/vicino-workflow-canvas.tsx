@@ -86,9 +86,9 @@ export const HANDLE_SLOT_Y = 56;
 export const HANDLE_SLOT_SPACING = 40;
 
 // Exported as the single source of node anatomy (real create-menu labels,
-// scaled-down node sizes, typed handles). The hero board uses these
-// coordinates; the model board (vicino-model-board.tsx) re-positions the
-// same nodes.
+// scaled-down node sizes, typed handles) for the hero flow canvas. The
+// station-04 board (vicino-model-board.tsx) is a standalone single Image node
+// and does not reuse these coordinates.
 export const canvasNodes: CanvasNode[] = [
   {
     id: "script",
@@ -504,7 +504,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
       </div>
 
       <div className="vicino-live-caption">
-        <span>Board recreation — 4 of 23 node types</span>
+        <span>Board recreation — a few of the node library&rsquo;s types</span>
         <span>Drag nodes</span>
       </div>
     </div>
