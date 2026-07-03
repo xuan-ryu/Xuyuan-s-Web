@@ -6,7 +6,6 @@ import KoiPondScene from "@/components/koi-pond-lazy";
 import { FeaturedGate } from "@/components/featured-gate";
 import { RoofTransition } from "@/components/roof-transition";
 import { KoiHowOverlay } from "@/components/koi-how-overlay";
-import { CtaBlock } from "@/components/cta-block";
 
 export default function Home() {
   const liteScenesEnabled = process.env.NEXT_PUBLIC_LITE_SCENES === "1";
@@ -40,8 +39,8 @@ export default function Home() {
         <FeaturedGate projects={projects} />
       </div>
 
-      {/* The pond hosts How I Work: after a few feeds (or the overlay's
-          in-view/scroll fallback) the title + method cards surface over the
+      {/* The pond hosts How I Work: after a few feed drops, the title + method
+          cards surface over the
           water. The old #value screens/vase/bamboo collage is retired — its
           markup is preserved at git tag backup/home-how-screens. */}
       <section
@@ -71,8 +70,6 @@ export default function Home() {
           forceReveal={liteScenesEnabled}
         />
       </section>
-
-      <CtaBlock />
     </>
   );
 }

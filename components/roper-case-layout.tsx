@@ -113,20 +113,10 @@ const roperCriticalCss = `
   padding-top: clamp(120px, 10vw, 168px);
   padding-bottom: clamp(64px, 7vw, 104px);
 }
-.roper-kicker {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  margin: 0;
-  font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--stone);
-}
 .roper-hero h1 {
   grid-column: 1 / -1;
-  grid-row: 2;
-  margin: clamp(16px, 2vw, 26px) 0 clamp(40px, 4.5vw, 64px);
+  grid-row: 1;
+  margin: 0 0 clamp(40px, 4.5vw, 64px);
   font-family: var(--font-condensed);
   font-size: var(--text-display-2);
   font-weight: 300;
@@ -137,7 +127,7 @@ const roperCriticalCss = `
 }
 .roper-hero-deck {
   grid-column: 1 / span 5;
-  grid-row: 3;
+  grid-row: 2;
   margin: 0;
   max-width: 24em;
   font-size: var(--text-lead);
@@ -148,12 +138,12 @@ const roperCriticalCss = `
 }
 .roper-hero-media {
   grid-column: 6 / -1;
-  grid-row: 3 / span 2;
+  grid-row: 2 / span 2;
   min-width: 0;
 }
 .roper-meta {
   grid-column: 1 / span 5;
-  grid-row: 4;
+  grid-row: 3;
   align-self: end;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -874,9 +864,6 @@ export function RoperCaseLayout({ project }: { project: Project }) {
       {/* 00 · archive masthead */}
       <header className="roper-hero">
         <div className="roper-shell">
-          <p className="roper-kicker" data-fade>
-            Case study · Cornell · {project.tags.join(" · ")}
-          </p>
           <h1 data-fade>{project.title}</h1>
           <p className="roper-hero-deck" data-fade>
             Redesigning Campaign Weathervane — the Roper Center’s teaching
@@ -1146,7 +1133,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
         </div>
       </section>
 
-      {/* 07 · screening band */}
+      {/* 07 · prototype walkthrough */}
       {reel && (
         <section
           className="roper-sec roper-screening"
@@ -1154,10 +1141,10 @@ export function RoperCaseLayout({ project }: { project: Project }) {
         >
           <div className="roper-shell">
             <p className="roper-index" data-fade>
-              07 / Screening
+              07 / Prototype walkthrough
             </p>
             <h2 className="roper-h2" id="roper-screening-title" data-fade>
-              Three questions from the archive, played end to end.
+              The redesigned learning loop, from guess to evidence.
             </h2>
             <div className="roper-reel-wrap" data-fade>
               <OffscreenVideo

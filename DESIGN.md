@@ -90,9 +90,7 @@ templates:
 
 recurring-motifs:
   - red seal stamp (ntwL7wUkSslvYCLMnzXaIuQu8zU.png) — nav block, contact
-    card, poster details, marquee separator, footer center
-  - LET'S WORK TOGETHER marquee (112px serif, seal between repetitions,
-    black GET IN TOUCH button pinned center) closes home and about
+    card, poster details, footer center
   - footer: black rounded inset card on white, noise texture, socials in the
     top corners, centered seal, nav row, © Xuyuan Liu
   - ink brush strokes (RJnh8cLkwy27PD5vycbXZbYjcQA.png) behind glass cards

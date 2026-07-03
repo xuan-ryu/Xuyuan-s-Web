@@ -338,17 +338,6 @@ Contract:
 - Submit button supports default, loading, success, error, disabled.
 - Mailto fallback is acceptable, but UI state must tell the user what happened.
 
-### CTA Marquee
-
-Source: Framer closing marquee; current `CtaBlock`.
-
-Contract:
-
-- Serif all-caps marquee, red seal between repetitions.
-- Centered black `GET IN TOUCH` button.
-- This closes home and about pages.
-- Motion should be continuous but calm; pause or simplify under reduced motion.
-
 ### Footer
 
 Source: Framer footer; current `Footer`.
@@ -408,7 +397,7 @@ Contract:
 | --- | --- | --- |
 | High | Form states are not system-complete. | Upgrade `ContactForm` with explicit status machine and accessible errors. |
 | High | Token adoption is partial. | When touching CSS, replace local hard-coded color/ease/radius values with canonical tokens. |
-| Medium | Standalone CTAs are being migrated to the `<Cta>` primitive. | `.cta` classes + `components/ui/cta.tsx` exist and are used in the featured section; migrate `CtaBlock` and contact submit next. |
+| Medium | Standalone CTAs are being migrated to the `<Cta>` primitive. | `.cta` classes + `components/ui/cta.tsx` exist and are used in the featured section; migrate contact submit next. |
 | Medium | Work card overlay behavior is repeated as local CSS. | Extract a reusable overlay contract or class group for project previews. |
 | Medium | Focus states lag behind hover states in art-directed components. | Audit `FeaturedWindows`, `WorkCard`, nav drawer, and CTA for keyboard parity. |
 | Low | Some older aliases duplicate canonical tokens. | Keep aliases for compatibility; slowly migrate touched rules to canonical names. |

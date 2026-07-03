@@ -180,8 +180,8 @@ export default function InkKoiEcosystem(props: Props) {
             updateDockVars()
             uiBox.classList.add("dismissed")
         }
-        // The overlay reveals via fallback (dwell/scroll) too — dock the tip
-        // then as well so the cards never rise under the centered pill.
+        // The overlay reveals after enough feed drops — dock the tip then as
+        // well so the cards never rise under the centered pill.
         const onHowReveal = () => dockTip()
         window.addEventListener("koi:how-reveal", onHowReveal)
         const syncFeedUi = () => {

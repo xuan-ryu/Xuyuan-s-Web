@@ -706,7 +706,25 @@ export default function DigitalLandscape(props: Props) {
         let THREE: typeof import("three")
 
 
-        // Fonts gate: ensure web fonts are loaded before text animations fire
+        // Fonts + loader gate: ensure web fonts are loaded before text
+        // animations fire, but never let a missed loaderFinished event trap
+        // the hero in its hidden pre-reveal state.
+        let loaderRevealArmed = false
+        let loaderRevealFallback = 0
+        const revealHeroText = () => {
+            if (!isMounted) return
+            uiRef.current?.classList.add("scene-loaded")
+            wordmarkRef.current?.classList.add("scene-loaded")
+        }
+        const revealAfterLoader = () => {
+            window.removeEventListener("loaderFinished", revealAfterLoader)
+            loaderRevealArmed = false
+            if (loaderRevealFallback) {
+                window.clearTimeout(loaderRevealFallback)
+                loaderRevealFallback = 0
+            }
+            revealHeroText()
+        }
         const tryReveal = () => {
             if (
                 sceneReadyRef.current &&
@@ -716,18 +734,21 @@ export default function DigitalLandscape(props: Props) {
                 // the session loader replays on every refresh: while it still
                 // covers the screen, hold the text entrance until it leaves
                 if (document.querySelector("[data-app-loader]")) {
-                    window.addEventListener(
-                        "loaderFinished",
-                        () => {
-                            uiRef.current?.classList.add("scene-loaded")
-                            wordmarkRef.current?.classList.add("scene-loaded")
-                        },
-                        { once: true }
-                    )
+                    if (!loaderRevealArmed) {
+                        loaderRevealArmed = true
+                        window.addEventListener(
+                            "loaderFinished",
+                            revealAfterLoader,
+                            { once: true }
+                        )
+                        loaderRevealFallback = window.setTimeout(
+                            revealAfterLoader,
+                            2400
+                        )
+                    }
                     return
                 }
-                uiRef.current?.classList.add("scene-loaded")
-                wordmarkRef.current?.classList.add("scene-loaded")
+                revealHeroText()
             }
         }
         const fontRevealFallback = window.setTimeout(() => {
@@ -1276,6 +1297,9 @@ export default function DigitalLandscape(props: Props) {
                     window.removeEventListener("mouseleave", handleMouseLeave)
                 }
                 window.removeEventListener("loaderFinished", onLoaderDone)
+                window.removeEventListener("loaderFinished", revealAfterLoader)
+                if (loaderRevealFallback)
+                    window.clearTimeout(loaderRevealFallback)
                 window.clearTimeout(fontRevealFallback)
             }
         }
@@ -2431,6 +2455,8 @@ export default function DigitalLandscape(props: Props) {
             birdMesh?.geometry.dispose()
             birdMesh?.material.dispose()
             renderer?.dispose()
+            window.removeEventListener("loaderFinished", revealAfterLoader)
+            if (loaderRevealFallback) window.clearTimeout(loaderRevealFallback)
         }
     }, [enableMouseSpotlight, isCanvas, liteMode])
 

@@ -105,7 +105,7 @@ export const about = {
       ],
     },
     {
-      org: "Chinese Student Association",
+      org: "Oberlin Chinese Student Association",
       role: "Chair",
       date: "January 2023- May 2024",
       bullets: [

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, type CSSProperties } from "react";
 import { about } from "@/data/about";
 import { site } from "@/data/site";
-import { CtaBlock } from "@/components/cta-block";
 import { Cta } from "@/components/ui/cta";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import HongyadongScene from "@/components/hongyadong";
@@ -50,7 +49,6 @@ export default function About() {
                 sizes="(max-width: 809px) 350px, 306px"
               />
             </div>
-            <p className="abf-frame-cap">帧 00 — Chongqing, 17 12 &rsquo;94</p>
           </div>
 
           <div className="about-quote-wrap">
@@ -88,7 +86,6 @@ export default function About() {
       <section className="section about-essay about-essay-right abf-pad">
         <div className="container">
           <div className="section-intro" data-fade>
-            <p className="abf-eb">帧 01 / 03</p>
             <h2 className="abf-t">{about.whatChanged.title}</h2>
           </div>
           <div className="about-text about-essay-text">
@@ -97,144 +94,154 @@ export default function About() {
             ))}
           </div>
 
-          <div className="abf-toolbox" data-fade>
-            <div className="abf-tools-head">
-              <span>Tools in rotation</span>
-              <span>{about.whatChanged.logos.length}</span>
-            </div>
-            <div className="about-logo-wall abf-tools">
-              {about.whatChanged.logos.map((src) => (
-                <span key={src} className="about-logo-cell">
-                  <Image src={src} alt="" fill sizes="72px" />
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <p className="abf-poster" data-fade>
-            {about.whatChanged.closing}
-            <Image
-              src={SEAL}
-              alt=""
-              width={28}
-              height={55}
-              className="abf-poster-seal"
-            />
-          </p>
-        </div>
-      </section>
-
-      {/* ── Frame 02 — Before the Shutter Closes + 恰好 + Kyoto reel ── */}
-      <section className="section about-essay about-shutter abf-shutter">
-        <div className="container">
-          <div className="about-shutter-grid">
-            <div>
-              <div className="section-intro" data-fade>
-                <p className="abf-eb">帧 02 / 03</p>
-                <h2 className="abf-t">{about.shutter.title}</h2>
+          <div className="abf-tool-index" data-fade>
+            <div className="abf-toolbox">
+              <div className="abf-tools-head">
+                <span>Tools in rotation</span>
+                <span>{about.whatChanged.logos.length}</span>
               </div>
-              <div className="about-text about-essay-text">
-                {about.shutter.body.map((p, i) => (
-                  <Fragment key={i}>
-                    <p data-fade>{p}</p>
-                    {i === 2 ? (
-                      <span className="abf-qiahao" data-fade>
-                        <span className="abf-qiahao-zh" aria-hidden="true">
-                          恰好
-                        </span>
-                        <span className="abf-qiahao-gloss">
-                          qiàhǎo — not perfect; right
-                        </span>
-                      </span>
-                    ) : null}
-                  </Fragment>
-                ))}
-              </div>
-            </div>
-            <figure className="about-kyoto" data-fade>
-              <OffscreenVideo src={about.shutter.video} />
-              <figcaption>{about.shutter.caption}</figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Frame 03 — How I Work: ink band, hanging scroll, dojo wall ── */}
-      <section className="section about-dark abf-dark">
-        <div className="container">
-          <div className="about-howiwork">
-            <div className="section-intro" data-fade>
-              <p className="abf-eb">帧 03 / 03</p>
-              <h2 className="abf-t">{about.howIWork.title}</h2>
-            </div>
-            <div className="abf-scroll" data-fade>
-              <span className="abf-scroll-zh" aria-hidden="true">
-                {dojoZh}
-              </span>
-              <span className="abf-scroll-gloss">
-                {dojoGlossParts.map((part) => (
-                  <span key={part} className="abf-scroll-gloss-line">
-                    {part}
+              <div className="about-logo-wall abf-tools">
+                {about.whatChanged.logos.map((src, i) => (
+                  <span
+                    key={src}
+                    className="about-logo-cell"
+                    style={{ "--tool-index": i } as CSSProperties}
+                  >
+                    <Image src={src} alt="" fill sizes="72px" />
                   </span>
                 ))}
-              </span>
+              </div>
             </div>
-            <div className="about-text about-essay-text">
-              {about.howIWork.body.map((p, i) => (
-                <p key={i} data-fade>{p}</p>
-              ))}
-            </div>
-          </div>
 
-          <div className="about-dojo-wall" data-fade>
-            {about.dojoWall.map((photo) => (
-              <figure
-                key={photo.src}
-                className="about-dojo-item"
-                style={{
-                  left: `${(photo.x / 1420) * 100}%`,
-                  top: photo.y,
-                }}
-              >
+            <div className="abf-tool-story">
+              <p className="abf-poster">
+                {about.whatChanged.closing}
                 <Image
-                  src={photo.src}
+                  src={SEAL}
                   alt=""
-                  width={154}
-                  height={photo.h}
-                  sizes="154px"
-                  style={{ height: photo.h }}
+                  width={28}
+                  height={55}
+                  className="abf-poster-seal"
                 />
-                {"caption" in photo && photo.caption ? (
-                  <figcaption>{photo.caption}</figcaption>
-                ) : null}
-              </figure>
-            ))}
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Rebate — vita timeline ── */}
-      <section className="section about-activities abf-vita-sec">
-        <div className="container">
-          <h2 className="about-activities-title abf-t" data-fade>
-            Activities &amp; Leadership
-          </h2>
-          <div className="abf-vita">
-            {about.activities.map((a) => (
-              <article key={a.org + a.role} className="abf-vita-entry" data-fade>
-                <h3>{a.org}</h3>
-                <p className="abf-vita-role">{a.role}</p>
-                <p className="abf-vita-date">{a.date}</p>
-                <ul>
-                  {a.bullets.map((b, i) => (
-                    <li key={i}>{b}</li>
+      <div className="about-page-turn">
+        {/* ── Frame 02 — Before the Shutter Closes + 恰好 + Kyoto reel ── */}
+        <section className="section about-essay about-shutter abf-shutter">
+          <div className="container">
+            <div className="about-shutter-grid">
+              <div>
+                <div className="section-intro" data-fade>
+                  <h2 className="abf-t">{about.shutter.title}</h2>
+                </div>
+                <div className="about-text about-essay-text">
+                  {about.shutter.body.map((p, i) => (
+                    <Fragment key={i}>
+                      <p data-fade>{p}</p>
+                      {i === 2 ? (
+                        <span className="abf-qiahao" data-fade>
+                          <span className="abf-qiahao-zh" aria-hidden="true">
+                            恰好
+                          </span>
+                          <span className="abf-qiahao-gloss">
+                            qiàhǎo — not perfect; right
+                          </span>
+                        </span>
+                      ) : null}
+                    </Fragment>
                   ))}
-                </ul>
-              </article>
-            ))}
+                </div>
+              </div>
+              <figure className="about-kyoto" data-fade>
+                <OffscreenVideo src={about.shutter.video} />
+                <figcaption>{about.shutter.caption}</figcaption>
+              </figure>
+            </div>
           </div>
+        </section>
+
+        <div className="about-dark-turn">
+          {/* ── Frame 03 — How I Work: ink band, hanging scroll, dojo wall ── */}
+          <section className="section about-dark abf-dark">
+            <div className="container">
+              <div className="about-howiwork">
+                <div className="section-intro" data-fade>
+                  <h2 className="abf-t">{about.howIWork.title}</h2>
+                </div>
+                <div className="abf-scroll" data-fade>
+                  <span className="abf-scroll-zh" aria-hidden="true">
+                    {dojoZh}
+                  </span>
+                  <span className="abf-scroll-gloss">
+                    {dojoGlossParts.map((part) => (
+                      <span key={part} className="abf-scroll-gloss-line">
+                        {part}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+                <div className="about-text about-essay-text">
+                  {about.howIWork.body.map((p, i) => (
+                    <p key={i} data-fade>{p}</p>
+                  ))}
+                </div>
+              </div>
+
+              <div className="about-dojo-wall" data-fade>
+                {about.dojoWall.map((photo) => (
+                  <figure
+                    key={photo.src}
+                    className="about-dojo-item"
+                    style={{
+                      left: `${(photo.x / 1420) * 100}%`,
+                      top: photo.y,
+                    }}
+                  >
+                    <Image
+                      src={photo.src}
+                      alt=""
+                      width={154}
+                      height={photo.h}
+                      sizes="154px"
+                      style={{ height: photo.h }}
+                    />
+                    {"caption" in photo && photo.caption ? (
+                      <figcaption>{photo.caption}</figcaption>
+                    ) : null}
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ── Rebate — vita timeline ── */}
+          <section className="section about-activities abf-vita-sec">
+            <div className="container">
+              <h2 className="about-activities-title abf-t" data-fade>
+                Activities &amp; Leadership
+              </h2>
+              <div className="abf-vita">
+                {about.activities.map((a) => (
+                  <article key={a.org + a.role} className="abf-vita-entry" data-fade>
+                    <h3>{a.org}</h3>
+                    <p className="abf-vita-role">{a.role}</p>
+                    <p className="abf-vita-date">{a.date}</p>
+                    <ul>
+                      {a.bullets.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
 
       {/* ── Rebate — voices ── */}
       <section className="section about-testimonials abf-voices">
@@ -283,29 +290,12 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      <CtaBlock />
-
       {/* ── "one roll of film" pass (.abf-) — page-owned styles ──
           globals.css .about-* rules keep styling the unchanged markup;
           everything new or overridden lives here under the abf prefix. */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
-/* ─ metadata voice: frame indices + eyebrows (mono, never titles) ─ */
-.abf-eb {
-  margin: 0 0 var(--space-4);
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  font-weight: 400;
-  letter-spacing: var(--track-eyebrow);
-  text-transform: uppercase;
-  color: var(--stone);
-}
-.abf-dark .abf-eb {
-  color: rgba(255, 255, 255, 0.5);
-}
-
 /* ─ condensed family voice for the display titles; gold = static detail ─ */
 .about-essay .section-intro h2.abf-t,
 .about-dark .section-intro h2.abf-t,
@@ -345,22 +335,13 @@ h2.about-habits-title.abf-t,
   aspect-ratio: 2075 / 3130;
   height: auto;
 }
-.abf-frame-cap {
-  margin: var(--space-3) 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: var(--track-eyebrow);
-  text-transform: uppercase;
-  color: var(--stone);
-}
-
 /* ─ pacing: standard paper padding; the post-poster void collapses ─ */
 .about-essay.abf-pad {
   padding: clamp(96px, 10vw, 144px) 0;
 }
 .about-shutter.abf-shutter {
   padding-top: 0;
-  padding-bottom: clamp(96px, 10vw, 144px);
+  padding-bottom: clamp(128px, 13vw, 196px);
 }
 .about-activities.abf-vita-sec {
   padding: clamp(96px, 10vw, 144px) 0;
@@ -372,9 +353,107 @@ h2.about-habits-title.abf-t,
   padding-top: clamp(96px, 10vw, 144px);
 }
 
-/* ─ toolbox index: hairline head + greyscale 10×2 wall ─ */
-.abf-toolbox {
+.about-page-turn {
+  position: relative;
+  isolation: isolate;
+  background: var(--paper);
+}
+.about-page-turn::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100svh;
+  background: var(--paper);
+  pointer-events: none;
+  z-index: 0;
+}
+.about-shutter.abf-shutter {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  background: var(--paper);
+}
+.about-shutter.abf-shutter > .container {
+  width: 100%;
+}
+.about-dark-turn {
+  position: relative;
+  z-index: 2;
+  background: var(--ink-950);
+  isolation: isolate;
+}
+.about-dark.abf-dark {
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+  min-height: 100svh;
+  border-radius: clamp(30px, 5vw, 64px) clamp(30px, 5vw, 64px) 0 0;
+  box-shadow: 0 -44px 90px rgba(5, 5, 5, 0.24);
+  overflow: clip;
+}
+.about-dark.abf-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(72px, 8vw, 132px);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0)
+  );
+}
+.about-activities.abf-vita-sec {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  min-height: 100svh;
+  margin-top: 0;
+  padding-top: clamp(76px, 8.5vw, 124px);
+  border-radius: clamp(30px, 5vw, 64px) clamp(30px, 5vw, 64px) 0 0;
+  background: var(--paper);
+  box-shadow: 0 -44px 90px rgba(5, 5, 5, 0.18);
+  overflow: clip;
+}
+.about-activities.abf-vita-sec::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(72px, 8vw, 132px);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(255, 255, 255, 0)
+  );
+}
+.about-activities.abf-vita-sec [data-fade] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  animation: none;
+}
+
+/* ─ toolbox index + poster line: one workbench block ─ */
+.abf-tool-index {
   grid-column: 2 / span 10;
+  min-width: 0;
+  margin-top: clamp(30px, 4vw, 56px);
+  padding-top: clamp(18px, 2vw, 28px);
+  border-top: 1px solid var(--rule);
+}
+.abf-tool-index[data-fade] {
+  transform: translateY(30px);
+  filter: none;
+}
+.abf-tool-index[data-fade].is-visible {
+  animation: abfToolSectionIn 0.95s var(--ease-reveal) forwards;
+  filter: none;
+}
+.abf-toolbox {
   min-width: 0;
 }
 .abf-tools-head {
@@ -382,27 +461,38 @@ h2.about-habits-title.abf-t,
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-6);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--rule);
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--stone);
+  opacity: 0;
+  transform: translateY(10px);
+}
+.abf-tool-index.is-visible .abf-tools-head {
+  animation: abfToolMetaIn 0.7s var(--ease-reveal) 0.08s forwards;
 }
 .about-logo-wall.abf-tools {
-  margin: var(--space-8) 0 0;
+  margin: clamp(28px, 4vw, 46px) 0 0;
   padding-top: 0;
   border-top: 0;
   max-width: none;
   grid-template-columns: repeat(10, minmax(0, 1fr));
   justify-content: stretch;
   justify-items: center;
-  gap: clamp(16px, 2vw, 28px);
+  gap: clamp(18px, 2.2vw, 32px) clamp(18px, 2.4vw, 36px);
 }
 .abf-tools .about-logo-cell {
   width: 100%;
   max-width: 72px;
+  opacity: 0;
+  transform: translateY(18px) scale(0.96);
+  transform-origin: 50% 70%;
+  will-change: transform, opacity;
+}
+.abf-tool-index.is-visible .about-logo-cell {
+  animation: abfToolLogoIn 0.72s var(--ease-silk) forwards;
+  animation-delay: calc(0.14s + (var(--tool-index) * 34ms));
 }
 .abf-tools .about-logo-cell img {
   filter: grayscale(1);
@@ -417,18 +507,33 @@ h2.about-habits-title.abf-t,
   opacity: 1;
 }
 
-/* ─ sealed poster line — the page's one seal-red moment ─ */
+/* ─ sealed poster line — belongs to the toolbox block ─ */
+.abf-tool-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: clamp(24px, 5vw, 72px);
+  margin-top: clamp(38px, 6vw, 76px);
+  padding-top: clamp(24px, 3vw, 42px);
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+}
 .abf-poster {
-  grid-column: 3 / span 8;
-  margin: var(--space-12) 0 0;
+  grid-column: 1;
+  max-width: 980px;
+  margin: 0;
   font-family: var(--font-condensed);
-  font-size: var(--text-display-3);
+  font-size: clamp(42px, 5.6vw, 74px);
   font-weight: 300;
-  line-height: 1.08;
+  line-height: 1.04;
   letter-spacing: var(--track-display);
   text-transform: uppercase;
-  text-align: center;
+  text-align: left;
   color: var(--ink-950);
+  opacity: 0;
+  transform: translateY(24px);
+}
+.abf-tool-index.is-visible .abf-poster {
+  animation: abfToolPosterIn 0.95s var(--ease-reveal) 0.46s forwards;
 }
 .abf-poster-seal {
   display: inline-block;
@@ -436,6 +541,49 @@ h2.about-habits-title.abf-t,
   height: auto;
   margin-left: var(--space-4);
   transform: translateY(0.08em);
+}
+
+@keyframes abfToolSectionIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
+  }
+}
+@keyframes abfToolMetaIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes abfToolLogoIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes abfToolPosterIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ─ 恰好 brush moment inside essay 02 ─ */
@@ -482,7 +630,8 @@ h2.about-habits-title.abf-t,
   font-size: clamp(40px, 4vw, 56px);
   line-height: 1;
   letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.08);
 }
 .abf-scroll-gloss {
   max-width: 24ch;
@@ -503,14 +652,74 @@ h2.about-habits-title.abf-t,
 }
 
 /* ─ dojo captions: wrap, max two lines ─ */
+.abf-dark .about-dojo-wall {
+  width: 100%;
+  max-width: min(1360px, 100%);
+  height: clamp(560px, 38vw, 660px);
+  margin-left: auto;
+  margin-right: auto;
+}
+.abf-dark .about-dojo-item {
+  width: clamp(112px, 9.2vw, 142px);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.22);
+}
+.abf-dark .about-dojo-item:nth-child(1) {
+  left: 0% !important;
+  top: 88px !important;
+  z-index: 1;
+}
+.abf-dark .about-dojo-item:nth-child(2) {
+  left: 14% !important;
+  top: 0 !important;
+  z-index: 2;
+}
+.abf-dark .about-dojo-item:nth-child(3) {
+  left: 28% !important;
+  top: 270px !important;
+  z-index: 3;
+}
+.abf-dark .about-dojo-item:nth-child(4) {
+  left: 41.5% !important;
+  top: 138px !important;
+  z-index: 2;
+}
+.abf-dark .about-dojo-item:nth-child(5) {
+  left: 55% !important;
+  top: 44px !important;
+  z-index: 4;
+}
+.abf-dark .about-dojo-item:nth-child(6) {
+  left: 66.4% !important;
+  top: 330px !important;
+  z-index: 3;
+}
+.abf-dark .about-dojo-item:nth-child(7) {
+  left: 77.5% !important;
+  top: 0 !important;
+  z-index: 2;
+}
+.abf-dark .about-dojo-item:nth-child(8) {
+  left: 89.2% !important;
+  top: 264px !important;
+  z-index: 4;
+}
 .abf-dark .about-dojo-item figcaption {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
   white-space: normal;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  font-size: clamp(12px, 0.86vw, 16px);
+  line-height: 1.22;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.72);
 }
 
 /* ─ vita timeline ─ */
@@ -627,9 +836,43 @@ h2.about-habits-title.abf-t,
 
 /* ─ tablet (810–1079.98): stack, drop the vertical scroll writing ─ */
 @media (max-width: 1079.98px) {
-  .abf-toolbox,
-  .abf-poster {
+  .about-shutter.abf-shutter {
+    position: relative;
+    min-height: auto;
+    display: block;
+  }
+  .about-dark.abf-dark {
+    position: relative;
+    top: auto;
+    margin-top: clamp(-56px, -8vw, -28px);
+  }
+  .about-activities.abf-vita-sec {
+    min-height: auto;
+    margin-top: 0;
+    padding-top: clamp(88px, 12vw, 124px);
+    border-radius: clamp(24px, 7vw, 44px) clamp(24px, 7vw, 44px) 0 0;
+  }
+  .abf-dark .about-dojo-wall {
+    position: static;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    max-width: none;
+  }
+  .abf-dark .about-dojo-item {
+    position: static;
+    width: 100%;
+  }
+  .abf-dark .about-dojo-item img {
+    width: 100%;
+    height: auto !important;
+  }
+  .abf-tool-index {
     grid-column: 1 / -1;
+  }
+  .abf-tool-story {
+    grid-template-columns: 1fr;
   }
   .abf-vhead {
     grid-column: 1 / span 4;
@@ -661,6 +904,9 @@ h2.about-habits-title.abf-t,
 
 /* ─ phone (≤809.98): single reading column ─ */
 @media (max-width: 809.98px) {
+  .abf-dark .about-dojo-wall {
+    grid-template-columns: 1fr;
+  }
   .abf-portrait {
     grid-column: 1 / -1;
     width: min(100%, 360px);
@@ -682,6 +928,7 @@ h2.about-habits-title.abf-t,
   }
   .abf-poster {
     font-size: clamp(38px, 10.5vw, 52px);
+    max-width: 11ch;
   }
   .abf-poster-seal {
     width: 22px;
@@ -698,6 +945,19 @@ h2.about-habits-title.abf-t,
 
 /* ─ reduced motion: state changes only, nothing moves ─ */
 @media (prefers-reduced-motion: reduce) {
+  .about-dark.abf-dark,
+  .about-activities.abf-vita-sec {
+    transform: none;
+    animation: none;
+  }
+  .abf-tool-index[data-fade].is-visible,
+  .abf-tool-index.is-visible .abf-tools-head,
+  .abf-tool-index.is-visible .about-logo-cell,
+  .abf-tool-index.is-visible .abf-poster {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
   .abf-tools .about-logo-cell img,
   .abf-habits .about-habit-photo img {
     transition: none;
