@@ -28,12 +28,17 @@ files; commit their output after a grep + tsc + screenshot check):
    `.abf-vita-sec` should be the relative cover), and remove the color band at
    the top of VOICES. File: app/about/page.tsx (all styles embedded there).
 
-**Still open (Wave 2 + owner):** froghire/vrmb pages never got a formal QA pass
-(they build + render 200); globals.css orphan cleanup (the /work + /contact
-deletion lists below); a worktree `next build` final check; and the owner's
-todos — Pulse cover/preview media, production domain (+ OG/sitemap/robots,
-metadataBase still a placeholder), lotus size/petal palette eyeball, moon-gate
-scroll feel.
+**Wave 2 — DONE (2026-07-03):** globals.css dead-CSS purge (5683→4346, −23%,
+render-neutral, committed); confidentiality re-verified (react-playground
+serves @your-org/react, zero internal-package anywhere); froghire/vrmb eyeball QA
+passed (render clean, 0 console errors); isolated worktree `next build` green —
+14/14 static pages, all routes prerendered, exit 0. globals.css is now 4346
+lines, down from 7986 at the start of the whole engineering effort (−46%).
+
+**Only owner-side items remain (need Xuyuan, not code):** Pulse cover/preview
+media; production domain + OG/sitemap/robots (metadataBase is still the
+`https://xuyuan.liu` placeholder); lotus size/petal-palette eyeball; moon-gate
+scroll feel. Nothing else is blocking.
 
 ---
 
