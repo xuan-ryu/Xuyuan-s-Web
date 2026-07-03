@@ -41,6 +41,10 @@ import { useEffect, useRef, useState } from "react";
 // frames, connectors — shares one coordinate space and stays aligned.
 const NODE_W = 250; // smaller than the shipped 310, to free room for the frames
 const NODE_H = 320;
+// The sliding panel is WIDER than the node and tucks its right edge 30px under
+// it (slide-phone). The extra width + right padding keeps the panel's own UI
+// clear of the node overlap so nothing is covered.
+const PANEL_W = 320;
 const NODE_X = 476; // node cluster sits centered-left with breathing room
 const NODE_Y = 222;
 const NODE_CX = NODE_X + NODE_W / 2;
@@ -83,8 +87,8 @@ const frames = [
     tick: "#8BD6D9",
     copy:
       "Node-level inputs and quick tweaks, changed in place — the prompt and its references. Not global settings or the next step.",
-    box: { left: 18, top: 566, width: 250 },
-    line: { x1: 250, y1: 566, x2: 238, y2: 544 },
+    box: { left: 18, top: 560, width: 250 },
+    line: { x1: 205, y1: 560, x2: 190, y2: 540 },
   },
   {
     id: "node",
@@ -171,7 +175,7 @@ function SlidingPanel({ open }: { open: boolean }) {
     <aside
       className="v-mb-panel"
       id="v-mb-image-panel"
-      style={{ width: NODE_W }}
+      style={{ width: PANEL_W }}
       aria-hidden={!open}
       aria-label="Image node Sliding Panel — recreation, specimen data"
       onPointerDown={(event) => event.stopPropagation()}
@@ -368,7 +372,7 @@ export function VicinoModelBoard() {
                 width: NODE_W,
                 height: NODE_H,
                 transform: `translate3d(${NODE_X}px, ${NODE_Y}px, 0)`,
-                "--v-mb-panel-w": `${NODE_W}px`,
+                "--v-mb-panel-w": `${PANEL_W}px`,
               } as CSSProperties
             }
             onClick={() => setPanelOpen((current) => !current)}

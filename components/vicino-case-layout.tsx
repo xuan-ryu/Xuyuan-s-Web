@@ -89,6 +89,9 @@ const vicinoCriticalCss = `
   --v-meta-ink: rgba(255, 255, 255, 0.64);
   --v-margin: clamp(20px, 5vw, 82px);
   --v-gutter: clamp(18px, 2vw, 28px);
+  /* how far the dashed chain rail sits into the left margin, off column 1, so
+     content breathes instead of hugging the rail (0 at narrow widths) */
+  --v-rail-inset: clamp(0px, 2.2vw, 34px);
   --v-pad-top: clamp(64px, 8vw, 128px);
   --v-pad-bottom: clamp(80px, 9vw, 152px);
   --v-head-gap: clamp(40px, 5vw, 64px);
@@ -163,7 +166,7 @@ const vicinoCriticalCss = `
 .vicino-station::before {
   content: "";
   position: absolute;
-  left: var(--v-margin);
+  left: calc(var(--v-margin) - var(--v-rail-inset));
   top: 0;
   bottom: 0;
   width: 1px;
@@ -204,7 +207,7 @@ const vicinoCriticalCss = `
   /* node-handle-shaped tick marking the station on the rail */
   content: "";
   position: absolute;
-  left: -3px;
+  left: calc(-3px - var(--v-rail-inset));
   top: -2px;
   width: 6px;
   height: 26px;
@@ -1334,7 +1337,8 @@ const vicinoCriticalCss = `
   opacity: 1;
 }
 .vicino-product-node.is-open .v-mb-tab {
-  left: calc(-1 * var(--v-mb-panel-w, 250px) + 5px);
+  /* ride to the panel's outer (left) edge — panel left = 30px - panel-w */
+  left: calc(25px - var(--v-mb-panel-w, 250px));
   opacity: 1;
 }
 
@@ -1349,11 +1353,14 @@ const vicinoCriticalCss = `
   top: 0;
   z-index: 1;
   box-sizing: border-box;
-  min-height: 100%;
+  /* equal height with the node (slide-phone lid + base line up); the right
+     padding keeps the panel's UI clear of the 30px it tucks under the node */
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  padding: 12px;
+  gap: 8px;
+  padding: 12px 38px 12px 12px;
   border: 10px solid rgba(32, 32, 32, 0.94);
   border-radius: 16px;
   background: rgba(48, 46, 48, 0.93);
@@ -2472,10 +2479,16 @@ h2.vicino-closing-title {
 }
 .vicino-product-node.is-image.is-open .vicino-product-node-shell {
   border-color: #8BD6D9;
-  box-shadow: var(--node-shell-selected-shadow);
+  /* lighter than the shared selected shadow — the board node sat too heavy */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
 }
 .vicino-product-node.is-image.is-static {
   cursor: default;
+}
+/* when the panel is open it slides over the node's left edge, so the left
+   input handles tuck UNDER the panel instead of floating on top of it */
+.vicino-product-node.is-image.is-open .vicino-product-handle.is-left {
+  z-index: 0;
 }
 /* header image glyph (image-node-header-icon) */
 .vicino-img-icon {
@@ -2600,7 +2613,7 @@ h2.vicino-closing-title {
 .v-mb-panel-inner {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   overflow: hidden;
 }
 .v-mb-panel-sep {
@@ -2655,8 +2668,8 @@ h2.vicino-closing-title {
   border-radius: 999px;
 }
 .v-mb-imgbox-add {
-  width: 54px;
-  height: 54px;
+  width: 46px;
+  height: 46px;
   border-radius: 8px;
   border-style: dashed;
   border-width: 2px;
@@ -2683,8 +2696,8 @@ h2.vicino-closing-title {
   height: 10px;
 }
 .v-mb-prompt {
-  min-height: 66px;
-  padding: 10px;
+  min-height: 50px;
+  padding: 9px 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   background: #202020;
@@ -3217,9 +3230,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               />
             </div>
             <figcaption>
-              The workflow, roughly mapped — a to-3D chain and a to-video chain
-              off the same text-to-image spine: capable steps, but no one
-              connected path to follow through them.
+              The workflow, roughly mapped: capable nodes, chained to 3D and to
+              video off one text-to-image spine — but a newcomer couldn&rsquo;t
+              see the 0-to-1 loop, or how to wire node into node into a flow of
+              their own.
             </figcaption>
           </figure>
         )}
@@ -3249,8 +3263,8 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               <Image
                 src={mainPathFigure}
                 alt="The main path as a node flow: Script Node refines or writes the script, Storyboard turns it into six sketch scenes, Shot Node generates detailed keyframes, an Image Editor refines frames, and Video Generation produces the clips — each stage a checkpoint before the next."
-                width={2049}
-                height={975}
+                width={1851}
+                height={854}
                 sizes="(max-width: 1080px) 100vw, 1280px"
                 style={{ height: "auto" }}
               />
