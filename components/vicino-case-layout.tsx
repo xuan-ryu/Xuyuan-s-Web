@@ -394,6 +394,85 @@ const vicinoCriticalCss = `
     stroke-dashoffset: 0;
   }
 }
+/* ---- click-to-run generation flow (hero canvas Run button) ---- */
+.vicino-live-run {
+  pointer-events: auto;
+  margin: 0;
+  padding: 5px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-amber, #e0902f) 12%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent-amber, #e0902f) 92%, white);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.vicino-live-run:hover {
+  background: color-mix(in srgb, var(--accent-amber, #e0902f) 22%, transparent);
+  border-color: var(--accent-amber, #e0902f);
+}
+.vicino-live-run:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+/* while a run plays, freeze the ambient edge drift and drive edges by state */
+.vicino-live-canvas.is-flow-run .vicino-story-edge {
+  animation: none;
+  opacity: 0.1;
+  stroke-dashoffset: 0;
+}
+.vicino-live-canvas.is-flow-run .vicino-story-edge.is-flowed {
+  opacity: 0.5;
+}
+.vicino-live-canvas.is-flow-run .vicino-story-edge.is-flowing {
+  opacity: 0.95;
+  animation: vicino-story-edge-flow 0.85s linear infinite;
+}
+/* node generation states */
+.vicino-product-node.is-pending {
+  opacity: 0.32;
+  transition: opacity 0.45s ease;
+}
+.vicino-product-node.is-generating,
+.vicino-product-node.is-generated {
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+.vicino-product-node.is-generating .vicino-product-node-shell {
+  border-color: var(--node-color, #6eddb3);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--node-color, #6eddb3) 70%, transparent),
+    0 0 26px -4px var(--node-color, #6eddb3);
+}
+.vicino-product-node.is-generating .vicino-product-node-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 34%,
+    color-mix(in srgb, var(--node-color, #6eddb3) 26%, transparent) 50%,
+    transparent 66%
+  );
+  background-size: 240% 100%;
+  animation: vicino-gen-sweep 0.85s linear infinite;
+}
+.vicino-product-node.is-generated .vicino-product-node-shell {
+  border-color: color-mix(in srgb, var(--node-color, #6eddb3) 52%, rgba(255, 255, 255, 0.12));
+}
+@keyframes vicino-gen-sweep {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -130% 0;
+  }
+}
 .vicino-live-caption {
   position: absolute;
   left: 18px;

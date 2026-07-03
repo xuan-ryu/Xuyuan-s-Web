@@ -360,6 +360,12 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
   } | null>(null);
   const [offsets, setOffsets] = useState<OffsetMap>({});
   const [isPaused, setIsPaused] = useState(false);
+  // Click-to-run generation flow: runIndex is -1 idle, 0..n-1 the node currently
+  // "generating", n once the whole flow has played through.
+  const [runIndex, setRunIndex] = useState(-1);
+  const runTimers = useRef<number[]>([]);
+  const nodeCount = canvasNodes.length;
+  const runActive = runIndex >= 0;
 
   const byId = useMemo(() => new Map(canvasNodes.map((node) => [node.id, node])), []);
 
@@ -377,6 +383,26 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  useEffect(() => () => runTimers.current.forEach((t) => clearTimeout(t)), []);
+
+  // Play the pipeline: light each node in turn (script -> storyboard -> shot ->
+  // video), its incoming edge carrying the output, so a click "runs" the flow.
+  const playFlow = () => {
+    runTimers.current.forEach((t) => clearTimeout(t));
+    runTimers.current = [];
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setRunIndex(nodeCount);
+      return;
+    }
+    setRunIndex(0);
+    for (let i = 1; i <= nodeCount; i += 1) {
+      runTimers.current.push(window.setTimeout(() => setRunIndex(i), 760 * i));
+    }
+  };
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>, node: CanvasNode) => {
     const current = offsetFor(node, offsets);
@@ -430,10 +456,29 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
     });
   };
 
+  const nodeStateClass = (index: number) => {
+    if (!runActive) return "";
+    if (index < runIndex) return " is-generated";
+    if (index === runIndex) return " is-generating";
+    return " is-pending";
+  };
+  const edgeStateClass = (index: number) => {
+    if (!runActive) return "";
+    if (runIndex === index + 1) return " is-flowing";
+    if (runIndex > index + 1) return " is-flowed";
+    return " is-dim";
+  };
+  const runLabel =
+    runIndex < 0
+      ? "▶ Run the flow"
+      : runIndex >= nodeCount
+        ? "↻ Replay"
+        : "Generating…";
+
   return (
     <div
       ref={rootRef}
-      className={`vicino-live-canvas is-storyboard-animation${isPaused ? " is-paused" : ""}`}
+      className={`vicino-live-canvas is-storyboard-animation${isPaused ? " is-paused" : ""}${runActive ? " is-flow-run" : ""}`}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}
       onPointerCancel={stopDragging}
@@ -445,13 +490,13 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
           viewBox={`0 0 ${VICINO_STAGE_W} ${VICINO_STAGE_H}`}
           aria-hidden="true"
         >
-          {canvasEdges.map(([fromId, toId, type]) => {
+          {canvasEdges.map(([fromId, toId, type], edgeIndex) => {
             const from = byId.get(fromId);
             const to = byId.get(toId);
             if (!from || !to) return null;
             return (
               <path
-                className={`vicino-story-edge is-${type}`}
+                className={`vicino-story-edge is-${type}${edgeStateClass(edgeIndex)}`}
                 key={`${fromId}-${toId}`}
                 d={connectorPath(from, to, offsets)}
                 style={{ stroke: handleColor[type] }}
@@ -460,11 +505,11 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
           })}
         </svg>
 
-        {canvasNodes.map((node) => {
+        {canvasNodes.map((node, nodeIndex) => {
           const offset = offsetFor(node, offsets);
           return (
             <div
-              className={`vicino-product-node is-${node.kind} ${productClassName[node.kind]}`}
+              className={`vicino-product-node is-${node.kind} ${productClassName[node.kind]}${nodeStateClass(nodeIndex)}`}
               key={node.id}
               role="button"
               tabIndex={0}
@@ -505,7 +550,14 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
 
       <div className="vicino-live-caption">
         <span>Board recreation — a few of the node library&rsquo;s types</span>
-        <span>Drag nodes</span>
+        <button
+          type="button"
+          className="vicino-live-run"
+          onClick={playFlow}
+          aria-label="Play the generation flow — script to storyboard to shot to video"
+        >
+          {runLabel}
+        </button>
       </div>
     </div>
   );
