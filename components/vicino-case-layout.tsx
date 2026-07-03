@@ -1168,20 +1168,20 @@ const vicinoCriticalCss = `
 .v-fs-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(4, auto);
+  grid-template-rows: repeat(3, auto);
   column-gap: var(--v-gutter);
   border-top: 1px solid var(--v-line-soft);
 }
 .v-fs-stop {
   display: grid;
-  grid-row: span 4;
+  grid-row: span 3;
   grid-template-rows: subgrid;
   min-width: 0;
   padding-top: 22px;
 }
 @supports not (grid-template-rows: subgrid) {
   .v-fs-stop {
-    grid-template-rows: repeat(4, auto);
+    grid-template-rows: repeat(3, auto);
     align-content: start;
   }
   /* fallback: reserve two title lines so single-line names stay level */
@@ -1231,15 +1231,6 @@ const vicinoCriticalCss = `
   font-weight: 300;
   line-height: 1.55;
   color: var(--v-meta-ink);
-}
-.v-fs-conn {
-  align-self: end;
-  margin: 14px 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--stone);
 }
 
 /* ---- station 04 — Block B: the interface, one interactive board ---- */
@@ -3026,7 +3017,7 @@ h2.vicino-closing-title {
   /* flow strip: two level pairs (each stop still spans the shared rows) */
   .v-fs-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(8, auto);
+    grid-template-rows: repeat(6, auto);
   }
   .v-fs-stop {
     padding-bottom: 30px;

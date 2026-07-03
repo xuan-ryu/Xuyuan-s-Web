@@ -67,7 +67,6 @@ export function VicinoFlowStrip() {
           </h3>
           <p className="v-fs-claim">{stop.claim}</p>
           <p className="v-fs-copy">{stop.copy}</p>
-          <p className="v-fs-conn">{stop.conn}</p>
         </div>
       ))}
     </div>
