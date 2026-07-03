@@ -18,14 +18,6 @@ function refreshFacts(copy: string) {
   );
 }
 
-// Figcaptions for the prototype reels. The teammate credit stays anonymous
-// (owner confidentiality decision — the portfolio is public): no real names.
-const reelCaptions = [
-  "Sliding-panel structure — React prototype",
-  "Sidebar-only previous version",
-  "Video 2 Node prototype — by a teammate",
-];
-
 // Station-04 evidence ledger: the chapter decisions, tightened. Rows whose
 // argument the station-03 interactive now carries are dropped per the
 // redundancy rule (the main-path row = the checkpoints, the four-layers row
@@ -3175,12 +3167,31 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         </h2>
         <div className="vicino-opening-copy" data-fade>
           <p className="vicino-body-copy">
-            The design problem was not how many tools the canvas could hold. It
-            was where a person could read the work in progress and know what to
-            change next.
+            The design problem was never how many tools the canvas could hold,
+            and better models will not retire it. It is where a person can read
+            the work in progress, shape their own intent, and know what to change
+            next.
           </p>
           {overviewCopy ? <p className="vicino-body-copy">{overviewCopy}</p> : null}
         </div>
+        {videos.length > 0 && (
+          <>
+            <p className="vicino-sub-label" data-fade>
+              The product in use
+            </p>
+            <div className="vicino-reel-grid">
+              {videos.map((video) => (
+                <figure
+                  className={`vicino-reel${video.wide ? " is-wide" : ""}`}
+                  key={video.src}
+                  data-fade
+                >
+                  <OffscreenVideo src={video.src} />
+                </figure>
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       <section className="vicino-station vicino-brief">
@@ -3206,9 +3217,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               />
             </div>
             <figcaption>
-              The pile-up, mapped: a to-3D chain and a to-video chain sharing
-              the same text-to-image spine — capable pieces, no single model
-              holding them together.
+              The workflow, roughly mapped — a to-3D chain and a to-video chain
+              off the same text-to-image spine: capable steps, but no one
+              connected path to follow through them.
             </figcaption>
           </figure>
         )}
@@ -3219,13 +3230,14 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <p className="vicino-station-index" data-fade>
           03 · The flow
         </p>
-        <h2 data-fade>The Main Path, Rebuilt Around What the Models Could Support</h2>
+        <h2 data-fade>The Main Path, Built to Keep Intent Legible</h2>
         <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
             The main path holds four checkpoints — script, storyboard, shot,
-            video. Each exists because the models cannot reliably skip it, and
-            each is a place to inspect and redirect before the next, more
-            expensive step.
+            video — each a place to inspect and redirect before the next, costlier
+            step. Each also asks the person to state their intent plainly, and
+            that stated intent is the clearest prompt any model can act on: the
+            flow does prompt-engineering by design, and teaches it as people work.
           </p>
         </div>
         <div className="vicino-flow-strip-wrap" data-fade>
@@ -3261,7 +3273,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
             The new workflow forced a second problem into the open: the
-            original lightweight node couldn't scale to carry these bigger
+            original lightweight node could not scale to carry these bigger
             encapsulated nodes, and as everything piled onto the same node
             surface the canvas itself turned bloated. A staged workflow needed
             a UI language that could scale with it.
@@ -3294,28 +3306,6 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           <div className="vicino-evidence-copy" data-fade>
             <p className="vicino-body-copy">{evidenceIntro}</p>
           </div>
-        )}
-
-        {videos.length > 0 && (
-          <>
-            <p className="vicino-sub-label" data-fade>
-              Prototype reels
-            </p>
-            <div className="vicino-reel-grid">
-              {videos.map((video, index) => (
-                <figure
-                  className={`vicino-reel${video.wide ? " is-wide" : ""}`}
-                  key={video.src}
-                  data-fade
-                >
-                  <OffscreenVideo src={video.src} />
-                  <figcaption>
-                    {reelCaptions[index] ?? `Prototype reel ${index + 1}`}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </>
         )}
 
         <p className="vicino-sub-label" data-fade>
