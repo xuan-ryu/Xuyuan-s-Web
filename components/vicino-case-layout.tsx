@@ -476,6 +476,7 @@ const vicinoCriticalCss = `
 .vicino-product-node-shell {
   position: absolute;
   inset: 0;
+  z-index: 2;
   overflow: hidden;
   border: 1px solid var(--image-node-card-border);
   border-radius: var(--node-shell-radius);
@@ -679,7 +680,7 @@ const vicinoCriticalCss = `
 .vicino-product-handle {
   position: absolute;
   top: calc(var(--output-y, 50%) - 13px);
-  z-index: 2;
+  z-index: 3;
   width: 6px;
   height: 26px;
   border: 1px solid var(--handle-color);
@@ -1329,7 +1330,7 @@ const vicinoCriticalCss = `
   position: absolute;
   left: 0;
   top: 50%;
-  z-index: 3;
+  z-index: 4;
   width: 5px;
   height: 72px;
   border-radius: 999px;
@@ -1350,9 +1351,11 @@ const vicinoCriticalCss = `
    rgba(48,46,48,.93) glass (the sliding panel). */
 .v-mb-panel {
   position: absolute;
-  right: 100%;
+  /* slide-phone: the panel (keyboard) sits level with the node top and tucks
+     30px under the node (the lid), so opening reads like a slider sliding out */
+  right: calc(100% - 30px);
   top: 0;
-  z-index: 2;
+  z-index: 1;
   box-sizing: border-box;
   min-height: 100%;
   display: flex;
@@ -3257,18 +3260,20 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <h2 data-fade>A Designated Home for Every Kind of Function</h2>
         <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
-            The zoning around that path exists to scale the product up.
-            Instead of answering each new feature with one more control on the
-            same surface, every kind of function got a designated home: the
-            Work Space stages the nodes, the Floating Bar carries the next
-            step, the Sidebar holds global settings and model selection, the
-            Sliding Panel takes node-level adjustment, the Node Panel stays
-            minimal, and deep revision leaves for an Editor.
+            The new workflow forced a second problem into the open: the
+            original lightweight node couldn't scale to carry these bigger
+            encapsulated nodes, and as everything piled onto the same node
+            surface the canvas itself turned bloated. A staged workflow needed
+            a UI language that could scale with it.
           </p>
           <p className="vicino-body-copy">
-            Each room keeps a one-sentence rule and a list of what never goes
-            there — so future features arrive with a place to live instead of
-            a new structural debate.
+            So every kind of function got a designated home: the Work Space
+            stages the nodes, the Floating Bar carries the next step, the
+            Sidebar holds global settings and model selection, the Sliding
+            Panel takes node-level adjustment, the Node Panel stays minimal,
+            and deep revision leaves for an Editor. Each zone keeps one rule
+            and a list of what never goes there — so future features arrive
+            with a place to live instead of a new structural debate.
           </p>
           <p className="vicino-model-invite">
             One Image node, every zone in place — click it to open its panel and bar
