@@ -1,5 +1,42 @@
 # Page art-direction wave — state ledger (2026-07-02)
 
+## Session 2 status (2026-07-02 evening) — latest first
+
+Home + all case pages are redesigned, committed, and confidentiality-cleaned.
+Latest commit at handoff: `0e7ae23`. Recent arc (newest first): codex batch
+(0e7ae23), Vicino PDR-schematic board + declassify (1e822c1), Pulse declassify
+(12cfcfc), Vicino product-faithful board (7962cc8), lotus arrival (1bc0cec),
+Pulse standard arc (652af61), Vicino four-rooms (d26196c), home night-ending
+(1e2f52d).
+
+**Confidentiality (owner decision — portfolio is public): DONE + grep-verified
+zero.** No commit hashes, no teammate real names, npm genericized (can't be
+reverse-engineered — incl. react-playground.png recaptured to @your-org/react),
+internal PRD paraphrased (verbatim rules + the "Detail PRD" board image removed;
+439KB asset deleted). Prototype product screenshots kept (owner OK). If any
+future edit re-introduces real material, re-run the sweep: grep for commit
+hashes, `internal-package`, teammate names (a teammate/a teammate/a teammate/a teammate), `internal-doc`,
+`internal-doc`, the drift quote.
+
+**Two refinements IN FLIGHT at handoff** (background agents; each owns disjoint
+files; commit their output after a grep + tsc + screenshot check):
+1. Vicino board — dock the Sidebar to the right (product-faithful inspector),
+   it was cramped in the center cluster. Files: components/vicino-model-board.tsx,
+   vicino-case-layout.tsx.
+2. About page transitions — make ACTIVITIES & LEADERSHIP cover the dark section
+   like the shutter→dark page-turn (fix inverted sticky: `.abf-dark` should pin,
+   `.abf-vita-sec` should be the relative cover), and remove the color band at
+   the top of VOICES. File: app/about/page.tsx (all styles embedded there).
+
+**Still open (Wave 2 + owner):** froghire/vrmb pages never got a formal QA pass
+(they build + render 200); globals.css orphan cleanup (the /work + /contact
+deletion lists below); a worktree `next build` final check; and the owner's
+todos — Pulse cover/preview media, production domain (+ OG/sitemap/robots,
+metadataBase still a placeholder), lotus size/petal palette eyeball, moon-gate
+scroll feel.
+
+---
+
 Wave 1 (9 parallel page builds) was interrupted by the session usage limit
 (resets 3am America/New_York). All work is on disk and committed; `tsc` clean,
 all 10 routes render 200 with zero console errors. Specs live in the session
