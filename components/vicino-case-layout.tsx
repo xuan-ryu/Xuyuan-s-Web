@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
 import { OffscreenVideo } from "./ui/offscreen-video";
+import { VicinoAudienceViz } from "./vicino-audience-viz";
 import { VicinoFlowStrip } from "./vicino-flow-strip";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
@@ -1143,6 +1144,14 @@ const vicinoCriticalCss = `
 }
 .vicino-wide-figure.is-tight {
   margin-top: clamp(28px, 3vw, 44px);
+}
+/* coded viz blocks embedded in the ink-900 stations (audience/logic diagrams
+   that replaced the blurry raster figures) */
+.vicino-brief-viz,
+.vicino-flow-viz {
+  grid-column: 1 / -1;
+  margin: var(--v-head-gap) 0 0;
+  min-width: 0;
 }
 
 /* ---- station 03 — Block A: the flow, told once ---- */
@@ -3237,6 +3246,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             </figcaption>
           </figure>
         )}
+        <div className="vicino-brief-viz" data-fade>
+          <VicinoAudienceViz />
+        </div>
       </section>
 
       <section className="vicino-station vicino-flow">
