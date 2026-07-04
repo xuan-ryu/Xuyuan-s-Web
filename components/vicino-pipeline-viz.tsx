@@ -111,14 +111,6 @@ export function VicinoPipelineViz() {
     radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
     #0a0a0c;
 }
-.vz-pipe-eyebrow {
-  margin: 0;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--text-label, 13px);
-  letter-spacing: var(--track-label, 0.14em);
-  text-transform: uppercase;
-  color: var(--accent-gold, #d9a441);
-}
 .vz-pipe-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -188,8 +180,8 @@ export function VicinoPipelineViz() {
   content: "";
   position: absolute;
   left: 15.5px;
-  top: 21px;
-  bottom: 21px;
+  top: 24px;
+  bottom: 24px;
   width: 1px;
   background: var(--v-line, rgba(255, 255, 255, 0.1));
 }
@@ -198,7 +190,7 @@ export function VicinoPipelineViz() {
   display: flex;
   align-items: center;
   gap: 13px;
-  padding: 7px 2px;
+  padding: 10px 2px;
 }
 .vz-pipe-chip {
   position: relative;
@@ -224,13 +216,6 @@ export function VicinoPipelineViz() {
   line-height: 1.35;
   color: var(--paper, #f4f1ea);
 }
-.vz-pipe-role-n {
-  flex: 0 0 auto;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
-  letter-spacing: var(--track-label, 0.14em);
-  color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 58%, transparent);
-}
 
 /* RIGHT: Vicino steps */
 .vz-pipe-body {
@@ -248,11 +233,19 @@ export function VicinoPipelineViz() {
 .vz-pipe-step {
   display: flex;
   align-items: baseline;
-  gap: 14px;
+  gap: 13px;
   padding: 16px 0;
+}
+.vz-pipe-step:first-child {
+  /* first rows of both columns start level (grid rule) */
+  padding-top: 10px;
 }
 .vz-pipe-step + .vz-pipe-step {
   border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+}
+.vz-pipe-step .vz-pipe-cell-n {
+  /* numeral column mirrors the specialists' 28px chip column */
+  flex: 0 0 28px;
 }
 .vz-pipe-step-copy {
   display: grid;
@@ -330,9 +323,6 @@ export function VicinoPipelineViz() {
 `,
         }}
       />
-      <p className="vz-pipe-eyebrow" aria-hidden="true">
-        Same depth, reorganized
-      </p>
       <div className="vz-pipe-cols" aria-hidden="true">
         <div className="vz-pipe-col is-traditional">
           <div className="vz-pipe-head-fig">
@@ -342,11 +332,10 @@ export function VicinoPipelineViz() {
             </div>
           </div>
           <div className="vz-pipe-list">
-            {traditionalSteps.map((item, i) => (
+            {traditionalSteps.map((item) => (
               <div className="vz-pipe-role" key={item.role}>
                 <span className="vz-pipe-chip">{item.icon}</span>
                 <span className="vz-pipe-role-name">{item.role}</span>
-                <span className="vz-pipe-role-n">{index2(i)}</span>
               </div>
             ))}
           </div>

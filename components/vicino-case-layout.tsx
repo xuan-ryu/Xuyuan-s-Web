@@ -1364,13 +1364,15 @@ const vicinoCriticalCss = `
 .vicino-model h2 {
   grid-column: 1 / span 6;
 }
+/* interactive lead-ins are read, not scanned — sentence case, no caps
+   (owner critique: instruction sentences in mono caps are unreadable) */
 .vicino-model-invite {
   margin: 4px 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--accent-gold);
+  font-family: var(--font-text);
+  font-size: var(--text-meta);
+  font-weight: 300;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
 }
 .vicino-model-board-wrap {
   grid-column: 1 / -1;
@@ -2385,11 +2387,10 @@ const vicinoCriticalCss = `
   grid-column: 1 / -1;
   margin: var(--v-head-gap) 0 0;
   padding-left: 18px;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--accent-gold);
+  font-family: var(--font-text);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  color: rgba(244, 241, 234, 0.88);
 }
 .vicino-reel-grid {
   grid-column: 1 / -1;

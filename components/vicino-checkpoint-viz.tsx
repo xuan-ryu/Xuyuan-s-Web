@@ -88,14 +88,6 @@ export function VicinoCheckpointViz() {
   justify-items: center;
   text-align: center;
 }
-.vz-chk-eyebrow {
-  margin: 0;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--text-label, 13px);
-  letter-spacing: var(--track-label, 0.14em);
-  text-transform: uppercase;
-  color: var(--accent-gold, #d9a441);
-}
 .vz-chk-intro {
   margin: 0;
   max-width: 56ch;
@@ -276,7 +268,6 @@ export function VicinoCheckpointViz() {
         }}
       />
       <div className="vz-chk-head" aria-hidden="true">
-        <p className="vz-chk-eyebrow">AI Limits · Product Logic</p>
         <p className="vz-chk-intro">
           Why not generate video directly? Because inserting a cheaper, faster
           image layer before the expensive step changed everything.

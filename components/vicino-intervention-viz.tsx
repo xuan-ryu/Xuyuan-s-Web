@@ -82,14 +82,6 @@ export function VicinoInterventionViz() {
     radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
     #0a0a0c;
 }
-.vz-int-eyebrow {
-  margin: 0;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--text-label, 13px);
-  letter-spacing: var(--track-label, 0.14em);
-  text-transform: uppercase;
-  color: var(--accent-gold, #d9a441);
-}
 .vz-int-intro {
   margin: 0 auto;
   max-width: 58ch;
@@ -221,11 +213,10 @@ export function VicinoInterventionViz() {
   border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
 }
 .vz-int-footer-label {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--text-label, 13px);
-  letter-spacing: var(--track-label, 0.14em);
-  text-transform: uppercase;
-  color: var(--accent-gold, #d9a441);
+  font-family: var(--font-text, var(--font-sans, system-ui));
+  font-size: var(--text-meta, 15px);
+  font-weight: 500;
+  color: var(--paper, #f4f1ea);
 }
 .vz-int-footer p {
   margin: 0;
@@ -277,9 +268,6 @@ export function VicinoInterventionViz() {
 `,
         }}
       />
-      <p className="vz-int-eyebrow" aria-hidden="true">
-        Human control &middot; Agent support
-      </p>
       <p className="vz-int-intro" aria-hidden="true">
         A smart workflow reduces friction without taking away control. At every
         stage, users can inspect, revise, and redirect — the system accelerates

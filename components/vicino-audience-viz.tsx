@@ -34,13 +34,14 @@ export function VicinoAudienceViz() {
     radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
     #0a0a0c;
 }
+/* the block's anchor — a big sentence-case caption, not an eyebrow */
 .vz-aud-eyebrow {
   margin: 0;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: var(--text-label, 13px);
-  letter-spacing: var(--track-label, 0.14em);
-  text-transform: uppercase;
-  color: var(--accent-gold, #d9a441);
+  font-family: var(--font-text, var(--font-sans, system-ui));
+  font-size: clamp(22px, 1.9vw, 28px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: rgba(244, 241, 234, 0.92);
 }
 /* the spectrum band: veteran — connector — newcomer */
 .vz-aud-band {
