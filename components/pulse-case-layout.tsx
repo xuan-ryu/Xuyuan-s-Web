@@ -175,14 +175,32 @@ const ledger: Array<[string, string]> = [
 ];
 
 // ── The melee (ch. 01): four prototypes with the same face and
-//    incompatible sources. Wireframes identical by design; the trace lines
-//    are categories, not tool brands (confidentiality: no tool list). ──
+//    incompatible sources. The shared wireframe strip on top is the "one
+//    face"; under it, each card shows its source's characteristic UI idiom
+//    (canvas selection, inline-style soup, chat paste, photo composite) —
+//    tool categories drawn, not named (confidentiality: no brand list). ──
 const meleeSources = [
-  { made: "drawn in a design canvas", trace: "frames only — no code at all" },
-  { made: "an AI page-builder export", trace: "one file, styles inlined per node" },
-  { made: "pasted from a model chat", trace: "runs, but write-only to humans" },
-  { made: "composited from images", trace: "screens as pictures — nothing wired" },
-];
+  {
+    kind: "canvas",
+    made: "drawn in a design canvas",
+    trace: "frames only — no code at all",
+  },
+  {
+    kind: "builder",
+    made: "an AI page-builder export",
+    trace: "one file, styles inlined per node",
+  },
+  {
+    kind: "chat",
+    made: "pasted from a model chat",
+    trace: "runs, but write-only to humans",
+  },
+  {
+    kind: "image",
+    made: "composited from images",
+    trace: "screens as pictures — nothing wired",
+  },
+] as const;
 
 // ── The brand rules (ch. 03) — the written identity, four rules + the
 //    generation ladder in one card (the prose stays at label budget). ──
@@ -871,11 +889,176 @@ const pulseCss = `
   background: rgba(29, 29, 31, 0.1);
 }
 .pulse-melee-wire i:first-child {
-  height: 16px;
+  height: 14px;
   background: rgba(29, 29, 31, 0.16);
 }
-.pulse-melee-wire i:nth-child(3) {
-  width: 72%;
+
+/* ── the guts: each source's characteristic UI idiom, drawn (tool
+   categories, not brands). Big + tinted on purpose — these scenes are the
+   act's visual anchor. ── */
+.pulse-melee-scene {
+  position: relative;
+  height: 140px;
+  border: 1px solid var(--pp-line);
+  border-radius: 8px;
+  background: var(--pp-stage);
+  overflow: hidden;
+}
+/* canvas: artboards with selection chrome on a dotted ground */
+.pulse-melee-scene.is-canvas {
+  background-image: radial-gradient(rgba(29, 29, 31, 0.14) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+.mc-frame {
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  width: 34%;
+  height: 66%;
+  background: #ffffff;
+  border: 2px solid #3987f3;
+  border-radius: 2px;
+  box-shadow: var(--pp-shadow-rest);
+}
+.mc-frame::before,
+.mc-frame::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #ffffff;
+  border: 2px solid #3987f3;
+}
+.mc-frame::before { left: -5px; top: -5px; }
+.mc-frame::after { right: -5px; bottom: -5px; }
+.mc-frame2 {
+  left: 52%;
+  top: 36px;
+  width: 36%;
+  height: 52%;
+  border-color: var(--pp-line-strong);
+}
+.mc-frame2::before,
+.mc-frame2::after {
+  border-color: var(--pp-line-strong);
+}
+.mc-cursor {
+  position: absolute;
+  right: 18%;
+  bottom: 16px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid var(--pp-ink);
+  border-bottom: 7px solid transparent;
+  border-top: 7px solid transparent;
+  transform: rotate(-64deg);
+}
+/* builder export: one file of inlined-style soup; the last "line" runs
+   past the edge — the million-character line */
+.pulse-melee-scene.is-builder {
+  padding: 14px;
+}
+.mc-soup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-content: flex-start;
+  height: 100%;
+}
+.mc-soup i {
+  display: block;
+  height: 10px;
+  border-radius: 3px;
+  background: rgba(29, 29, 31, 0.12);
+}
+.mc-soup i:nth-child(5n + 1) { width: 34px; }
+.mc-soup i:nth-child(5n + 2) { width: 18px; background: #d7e6fd; }
+.mc-soup i:nth-child(5n + 3) { width: 46px; background: #fce7be; }
+.mc-soup i:nth-child(5n + 4) { width: 26px; background: #e2e3fc; }
+.mc-soup i:nth-child(5n) { width: 38px; background: #d5f0da; }
+.mc-soup i:nth-child(7n) { width: 58px; }
+.mc-soup i:last-child {
+  width: 200%;
+  background: repeating-linear-gradient(
+    90deg,
+    #f9c9c9 0 26px,
+    #fce7be 26px 54px,
+    #d7e6fd 54px 84px,
+    #e2e3fc 84px 108px
+  );
+}
+/* model chat: an ink prompt bubble, a wall of generated code below */
+.mc-bubble {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 44%;
+  height: 20px;
+  border-radius: 10px 10px 3px 10px;
+  background: var(--pp-ink);
+}
+.mc-code {
+  position: absolute;
+  left: 14px;
+  right: 30%;
+  top: 48px;
+  bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #23272c;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.mc-code i {
+  display: block;
+  height: 5px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.mc-code i:nth-child(1) { width: 42%; background: #7fd68c; }
+.mc-code i:nth-child(2) { width: 88%; }
+.mc-code i:nth-child(3) { width: 96%; background: #a5a8f7; }
+.mc-code i:nth-child(4) { width: 64%; }
+/* image composite: photos pretending to be screens */
+.mc-photo {
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  width: 46%;
+  height: 60%;
+  border: 1px solid var(--pp-line-strong);
+  border-radius: 4px;
+  background: linear-gradient(180deg, #e5fbff 0 58%, #d5f0da 58% 100%);
+  box-shadow: var(--pp-shadow-rest);
+  overflow: hidden;
+}
+.mc-photo::before {
+  content: "";
+  position: absolute;
+  left: 12%;
+  bottom: -8%;
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 34px solid #43ba51;
+  opacity: 0.55;
+}
+.mc-photo::after {
+  content: "";
+  position: absolute;
+  right: 14%;
+  top: 14%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f19a08;
+}
+.mc-photo2 {
+  left: 44%;
+  top: 34px;
+  transform: rotate(5deg);
 }
 .pulse-melee-made {
   margin: 0;
@@ -939,43 +1122,79 @@ const pulseCss = `
   justify-items: center;
 }
 .pulse-monolith-bar {
-  width: 64px;
-  height: 240px;
+  width: 76px;
+  height: 264px;
   border: 1px solid var(--pp-line-strong);
   border-radius: 4px;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(29, 29, 31, 0.14) 0 1px,
-    transparent 1px 5px
-  );
+  /* code stripes with tangled style-bands bleeding through — the mess is
+     tinted on purpose */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(29, 29, 31, 0.14) 0 1px,
+      transparent 1px 5px
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0 18%,
+      #fce7be 18% 21%,
+      transparent 21% 38%,
+      #d7e6fd 38% 41%,
+      transparent 41% 58%,
+      #f9c9c9 58% 61%,
+      transparent 61% 80%,
+      #e2e3fc 80% 83%,
+      transparent 83%
+    );
   transform-origin: bottom;
 }
 .pulse-monolith-folder {
   display: grid;
-  gap: 6px;
+  gap: 10px;
 }
 .pulse-monolith-chip {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
+/* a real folder glyph, tinted per row (the split's payoff is colorful) */
 .pulse-monolith-chip i {
+  position: relative;
   display: block;
-  width: 28px;
-  height: 18px;
+  width: 36px;
+  height: 24px;
   border: 1px solid var(--pp-line-strong);
-  border-radius: 2px;
+  border-radius: 3px;
   background: var(--pp-canvas);
 }
+.pulse-monolith-chip i::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: -6px;
+  width: 14px;
+  height: 6px;
+  border: 1px solid var(--pp-line-strong);
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+  background: inherit;
+}
+.pulse-monolith-chip:nth-child(1) i { background: var(--pp-cyan-soft); border-color: var(--pp-cyan-line); }
+.pulse-monolith-chip:nth-child(1) i::before { border-color: var(--pp-cyan-line); }
+.pulse-monolith-chip:nth-child(2) i { background: var(--pp-green-soft); border-color: var(--pp-green-line); }
+.pulse-monolith-chip:nth-child(2) i::before { border-color: var(--pp-green-line); }
+.pulse-monolith-chip:nth-child(3) i { background: var(--pp-purple-soft); border-color: var(--pp-purple-line); }
+.pulse-monolith-chip:nth-child(3) i::before { border-color: var(--pp-purple-line); }
+.pulse-monolith-chip:nth-child(4) i { background: var(--pp-amber-soft); border-color: var(--pp-amber-line); }
+.pulse-monolith-chip:nth-child(4) i::before { border-color: var(--pp-amber-line); }
 .pulse-monolith-chip em {
   font-style: normal;
-  font-family: var(--pulse-mono);
-  font-size: 12px;
-  color: var(--pp-text-3);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pp-text-2);
 }
 .pulse-monolith-label {
   margin: 0;
-  font-family: var(--pulse-mono);
   font-size: 12px;
   line-height: 1.5;
   text-align: center;
@@ -983,6 +1202,7 @@ const pulseCss = `
 }
 .pulse-monolith-label strong {
   display: block;
+  font-size: 20px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--pp-ink);
@@ -2064,25 +2284,32 @@ const pulseCss = `
 .pflow-node {
   position: relative;
   box-sizing: border-box;
-  padding: 8px 16px;
+  padding: 12px 18px;
   border: 1px solid var(--pp-line-strong);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--pp-canvas);
   box-shadow: var(--pp-shadow-rest);
   text-align: center;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--pp-ink);
 }
 .pflow-node em {
   display: block;
-  margin-top: 2px;
+  margin-top: 3px;
   font-style: normal;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.35;
-  color: var(--pp-text-4);
+  color: var(--pp-text-3);
 }
+/* stage tints — Pulse's own semantics carried into the diagrams:
+   cyan = ready/neutral work, purple = generating/in-flight, amber = the
+   risky step, green = confirmed good */
+.pflow-node.is-cyan { background: var(--pp-cyan-soft); border-color: var(--pp-cyan-line); }
+.pflow-node.is-purple { background: var(--pp-purple-soft); border-color: var(--pp-purple-line); }
+.pflow-node.is-amber { background: var(--pp-amber-soft); border-color: var(--pp-amber-line); }
+.pflow-node.is-green { background: var(--pp-green-soft); border-color: var(--pp-green-line); }
 .pflow-line {
   position: relative;
   height: 2px;
@@ -2116,11 +2343,11 @@ const pulseCss = `
 .pflow-line.is-amber { color: #cc7f06; }
 .pflow-loop {
   box-sizing: border-box;
-  height: 20px;
+  height: 24px;
   margin-top: -2px;
-  border: 1px dashed #cc7f06;
+  border: 2px dashed #cc7f06;
   border-top: 0;
-  border-radius: 0 0 10px 10px;
+  border-radius: 0 0 12px 12px;
 }
 /* the one loop you keep: harness control's feedback loop is a good loop */
 .pflow-loop.is-green {
@@ -2128,7 +2355,7 @@ const pulseCss = `
 }
 .pflow-note {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1.5;
   color: var(--pp-text-3);
@@ -2161,14 +2388,14 @@ const pulseCss = `
 .pflow-hub-bar {
   grid-column: 1 / -1;
   box-sizing: border-box;
-  padding: 12px 18px;
-  border: 1px solid var(--pp-line-strong);
-  border-radius: 8px;
-  background: var(--pp-canvas);
+  padding: 14px 18px;
+  border: 1px solid var(--pp-cyan-line);
+  border-radius: 10px;
+  background: var(--pp-cyan-soft);
   box-shadow: var(--pp-shadow-rest);
   text-align: center;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--pp-ink);
 }
 .pflow-hub-stem {
@@ -2452,14 +2679,53 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <div className="pulse-section">
                 <SectionProse section={melee.sections[0]} />
                 <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-melee">
+                  <div
+                    className="pulse-melee"
+                    role="img"
+                    aria-label="Four prototypes share the same wireframe face, but each comes from a different kind of source: one drawn in a design canvas (frames and selection handles, no code), one exported by an AI page-builder (a single file of inlined styles), one pasted from a model chat (it runs but reads as a wall of generated code), one composited from images (screens as pictures, nothing wired)."
+                  >
                     {meleeSources.map((cell) => (
-                      <div className="pulse-melee-cell" key={cell.made}>
-                        <div className="pulse-melee-wire" aria-hidden="true">
+                      <div
+                        className="pulse-melee-cell"
+                        key={cell.made}
+                        aria-hidden="true"
+                      >
+                        <div className="pulse-melee-wire">
                           <i />
                           <i />
-                          <i />
-                          <i />
+                        </div>
+                        <div className={`pulse-melee-scene is-${cell.kind}`}>
+                          {cell.kind === "canvas" && (
+                            <>
+                              <i className="mc-frame" />
+                              <i className="mc-frame mc-frame2" />
+                              <i className="mc-cursor" />
+                            </>
+                          )}
+                          {cell.kind === "builder" && (
+                            <span className="mc-soup">
+                              {Array.from({ length: 26 }).map((_, i) => (
+                                <i key={i} />
+                              ))}
+                            </span>
+                          )}
+                          {cell.kind === "chat" && (
+                            <>
+                              <i className="mc-bubble" />
+                              <span className="mc-code">
+                                <i />
+                                <i />
+                                <i />
+                                <i />
+                              </span>
+                            </>
+                          )}
+                          {cell.kind === "image" && (
+                            <>
+                              <i className="mc-photo" />
+                              <i className="mc-photo mc-photo2" />
+                            </>
+                          )}
                         </div>
                         <p className="pulse-melee-made">{cell.made}</p>
                         <p className="pulse-melee-trace">{cell.trace}</p>
@@ -2505,7 +2771,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                         >
                           <span className="pflow-node">Boards</span>
                           <span className="pflow-line is-amber" />
-                          <span className="pflow-node">Stills</span>
+                          <span className="pflow-node is-amber">Stills</span>
                         </div>
                         <p className="pflow-note is-amber">
                           <i>✗</i>looks &mdash; can&rsquo;t run, can&rsquo;t
@@ -2520,12 +2786,12 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                               "max-content minmax(20px, 1fr) max-content",
                           }}
                         >
-                          <span className="pflow-node">
+                          <span className="pflow-node is-cyan">
                             Code
                             <em>+ a thin style pass</em>
                           </span>
                           <span className="pflow-line is-green" />
-                          <span className="pflow-node">Runnable flow</span>
+                          <span className="pflow-node is-green">Runnable flow</span>
                         </div>
                         <p className="pflow-note is-green">
                           <i>✓</i>click, record, pitch &mdash; in days
@@ -2686,7 +2952,6 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                             (name) => (
                               <div className="pulse-monolith-chip" key={name}>
                                 <i />
-                                <i />
                                 <em>{name}</em>
                               </div>
                             ),
@@ -2730,7 +2995,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                             "max-content minmax(18px, 1fr) max-content minmax(18px, 1fr) max-content",
                         }}
                       >
-                        <span className="pflow-node">
+                        <span className="pflow-node is-cyan">
                           My file
                           <em>split &middot; structure</em>
                         </span>
@@ -2740,7 +3005,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           <em>&ldquo;what would you accept?&rdquo;</em>
                         </span>
                         <span className="pflow-line is-green" />
-                        <span className="pflow-node">
+                        <span className="pflow-node is-green">
                           React
                           <em>handed over clean</em>
                         </span>
@@ -2788,13 +3053,13 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                             "max-content minmax(14px, 1fr) max-content minmax(14px, 1fr) max-content minmax(14px, 1fr) max-content",
                         }}
                       >
-                        <span className="pflow-node">Unify</span>
+                        <span className="pflow-node is-cyan">Unify</span>
                         <span className="pflow-line is-cyan" />
-                        <span className="pflow-node">Engineer</span>
-                        <span className="pflow-line is-cyan" />
-                        <span className="pflow-node">Migrate</span>
+                        <span className="pflow-node is-purple">Engineer</span>
+                        <span className="pflow-line is-amber" />
+                        <span className="pflow-node is-amber">Migrate</span>
                         <span className="pflow-line is-green" />
-                        <span className="pflow-node">Merge</span>
+                        <span className="pflow-node is-green">Merge</span>
                         <span aria-hidden="true" />
                         <span aria-hidden="true" />
                         <span aria-hidden="true" />
@@ -3011,7 +3276,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                         >
                           <span className="pflow-node">Prompt</span>
                           <span className="pflow-line is-amber" />
-                          <span className="pflow-node">Generate</span>
+                          <span className="pflow-node is-amber">Generate</span>
                           <span
                             className="pflow-loop"
                             style={{ gridColumn: "1 / -1" }}
@@ -3029,12 +3294,12 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                               "max-content minmax(20px, 1fr) max-content",
                           }}
                         >
-                          <span className="pflow-node">
+                          <span className="pflow-node is-cyan">
                             Skill loads
                             <em>once, before the work</em>
                           </span>
                           <span className="pflow-line is-green" />
-                          <span className="pflow-node">
+                          <span className="pflow-node is-green">
                             Generate
                             <em>on-system by construction</em>
                           </span>
@@ -3103,14 +3368,14 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                       >
                         <span className="pflow-node">Decide</span>
                         <span className="pflow-line is-cyan" />
-                        <span className="pflow-node">
+                        <span className="pflow-node is-cyan">
                           Write the md
                           <em>where the AI reads</em>
                         </span>
                         <span className="pflow-line is-cyan" />
-                        <span className="pflow-node">Generate</span>
-                        <span className="pflow-line is-cyan" />
-                        <span className="pflow-node">Review</span>
+                        <span className="pflow-node is-purple">Generate</span>
+                        <span className="pflow-line is-green" />
+                        <span className="pflow-node is-green">Review</span>
                         <span aria-hidden="true" />
                         <span aria-hidden="true" />
                         <span

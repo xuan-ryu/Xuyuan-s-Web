@@ -47,6 +47,11 @@ export function PulseScroll() {
     let unsubLenis: (() => void) | null = null;
     let lenisDetach: (() => void) | null = null;
     const timers: number[] = [];
+    // Enter-once moments run on IntersectionObserver, NOT ScrollTrigger:
+    // under Lenis, ST enter-triggers can fire late/never on programmatic
+    // jumps (the same landmine gsap-reveal.tsx documents). ST stays for
+    // true scrubs only.
+    const observers: IntersectionObserver[] = [];
 
     (async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -104,26 +109,41 @@ export function PulseScroll() {
           timers.push(window.setTimeout(step, 700));
         });
 
-        // ── numerals: count up from 0 on first enter ──
-        root.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
-          const to = Number(el.dataset.count ?? "0");
-          if (!Number.isFinite(to) || to <= 0) return;
-          const comma = el.dataset.countFormat === "comma";
-          const state = { n: to };
-          const render = () => {
-            const v = Math.round(state.n);
-            el.textContent = comma ? v.toLocaleString("en-US") : String(v);
-          };
-          state.n = 0;
-          render();
-          gsap.to(state, {
-            n: to,
-            duration: 1.6,
-            ease: "power3.out",
-            onUpdate: render,
-            scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        // ── numerals: count up from 0 on first enter (once, IO-driven) ──
+        {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                const el = entry.target as HTMLElement;
+                io.unobserve(el);
+                const to = Number(el.dataset.count ?? "0");
+                if (!Number.isFinite(to) || to <= 0) return;
+                const comma = el.dataset.countFormat === "comma";
+                const state = { n: 0 };
+                gsap.to(state, {
+                  n: to,
+                  duration: 1.6,
+                  ease: "power3.out",
+                  onUpdate: () => {
+                    const v = Math.round(state.n);
+                    el.textContent = comma
+                      ? v.toLocaleString("en-US")
+                      : String(v);
+                  },
+                });
+              });
+            },
+            { rootMargin: "0px 0px -10% 0px" },
+          );
+          root.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
+            const to = Number(el.dataset.count ?? "0");
+            if (!Number.isFinite(to) || to <= 0) return;
+            el.textContent = "0";
+            io.observe(el);
           });
-        });
+          observers.push(io);
+        }
 
         // ── the monolith splits (act 04): scrubbed counter + bar + chips ──
         root
@@ -180,26 +200,34 @@ export function PulseScroll() {
             }
           });
 
-        // ── generation ladder (act 03): pills light in sequence, once ──
-        root.querySelectorAll<HTMLElement>(".pulse-ladder").forEach((row) => {
-          const pills = Array.from(
-            row.querySelectorAll<HTMLElement>(".pulse-ladder-pill"),
-          );
-          if (!pills.length) return;
-          pills.forEach((p) => p.classList.remove("is-on"));
-          ScrollTrigger.create({
-            trigger: row,
-            start: "top 80%",
-            once: true,
-            onEnter: () => {
-              pills.forEach((p, i) => {
-                timers.push(
-                  window.setTimeout(() => p.classList.add("is-on"), 360 * i),
-                );
+        // ── generation ladder (act 03): pills light in sequence, once
+        //    (IO-driven) ──
+        {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                const row = entry.target as HTMLElement;
+                io.unobserve(row);
+                row
+                  .querySelectorAll<HTMLElement>(".pulse-ladder-pill")
+                  .forEach((p, i) => {
+                    timers.push(
+                      window.setTimeout(() => p.classList.add("is-on"), 360 * i),
+                    );
+                  });
               });
             },
+            { rootMargin: "0px 0px -16% 0px" },
+          );
+          root.querySelectorAll<HTMLElement>(".pulse-ladder").forEach((row) => {
+            const pills = row.querySelectorAll<HTMLElement>(".pulse-ladder-pill");
+            if (!pills.length) return;
+            pills.forEach((p) => p.classList.remove("is-on"));
+            io.observe(row);
           });
-        });
+          observers.push(io);
+        }
 
         // ── commit stream (act 05): scrubbed horizontal drift ──
         root
@@ -238,36 +266,55 @@ export function PulseScroll() {
             });
           };
           setActive(0);
-          chapters.forEach((ch) => {
-            const idx = Number(ch.dataset.act ?? "0");
-            ScrollTrigger.create({
-              trigger: ch,
-              start: "top 55%",
-              end: "bottom 55%",
-              onToggle: (self) => {
-                if (self.isActive) setActive(idx);
-              },
-            });
-          });
+          // IO with a thin viewport-center band: the chapter crossing the
+          // center line is the running act (reliable under Lenis jumps,
+          // unlike ST enter-triggers).
+          const active = new Set<number>();
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                const idx = Number(
+                  (entry.target as HTMLElement).dataset.act ?? "0",
+                );
+                if (entry.isIntersecting) active.add(idx);
+                else active.delete(idx);
+              });
+              if (active.size) setActive(Math.max(...active));
+            },
+            { rootMargin: "-48% 0px -48% 0px", threshold: 0 },
+          );
+          chapters.forEach((ch) => io.observe(ch));
+          observers.push(io);
         }
 
-        // ── inventory (act 06): batched rise-in ──
-        const cells = root.querySelectorAll<HTMLElement>(".pulse-inv-cell");
-        if (cells.length) {
-          gsap.set(cells, { opacity: 0, y: 12 });
-          ScrollTrigger.batch(cells, {
-            start: "top 92%",
-            once: true,
-            onEnter: (batch) =>
-              gsap.to(batch, {
-                opacity: 1,
-                y: 0,
-                duration: 0.5,
-                stagger: 0.03,
-                ease: "power2.out",
-                overwrite: true,
-              }),
-          });
+        // ── inventory (act 06): rise-in, once (IO-driven; index-staggered) ──
+        {
+          const cells = Array.from(
+            root.querySelectorAll<HTMLElement>(".pulse-inv-cell"),
+          );
+          if (cells.length) {
+            gsap.set(cells, { opacity: 0, y: 12 });
+            const io = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  if (!entry.isIntersecting) return;
+                  const el = entry.target as HTMLElement;
+                  io.unobserve(el);
+                  gsap.to(el, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    delay: (cells.indexOf(el) % 5) * 0.04,
+                    ease: "power2.out",
+                    overwrite: true,
+                  });
+                });
+              },
+              { rootMargin: "0px 0px -6% 0px" },
+            );
+            cells.forEach((c) => io.observe(c));
+            observers.push(io);
+          }
         }
       }, root);
 
@@ -277,6 +324,7 @@ export function PulseScroll() {
     return () => {
       cancelled = true;
       timers.forEach((t) => window.clearTimeout(t));
+      observers.forEach((io) => io.disconnect());
       lenisDetach?.();
       unsubLenis?.();
       ctx?.revert();
