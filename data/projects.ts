@@ -94,9 +94,9 @@ export const projects: Project[] = [
       title:
         "When Pulse turned me from someone who ships pages into someone who builds the system that ships them",
       body: [
-        "Pulse did not hand me a design-system brief. It handed me a melee — one product, six tools, a deadline — and the discovery that pages which look identical can share nothing at all. The real deliverable was never one more screen. It was the base underneath all of them.",
-        "So the work became structure: tokens instead of taste, components instead of copies, written rules an AI can load instead of instructions repeated into a chat box, and a readable surface for every role that touches the work. Design reads previews, engineering reads a typed package, ML reads data states, product reads one runnable flow — the melee ended the day everyone stopped squeezing into the same files and started shipping from the same base.",
-        "And one rule survived every iteration untouched: AI can draft and schedule, but a person always releases to publish. Speed where it helps, a deliberate checkpoint everywhere it matters — that balance, not the automation, was the design.",
+        "Pulse did not hand me a design-system brief. It handed me a melee: one product, six tools, a deadline, and the discovery that pages which look identical can share nothing at all. The real deliverable was never one more screen. It was the base underneath all of them.",
+        "So the work became structure. Tokens instead of taste, components instead of copies, and written rules an AI loads instead of instructions repeated into a chat box. Design reads previews, engineering reads a typed package, ML reads data states, product reads one runnable flow. The melee ended when everyone stopped squeezing into the same files and started shipping from the same base.",
+        "One rule survived every iteration untouched: AI can draft and schedule, but a person always releases to publish. Speed where it helps, a deliberate checkpoint where it matters. That balance, not the automation, was the design.",
       ],
       // TODO: add a screen recording of New Post -> Create with AI -> editable brief -> approve.
     },
@@ -122,7 +122,7 @@ export const projects: Project[] = [
             heading:
               "Prototypes that only looked like one product",
             body: [
-              "When I picked up Pulse, everyone was iterating on the same product in a different tool — canvas frames, an AI page-builder, model-pasted HTML, screens composited from images. An early style pass kept every page looking like Pulse; underneath, nothing matched. Then the deadline made it real — a week to fold all of it into one flow we could pitch — and the lesson landed: visual consistency is not system consistency.",
+              "When I picked up Pulse, everyone was iterating on the same product in a different tool: canvas frames, an AI page-builder, model-pasted HTML, screens composited from images. An early style pass kept the pages looking related, but nothing underneath matched. With a week left before the pitch we had to fold all of it into one flow, and that is where the lesson landed for me. Visual consistency is not system consistency.",
             ],
           },
         ],
@@ -135,7 +135,7 @@ export const projects: Project[] = [
             tags: "CODE-FIRST · PROTOTYPE STRATEGY",
             heading: "Betting the pitch on code",
             body: [
-              "A pitch needs a flow someone can click through and record, not a deck of stills — so the designer and I bet on code, with AI carrying the typing. We seeded six parallel efforts with a thin style pass so they would at least rhyme. It was a look, not a system, and the gap between those two words became the whole story.",
+              "A pitch needs a flow someone can click through and record, not a deck of stills, so the designer and I decided to prototype in code and let AI do most of the typing. To keep six parallel efforts roughly aligned, we seeded a thin style pass first. It gave us a shared look. It did not give us a system, and that difference shaped everything that followed.",
             ],
           },
         ],
@@ -148,7 +148,7 @@ export const projects: Project[] = [
             tags: "BRAND · UI DIRECTION",
             heading: "Neutral first, color with meaning",
             body: [
-              "Pulse’s identity had to be decided fast and hold up under AI reproduction: few rules, firmly held, written down. And the direction wasn’t declared by taste — it was tested, running accent candidates against the same dashboard side by side and proving the winner on a full Home screen before the palette was ratified.",
+              "The identity had to be settled fast, and it had to survive AI reproduction, so I kept the rules few and wrote every one of them down. I also refused to pick the direction by taste alone. The accent candidates ran against the same dashboard side by side, and the winner had to prove itself on a full Home screen before we ratified the palette.",
             ],
           },
         ],
@@ -162,7 +162,7 @@ export const projects: Project[] = [
             heading:
               "The front door forces the map",
             body: [
-              "My page was Home — the product’s entry point — and designing it meant understanding every tab, every module, everyone’s files. Extraction kept failing: styles welded to pages, interactions dying in transit, generated code nobody could read. The wake-up was a single prototype file 10,180 lines long — nothing that size stays maintainable, for a person or affordably for a model.",
+              "My page was Home, the product’s entry point, so designing it meant understanding every tab, every module, and everyone’s files. Extraction kept failing: styles were welded to pages, interactions died in transit, and much of the generated code was unreadable. The wake-up call was a single prototype file 10,180 lines long. Nothing that size stays maintainable, for a person or, affordably, for a model.",
             ],
           },
           {
@@ -170,7 +170,7 @@ export const projects: Project[] = [
             heading:
               "Engineer my own page, then ask engineering",
             body: [
-              "I started with my own file — split it, structured it, cleared the dead code — then asked the engineers a question no one had asked yet: if design ships code, what shape would you actually accept? Their stack was React, so I rebuilt on their conventions. It handed over cleanly, and exposed how far the rest of the product still had to come.",
+              "I started with my own file: split it, structured it, cleared the dead code. Then I asked the engineers a question nobody had raised yet — if design ships code, what shape would you actually accept? Their stack was React, so I rebuilt on their conventions. The handover went cleanly, and it showed how far the rest of the product still had to go.",
             ],
           },
         ],
@@ -184,7 +184,7 @@ export const projects: Project[] = [
             heading:
               "Unify, engineer, migrate, merge",
             body: [
-              "A week out, the call came: fold every prototype into one mockup and record the pitch video. I took them all — unify the surface, engineer file by file, migrate toward one stack, merge into a single runnable app. AI carried the bulk and broke things in transit; every page was reviewed against its original and repaired by hand. With a teammate, it took a week of nights.",
+              "A week out, the call came to fold every prototype into one mockup and record the pitch video. I took them all: unify the surface, engineer file by file, migrate toward one stack, merge into a single runnable app. AI carried the bulk of the conversion and kept breaking things in transit, so every page was reviewed against its original and repaired by hand. With a teammate, it took a week of nights.",
             ],
           },
           {
@@ -192,7 +192,7 @@ export const projects: Project[] = [
             heading:
               "Then the data didn’t fit",
             body: [
-              "A pitch needs a real case, so I wired in the ML team’s data — and the shapes didn’t match what the front end expected. Mapping fields, states, and edge cases into components pushed me into the invisible half of front-end. The mockup still shipped on time; so did a conviction: this cannot be allowed to happen twice.",
+              "A pitch needs a real case, so I wired in the ML team’s data, and the shapes didn’t match what the front end expected. Mapping fields, states, and edge cases into components pushed me into the invisible half of front-end work. The mockup still shipped on time. What also shipped was a conviction that this could not be allowed to happen twice.",
             ],
           },
         ],
@@ -206,7 +206,7 @@ export const projects: Project[] = [
             heading:
               "One canonical base, checked by machines",
             body: [
-              "The fix was a base everyone shares: the look ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — under 40 standalone components, every screen composing from contracts before inventing page-local UI. The standard became commits, not advice: Prettier-normalized, 1,905 verified-dead lines purged, and a dependency-free check enforcing it all in CI.",
+              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — under 40 standalone components, and every screen composes from those contracts before inventing anything page-local. The standard became commits rather than advice: Prettier normalized the codebase, 1,905 verified-dead lines were purged, and a dependency-free check now enforces all of it in CI.",
             ],
           },
           {
@@ -214,7 +214,7 @@ export const projects: Project[] = [
             heading:
               "Stepping down from React, on purpose",
             body: [
-              "I had proven the React path — and still chose plain HTML + CSS as the team’s prototype stack, because a mockup a teammate can’t open is a mockup that doesn’t exist. The floor mattered more than the ceiling; the discipline lives in the tokens and the checks, not the framework.",
+              "I had proven the React path and still chose plain HTML and CSS as the team’s prototype stack, because a mockup a teammate can’t open might as well not exist. The floor mattered more than the ceiling here. The discipline lives in the tokens and the checks, not in the framework.",
             ],
           },
         ],
@@ -228,7 +228,14 @@ export const projects: Project[] = [
             heading:
               "Teaching the AI the system",
             body: [
-              "A library only holds if every new prototype obeys it — and re-typing the rules into a chat box is where systems go to die. So the rules became skills the AI loads before it generates or edits: maintenance skills keep tokens, components, and previews in sync; a design skill makes new work start on-system. Calendar and Campaign both began from that baseline, and the melee never came back.",
+              "A library only holds if every new prototype follows it, and re-typing the rules into a chat box every time is exactly how that falls apart. So I wrote the rules as skills the AI loads before it generates or edits: maintenance skills keep tokens, components, and previews in sync, and a design skill makes new work start on-system instead of getting repaired into it. Calendar and Campaign both began from that baseline, and the melee never came back.",
+            ],
+          },
+          {
+            tags: "HARNESS CONTROL · LIVING RULES",
+            heading: "The skill is a living document",
+            body: [
+              "When a review catches a drift, the fix lands in the skill’s markdown, not in someone’s memory. I keep editing those files the way engineers keep tests green: each decision we settle — a token, a component pattern, a rule about states — gets written where the AI reads it before it works. That is what makes the generation quality compound: every edit raises the floor of everything produced after it.",
             ],
           },
         ],
@@ -242,7 +249,7 @@ export const projects: Project[] = [
             heading:
               "A surface for each side of the table",
             body: [
-              "The system grew a reading surface for each side of the table: a live component browser rendering every component and state from its standalone source, and a sliced, deliberately non-interactive Figma board built purely to be imported — code UI carried back into design review. And the handoff is not a snapshot: when the system moves, a sync pass carries the decision back out.",
+              "The system grew a reading surface for each side of the table. A live component browser renders every component and state from its standalone source, and a sliced, deliberately non-interactive Figma board exists purely to be imported, so code UI flows back into design review. The handoff is not a snapshot either: when the system changes, a sync pass carries the decision back out to the designer surfaces.",
             ],
           },
           {
@@ -250,7 +257,7 @@ export const projects: Project[] = [
             heading:
               "From preview to infrastructure",
             body: [
-              "A teammate then wrapped the library as a typed React package on the team’s private registry — a build step copies the canonical CSS in, so the package cannot drift from its source. Its playground goes past looks: feed a component data and watch it hold. That is what the melee had been missing — not talent, an interface.",
+              "A teammate then wrapped the library as a typed React package on the team’s private registry, with a build step that copies the canonical CSS in so the package cannot drift from its source. Its playground goes past looks: you feed a component data and watch it hold. That was the thing the melee had been missing — not talent, but an interface between the people involved.",
             ],
           },
         ],
@@ -264,7 +271,7 @@ export const projects: Project[] = [
             heading:
               "A calm studio, not a dashboard",
             body: [
-              "On top of the system sits the application — a sidebar workspace from Home with its docked assistant through Calendar, Signal, Analytics, Strategy, Campaigns, and the production Studio. Hierarchy comes from tone, spacing, and rhythm before borders — and every screenshot here renders from a plain file:// address.",
+              "On top of the system sits the application: a sidebar workspace that runs from Home and its docked assistant through Calendar, Signal, Analytics, Strategy, Campaigns, and the production Studio. Hierarchy comes from tone, spacing, and rhythm before borders, and every screenshot on this page renders from a plain file:// address.",
             ],
           },
           {
@@ -272,7 +279,7 @@ export const projects: Project[] = [
             heading:
               "A light brief, drafted by the AI, owned by the human",
             body: [
-              "A post starts inside its campaign: New Post, then Create with AI, and the rest is a conversation, not a form. The user gives a goal and a few assets; Pulse reads the brand vault and the campaign, then drafts a structured Creative Brief as editable fields inside the chat — and only approval hands off to generation.",
+              "A post starts inside its campaign. New Post, then Create with AI, and from there it is a conversation rather than a form: the user gives a goal and a few assets, Pulse reads the brand vault and the campaign, and a structured Creative Brief comes back as editable fields inside the chat. Only approval hands off to generation.",
             ],
           },
           {

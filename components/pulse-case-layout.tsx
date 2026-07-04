@@ -241,59 +241,70 @@ const ciSteps: Array<[string, string]> = [
   ["pages", "playground deploy"],
 ];
 
-// ── Build timeline (ch. 07 close). My own account, over five verified
-//    weeks (2026-05-30 → 2026-07-04, 824 commits). Two milestones were a
-//    teammate's or the team's work, and their notes say so. ──
+// ── Build timeline (ch. 07 close), drawn as a commit spine. Notes at label
+//    budget; `mine: false` marks a teammate's / the team's milestone (the
+//    outlined nodes — attribution is part of the drawing). Five verified
+//    weeks, 2026-05-30 → 2026-07-04, 824 commits. ──
 const milestones = [
   {
     date: "Late May",
     title: "Six ways of building, one deadline",
-    note: "The team was prototyping the same product in different tools, an early style guide holding the look together — and a pitch date about a week out made the gap between looking alike and being alike unmissable.",
+    note: "the same product in six tools, a pitch about a week out",
+    mine: false,
   },
   {
     date: "Late May",
     title: "The file that forced the question",
-    note: "The shared home prototype peaked at 10,180 lines in one file — the moment prototyping stopped being just design work.",
+    note: "the shared home prototype peaks at 10,180 lines in one file",
+    mine: true,
   },
   {
     date: "Early June",
     title: "A finished design, waiting on a foundation",
-    note: "A teammate's page was done and idle, blocked on a system that didn't exist yet. It was the plainest argument for building the foundation before the screens.",
+    note: "a teammate's finished page sits idle — no system to land on",
+    mine: false,
   },
   {
     date: "Mid-June",
-    title: "The boards became one portable file",
-    note: "I rebuilt the visual component library as a single self-contained page, so the designer-facing boards travelled as one file anyone could open.",
+    title: "The boards become one portable file",
+    note: "the visual library rebuilt as a single self-contained page",
+    mine: true,
   },
   {
     date: "Mid-June",
-    title: "HTML and CSS became the source of truth",
-    note: "The pivot that stuck: I made the standalone HTML and CSS the canonical layer and demoted the React copy to a consumer of it.",
+    title: "HTML and CSS become the source of truth",
+    note: "the React copy demoted to a consumer of the canonical layer",
+    mine: true,
   },
   {
     date: "Mid-June",
-    title: "The monolith became source, not blob",
-    note: "A build script split the draft app into 76 HTML partials, 71 scripts, and 22 sheets — assembled by tooling, never hand-edited again.",
+    title: "The monolith becomes source, not blob",
+    note: "a build script splits it: 76 partials, 71 scripts, 22 sheets",
+    mine: true,
   },
   {
     date: "Mid-June",
     title: "Standards, written as commits",
-    note: "A formatting and lint pass, consistent line endings, lighter assets, and a CI token gate turned the conventions into something the repo enforced — not something I had to keep asking for.",
+    note: "Prettier, lint, lighter assets, a CI token gate",
+    mine: true,
   },
   {
     date: "Late June",
-    title: "The demos converged into one product",
-    note: "The scattered prototypes unified into a single static product export — one set of routable pages, all on the system's tokens.",
+    title: "The demos converge into one product",
+    note: "one static export, every page on the system's tokens",
+    mine: true,
   },
   {
     date: "Late June",
     title: "Wrapped for every consumer",
-    note: "A teammate packaged the library as an internal, typed React set on a private registry; a build step syncs the canonical CSS in, so the two can never fall out of step.",
+    note: "a teammate publishes the typed React package; CI syncs the CSS in",
+    mine: false,
   },
   {
     date: "Early July",
     title: "The payoff: 1,905 dead lines gone",
-    note: "As the surfaces adopted the system, the parallel copies the styles had drifted into collapsed back to one — 1,905 verified-dead lines removed in one audited purge.",
+    note: "drifted style copies collapse back to one source",
+    mine: true,
   },
 ];
 
@@ -395,12 +406,17 @@ const pulseCss = `
   top: 0;
   left: 0;
   right: 0;
-  height: 96px;
+  /* balance point (owner bug report, two iterations): 96px ghosted
+     headlines far below the links; 64px let cards interleave with them.
+     72px with a 58% solid core covers the whole nav band and leaves only
+     a ~30px transition — big type reads as sliding under a bar instead
+     of growing a long ghost. */
+  height: 72px;
   z-index: 50;
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    var(--pp-stage) 34%,
+    var(--pp-stage) 58%,
     rgba(244, 247, 247, 0) 100%
   );
 }
@@ -1325,37 +1341,125 @@ const pulseCss = `
   left: 0;
   color: var(--case-detail);
 }
-.pulse-log {
-  border-top: 1px solid var(--pp-line-strong);
+/* the build timeline, drawn as one commit spine: a continuous cyan line,
+   filled nodes for my milestones, outlined nodes for a teammate's / the
+   team's — attribution is part of the drawing */
+.pulse-timeline {
+  position: relative;
+  max-width: 880px;
+  padding: 6px 0;
 }
-.pulse-log-row {
+.pulse-timeline::before {
+  content: "";
+  position: absolute;
+  left: 131px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: var(--pp-cyan-line);
+}
+.pulse-timeline-row {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(96px, 120px) minmax(0, 1.1fr) minmax(0, 1fr);
-  column-gap: var(--work-grid-gap);
+  grid-template-columns: 110px 44px minmax(0, 1fr);
   align-items: baseline;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--pp-line-strong);
+  padding: 10px 0;
 }
-.pulse-log-row p {
+.pulse-timeline-row p {
   margin: 0;
 }
-.pulse-log-date {
-  font-family: var(--pulse-mono);
+.pulse-timeline-date {
   font-size: var(--text-micro);
+  font-weight: 500;
   letter-spacing: 0.04em;
+  text-align: right;
   white-space: nowrap;
   color: var(--case-detail);
 }
-.pulse-log-subject {
+.pulse-timeline-node {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  align-self: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--pp-cyan-600);
+}
+.pulse-timeline-row.is-team .pulse-timeline-node {
+  background: var(--pp-canvas);
+  border: 2px solid var(--pp-cyan-600);
+  width: 8px;
+  height: 8px;
+}
+.pulse-timeline-body {
+  min-width: 0;
+}
+.pulse-timeline-body strong {
+  display: block;
   font-size: var(--text-meta);
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.45;
   color: var(--pp-ink);
 }
-.pulse-log-note {
-  font-size: var(--text-meta);
+.pulse-timeline-body span {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--pp-text-3);
+}
+.pulse-timeline-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0 154px;
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--pp-text-4);
+}
+.pulse-timeline-legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--pp-cyan-600);
+}
+.pulse-timeline-legend i.is-team {
+  width: 7px;
+  height: 7px;
+  background: var(--pp-canvas);
+  border: 2px solid var(--pp-cyan-600);
+  margin-left: 16px;
+}
+@media (max-width: 809px) {
+  .pulse-timeline::before {
+    left: 5px;
+  }
+  .pulse-timeline-row {
+    grid-template-columns: 12px minmax(0, 1fr);
+  }
+  .pulse-timeline-date {
+    display: none;
+  }
+  .pulse-timeline-node {
+    justify-self: start;
+  }
+  .pulse-timeline-body span em.pulse-timeline-when {
+    display: inline;
+  }
+  .pulse-timeline-legend {
+    margin-left: 24px;
+  }
+}
+.pulse-timeline-when {
+  font-style: normal;
+}
+@media (min-width: 810px) {
+  .pulse-timeline-when {
+    display: none;
+  }
 }
 
 /* ── Ch. 09 — product artifacts (brief, chat, guardrail) ────────────────── */
@@ -1812,9 +1916,6 @@ const pulseCss = `
   .pulse-inv-cell:nth-child(4n) { border-right: 0; }
   .pulse-inv-cell:nth-last-child(-n + 5) { border-bottom: 1px solid var(--pp-line); }
   .pulse-inv-cell:nth-last-child(-n + 4) { border-bottom: 0; }
-  .pulse-log-row {
-    grid-template-columns: minmax(84px, 104px) minmax(0, 1.1fr) minmax(0, 1fr);
-  }
   .pulse-next-label {
     grid-column: 1 / 3;
   }
@@ -1885,20 +1986,6 @@ const pulseCss = `
   .pulse-chain-link::before,
   .pulse-chain-link::after {
     width: 12px;
-  }
-  .pulse-log-row {
-    display: block;
-    padding: 16px 0;
-  }
-  .pulse-log-date {
-    display: inline-block;
-    margin-right: 14px;
-  }
-  .pulse-log-subject {
-    margin-top: 6px;
-  }
-  .pulse-log-note {
-    margin-top: 4px;
   }
   .pulse-shot-pair {
     grid-template-columns: minmax(0, 1fr);
@@ -2034,6 +2121,10 @@ const pulseCss = `
   border: 1px dashed #cc7f06;
   border-top: 0;
   border-radius: 0 0 10px 10px;
+}
+/* the one loop you keep: harness control's feedback loop is a good loop */
+.pflow-loop.is-green {
+  border-color: var(--pp-green);
 }
 .pflow-note {
   margin: 0;
@@ -2987,19 +3078,87 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </span>
                   </figcaption>
                 </figure>
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-log">
-                    {milestones.map((m) => (
-                      <div className="pulse-log-row" key={m.title}>
-                        <span className="pulse-log-date">{m.date}</span>
-                        <p className="pulse-log-subject">{m.title}</p>
-                        <p className="pulse-log-note">{m.note}</p>
+              </div>
+            )}
+            {skills.sections[1] && (
+              <div className="pulse-section">
+                <SectionProse section={skills.sections[1]} />
+                <figure className="pulse-section-aside" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>harness control &middot; the loop that stays</span>
+                    </header>
+                    <div
+                      className="pflow"
+                      role="img"
+                      aria-label="A four-step feedback loop: decide, write the decision into the skill's markdown where the AI reads it, generate with the skill loaded, review the output. When review catches a drift, the fix goes back into the markdown — so every later generation starts from a higher floor."
+                    >
+                      <div
+                        className="pflow-grid"
+                        aria-hidden="true"
+                        style={{
+                          gridTemplateColumns:
+                            "max-content minmax(12px, 1fr) max-content minmax(12px, 1fr) max-content minmax(12px, 1fr) max-content",
+                        }}
+                      >
+                        <span className="pflow-node">Decide</span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">
+                          Write the md
+                          <em>where the AI reads</em>
+                        </span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">Generate</span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">Review</span>
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                        <span
+                          className="pflow-loop is-green"
+                          style={{ gridColumn: "3 / 8" }}
+                        />
                       </div>
-                    ))}
+                      <p className="pflow-note is-green is-center" aria-hidden="true">
+                        <i>↺</i>drift found &rarr; edit the md &mdash; the
+                        floor rises for everything after
+                      </p>
+                    </div>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 16</em>Build timeline
+                      <em className="pulse-fig">Fig. 16</em>Harness control
+                      &mdash; the feedback loop that stays
+                    </span>
+                  </figcaption>
+                </figure>
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-timeline">
+                    {milestones.map((m) => (
+                      <div
+                        className={`pulse-timeline-row${m.mine ? "" : " is-team"}`}
+                        key={m.title}
+                      >
+                        <span className="pulse-timeline-date">{m.date}</span>
+                        <i className="pulse-timeline-node" aria-hidden="true" />
+                        <div className="pulse-timeline-body">
+                          <strong>{m.title}</strong>
+                          <span>
+                            <em className="pulse-timeline-when">
+                              {m.date} &middot;{" "}
+                            </em>
+                            {m.note}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    <p className="pulse-timeline-legend" aria-hidden="true">
+                      <i /> my work
+                      <i className="is-team" /> teammate / team
+                    </p>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 17</em>Build timeline
                       &mdash; five weeks from melee to system, late May to
                       early July 2026
                     </span>
@@ -3021,7 +3180,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <PulseComponentBrowser />
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 17</em>The component
+                      <em className="pulse-fig">Fig. 18</em>The component
                       browser, rebuilt live &mdash; real components from the
                       Pulse registry; the shipped browser holds all 40
                     </span>
@@ -3043,7 +3202,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 18</em>The sliced Figma
+                      <em className="pulse-fig">Fig. 19</em>The sliced Figma
                       board &mdash; deliberately non-interactive, built to be
                       imported into design review
                     </span>
@@ -3074,7 +3233,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 19</em>The package&rsquo;s
+                      <em className="pulse-fig">Fig. 20</em>The package&rsquo;s
                       plate &mdash; styles sync from the canonical CSS at build
                       time
                     </span>
@@ -3086,7 +3245,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 20</em>The playground
+                      <em className="pulse-fig">Fig. 21</em>The playground
                       idea, live &mdash; feed a component data and watch it
                       hold: empty, overflowing, broken
                     </span>
@@ -3108,7 +3267,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 21</em>The real
+                      <em className="pulse-fig">Fig. 22</em>The real
                       playground &mdash; the published AIPanel rendered live,
                       with per-component knobs and a JSON data editor
                     </span>
@@ -3151,7 +3310,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 22</em>The interface,
+                      <em className="pulse-fig">Fig. 23</em>The interface,
                       read four ways
                     </span>
                   </figcaption>
@@ -3181,7 +3340,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 23</em>The unified Pulse
+                      <em className="pulse-fig">Fig. 24</em>The unified Pulse
                       app, Home &mdash; the page that forced the map, now on
                       the system
                     </span>
@@ -3212,7 +3371,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 24</em>Two more pages of
+                      <em className="pulse-fig">Fig. 25</em>Two more pages of
                       the same static export &mdash; the scheduling Calendar
                       and the weekly Analytics report, both from a file://
                       address
@@ -3232,7 +3391,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 25</em>Onboarding &mdash;
+                      <em className="pulse-fig">Fig. 26</em>Onboarding &mdash;
                       a new brand becomes working material: starter assets and
                       a vault that feeds every generative step after it
                     </span>
@@ -3250,7 +3409,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 26</em>The Creative
+                        <em className="pulse-fig">Fig. 27</em>The Creative
                         Brief &mdash; a person shapes the AI draft
                       </span>
                       <InteractiveCue>edit a field, then approve</InteractiveCue>
@@ -3293,7 +3452,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 27</em>Chat contract
+                        <em className="pulse-fig">Fig. 28</em>Chat contract
                         &mdash; the assistant follows the product component
                         contract
                       </span>
@@ -3324,7 +3483,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 28</em>Approval chain
+                      <em className="pulse-fig">Fig. 29</em>Approval chain
                       &mdash; SLA timers; escalation never auto-approves
                     </span>
                   </figcaption>
@@ -3369,7 +3528,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             </div>
             <footer className="pulse-spine-caption" data-fade>
               <span>
-                <em className="pulse-fig">Fig. 29</em>Create-with-AI &mdash;
+                <em className="pulse-fig">Fig. 30</em>Create-with-AI &mdash;
                 where a person stays in the loop
               </span>
               <span className="pulse-spine-legend">
