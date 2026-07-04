@@ -1,49 +1,66 @@
 // Station visualization: why the product inserts a cheap image-preview layer
-// before the expensive video step. A "wrong vs right" comparison rebuilt as
-// crisp coded UI (the source was a raster diagram that blurred when scaled).
+// before the expensive video step. Rebuilt as two horizontal PIPELINE tracks
+// (a "wrong path" and a "right path") that read left→right, so the comparison
+// scans as flow rather than a stack of nested boxes. The source was a raster
+// diagram that blurred when scaled; this is crisp coded UI.
 // Decorative content is aria-hidden; the root aria-label carries the meaning.
 //
 // Design language matches the rest of the Vicino case page (tokens inherited
 // from .vicino-case-page): near-black surfaces, hairline borders, mono/gold
-// eyebrows, one restrained accent per moment. The single warm-red highlight is
-// deliberately NOT var(--seal-red) — that accent is reserved elsewhere.
+// eyebrows. Verdict is carried by a 2px top rule per cell — warm-red for the
+// direct-to-video path, teal for the image-first path — instead of heavy
+// per-cell borders. The warm-red is deliberately NOT var(--seal-red).
 
-const wrongSteps = [
+const tracks = [
   {
-    title: "Prompt → Video",
-    body:
-      "User writes a prompt and immediately generates a video. Slow, expensive, no preview of what the content will look like.",
-    tint: false,
+    tone: "wrong" as const,
+    mark: "✗",
+    label: "Direct to video",
+    steps: [
+      {
+        title: "Prompt → Video",
+        body:
+          "User writes a prompt and immediately generates a video. Slow, expensive, no preview of what the content will look like.",
+        tint: false,
+      },
+      {
+        title: "Wrong composition?",
+        body:
+          "Wrong character, wrong angle, wrong scene — user only finds out after waiting and paying.",
+        tint: true,
+      },
+      {
+        title: "Regenerate entire video",
+        body:
+          "No way to fix just the part that's wrong. Start over, spend more credits, wait again. Blind iteration.",
+        tint: true,
+      },
+    ],
   },
   {
-    title: "Wrong composition?",
-    body:
-      "Wrong character, wrong angle, wrong scene — user only finds out after waiting and paying.",
-    tint: true,
-  },
-  {
-    title: "Regenerate entire video",
-    body:
-      "No way to fix just the part that's wrong. Start over, spend more credits, wait again. Blind iteration.",
-    tint: true,
-  },
-] as const;
-
-const rightSteps = [
-  {
-    title: "Prompt → Image",
-    body:
-      "Generate an image in seconds. Costs a fraction of video. See the composition, character, and scene before committing.",
-  },
-  {
-    title: "Fix at the image layer",
-    body:
-      "Wrong framing? Wrong look? Adjust and regenerate — fast and cheap. Most problems are content problems, not motion problems.",
-  },
-  {
-    title: "Video with confidence",
-    body:
-      "Keyframes already confirmed. The expensive step happens with intention. Only duration, movement, and bounce are decided here.",
+    tone: "right" as const,
+    mark: "✓",
+    label: "Image preview first",
+    steps: [
+      {
+        title: "Prompt → Image",
+        body:
+          "Generate an image in seconds. Costs a fraction of video. See the composition, character, and scene before committing.",
+        tint: false,
+      },
+      {
+        title: "Fix at the image layer",
+        body:
+          "Wrong framing? Wrong look? Adjust and regenerate — fast and cheap. Most problems are content problems, not motion problems.",
+        tint: false,
+      },
+      {
+        title: "Video with confidence",
+        body:
+          "Keyframes already confirmed. The expensive step happens with intention. Only duration, movement, and bounce are decided here.",
+        tint: false,
+      },
+    ],
   },
 ] as const;
 
@@ -59,143 +76,165 @@ export function VicinoCheckpointViz() {
           __html: `
 .vz-chk {
   display: grid;
-  gap: 18px;
-  padding: 22px clamp(16px, 2vw, 26px) 24px;
+  gap: clamp(22px, 2.6vw, 30px);
+  padding: clamp(22px, 2.2vw, 28px) clamp(18px, 2vw, 28px) clamp(24px, 2.2vw, 28px);
   border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
   border-radius: 14px;
   background:
     radial-gradient(120% 140% at 50% -20%, rgba(255, 255, 255, 0.035), transparent 60%),
     rgba(255, 255, 255, 0.015);
 }
+.vz-chk-head {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  text-align: center;
+}
 .vz-chk-eyebrow {
   margin: 0;
-  text-align: center;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
+  font-size: var(--text-label, 13px);
   letter-spacing: var(--track-label, 0.14em);
   text-transform: uppercase;
   color: var(--accent-gold, #d9a441);
 }
 .vz-chk-intro {
-  margin: 0 auto;
-  max-width: 62ch;
-  text-align: center;
+  margin: 0;
+  max-width: 56ch;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(14px, 1.15vw, 15px);
+  font-size: var(--text-body, 17px);
   font-weight: 300;
   line-height: 1.55;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  color: rgba(255, 255, 255, 0.72);
 }
-.vz-chk-cols {
+
+/* --- one track = header + a left→right flow of cells --- */
+.vz-chk-track {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(12px, 1.6vw, 20px);
+  gap: 14px;
 }
-.vz-chk-col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: clamp(14px, 1.4vw, 18px);
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.012);
-}
-.vz-chk-col-head {
+.vz-chk-track-head {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 6px;
 }
 .vz-chk-badge {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
   border-radius: 999px;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
 }
-.vz-chk-badge.is-x {
-  border-color: rgba(224, 122, 90, 0.5);
+/* track heads speak in the family's condensed display voice */
+.vz-chk-track-title {
+  font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
+  font-size: clamp(21px, 1.9vw, 27px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: var(--track-display, -0.05em);
+  text-transform: uppercase;
+}
+.vz-chk-track.is-wrong .vz-chk-badge {
+  border-color: rgba(224, 122, 90, 0.55);
   color: rgba(224, 122, 90, 0.9);
 }
-.vz-chk-badge.is-check {
-  border-color: #8bd6d9;
+.vz-chk-track.is-wrong .vz-chk-track-title {
+  color: rgba(224, 122, 90, 0.9);
+}
+.vz-chk-track.is-right .vz-chk-badge {
+  border-color: rgba(139, 214, 217, 0.6);
   color: #8bd6d9;
 }
-.vz-chk-col-title {
-  font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(14px, 1.1vw, 16px);
-  font-weight: 500;
-  color: var(--paper, #f4f1ea);
+.vz-chk-track.is-right .vz-chk-track-title {
+  color: #8bd6d9;
 }
-.vz-chk-col.is-wrong .vz-chk-col-title {
-  color: rgba(224, 122, 90, 0.9);
-}
-.vz-chk-steps {
+
+.vz-chk-flow {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: stretch;
+  gap: clamp(8px, 1vw, 14px);
 }
-.vz-chk-step {
-  display: contents;
-}
-.vz-chk-arrow {
-  text-align: center;
-  font-size: 14px;
+.vz-chk-conn {
+  flex: 0 0 auto;
+  align-self: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 17px;
   line-height: 1;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.32);
 }
+.vz-chk-conn::before {
+  content: "→";
+}
+
 .vz-chk-cell {
+  flex: 1 1 0;
+  min-width: 0;
   display: grid;
-  gap: 6px;
-  padding: clamp(13px, 1.2vw, 16px);
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
+  gap: 7px;
+  align-content: start;
+  padding: clamp(15px, 1.5vw, 18px);
+  border-top: 2px solid transparent;
+  border-radius: 3px 3px 9px 9px;
+  background: rgba(255, 255, 255, 0.025);
 }
-.vz-chk-cell.is-tint {
-  border-color: rgba(224, 122, 90, 0.18);
-  background: rgba(224, 122, 90, 0.05);
+.vz-chk-track.is-wrong .vz-chk-cell {
+  border-top-color: rgba(224, 122, 90, 0.9);
+}
+.vz-chk-track.is-wrong .vz-chk-cell.is-tint {
+  background: rgba(224, 122, 90, 0.06);
+}
+.vz-chk-track.is-right .vz-chk-cell {
+  border-top-color: #8bd6d9;
+}
+.vz-chk-idx {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.vz-chk-track.is-wrong .vz-chk-idx {
+  color: rgba(224, 122, 90, 0.7);
+}
+.vz-chk-track.is-right .vz-chk-idx {
+  color: rgba(139, 214, 217, 0.75);
 }
 .vz-chk-cell h4 {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(14px, 1.05vw, 16px);
+  font-size: var(--text-body, 17px);
   font-weight: 500;
+  line-height: 1.3;
   color: var(--paper, #f4f1ea);
-}
-.vz-chk-cell.is-tint h4 {
-  color: rgba(224, 122, 90, 0.9);
 }
 .vz-chk-cell p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: 14px;
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
-  line-height: 1.5;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
 }
+
+/* --- design-principle footer: a divider, not another box --- */
 .vz-chk-footer {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: clamp(14px, 1.4vw, 18px);
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.012);
+  padding-top: clamp(16px, 1.8vw, 20px);
+  border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
 }
 .vz-chk-corner {
   flex: 0 0 auto;
   margin-top: 1px;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.5));
+  color: rgba(255, 255, 255, 0.5);
 }
 .vz-chk-footer-body {
   display: grid;
@@ -204,69 +243,93 @@ export function VicinoCheckpointViz() {
 .vz-chk-footer-title {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(14px, 1.05vw, 15px);
+  font-size: var(--text-meta, 15px);
   font-weight: 500;
   color: var(--paper, #f4f1ea);
 }
 .vz-chk-footer-body p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: 14px;
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
   line-height: 1.55;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  color: rgba(255, 255, 255, 0.72);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vz-chk-conn::before {
+    display: inline-block;
+    animation: vz-chk-flow 2.6s ease-in-out infinite;
+  }
+  @keyframes vz-chk-flow {
+    0%, 100% { opacity: 0.35; transform: translateX(-1px); }
+    50% { opacity: 0.7; transform: translateX(1px); }
+  }
+}
+
+@media (max-width: 980px) {
+  .vz-chk-flow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .vz-chk-conn {
+    align-self: center;
+  }
+  .vz-chk-conn::before {
+    content: "↓";
+  }
 }
 @media (max-width: 720px) {
-  .vz-chk-cols {
-    grid-template-columns: 1fr;
+  .vz-chk {
+    padding: 20px 16px 22px;
+    gap: 22px;
   }
 }
 `,
         }}
       />
-      <p className="vz-chk-eyebrow" aria-hidden="true">
-        AI Limits · Product Logic
-      </p>
-      <p className="vz-chk-intro" aria-hidden="true">
-        Why not generate video directly? Because inserting a cheaper, faster
-        image layer before the expensive step changed everything.
-      </p>
-      <div className="vz-chk-cols" aria-hidden="true">
-        <div className="vz-chk-col is-wrong">
-          <div className="vz-chk-col-head">
-            <span className="vz-chk-badge is-x">✗</span>
-            <span className="vz-chk-col-title">Direct to video</span>
-          </div>
-          <div className="vz-chk-steps">
-            {wrongSteps.map((step, i) => (
-              <div className="vz-chk-step" key={step.title}>
-                {i > 0 && <span className="vz-chk-arrow">↓</span>}
-                <div className={`vz-chk-cell${step.tint ? " is-tint" : ""}`}>
-                  <h4>{step.title}</h4>
-                  <p>{step.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="vz-chk-col is-right">
-          <div className="vz-chk-col-head">
-            <span className="vz-chk-badge is-check">✓</span>
-            <span className="vz-chk-col-title">Image preview first</span>
-          </div>
-          <div className="vz-chk-steps">
-            {rightSteps.map((step, i) => (
-              <div className="vz-chk-step" key={step.title}>
-                {i > 0 && <span className="vz-chk-arrow">↓</span>}
-                <div className="vz-chk-cell">
-                  <h4>{step.title}</h4>
-                  <p>{step.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="vz-chk-head" aria-hidden="true">
+        <p className="vz-chk-eyebrow">AI Limits · Product Logic</p>
+        <p className="vz-chk-intro">
+          Why not generate video directly? Because inserting a cheaper, faster
+          image layer before the expensive step changed everything.
+        </p>
       </div>
+
+      {tracks.map((track) => (
+        <div className={`vz-chk-track is-${track.tone}`} key={track.label} aria-hidden="true">
+          <div className="vz-chk-track-head">
+            <span className="vz-chk-badge">{track.mark}</span>
+            <span className="vz-chk-track-title">{track.label}</span>
+          </div>
+          <div className="vz-chk-flow">
+            {track.steps.flatMap((step, i) => {
+              const cell = (
+                <div
+                  className={`vz-chk-cell${step.tint ? " is-tint" : ""}`}
+                  key={step.title}
+                >
+                  <span className="vz-chk-idx">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h4>{step.title}</h4>
+                  <p>{step.body}</p>
+                </div>
+              );
+              return i === 0
+                ? [cell]
+                : [
+                    <span
+                      className="vz-chk-conn"
+                      key={`conn-${step.title}`}
+                    />,
+                    cell,
+                  ];
+            })}
+          </div>
+        </div>
+      ))}
+
       <div className="vz-chk-footer" aria-hidden="true">
         <span className="vz-chk-corner">↳</span>
         <div className="vz-chk-footer-body">

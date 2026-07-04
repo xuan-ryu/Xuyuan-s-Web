@@ -4,18 +4,80 @@
 // diagram that blurred when scaled. Decorative content is aria-hidden; the
 // root aria-label carries the meaning for assistive tech.
 //
+// The traditional side is a chain of specialists, each on a rail with a small
+// tool pictogram (pen nib, storyboard grid, clapperboard, camera, splice,
+// color drop). The Vicino side is headed by a single profile-bust figure — one
+// person — and a subtle six-to-one convergence cue bridges the two.
+//
 // Design language matches the rest of the Vicino case page (tokens inherited
 // from .vicino-case-page): near-black surfaces, hairline borders, mono/gold
 // eyebrow, one restrained amber accent reserved for the Vicino path.
 
 const traditionalSteps = [
-  "Screenwriter",
-  "Storyboard artist",
-  "Director",
-  "Cinematographer",
-  "Editor",
-  "Colorist / VFX",
-] as const;
+  {
+    role: "Screenwriter",
+    icon: (
+      <svg className="vz-pipe-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M5 3 H11 L9.2 10.4 L8 13 L6.8 10.4 Z" />
+        <circle cx="8" cy="5.6" r="0.9" />
+        <path d="M8 7.4 V12.2" />
+      </svg>
+    ),
+  },
+  {
+    role: "Storyboard artist",
+    icon: (
+      <svg className="vz-pipe-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="2.8" y="3.5" width="10.4" height="9" rx="1.4" />
+        <path d="M8 3.5 V12.5" />
+        <path d="M2.8 8 H13.2" />
+      </svg>
+    ),
+  },
+  {
+    role: "Director",
+    icon: (
+      <svg className="vz-pipe-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <rect x="2.6" y="6" width="10.8" height="7" rx="1.2" />
+        <rect x="2.6" y="2.9" width="10.8" height="3.1" rx="0.7" />
+        <path d="M5 2.9 L6.4 6" />
+        <path d="M8.3 2.9 L9.7 6" />
+        <path d="M11.6 2.9 L13 6" />
+      </svg>
+    ),
+  },
+  {
+    role: "Cinematographer",
+    icon: (
+      <svg className="vz-pipe-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="5.4" cy="4.8" r="2.1" />
+        <circle cx="9.2" cy="4.8" r="2.1" />
+        <rect x="2.4" y="6.8" width="8.4" height="5.4" rx="1.1" />
+        <path d="M10.8 8.2 L13.4 7.1 L13.4 11.9 L10.8 10.8 Z" />
+      </svg>
+    ),
+  },
+  {
+    role: "Editor",
+    icon: (
+      <svg className="vz-pipe-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="5.4" cy="11" r="1.7" />
+        <circle cx="10.6" cy="11" r="1.7" />
+        <path d="M6.4 9.6 L11 3.4" />
+        <path d="M9.6 9.6 L5 3.4" />
+      </svg>
+    ),
+  },
+  {
+    role: "Colorist / VFX",
+    icon: (
+      <svg className="vz-pipe-glyph" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 2.4 C 10.6 6, 12 8.2, 12 10.2 C 12 12.6, 10.2 14, 8 14 C 5.8 14, 4 12.6, 4 10.2 C 4 8.2, 5.4 6, 8 2.4 Z" />
+        <path d="M6 10.8 C 6 12.1, 6.9 12.9, 8.1 12.9" />
+      </svg>
+    ),
+  },
+];
 
 const vicinoSteps = [
   { title: "Script", note: "Organize intent" },
@@ -23,6 +85,8 @@ const vicinoSteps = [
   { title: "Image", note: "Refine keyframes" },
   { title: "Video", note: "Final generation" },
 ] as const;
+
+const index2 = (i: number) => (i + 1).toString().padStart(2, "0");
 
 export function VicinoPipelineViz() {
   return (
@@ -36,8 +100,8 @@ export function VicinoPipelineViz() {
           __html: `
 .vz-pipe {
   display: grid;
-  gap: 20px;
-  padding: 22px clamp(16px, 2vw, 26px) 22px;
+  gap: 22px;
+  padding: 24px clamp(16px, 2vw, 26px) 24px;
   border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
   border-radius: 14px;
   background:
@@ -47,7 +111,7 @@ export function VicinoPipelineViz() {
 .vz-pipe-eyebrow {
   margin: 0;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
+  font-size: var(--text-label, 13px);
   letter-spacing: var(--track-label, 0.14em);
   text-transform: uppercase;
   color: var(--accent-gold, #d9a441);
@@ -55,25 +119,35 @@ export function VicinoPipelineViz() {
 .vz-pipe-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(16px, 3vw, 44px);
+  gap: clamp(18px, 3vw, 46px);
   align-items: start;
 }
 .vz-pipe-col {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   align-content: start;
 }
 .vz-pipe-head {
   display: grid;
   gap: 3px;
+  min-width: 0;
 }
+.vz-pipe-head-fig {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+}
+/* column heads speak in the family's condensed display voice */
 .vz-pipe-sublabel {
   margin: 0;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
-  letter-spacing: var(--track-label, 0.14em);
+  font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
+  font-size: clamp(21px, 1.9vw, 27px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: var(--track-display, -0.05em);
   text-transform: uppercase;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  color: rgba(244, 241, 234, 0.82);
 }
 .vz-pipe-col.is-vicino .vz-pipe-sublabel {
   color: var(--accent-amber, #e0902f);
@@ -81,10 +155,80 @@ export function VicinoPipelineViz() {
 .vz-pipe-faint {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: 13px;
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
-  color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 62%, transparent);
+  line-height: 1.4;
+  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
 }
+
+/* shared line-art */
+.vz-pipe-glyph {
+  fill: none;
+  stroke: rgba(244, 241, 234, 0.88);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.vz-pipe-chip svg { width: 18px; height: 18px; display: block; stroke-width: 1.4; }
+.vz-pipe-figure svg { display: block; height: 56px; width: auto; stroke-width: 1.6; }
+.vz-pipe-frame { stroke: rgba(244, 241, 234, 0.42); }
+.vz-pipe-gold { stroke: var(--accent-gold, #d9a441); }
+.vz-pipe-node { fill: rgba(244, 241, 234, 0.7); stroke: none; }
+.vz-pipe-node-gold { fill: var(--accent-gold, #d9a441); stroke: none; }
+.vz-pipe-thread { stroke: rgba(244, 241, 234, 0.26); stroke-width: 1; }
+.vz-pipe-figure { flex: 0 0 auto; line-height: 0; }
+
+/* LEFT: specialists on a rail */
+.vz-pipe-list {
+  position: relative;
+  display: grid;
+  gap: 4px;
+}
+.vz-pipe-list::before {
+  content: "";
+  position: absolute;
+  left: 15.5px;
+  top: 21px;
+  bottom: 21px;
+  width: 1px;
+  background: var(--v-line, rgba(255, 255, 255, 0.1));
+}
+.vz-pipe-role {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 7px 2px;
+}
+.vz-pipe-chip {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+  background: var(--ink-950, #08080a);
+}
+.vz-pipe-role-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-text, var(--font-sans, system-ui));
+  font-size: var(--text-body, 17px);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--paper, #f4f1ea);
+}
+.vz-pipe-role-n {
+  flex: 0 0 auto;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: var(--track-label, 0.14em);
+  color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 58%, transparent);
+}
+
+/* RIGHT: Vicino steps */
 .vz-pipe-body {
   display: flex;
   align-items: stretch;
@@ -101,36 +245,34 @@ export function VicinoPipelineViz() {
   gap: 6px;
 }
 .vz-pipe-cell {
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 14px 16px;
-  text-align: center;
-}
-.vz-pipe-cell.is-plain {
-  font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(14px, 1.15vw, 15px);
-  font-weight: 400;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  background: rgba(255, 255, 255, 0.03);
+  padding: 13px 15px;
 }
 .vz-pipe-cell.is-step {
   display: grid;
-  gap: 3px;
-  border-color: rgba(255, 255, 255, 0.14);
-  border-left: 2px solid color-mix(in srgb, var(--accent-amber, #e0902f) 70%, transparent);
-  background: rgba(255, 255, 255, 0.03);
+  gap: 2px;
+  border-left: 2px solid color-mix(in srgb, var(--accent-amber, #e0902f) 72%, transparent);
+}
+.vz-pipe-cell-n {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: var(--track-label, 0.14em);
+  color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 62%, transparent);
 }
 .vz-pipe-cell-title {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(15px, 1.2vw, 17px);
-  font-weight: 600;
+  font-size: var(--text-body, 17px);
+  font-weight: 500;
   color: var(--paper, #f4f1ea);
 }
 .vz-pipe-cell-note {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: 13px;
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
 }
 .vz-pipe-arrow {
   justify-self: center;
@@ -164,20 +306,51 @@ export function VicinoPipelineViz() {
   text-transform: uppercase;
   color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
 }
+
+/* six specialists -> one person */
+.vz-pipe-cue {
+  display: flex;
+  justify-content: center;
+}
+.vz-pipe-cue svg {
+  width: min(220px, 72%);
+  height: auto;
+}
+
 .vz-pipe-caption {
   margin: 0;
   text-align: center;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: clamp(13px, 1.1vw, 14px);
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
   line-height: 1.55;
-  color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
+  color: rgba(255, 255, 255, 0.72);
 }
-@media (max-width: 720px) {
+
+@media (prefers-reduced-motion: no-preference) {
+  .vz-pipe-node-gold {
+    animation: vz-pipe-pulse 3.4s ease-in-out infinite;
+  }
+  @keyframes vz-pipe-pulse {
+    0%, 100% { opacity: 0.82; }
+    50% { opacity: 1; }
+  }
+}
+
+@media (max-width: 980px) {
   .vz-pipe-cols {
     grid-template-columns: 1fr;
-    gap: 26px;
+    gap: 30px;
   }
+}
+@media (max-width: 720px) {
+  .vz-pipe {
+    padding: 20px 16px;
+    gap: 20px;
+  }
+  .vz-pipe-figure svg { height: 48px; }
+  .vz-pipe-head-fig { min-height: 48px; }
+  .vz-pipe-cue svg { width: 88%; }
 }
 `,
         }}
@@ -187,33 +360,45 @@ export function VicinoPipelineViz() {
       </p>
       <div className="vz-pipe-cols" aria-hidden="true">
         <div className="vz-pipe-col is-traditional">
-          <div className="vz-pipe-head">
-            <p className="vz-pipe-sublabel">Traditional production</p>
-            <p className="vz-pipe-faint">one specialist per step</p>
-          </div>
-          <div className="vz-pipe-body">
-            <div className="vz-pipe-stack">
-              {traditionalSteps.map((step, i) => (
-                <div className="vz-pipe-item" key={step}>
-                  <div className="vz-pipe-cell is-plain">{step}</div>
-                  {i < traditionalSteps.length - 1 && (
-                    <span className="vz-pipe-arrow">&darr;</span>
-                  )}
-                </div>
-              ))}
+          <div className="vz-pipe-head-fig">
+            <div className="vz-pipe-head">
+              <p className="vz-pipe-sublabel">Traditional production</p>
+              <p className="vz-pipe-faint">one specialist per step</p>
             </div>
+          </div>
+          <div className="vz-pipe-list">
+            {traditionalSteps.map((item, i) => (
+              <div className="vz-pipe-role" key={item.role}>
+                <span className="vz-pipe-chip">{item.icon}</span>
+                <span className="vz-pipe-role-name">{item.role}</span>
+                <span className="vz-pipe-role-n">{index2(i)}</span>
+              </div>
+            ))}
           </div>
         </div>
         <div className="vz-pipe-col is-vicino">
-          <div className="vz-pipe-head">
-            <p className="vz-pipe-sublabel">In Vicino</p>
-            <p className="vz-pipe-faint">one person, flexible path</p>
+          <div className="vz-pipe-head-fig">
+            <span className="vz-pipe-figure" aria-hidden="true">
+              <svg className="vz-pipe-glyph" viewBox="0 0 56 56" aria-hidden="true">
+                <circle className="vz-pipe-frame" cx="28" cy="28" r="26" />
+                <path d="M26 13 C 22 13, 18.5 14.5, 17.5 19 C 16.8 22, 16.8 26, 18 29 C 19 31, 21 32.2, 24 32.8 C 26.5 33.3, 28.5 33.2, 30.5 32 C 31.2 31.5, 31 30.4, 31 29.4 C 33 28.6, 35 27.3, 35.2 26 C 35.3 25, 33.5 24.6, 32.6 23.6 C 32 21, 33 18, 31 15.5 C 29.5 13.8, 27.5 13, 26 13 Z" />
+                <path d="M20.5 31.5 L20.5 37.5" />
+                <path d="M29.5 32.5 L29.5 37.5" />
+                <path d="M12 46 C 13.5 40, 17 37.5, 20.5 37.5 L 29.5 37.5 C 33 37.5, 40.5 40.5, 42 46" />
+                <path className="vz-pipe-gold" d="M25.5 37.5 L28 40 L30.5 37.5" />
+              </svg>
+            </span>
+            <div className="vz-pipe-head">
+              <p className="vz-pipe-sublabel">In Vicino</p>
+              <p className="vz-pipe-faint">one person, flexible path</p>
+            </div>
           </div>
           <div className="vz-pipe-body">
             <div className="vz-pipe-stack">
               {vicinoSteps.map((step, i) => (
                 <div className="vz-pipe-item" key={step.title}>
                   <div className="vz-pipe-cell is-step">
+                    <span className="vz-pipe-cell-n">{index2(i)}</span>
                     <span className="vz-pipe-cell-title">{step.title}</span>
                     <span className="vz-pipe-cell-note">{step.note}</span>
                   </div>
@@ -229,6 +414,23 @@ export function VicinoPipelineViz() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="vz-pipe-cue" aria-hidden="true">
+        <svg className="vz-pipe-glyph" viewBox="0 0 200 40" aria-hidden="true">
+          <line className="vz-pipe-thread" x1="16" y1="8" x2="168" y2="20" />
+          <line className="vz-pipe-thread" x1="34" y1="8" x2="168" y2="20" />
+          <line className="vz-pipe-thread" x1="16" y1="20" x2="168" y2="20" />
+          <line className="vz-pipe-thread" x1="34" y1="20" x2="168" y2="20" />
+          <line className="vz-pipe-thread" x1="16" y1="32" x2="168" y2="20" />
+          <line className="vz-pipe-thread" x1="34" y1="32" x2="168" y2="20" />
+          <circle className="vz-pipe-node" cx="16" cy="8" r="2.6" />
+          <circle className="vz-pipe-node" cx="34" cy="8" r="2.6" />
+          <circle className="vz-pipe-node" cx="16" cy="20" r="2.6" />
+          <circle className="vz-pipe-node" cx="34" cy="20" r="2.6" />
+          <circle className="vz-pipe-node" cx="16" cy="32" r="2.6" />
+          <circle className="vz-pipe-node" cx="34" cy="32" r="2.6" />
+          <circle className="vz-pipe-node-gold" cx="168" cy="20" r="4" />
+        </svg>
       </div>
       <p className="vz-pipe-caption" aria-hidden="true">
         Same creative depth &mdash; reorganized so one person can navigate it.
