@@ -176,9 +176,6 @@ export function VicinoPipelineViz() {
 .vz-pipe-figure svg { display: block; height: 56px; width: auto; stroke-width: 1.6; }
 .vz-pipe-frame { stroke: rgba(244, 241, 234, 0.42); }
 .vz-pipe-gold { stroke: var(--accent-gold, #d9a441); }
-.vz-pipe-node { fill: rgba(244, 241, 234, 0.7); stroke: none; }
-.vz-pipe-node-gold { fill: var(--accent-gold, #d9a441); stroke: none; }
-.vz-pipe-thread { stroke: rgba(244, 241, 234, 0.26); stroke-width: 1; }
 .vz-pipe-figure { flex: 0 0 auto; line-height: 0; }
 
 /* LEFT: specialists on a rail */
@@ -320,16 +317,6 @@ export function VicinoPipelineViz() {
   color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
 }
 
-/* six specialists -> one person */
-.vz-pipe-cue {
-  display: flex;
-  justify-content: center;
-}
-.vz-pipe-cue svg {
-  width: min(220px, 72%);
-  height: auto;
-}
-
 .vz-pipe-caption {
   margin: 0;
   text-align: center;
@@ -338,16 +325,6 @@ export function VicinoPipelineViz() {
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .vz-pipe-node-gold {
-    animation: vz-pipe-pulse 3.4s ease-in-out infinite;
-  }
-  @keyframes vz-pipe-pulse {
-    0%, 100% { opacity: 0.82; }
-    50% { opacity: 1; }
-  }
 }
 
 @media (max-width: 980px) {
@@ -363,7 +340,6 @@ export function VicinoPipelineViz() {
   }
   .vz-pipe-figure svg { height: 48px; }
   .vz-pipe-head-fig { min-height: 48px; }
-  .vz-pipe-cue svg { width: 88%; }
 }
 `,
         }}
@@ -427,23 +403,6 @@ export function VicinoPipelineViz() {
             </div>
           </div>
         </div>
-      </div>
-      <div className="vz-pipe-cue" aria-hidden="true">
-        <svg className="vz-pipe-glyph" viewBox="0 0 200 40" aria-hidden="true">
-          <line className="vz-pipe-thread" x1="16" y1="8" x2="168" y2="20" />
-          <line className="vz-pipe-thread" x1="34" y1="8" x2="168" y2="20" />
-          <line className="vz-pipe-thread" x1="16" y1="20" x2="168" y2="20" />
-          <line className="vz-pipe-thread" x1="34" y1="20" x2="168" y2="20" />
-          <line className="vz-pipe-thread" x1="16" y1="32" x2="168" y2="20" />
-          <line className="vz-pipe-thread" x1="34" y1="32" x2="168" y2="20" />
-          <circle className="vz-pipe-node" cx="16" cy="8" r="2.6" />
-          <circle className="vz-pipe-node" cx="34" cy="8" r="2.6" />
-          <circle className="vz-pipe-node" cx="16" cy="20" r="2.6" />
-          <circle className="vz-pipe-node" cx="34" cy="20" r="2.6" />
-          <circle className="vz-pipe-node" cx="16" cy="32" r="2.6" />
-          <circle className="vz-pipe-node" cx="34" cy="32" r="2.6" />
-          <circle className="vz-pipe-node-gold" cx="168" cy="20" r="4" />
-        </svg>
       </div>
       <p className="vz-pipe-caption" aria-hidden="true">
         Same creative depth &mdash; reorganized so one person can navigate it.
