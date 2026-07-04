@@ -103,13 +103,16 @@ export function VicinoPipelineViz() {
   /* density stays LOW (skill: Density & Anchors) */
   gap: calc(var(--v-gutter, 24px) * 1.5);
   padding: clamp(32px, 3.2vw, 52px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
+  border: 1px solid var(--v-card-line, rgba(255, 255, 255, 0.1));
+  border-radius: var(--v-card-radius, 16px);
+  box-shadow:
+    var(--v-card-highlight, inset 0 1px 0 rgba(255, 255, 255, 0.07)),
+    var(--v-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.38), 0 22px 50px rgba(0, 0, 0, 0.5));
   /* a piece of the product's Work Space: near-black canvas + faint dot grid;
      panels above it are frosted glass */
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
-    #0a0a0c;
+    var(--v-card-surface, #1d1d1f);
 }
 .vz-pipe-cols {
   display: grid;

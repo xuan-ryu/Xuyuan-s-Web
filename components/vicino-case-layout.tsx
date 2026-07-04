@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
-import { BandStack } from "./band-stack";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { VicinoAudienceViz } from "./vicino-audience-viz";
 import { VicinoCheckpointViz } from "./vicino-checkpoint-viz";
@@ -93,6 +92,15 @@ const vicinoCriticalCss = `
   --video-node-video-area-bg: #0b0b0d;
   --video-node-stage-bg: #0b0b0d;
   --vicino-node-text: var(--node-header-label-color);
+  /* ── Unified card system (owner: unify radius + border, add depth/质感, not
+     flat AI). One radius, one hairline, one elevated material for every
+     case-level card so the page reads as one system. Depth on dark = a surface
+     lifted a step off the ground + a top catch-light + a layered shadow. ── */
+  --v-card-radius: 16px;
+  --v-card-line: rgba(255, 255, 255, 0.10);
+  --v-card-surface: #1d1d1f;
+  --v-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.38), 0 22px 50px rgba(0, 0, 0, 0.5);
+  --v-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
   background: var(--ink-950);
   color: var(--paper);
   overflow: hidden;
@@ -146,93 +154,88 @@ const vicinoCriticalCss = `
   height: calc(var(--v-pad-top) - 12px);
 }
 
-/* ── Theme bands — the page breathes between ink and paper (owner rule:
-   an all-black scroll is tiring). Narrative logic: ink = inside the
-   product's canvas (hero, the flow, the interface); paper = the designer
-   stepping back to speak (overview, context, the closing). Each band pins by
-   its bottom edge and the next slides UP over it (BandStack + sticky) — a
-   scroll-driven page-turn, not a static stack. The header's luminance sampler
-   reads the topmost band and flips the nav ink on its own. ── */
+/* ── Reading zones — large flat color blocks that give the continuous
+   scroll its rhythm (owner: 大色块分区 is welcome; but NO page-turn, NO
+   rounded-corner sheets). The page stays one dark Work Space; zones alternate
+   the pure canvas black with a lifted graphite so sections read as distinct
+   grounds without ever leaving the dark, and reading is never interrupted. The
+   Dataflow Spine + spotlight (added separately) carry the color and life. ── */
 .vicino-band {
   position: relative;
 }
-.vicino-band.is-ink {
-  background: var(--ink-950);
+/* Zones ride the product's OWN two themes (s:/the-product-codebase/src/styles/themes):
+   dark = inside the Work Space (canvas / flow / interface); light = the reading
+   sections, using the real light mode (#fff ground, ink text) so prose reads
+   easily. Authentic, not an arbitrary ink/paper alternation. */
+.vicino-band[data-zone="canvas"] {
+  background: #0a0a0a;
 }
-.vicino-band.is-paper {
-  background: var(--paper-warm);
+.vicino-band[data-zone="frame"] {
+  background: #ffffff;
 }
-/* every band after the first is a sheet: rounded shoulder + lifting shadow,
-   clipped to its own top radius */
-.vicino-band + .vicino-band {
-  border-radius: clamp(32px, 5vw, 64px) clamp(32px, 5vw, 64px) 0 0;
-  box-shadow: 0 -44px 90px rgba(5, 5, 5, 0.28);
-  overflow: clip;
+.vicino-band[data-zone="flow"] {
+  background: #0a0a0a;
 }
-/* a hairline catch-light along the incoming sheet's shoulder — paper takes a
-   soft ink edge, ink takes a light one — so the rise reads as a lifting page */
-.vicino-band + .vicino-band::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: clamp(64px, 8vw, 120px);
-  pointer-events: none;
-  z-index: 4;
+.vicino-band[data-zone="reflect"] {
+  background: #ffffff;
 }
-.vicino-band.is-ink + .vicino-band.is-ink::before,
-.vicino-band.is-paper + .vicino-band.is-ink::before {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+/* ── Light-mode reading zones: flip the prose/headings/rails to the product's
+   light-theme ink (#000 / #333 / #666, border #e0e0e0). Dark diagram + product
+   cards stay dark islands on the white — editorial dark-figures-on-paper — so
+   no viz needs re-theming. The header nav-ink sampler flips on its own. ── */
+.vicino-band[data-zone="frame"],
+.vicino-band[data-zone="reflect"] {
+  color: #333333;
 }
-.vicino-band.is-ink + .vicino-band.is-paper::before,
-.vicino-band.is-paper + .vicino-band.is-paper::before {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), transparent);
+.vicino-band[data-zone="frame"] .vicino-station h2,
+.vicino-band[data-zone="frame"] .vicino-thesis,
+.vicino-band[data-zone="reflect"] h2.vicino-closing-title {
+  color: #000000;
 }
-/* scroll-driven page-turn: BandStack measures each band, pins it by its bottom
-   so it reads fully then holds while the next sheet rises over it (rising
-   z-index). CSS sticky = smooth, GPU, Lenis-friendly; prefers-reduced-motion
-   never gets .is-stacked, so bands stay in normal flow. */
-.vicino-band.is-stacked {
-  position: sticky;
-  top: var(--vb-top, 0px);
-  z-index: var(--vb-z, 1);
+.vicino-band[data-zone="frame"] .vicino-body-copy,
+.vicino-band[data-zone="frame"] .vicino-body-copy p,
+.vicino-band[data-zone="reflect"] .vicino-closing-copy,
+.vicino-band[data-zone="reflect"] .vicino-closing-copy p {
+  color: #333333;
 }
-/* stations inside a band paint no ground of their own — the band owns it
-   (retires the per-station ink washes and the brief's 100vmax bleed) */
+.vicino-band[data-zone="frame"] .vicino-station-index,
+.vicino-band[data-zone="reflect"] .vicino-next-label {
+  color: #666666;
+}
+.vicino-band[data-zone="reflect"] .vicino-next-title {
+  color: #000000;
+}
+/* the next-case rides the light zone too (it had its own ink bg → black-on-black
+   once the title flipped; drop the bg so it reads black-on-white) */
+.vicino-band[data-zone="reflect"] .vicino-next {
+  background: transparent;
+}
+.vicino-band[data-zone="frame"] .vicino-station-rule,
+.vicino-band[data-zone="reflect"] .vicino-closing-rule {
+  background: #e0e0e0;
+}
+.vicino-band[data-zone="frame"] .vicino-wide-figure figcaption {
+  color: #666666;
+}
+.vicino-band[data-zone="frame"] .vicino-station::before,
+.vicino-band[data-zone="reflect"] .vicino-station::before,
+.vicino-band[data-zone="reflect"] .vicino-closing::before {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0 7px,
+    transparent 7px 16px
+  );
+}
+.vicino-band[data-zone="frame"] .vicino-station-index::before {
+  background: rgba(0, 0, 0, 0.32);
+}
+/* stations inside a zone paint no ground of their own — the zone owns it */
 .vicino-band .vicino-station,
 .vicino-band .vicino-hero {
   background: transparent;
   box-shadow: none;
   clip-path: none;
 }
-/* ── paper ink: the reading stations flip to ink-on-paper ── */
-.vicino-band.is-paper .vicino-station h2,
-.vicino-band.is-paper .vicino-thesis,
-.vicino-band.is-paper .vicino-closing-title {
-  color: var(--ink-950);
-}
-.vicino-band.is-paper .vicino-body-copy {
-  color: rgba(17, 17, 17, 0.78);
-}
-.vicino-band.is-paper .vicino-sub-label {
-  color: rgba(17, 17, 17, 0.88);
-}
-.vicino-band.is-paper .vicino-model-invite {
-  color: rgba(17, 17, 17, 0.62);
-}
-.vicino-band.is-paper .vicino-wide-figure figcaption {
-  color: rgba(17, 17, 17, 0.56);
-}
-.vicino-band.is-paper .vicino-station-rule,
-.vicino-band.is-paper .vicino-closing-rule {
-  background: var(--rule);
-}
-.vicino-band.is-paper .vicino-station-index::before {
-  background: rgba(17, 17, 17, 0.35);
-}
-.vicino-band.is-paper .vicino-next-title {
-  color: var(--ink-950);
-}
-
 .vicino-station-rule {
   display: block;
   grid-column: 1 / -1;
@@ -372,9 +375,12 @@ const vicinoCriticalCss = `
   width: 100%;
   aspect-ratio: 1360 / 620;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, rgba(255,255,255,0.14));
+  border: 1px solid var(--v-card-line, rgba(255, 255, 255, 0.1));
+  border-radius: var(--v-card-radius, 16px);
   background: #050506;
-  box-shadow: 0 30px 92px rgba(0,0,0,0.38);
+  box-shadow:
+    var(--v-card-highlight, inset 0 1px 0 rgba(255, 255, 255, 0.07)),
+    var(--v-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.38), 0 22px 50px rgba(0, 0, 0, 0.5));
   touch-action: none;
   container-type: inline-size;
 }
@@ -1488,10 +1494,12 @@ const vicinoCriticalCss = `
   width: 100%;
   aspect-ratio: 1320 / 760;
   overflow: hidden;
-  border: 1px dashed color-mix(in srgb, var(--accent-gold) 30%, rgba(255,255,255,0.16));
-  border-radius: 2px;
+  border: 1px solid var(--v-card-line, rgba(255, 255, 255, 0.1));
+  border-radius: var(--v-card-radius, 16px);
   background: #050506;
-  box-shadow: 0 30px 92px rgba(0,0,0,0.38);
+  box-shadow:
+    var(--v-card-highlight, inset 0 1px 0 rgba(255, 255, 255, 0.07)),
+    var(--v-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.38), 0 22px 50px rgba(0, 0, 0, 0.5));
   container-type: inline-size;
 }
 /* 1320x760 stage scaled to the container width (frame shows >=1080px only;
@@ -2605,10 +2613,11 @@ const vicinoCriticalCss = `
   margin: 0;
 }
 .vicino-seal::before {
-  /* the rail's terminal tick — seal red, once on the page */
+  /* the rail's terminal tick — seal red, once on the page. Aligns to the chain
+     rail exactly like every station tick (same -rail-inset offset). */
   content: "";
   position: absolute;
-  left: -3px;
+  left: calc(-3px - var(--v-rail-inset));
   top: -36px;
   width: 6px;
   height: 26px;
@@ -3368,12 +3377,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   return (
     <article className="vicino-case-page">
       <style dangerouslySetInnerHTML={{ __html: vicinoCriticalCss }} />
-      <BandStack selector=".vicino-case-page > .vicino-band" />
 
-      {/* ── theme bands: ink = inside the product's canvas; paper = the
-          designer stepping back to speak. Bands slide over each other as
-          About-style sheets (see .vicino-band CSS). ── */}
-      <div className="vicino-band is-ink">
+      {/* ── reading zones: large flat color blocks (canvas black ↔ graphite)
+          for scroll rhythm — continuous, no page-turn, no rounded sheets ── */}
+      <div className="vicino-band" data-zone="canvas">
       <section className="vicino-hero" id="header">
         <div className="vicino-hero-copy">
           <h1 data-fade>Vicino AI</h1>
@@ -3397,7 +3404,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       </section>
       </div>
 
-      <div className="vicino-band is-paper">
+      <div className="vicino-band" data-zone="frame">
       <section
         className="vicino-station vicino-opening-statement"
         aria-labelledby="vicino-opening-title"
@@ -3477,7 +3484,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       </section>
       </div>
 
-      <div className="vicino-band is-ink">
+      <div className="vicino-band" data-zone="flow">
       <section className="vicino-station vicino-flow">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
@@ -3573,7 +3580,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       </section>
       </div>
 
-      <div className="vicino-band is-paper">
+      <div className="vicino-band" data-zone="reflect">
       {project.moment && (
         <section className="vicino-station vicino-closing">
           <figure className="vicino-seal" data-fade>

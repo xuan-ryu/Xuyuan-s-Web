@@ -26,13 +26,17 @@ export function VicinoAudienceViz() {
      station gutter, interior padding well past 1.25x */
   gap: calc(var(--v-gutter, 24px) * 1.5);
   padding: clamp(32px, 3.2vw, 52px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  /* the container is a piece of the product's Work Space: near-black canvas
-     with the faint dot grid; panels above it are frosted glass */
+  border: 1px solid var(--v-card-line, rgba(255, 255, 255, 0.1));
+  border-radius: var(--v-card-radius, 16px);
+  /* an elevated piece of the product's Work Space: the faint dot grid over a
+     surface lifted a step off the zone, with a top catch-light + layered
+     shadow so it reads as a raised panel, not a flat fill */
   background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
-    #0a0a0c;
+    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 26px 26px,
+    var(--v-card-surface, #17181d);
+  box-shadow:
+    var(--v-card-highlight, inset 0 1px 0 rgba(255, 255, 255, 0.07)),
+    var(--v-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.38), 0 22px 50px rgba(0, 0, 0, 0.5));
 }
 /* the block's anchor — a big sentence-case caption, not an eyebrow */
 .vz-aud-eyebrow {

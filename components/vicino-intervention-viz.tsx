@@ -1,54 +1,34 @@
-// Station-02 visualization: per-stage pairing of what the AI accelerates with
-// where the user can intervene. Rebuilt as a STAGE SPINE — four numbered stage
-// rows threaded on a single vertical connector, each row splitting into an AI
-// half (filled dot) and a User half (outlined square) so the two read as two
-// halves of one stage. Static, decorative content is aria-hidden; the root
-// aria-label carries the meaning for assistive tech.
-//
-// Design language matches the rest of the Vicino case page (tokens inherited
-// from .vicino-case-page): near-black surfaces, hairline borders, mono/gold
-// eyebrows, one restrained accent reserved for a single moment.
+// Station visualization: every generation stage has two halves — what the AI
+// accelerates, and where the user steps in. Laid as a table: one row per stage,
+// two aligned columns (AI | You) so each stage's two halves read side by side
+// and the correspondence is obvious. Open on the canvas — no card frame, no dot
+// grid (owner: these info UIs are not cards; keep density low). Decorative
+// content is aria-hidden; the root aria-label carries the meaning.
 
 const stages = [
   {
-    ai: {
-      title: "Script generation",
-      body: "AI expands a sentence into a multi-scene script, or splits an uploaded screenplay into scenes automatically.",
-    },
-    user: {
-      title: "Edit, rewrite, restructure",
-      body: "User reviews every scene. Can rewrite descriptions, merge or split scenes, adjust durations, add or remove scenes entirely.",
-    },
+    n: "01",
+    stage: "Script",
+    ai: "Expands a sentence into a multi-scene script.",
+    user: "Rewrite, merge, split, or re-time any scene.",
   },
   {
-    ai: {
-      title: "Storyboard generation",
-      body: "AI generates rough visual frames for each scene. Auto mode creates all at once; manual mode lets users prompt each frame individually.",
-    },
-    user: {
-      title: "Swap, regenerate, refine",
-      body: "Each frame can be individually replaced, regenerated, or exported to an Image node for deeper editing — then connected back.",
-    },
+    n: "02",
+    stage: "Storyboard",
+    ai: "Rough frames per scene — auto, or one by one.",
+    user: "Swap, regenerate, or open a frame in an Image node.",
   },
   {
-    ai: {
-      title: "Shot & keyframe generation",
-      body: "AI generates high-fidelity keyframe images based on shot specifications. Produces first frame, last frame, or key moments.",
-    },
-    user: {
-      title: "Define every shot",
-      body: "User specifies camera movement, angle, lighting, transition, and timing per shot. Subdivides scenes freely. Full cinematographic control.",
-    },
+    n: "03",
+    stage: "Shot & keyframe",
+    ai: "High-fidelity keyframes from shot specs.",
+    user: "Set camera, angle, lighting, and timing per shot.",
   },
   {
-    ai: {
-      title: "Video generation",
-      body: "AI generates video clips from confirmed keyframes. Can produce segments individually or stitch a full sequence automatically.",
-    },
-    user: {
-      title: "Review, reshoot, re-edit",
-      body: "User can view segments individually, regenerate a single clip without touching others, adjust in the video editor, or go back to any earlier step.",
-    },
+    n: "04",
+    stage: "Video",
+    ai: "Clips from confirmed keyframes, or a full stitch.",
+    user: "Reshoot one clip, re-edit, or step back a stage.",
   },
 ] as const;
 
@@ -57,59 +37,50 @@ export function VicinoInterventionViz() {
     <div
       className="vz-int"
       role="img"
-      aria-label="Four generation stages run down a single spine; each stage pairs what the AI accelerates (a filled marker) with where the user can intervene (an outlined marker), and neither half is optional."
+      aria-label="Every generation stage has two halves. Script: AI expands a sentence into a multi-scene script; you rewrite, merge, split, or re-time. Storyboard: AI generates rough frames; you swap, regenerate, or open one in an Image node. Shot and keyframe: AI generates keyframes from specs; you set camera, angle, lighting, and timing. Video: AI generates clips from keyframes; you reshoot one, re-edit, or step back. Neither half is optional."
     >
       <style
         dangerouslySetInnerHTML={{
           __html: `
 .vz-int {
-  --vz-rail: clamp(48px, 5vw, 58px);
-  /* rhythm rides the station's gutter — rows 1.5 gutters apart, the rail tie
-     half a gutter, the AI/User pair split by one gutter (skill: Density &
-     Anchors — density stays LOW) */
-  --vz-row-gap: calc(var(--v-gutter, 24px) * 1.5);
-  --vz-row-colgap: calc(var(--v-gutter, 24px) / 2);
-  --vz-pair-gap: var(--v-gutter, 24px);
-  --vz-node-center: 30px;
+  /* open on the canvas — no card frame, no dot grid; density stays low */
   display: grid;
-  gap: calc(var(--v-gutter, 24px) * 1.5);
-  padding: clamp(32px, 3.2vw, 52px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  /* a piece of the product's Work Space: near-black canvas + faint dot grid;
-     panels above it are frosted glass */
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
-    #0a0a0c;
+  gap: calc(var(--v-gutter, 24px) * 1.4);
 }
 .vz-int-intro {
-  margin: 0 auto;
-  max-width: 58ch;
-  text-align: center;
+  margin: 0;
+  max-width: 60ch;
   font-family: var(--font-text, var(--font-sans, system-ui));
   font-size: var(--text-body, 18px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
 }
-.vz-int-legend {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: clamp(16px, 3vw, 32px);
-  font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 16px);
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.72);
+/* one grid: a stage rail + the two halves as aligned columns */
+.vz-int-grid {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.6fr) 1fr 1fr;
+  column-gap: var(--v-gutter, 24px);
+  row-gap: clamp(18px, 2.2vw, 26px);
+  align-items: start;
 }
-.vz-int-legend-item {
-  display: inline-flex;
+.vz-int-colhead {
+  display: flex;
   align-items: center;
   gap: 8px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+}
+.vz-int-colhead.is-spacer {
+  border-bottom: 0;
 }
 .vz-int-mark {
   flex: 0 0 auto;
-  display: inline-block;
   width: 8px;
   height: 8px;
 }
@@ -119,203 +90,110 @@ export function VicinoInterventionViz() {
 }
 .vz-int-mark.is-user {
   border-radius: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
-.vz-int-rows {
-  display: grid;
-  gap: var(--vz-row-gap);
-}
-.vz-int-row {
-  display: grid;
-  grid-template-columns: var(--vz-rail) 1fr;
-  column-gap: var(--vz-row-colgap);
-  align-items: stretch;
-}
-.vz-int-rail {
-  position: relative;
+/* the stage label anchors each row */
+.vz-int-stage-label {
   display: flex;
-  justify-content: center;
-  padding-top: 14px;
+  align-items: baseline;
+  gap: 10px;
 }
-/* the spine: a segment from this node down to the next node */
-.vz-int-rail::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: var(--vz-node-center);
-  bottom: calc(-1 * (var(--vz-row-gap) + var(--vz-node-center)));
-  width: 1px;
-  transform: translateX(-0.5px);
-  background: var(--v-line, rgba(255, 255, 255, 0.1));
-  z-index: 0;
-}
-.vz-int-row:last-child .vz-int-rail::before {
-  display: none;
-}
-.vz-int-node {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 34px;
-  padding: 0 4px;
-  background: var(--ink-950, #08080a);
-  /* the stage numerals are this block's anchors — big condensed wayfinding
-     down the spine (the cell titles stay the readable titles) */
+.vz-int-stage-label em {
+  font-style: normal;
   font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
-  font-size: clamp(26px, 2.2vw, 32px);
+  font-size: clamp(24px, 2vw, 30px);
   font-weight: 300;
   line-height: 1;
-  letter-spacing: 0;
   color: var(--accent-gold, #d9a441);
 }
-.vz-int-pair {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--vz-pair-gap);
-  align-items: stretch;
-}
-/* the stage halves sit OPEN on the canvas — text on the spine, no cards
-   (boxes are reserved for genuine product-UI recreations) */
-.vz-int-cell {
-  display: grid;
-  gap: 8px;
-  align-content: start;
-}
-.vz-int-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.vz-int-cell h4 {
-  margin: 0;
+.vz-int-stage-label span {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 18px);
+  font-size: var(--text-body, 17px);
   font-weight: 500;
-  line-height: 1.3;
+  line-height: 1.2;
   color: var(--paper, #f4f1ea);
 }
-.vz-int-cell p {
+.vz-int-cell {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 16px);
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
-  line-height: 1.55;
+  line-height: 1.5;
   color: rgba(255, 255, 255, 0.72);
+  align-self: center;
 }
-/* design-principle footer: a divider, not another box */
+/* design principle — a divider line, not a box */
 .vz-int-footer {
-  display: grid;
-  gap: 6px;
-  padding-top: clamp(16px, 1.8vw, 20px);
+  display: flex;
+  gap: 10px;
+  padding-top: clamp(14px, 1.6vw, 18px);
   border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
 }
-.vz-int-footer-label {
+.vz-int-footer strong {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 16px);
+  font-size: var(--text-meta, 15px);
   font-weight: 500;
   color: var(--paper, #f4f1ea);
+  white-space: nowrap;
 }
 .vz-int-footer p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 16px);
+  font-size: var(--text-meta, 15px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
 }
-@media (max-width: 980px) {
-  .vz-int-pair {
-    grid-template-columns: 1fr;
-    gap: var(--vz-row-gap);
+@media (max-width: 860px) {
+  .vz-int-grid {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 22px;
   }
+  .vz-int-colhead.is-spacer { display: none; }
+  .vz-int-colhead:not(.is-spacer):first-of-type { display: none; }
+  .vz-int-stage-label { grid-column: 1 / -1; }
 }
-@media (max-width: 720px) {
-  .vz-int {
-    --vz-rail: 46px;
-    padding: 20px 16px 22px;
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vz-int-row {
-    animation: vz-int-rise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-  }
-  .vz-int-row:nth-child(1) {
-    animation-delay: 0.04s;
-  }
-  .vz-int-row:nth-child(2) {
-    animation-delay: 0.12s;
-  }
-  .vz-int-row:nth-child(3) {
-    animation-delay: 0.2s;
-  }
-  .vz-int-row:nth-child(4) {
-    animation-delay: 0.28s;
-  }
-}
-@keyframes vz-int-rise {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+@media (max-width: 520px) {
+  .vz-int-grid { grid-template-columns: 1fr; }
+  .vz-int-colhead { display: none; }
 }
 `,
         }}
       />
       <p className="vz-int-intro" aria-hidden="true">
-        A smart workflow reduces friction without taking away control. At every
-        stage, users can inspect, revise, and redirect — the system accelerates
-        the start, not the judgment.
+        A smart workflow reduces friction without taking away control — it
+        accelerates the start, never the judgment.
       </p>
-      <div className="vz-int-legend" aria-hidden="true">
-        <span className="vz-int-legend-item">
+
+      <div className="vz-int-grid" aria-hidden="true">
+        <span className="vz-int-colhead is-spacer" />
+        <span className="vz-int-colhead">
           <span className="vz-int-mark is-ai" />
           AI accelerates
         </span>
-        <span className="vz-int-legend-item">
+        <span className="vz-int-colhead">
           <span className="vz-int-mark is-user" />
-          User intervenes
+          Where you step in
         </span>
-      </div>
-      <div className="vz-int-rows" aria-hidden="true">
-        {stages.map((stage, i) => (
-          <div className="vz-int-row" key={stage.ai.title}>
-            <div className="vz-int-rail">
-              <span className="vz-int-node">
-                {String(i + 1).padStart(2, "0")}
-              </span>
+
+        {stages.map((s) => (
+          <div key={s.n} style={{ display: "contents" }}>
+            <div className="vz-int-stage-label">
+              <em>{s.n}</em>
+              <span>{s.stage}</span>
             </div>
-            <div className="vz-int-pair">
-              <div className="vz-int-cell is-ai">
-                <div className="vz-int-head">
-                  <span className="vz-int-mark is-ai" />
-                  <h4>{stage.ai.title}</h4>
-                </div>
-                <p>{stage.ai.body}</p>
-              </div>
-              <div className="vz-int-cell is-user">
-                <div className="vz-int-head">
-                  <span className="vz-int-mark is-user" />
-                  <h4>{stage.user.title}</h4>
-                </div>
-                <p>{stage.user.body}</p>
-              </div>
-            </div>
+            <p className="vz-int-cell">{s.ai}</p>
+            <p className="vz-int-cell">{s.user}</p>
           </div>
         ))}
       </div>
+
       <div className="vz-int-footer" aria-hidden="true">
-        <span className="vz-int-footer-label">Design principle</span>
+        <strong>Design principle</strong>
         <p>
-          Every step has two halves: what AI can generate, and where users can
-          intervene. Neither half is optional. The left column makes starting
-          easy; the right column makes quality possible.
+          Every stage has two halves — what AI generates, and where you step in.
+          Neither is optional: the left makes starting easy, the right makes
+          quality possible.
         </p>
       </div>
     </div>
