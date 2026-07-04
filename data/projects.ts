@@ -77,7 +77,7 @@ export const projects: Project[] = [
     coverClass: "cover-pulse",
     tags: ["Product Design", "Design System", "AI"],
     oneliner:
-      "A team prototyping one product in six different tools, a week to a pitchable flow — and the design production system I built so the rescue never has to happen twice.",
+      "Pulse is an AI marketing platform — strategic signal to published post, with a person at every gate. I joined a team prototyping it in six different tools, a week from a pitch — and built the design production system so that rescue never happens twice.",
     blurb:
       "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. I joined to design its homepage — and left owning the way the whole team ships: the unified pitch mockup merged from everyone's prototypes, a token-driven design system of ~37 components, the standards and automation that keep AI-generated UI on-system, and the campaign production flow with a person at every gate.\n\nTwo beliefs run through the work. Pages that look alike aren't a product until they share one system. And AI should draft while humans decide — every generative step is wrapped in an editable brief, a review, or an approval gate.",
     role: "Product Designer · Design System · Front-end",
@@ -87,7 +87,8 @@ export const projects: Project[] = [
     // Overview = what Pulse is + the owner's scope, once. The belief lives in
     // the moment band; the acts carry the detail — no smearing.
     summary: [
-      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. When I picked it up, the team was prototyping that one product in six different tools — pages that looked alike and shared nothing underneath — with about a week to fold them into a flow we could pitch. Over five intensive weeks I went from owning the homepage to owning how the team ships: the merged mockup itself, then the token-driven design system, the component library, the automation that keeps AI-generated UI on-system, and the handoff surfaces that let design, engineering, ML, and product finally work from one base.",
+      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. When I picked it up, the team was prototyping that one product in six different tools — pages that looked alike and shared nothing underneath — with about a week to fold them into a flow we could pitch.",
+      "Over five intensive weeks I went from owning the homepage to owning how the team ships: the merged mockup itself, then the token-driven design system and component library, the automation that keeps AI-generated UI on-system, and the handoff surfaces that let design, engineering, ML, and product finally work from one base.",
     ],
     moment: {
       title:
@@ -164,7 +165,7 @@ export const projects: Project[] = [
             heading:
               "Then the data didn’t fit",
             body: [
-              "A pitch needs a real case, so I wired in the ML team’s data — and the shapes didn’t match what the front end expected. Mapping fields, states, and edge cases into components was the last mile, and it pushed me into the invisible half of front-end: how data enters a page, and what a component must promise in order to accept it.",
+              "A pitch needs a real case, so I wired in the ML team’s data — and the shapes didn’t match what the front end expected. Mapping fields, states, and edge cases into components was the last mile, and it pushed me into the invisible half of front-end: how data enters a page, and what a component must promise in order to accept it — which fields may arrive empty, and what a KPI tile should show while its number is still loading.",
               "The mockup shipped on time; the pitch was recorded. The other thing that shipped was a conviction: this cannot be allowed to happen twice.",
             ],
           },
@@ -222,7 +223,7 @@ export const projects: Project[] = [
               "From preview to infrastructure",
             body: [
               "A teammate then wrapped the library as a typed React package on the team’s private registry — the JSX wrappers are the only authored layer, and a build step copies the canonical CSS in, so the package cannot drift from its source. Its playground goes past looks: feed a component data and watch it hold — empty, overflowing, missing fields, loading, error.",
-              "That is what the melee had been missing. Not talent — an interface. Design, engineering, ML, and product each got a surface they could read, and integration stopped being a rescue.",
+              "That is what the melee had been missing. Not talent — an interface. Design, engineering, ML, and product each got a surface they could read, and integration stopped being a rescue. It stays judgment work — every new prototype still surfaces some UI that has to be argued into the library or kept out of it — but the argument now happens once, in one place.",
             ],
           },
         ],
@@ -256,7 +257,7 @@ export const projects: Project[] = [
             heading:
               "Two gates and a guardrail keep a person in charge",
             body: [
-              "Approval runs through an ordered chain — reviewer, then brand admin, then org owner — with SLA timers and an escalation that never auto-approves. A campaign-level plan gate signs off direction and spend before any credits are burned; a per-post content gate signs off the finished creative before it goes live.",
+              "Approval runs through an ordered chain — reviewer, then brand admin, then org owner — with SLA timers and an escalation that never auto-approves. A campaign-level plan gate signs off direction and spend before any credits are burned; a per-post content gate signs off the finished creative before it goes live. Both gates route through that same chain.",
             ],
           },
           {

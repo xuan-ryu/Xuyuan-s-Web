@@ -175,7 +175,7 @@ const meleeSources = [
   { made: "drawn in a design canvas", trace: "frames only — no code at all" },
   { made: "an AI page-builder export", trace: "one file, styles inlined per node" },
   { made: "pasted from a model chat", trace: "runs, but write-only to humans" },
-  { made: "hand-built, another stack", trace: "components — different framework" },
+  { made: "composited from images", trace: "screens as pictures — nothing wired" },
 ];
 
 // ── The wake-up file (ch. 02, Fig. 03): the 13,020-line monolith against
@@ -215,8 +215,8 @@ const roleRows: Array<[string, string]> = [
 const milestones = [
   {
     date: "Late May",
-    title: "Day one: a prototype and a system, together",
-    note: "The first thing I shipped was a complete single-file prototype — and, sitting beside it, the first design-system page. The system was explored as code before any process asked for one.",
+    title: "Six ways of building, one deadline",
+    note: "The team was prototyping the same product in different tools, an early style guide holding the look together — and a pitch date about a week out made the gap between looking alike and being alike unmissable.",
   },
   {
     date: "Early June",
@@ -1507,6 +1507,23 @@ const pulseCss = `
 }
 
 /* ── Reduced motion: render final state; kill scoped loops ──────────────── */
+.pulse-inventory-cell.is-blank::after {
+  content: "—";
+  display: block;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(10, 10, 10, 0.24);
+}
+.pulse-ledger-note {
+  grid-column: 1 / -1;
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(10, 10, 10, 0.44);
+}
+
 /* ── The melee (Fig. 02): four identical wireframes, four incompatible
    sources. The sameness on top is the point; the trace lines disagree. ── */
 .pulse-melee {
@@ -1789,6 +1806,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <span>{unit}</span>
             </div>
           ))}
+          <p className="pulse-ledger-note">
+            teammates, tools, and the package identity are generalized on
+            purpose &mdash; the work is real; the internals stay internal
+          </p>
         </aside>
       </section>
 
@@ -1832,7 +1853,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             <div className="pulse-section">
               <SectionProse section={wakeup.sections[0]} />
               <figure className="pulse-section-aside" data-fade>
-                <div className="pulse-fileviz" aria-hidden="true">
+                <div className="pulse-spec-card">
+                  <header className="pulse-spec-head">
+                    <span>one prototype file</span>
+                  </header>
+                  <div className="pulse-fileviz" aria-hidden="true">
                   <div className="pulse-fileviz-col">
                     <div className="pulse-fileviz-monolith" />
                     <p className="pulse-fileviz-label">
@@ -1852,6 +1877,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     <p className="pulse-fileviz-label">
                       <strong>one folder each</strong>one HTML &middot; one CSS
                     </p>
+                  </div>
                   </div>
                 </div>
                 <figcaption className="pulse-fig-caption">
@@ -2073,11 +2099,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 </div>
                 <figcaption className="pulse-fig-caption">
                   <em className="pulse-fig">Fig. 10</em> The live component
-                  browser &mdash; every component and state, rendered from its
-                  standalone source
+                  browser &mdash; 40 components by this capture; the inventory
+                  sheet above abridges to 37 named sources
                 </figcaption>
               </figure>
-              <figure className="pulse-section-full" data-fade>
+              <figure className="pulse-section-inset" data-fade>
                 <div className="pulse-shot">
                   <Image
                     src="/media/work/pulse/figma-board-campaign.png"
