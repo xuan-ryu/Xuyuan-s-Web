@@ -36,7 +36,10 @@ function AutoText({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    el.focus();
+    // preventScroll: this mounts inside a long case page — focusing must
+    // never move the viewport (QA: an auto-focused field mid-page scrolled
+    // the whole document there on load under reduced motion).
+    el.focus({ preventScroll: true });
     el.setSelectionRange(el.value.length, el.value.length);
   }, []);
   return (
@@ -60,7 +63,10 @@ function AutoText({
 
 export function PulseCreativeBrief() {
   const [fields, setFields] = useState(INITIAL);
-  const [editing, setEditing] = useState<number | null>(1); // Key message, pre-focused
+  // No field starts in edit mode: a pre-focused textarea steals document
+  // focus at hydration (and drags the reduced-motion viewport to it). The
+  // InteractiveCue names the gesture instead.
+  const [editing, setEditing] = useState<number | null>(null);
   const [approve, setApprove] = useState<"idle" | "busy" | "done">("idle");
   const timers = useRef<number[]>([]);
   useEffect(() => {

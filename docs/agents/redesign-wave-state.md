@@ -1,5 +1,37 @@
 # Page art-direction wave — state ledger (2026-07-02)
 
+## Session 3 (2026-07-04) — Pulse "Studio Bloom" rework + Vicino viz pass
+
+**Pulse page fully rebuilt (owner-directed).** The ink/paper specimen document
+AND its scroll page-turn are retired; the page now adopts Pulse's own light
+stage (#f4f7f7 + soft cyan blooms, glass bentos, white cards) — an
+owner-sanctioned departure from the paper editorial ground, scoped to this
+page. Narrative is the owner's 9-act causal chain (melee → bet → look →
+wake-up → rescue → base → skills → interface → product → Turn), copy in
+data/projects.ts. Choreography in components/pulse-scroll.tsx (GSAP
+ScrollTrigger over lenis-bus; server markup is always final state — reduce
+and no-JS read a finished page). One persistent run-log rail (single spine,
+scroll-driven states). One-typeface rule (owner 字体统一): everything Manrope
+w/ tabular numerals; real mono ONLY for literal code (commit ticker, JSON
+editor). H1 + next-title de-condensed on this page only. Page-local
+.pulse-navscrim fades content under the transparent fixed nav.
+
+**Numbers re-verified against private Pulse repo git history (2026-07-04):**
+peak file = 10,180 lines (rev 5652305 root index.html — the old 13,020 claim
+did NOT survive audit and is corrected everywhere); 824 commits over 5 weeks,
+308 structural; 40 handoff components (37 React); 1,905 net dead lines
+(commit-subject verbatim). New evidence media in public/media/work/pulse/:
+accent-study, cyan-experiment, foundations-color, pulse-app-onboarding
+(cropped — Vicino wordmark removed). foundations-handbook.png +
+component-preview.png deleted (orphaned); components/band-stack.tsx DELETED
+(page-turn dead code, zero importers).
+
+**QA state:** lint/tsc clean; zero console errors; phone load-at-bottom bug
+fixed; brief focus-steal fixed (preventScroll + no pre-focus); reduced-motion
+full-content pass; keyboard pass. Vicino checkpoint/intervention vizzes being
+redrawn as diagrams (pipeline loop + dual-lane timeline) per owner
+text-density feedback — see that session's report for status.
+
 ## Session 2 status (2026-07-02 evening) — latest first
 
 Home + all case pages are redesigned, committed, and confidentiality-cleaned.

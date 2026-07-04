@@ -267,6 +267,17 @@ export function PulseComponentBrowser() {
                 <RunButton variant="ghost" label="Preview" />
                 <RunButton variant="danger" label="Remove" />
               </div>
+              <div className="pcb-btn-row">
+                <button type="button" className="pcb-btn pcb-btn--primary pcb-btn--sm">
+                  Compact · 34px
+                </button>
+                <button type="button" className="pcb-btn pcb-btn--secondary pcb-btn--sm">
+                  Compact
+                </button>
+                <button type="button" className="pcb-btn pcb-btn--secondary pcb-btn--sm" disabled>
+                  Disabled
+                </button>
+              </div>
               <span className="pcb-hint">click any button · submit → busy → landed</span>
             </div>
           )}
@@ -305,9 +316,14 @@ const PCB_CSS = `
   --c-shadow-2: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px rgba(15,23,42,0.06);
   --c-focus: 0 0 0 3px rgba(73,224,245,0.42);
   --c-ui: var(--font-text, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
-  --c-mono: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+  /* one-typeface rule (owner, 2026-07-04): Pulse aliases mono to its sans —
+     labels/hints render in the text face with tabular numerals */
+  --c-mono: var(--c-ui);
 
   box-sizing: border-box;
+  /* capped so the stage reads dense at full-shell width (owner QA note:
+     the uncapped browser left the stage mostly empty at 1536) */
+  max-width: 980px;
   border: 1px solid var(--c-border);
   border-radius: 16px;
   background: var(--c-canvas);
@@ -378,6 +394,8 @@ const PCB_CSS = `
 }
 .pcb-btn--sm { height: 34px; padding: 0 16px; font-size: 12px; }
 .pcb-btn:focus-visible { outline: none; box-shadow: var(--c-focus); }
+.pcb-btn:disabled { cursor: default; opacity: 0.45; box-shadow: none; }
+.pcb-btn:disabled:hover { background: #fff; box-shadow: none; }
 .pcb-btn--primary { background: var(--c-ink-900); color: #fff; }
 .pcb-btn--primary:hover { background: var(--c-ink-700); box-shadow: var(--c-shadow-2); }
 .pcb-btn--secondary { background: #fff; border-color: var(--c-border-strong); color: var(--c-ink-800); }
