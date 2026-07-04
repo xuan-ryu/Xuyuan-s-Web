@@ -3,6 +3,7 @@ import type { Project, CaseSection } from "@/data/projects";
 import type { ReactNode } from "react";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { FroghireAffinityMap } from "@/components/froghire-affinity-map";
+import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
 import { FroghireTradeLedger } from "@/components/froghire-trade-ledger";
 
 // FrogHire.ai — the triage ledger.
@@ -716,6 +717,11 @@ const froghireCss = `
 }
 
 /* ── affinity map (SVG voices) ── */
+.froghire-cue-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 14px;
+}
 .froghire-map {
   width: 100%;
   height: auto;
@@ -968,7 +974,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
 
   return (
     <article className="froghire-case-page">
-      <style dangerouslySetInnerHTML={{ __html: froghireCss }} />
+      <style dangerouslySetInnerHTML={{ __html: froghireCss + ICUE_CSS }} />
 
       {/* ── docket hero ── */}
       <section className="froghire-hero froghire-shell froghire-grid" id="header">
@@ -1133,6 +1139,11 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
             <Sec chapter={0} section={ch1.sections[3]} index={3}>
               <figure className="froghire-figrow" data-fade>
                 <div className="froghire-fig froghire-fig--map froghire-f-full">
+                  <p className="froghire-cue-row">
+                    <InteractiveCue accent="#5ac75a">
+                      Hover a complaint to trace it to a flaw
+                    </InteractiveCue>
+                  </p>
                   <FroghireAffinityMap />
                 </div>
                 <FigCaption index="06" className="froghire-c-below">
