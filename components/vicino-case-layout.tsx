@@ -246,7 +246,7 @@ const vicinoCriticalCss = `
 }
 .vicino-hero-meta {
   grid-column: 8 / -1;
-  align-self: center;
+  align-self: start;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(16px, 2.4vw, 34px);
@@ -398,15 +398,17 @@ const vicinoCriticalCss = `
   }
 }
 /* ---- click-to-run generation flow (hero canvas Run button) ---- */
+/* quiet resting state (used for Generating… and Replay) — solid, never a
+   transparent wash */
 .vicino-live-run {
   pointer-events: auto;
   margin: 0;
-  padding: 5px 12px;
+  padding: 8px 16px;
   border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 55%, transparent);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--accent-amber, #e0902f) 12%, transparent);
+  background: var(--ink-900, #0a0a0a);
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
+  font-size: var(--text-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: color-mix(in srgb, var(--accent-amber, #e0902f) 92%, white);
@@ -414,8 +416,19 @@ const vicinoCriticalCss = `
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 .vicino-live-run:hover {
-  background: color-mix(in srgb, var(--accent-amber, #e0902f) 22%, transparent);
+  background: var(--ink-800, #1c1c1c);
   border-color: var(--accent-amber, #e0902f);
+}
+/* the opening call to run — solid amber, ink label, unmissable */
+.vicino-live-run.is-primary {
+  background: var(--accent-amber, #e0902f);
+  border-color: var(--accent-amber, #e0902f);
+  color: var(--ink-950, #08080a);
+  box-shadow: 0 6px 20px -6px color-mix(in srgb, var(--accent-amber, #e0902f) 60%, transparent);
+}
+.vicino-live-run.is-primary:hover {
+  background: color-mix(in srgb, var(--accent-amber, #e0902f) 86%, white);
+  color: var(--ink-950, #08080a);
 }
 .vicino-live-run:focus-visible {
   outline: var(--focus-ring);

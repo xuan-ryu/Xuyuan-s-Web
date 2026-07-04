@@ -659,7 +659,7 @@ export function VicinoWorkflowCanvas({
         {runnable ? (
           <button
             type="button"
-            className="vicino-live-run"
+            className={`vicino-live-run${runIndex < 0 ? " is-primary" : ""}`}
             onClick={playFlow}
             aria-label="Play the generation flow — script to storyboard to shot to video"
           >

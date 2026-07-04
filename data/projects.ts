@@ -261,11 +261,11 @@ export const projects: Project[] = [
     ],
     moment: {
       title:
-        "When I realized the product did not need one more feature - it needed a clearer interaction model",
+        "When I realized the product did not need one more feature — it needed a clearer interaction model",
       body: [
         "What stayed with me most from this project was the moment I realized the product did not need one more feature. It needed a clearer structure.",
         "During one review, we walked through a long creation chain: camera, 3D, image, prompt, and then video. On paper, each part was already becoming more capable. But when I tried to trace the flow from input to output, I realized the problem was no longer feature depth. The problem was that the system itself was becoming harder to explain. Even within the team, people were beginning to describe the same workflow in different ways. That was the moment I stopped treating the project as a series of screen problems and started treating it as a workflow problem.",
-        "From then on, I became much more focused on where complexity should live. What belongs in a node? What belongs in an editor? What should stay global, and what should stay local? If the models could not reliably do everything in one shot, then the product should not pretend otherwise. That shift shaped the prototype direction I helped push forward: nodes represented meaningful stages and outputs; the Sidebar handled global settings and model selection; the Floating Bar carried the next-step actions; sliding panels supported more local adjustments, input management, and version history; and editors took on the deeper work that did not belong on the main canvas. More importantly, that structure gave the team a stronger foundation for iteration and a shared way to think about how new features should enter the product as it kept growing.",
+        "From then on the work was mostly about where complexity should live — and both halves of this project grew out of that one question. The flow gave people a path they could follow and correct; the zoning gave every kind of function a place to belong. What I keep from it is not any single screen but a way to grow a product: when the models cannot do everything in one shot, structure is what lets people — and the team — keep moving, and lets new features enter without reopening the same debate.",
         "(note: the Video 2 Node prototype was made by a teammate)",
       ],
       videos: [

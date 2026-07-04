@@ -92,7 +92,7 @@ export function VicinoCheckpointViz() {
   margin: 0;
   max-width: 56ch;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
@@ -154,7 +154,7 @@ export function VicinoCheckpointViz() {
   flex: 0 0 auto;
   align-self: center;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 17px;
+  font-size: 18px;
   line-height: 1;
   color: rgba(255, 255, 255, 0.32);
 }
@@ -173,7 +173,7 @@ export function VicinoCheckpointViz() {
 }
 .vz-chk-idx {
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.14em;
 }
 .vz-chk-track.is-wrong .vz-chk-idx {
@@ -185,7 +185,7 @@ export function VicinoCheckpointViz() {
 .vz-chk-cell h4 {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 500;
   line-height: 1.3;
   color: var(--paper, #f4f1ea);
@@ -193,7 +193,7 @@ export function VicinoCheckpointViz() {
 .vz-chk-cell p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
@@ -211,7 +211,7 @@ export function VicinoCheckpointViz() {
   flex: 0 0 auto;
   margin-top: 1px;
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -222,14 +222,14 @@ export function VicinoCheckpointViz() {
 .vz-chk-footer-title {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 500;
   color: var(--paper, #f4f1ea);
 }
 .vz-chk-footer-body p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);

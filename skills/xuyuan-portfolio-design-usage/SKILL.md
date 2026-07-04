@@ -62,6 +62,14 @@ The local repo is the current truth.
 
 - New/touched CSS should use tokens from `app/globals.css` for ink, paper,
   lines, radii, and easing.
+- Numeric design values are EVEN (owner rule 2026-07-05): font sizes, spacing,
+  gaps, padding, radii, and element dimensions round to an even px (267 → 268).
+  Exempt: 1px hairlines/borders (a rule is a rule), measured Framer-clone and
+  product-UI-recreation geometry (faithful pixel repro, like `--font-condensed`
+  node/handle sizes), and the `999px` pill sentinel. vw / decimal coefficients
+  inside `clamp()` are ratios, not px — only their px anchors need to be even.
+  The DS type ladder is already even (12/14/16/18/22 …); token fallbacks must
+  mirror it.
 - Letter spacing defaults to zero. Add tracking only for labels, nav, vertical
   text, and compact uppercase UI.
 - Large display titles may use the condensed face `var(--font-condensed)`

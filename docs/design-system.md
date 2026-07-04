@@ -49,6 +49,12 @@ Operational rule: if a touched rule needs black, white, orange, gold, or a
 hairline, use a token. Hard-coded values stay only when they are measured
 art-direction or Canvas/WebGL internals.
 
+Even-number rule (owner, 2026-07-05): design values are even px — font sizes,
+spacing, gaps, padding, radii, dimensions (267 → 268). The type ladder is even
+(12/14/16/18/22 …) and token fallbacks mirror it. Exempt: 1px hairlines/borders,
+measured Framer-clone / product-UI-recreation geometry, the `999px` pill
+sentinel, and vw/decimal coefficients inside `clamp()` (only px anchors count).
+
 #### Per-case palettes (owner rule, 2026-07-05)
 
 Case and poster pages derive their accent palette from THEIR OWN work — the

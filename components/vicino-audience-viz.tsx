@@ -100,14 +100,14 @@ export function VicinoAudienceViz() {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
   /* the persona names are this block's anchors — lead size, calm weight */
-  font-size: var(--text-lead, 21px);
+  font-size: var(--text-lead, 22px);
   font-weight: 400;
   color: var(--paper, #f4f1ea);
 }
 .vz-aud-dot {
   flex: 0 0 auto;
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
 }
 .vz-aud-persona.is-veteran .vz-aud-dot {
@@ -120,7 +120,7 @@ export function VicinoAudienceViz() {
   margin: 0;
   max-width: 26ch;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
@@ -137,7 +137,7 @@ export function VicinoAudienceViz() {
 .vz-aud-pill {
   position: relative;
   max-width: 24ch;
-  padding: 13px 22px;
+  padding: 14px 22px;
   border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 50%, transparent);
   border-radius: 999px;
   /* amber-tinted frosted glass — the product's panel material, one hairline
@@ -149,7 +149,7 @@ export function VicinoAudienceViz() {
     inset 0 1px 0 rgba(255, 255, 255, 0.07),
     0 12px 30px -18px rgba(0, 0, 0, 0.7);
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   line-height: 1.5;
   text-align: center;
   color: color-mix(in srgb, var(--accent-amber, #e0902f) 82%, white);
@@ -176,7 +176,7 @@ export function VicinoAudienceViz() {
   margin: 0;
   max-width: 58ch;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 300;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.72);

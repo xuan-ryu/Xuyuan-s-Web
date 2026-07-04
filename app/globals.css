@@ -90,12 +90,14 @@
      (`font-size: var(--text-body)`). Fluid display steps use
      clamp(min, vw, max); small UI text is fixed px. Measured Framer-clone
      geometry may keep literal sizes; all other rules use these. Full
-     reference + role guidance: docs/design-system.md. */
-  --text-micro: 11px; /* fine print, indices, legal */
-  --text-label: 13px; /* uppercase eyebrows, tags, small labels */
-  --text-meta: 15px; /* nav, captions, secondary text, dates */
-  --text-body: clamp(17px, 1.25vw, 20px); /* long-form reading copy */
-  --text-lead: clamp(21px, 1.55vw, 26px); /* section lead paragraphs */
+     reference + role guidance: docs/design-system.md.
+     Owner rule (2026-07-05): design values are EVEN px (this ladder, spacing,
+     radii); 1px hairlines and measured/product-recreation geometry are exempt. */
+  --text-micro: 12px; /* fine print, indices, legal */
+  --text-label: 14px; /* uppercase eyebrows, tags, small labels */
+  --text-meta: 16px; /* nav, captions, secondary text, dates */
+  --text-body: clamp(18px, 1.25vw, 20px); /* long-form reading copy */
+  --text-lead: clamp(22px, 1.55vw, 26px); /* section lead paragraphs */
   --text-title: clamp(24px, 2vw, 28px); /* card / sub-section titles */
   --text-heading: clamp(32px, 3.4vw, 46px); /* editorial section headings */
   --text-display-3: clamp(48px, 6.5vw, 80px); /* chapter banners, CTA, section display */
@@ -2097,10 +2099,9 @@ body.hero-night .nav-links a.active {
 .about-activities-title,
 .about-habits-title {
   margin: 0;
-  padding-left: clamp(14px, 1.5vw, 22px);
-  padding-right: 0;
-  border-left: 4px solid var(--accent-amber);
-  border-right: 0;
+  /* owner rule (2026-07-05): no single-edge accent bars — amber title bar removed */
+  padding: 0;
+  border: 0;
   font-family: var(--page-display-font, var(--font-serif));
   font-size: var(--text-display-3);
   font-weight: 400;

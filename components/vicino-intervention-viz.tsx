@@ -87,7 +87,7 @@ export function VicinoInterventionViz() {
   max-width: 58ch;
   text-align: center;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
@@ -98,20 +98,20 @@ export function VicinoInterventionViz() {
   flex-wrap: wrap;
   gap: clamp(16px, 3vw, 32px);
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   color: rgba(255, 255, 255, 0.72);
 }
 .vz-int-legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 }
 .vz-int-mark {
   flex: 0 0 auto;
   display: inline-block;
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
 }
 .vz-int-mark.is-ai {
   border-radius: 999px;
@@ -181,18 +181,18 @@ export function VicinoInterventionViz() {
    (boxes are reserved for genuine product-UI recreations) */
 .vz-int-cell {
   display: grid;
-  gap: 9px;
+  gap: 8px;
   align-content: start;
 }
 .vz-int-head {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 }
 .vz-int-cell h4 {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 500;
   line-height: 1.3;
   color: var(--paper, #f4f1ea);
@@ -200,7 +200,7 @@ export function VicinoInterventionViz() {
 .vz-int-cell p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
@@ -214,14 +214,14 @@ export function VicinoInterventionViz() {
 }
 .vz-int-footer-label {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 500;
   color: var(--paper, #f4f1ea);
 }
 .vz-int-footer p {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);

@@ -333,10 +333,7 @@ h2.about-activities-title.abf-t,
 h2.about-habits-title.abf-t,
 .abf-vhead h2.abf-t {
   margin: 0;
-  border-left: 4px solid var(--accent-gold);
-  border-right: 0;
-  padding-left: clamp(14px, 1.5vw, 22px);
-  padding-right: 0;
+  padding: 0;
   font-family: var(--font-condensed);
   font-size: var(--text-display-3);
   font-weight: 300;

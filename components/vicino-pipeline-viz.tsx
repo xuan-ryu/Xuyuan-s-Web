@@ -126,7 +126,7 @@ export function VicinoPipelineViz() {
 }
 .vz-pipe-head {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
 }
 .vz-pipe-head-fig {
@@ -151,7 +151,7 @@ export function VicinoPipelineViz() {
 .vz-pipe-faint {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.4;
   color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
@@ -189,7 +189,7 @@ export function VicinoPipelineViz() {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 12px;
   padding: 10px 2px;
 }
 .vz-pipe-chip {
@@ -211,7 +211,7 @@ export function VicinoPipelineViz() {
   flex: 1 1 auto;
   min-width: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 400;
   line-height: 1.35;
   color: var(--paper, #f4f1ea);
@@ -233,7 +233,7 @@ export function VicinoPipelineViz() {
 .vz-pipe-step {
   display: flex;
   align-items: baseline;
-  gap: 13px;
+  gap: 12px;
   padding: 16px 0;
 }
 .vz-pipe-step:first-child {
@@ -253,19 +253,19 @@ export function VicinoPipelineViz() {
 }
 .vz-pipe-cell-n {
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: var(--track-label, 0.14em);
   color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 62%, transparent);
 }
 .vz-pipe-cell-title {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
+  font-size: var(--text-body, 18px);
   font-weight: 500;
   color: var(--paper, #f4f1ea);
 }
 .vz-pipe-cell-note {
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.72);
@@ -282,7 +282,7 @@ export function VicinoPipelineViz() {
 }
 .vz-pipe-revisit-arrow {
   font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1;
   color: color-mix(in srgb, var(--accent-amber, #e0902f) 80%, transparent);
 }
@@ -299,7 +299,7 @@ export function VicinoPipelineViz() {
   margin: 0;
   text-align: center;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-meta, 15px);
+  font-size: var(--text-meta, 16px);
   font-weight: 300;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
