@@ -56,12 +56,15 @@ The local repo is the current truth.
 - Letter spacing defaults to zero. Add tracking only for labels, nav, vertical
   text, and compact uppercase UI.
 - Large display titles may use the condensed face `var(--font-condensed)`
-  (Saira Condensed) in uppercase, light weight (300). Negative tracking
-  (`var(--track-display)`, -0.05em) is reserved for STYLIZED SHORT DISPLAY
-  NAMES only — the wordmark, hero/gate/poster/index project names, one-to-few
-  word page titles. Readable multi-word titles — section claims, statements,
-  artifact/viz heads — keep tracking 0 even in condensed uppercase (owner
-  rule 2026-07-05: they are read, not glanced; readability wins).
+  (Saira Condensed) in uppercase, light weight (300). Tracking heuristic
+  (owner rule 2026-07-05): POSTER-SCALE type is stylized and keeps its
+  display tracking — names, page/case openers, gate/index titles, poster
+  sign-offs (roughly display-2 and up, or anything that reads as artwork;
+  wide positive tracking like the about-page signature also qualifies).
+  Titles that are READ — section claims (station H2s at display-3),
+  statements inside sections, artifact/viz heads — keep tracking 0.
+  When in doubt: if it is a name or a page's opening artwork, style it;
+  if the user must parse a sentence, normalize it.
 - Long prose should stay calm: about 55-68ch, line-height 1.5-1.7, no dense
   blocks pressed against media.
 - Dark surfaces use ink tones, subtle hairlines, and soft shadows. Avoid neon
@@ -82,12 +85,21 @@ vertical rhythm, hierarchy by scale and spacing before boxes) — applied in
 this site's ink/condensed voice, not Pulse's visual style.
 
 - Every section AND every embedded artifact (coded viz, board, diagram block)
-  gets ONE unmistakable visual anchor: a display-voice title (condensed,
-  uppercase, weight 300, normal tracking — see Visual Rules; negative
-  tracking is reserved for stylized short names) sized to be seen first.
-  Inside embedded artifacts that means ~`clamp(28px, 2.6vw, 38px)` or larger —
-  never a 15-16px "small title". If a block's largest text is label-sized,
-  the block has no anchor; fix the block.
+  gets ONE unmistakable visual anchor sized to be seen first. At station/page
+  level that is the condensed uppercase display voice. INSIDE embedded
+  artifacts the anchor is a big sentence-case caption in the text face
+  (Pulse-style): `var(--font-text)`, weight 500, ~`clamp(22px, 1.9vw, 28px)`,
+  normal case, tracking 0 — NOT all-caps condensed, and never a 15-16px
+  "small title". If a block's largest text is label-sized, the block has no
+  anchor; fix the block.
+- Inside coded artifacts, content sits OPEN on the canvas: hierarchy from the
+  big caption, type scale, hairline dividers, and spacing. Do not wrap text
+  lists in cards — glass/boxed surfaces are reserved for genuine product-UI
+  recreations (nodes, panels, toolbars).
+- Section-to-section spacing is ONE standard: `var(--gap-section)` (each
+  section pads half above / half below the boundary). Intra-section block
+  spacing is ONE standard: `var(--gap-block)`. Do not invent per-section
+  paddings; artifact-internal spacing rides the local gutter.
 - Eyebrows, labels, and indices remain metadata (existing rule) — big mono
   numerals may act as graphic wayfinding, but the readable title above body
   copy is the anchor.

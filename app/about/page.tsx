@@ -578,8 +578,9 @@ h2.about-habits-title.abf-t,
   font-size: clamp(42px, 5.6vw, 74px);
   font-weight: 300;
   line-height: 1.04;
-  /* a full read-through statement — normal tracking (owner rule) */
-  letter-spacing: 0;
+  /* poster-scale sign-off — stylized, keeps the display tracking
+     (owner rule: very large type = stylized; names, page openers) */
+  letter-spacing: var(--track-display);
   text-transform: uppercase;
   text-align: left;
   color: var(--ink-950);

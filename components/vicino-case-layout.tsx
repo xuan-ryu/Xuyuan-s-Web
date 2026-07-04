@@ -53,9 +53,11 @@ const vicinoCriticalCss = `
   /* how far the dashed chain rail sits into the left margin, off column 1, so
      content breathes instead of hugging the rail (0 at narrow widths) */
   --v-rail-inset: clamp(0px, 2.2vw, 34px);
-  --v-pad-top: clamp(64px, 8vw, 128px);
-  --v-pad-bottom: clamp(80px, 9vw, 152px);
-  --v-head-gap: clamp(40px, 5vw, 64px);
+  /* station rhythm rides the DS tokens: adjacent stations sum to exactly
+     one --gap-section; block spacing inside a station is one --gap-block */
+  --v-pad-top: calc(var(--gap-section) / 2);
+  --v-pad-bottom: calc(var(--gap-section) / 2);
+  --v-head-gap: var(--gap-block);
   /* exact shipped connection colors — src/core/connections/the connection types */
   --handle-text: #F1A0FA;
   --handle-image: #6EDDB3;

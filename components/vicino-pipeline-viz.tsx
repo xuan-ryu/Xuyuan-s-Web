@@ -143,17 +143,15 @@ export function VicinoPipelineViz() {
   gap: 14px;
   min-height: 64px;
 }
-/* column heads speak in the family's condensed display voice */
+/* the column heads are this block's anchors — Pulse-style big sentence-case
+   captions (all-caps condensed stays at station/page display level) */
 .vz-pipe-sublabel {
   margin: 0;
-  font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
-  /* the column heads are this block's anchors (skill: Density & Anchors) */
-  font-size: clamp(28px, 2.6vw, 38px);
-  font-weight: 300;
-  line-height: 1.05;
-  letter-spacing: 0;
-  text-transform: uppercase;
-  color: rgba(244, 241, 234, 0.82);
+  font-family: var(--font-text, var(--font-sans, system-ui));
+  font-size: clamp(22px, 1.9vw, 28px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: rgba(244, 241, 234, 0.92);
 }
 .vz-pipe-col.is-vicino .vz-pipe-sublabel {
   color: var(--accent-amber, #e0902f);
@@ -240,29 +238,23 @@ export function VicinoPipelineViz() {
   align-items: stretch;
   gap: 10px;
 }
+/* the four steps sit OPEN on the canvas — text and hairlines, no cards
+   (boxes are reserved for genuine product-UI recreations) */
 .vz-pipe-stack {
   flex: 1 1 auto;
   display: grid;
-  gap: 10px;
   min-width: 0;
 }
-.vz-pipe-item {
-  display: grid;
-  gap: 10px;
+.vz-pipe-step {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 16px 0;
 }
-.vz-pipe-cell {
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 12px;
-  /* frosted glass over the dot grid — the product's panel material */
-  background: rgba(32, 32, 36, 0.55);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  backdrop-filter: blur(10px) saturate(120%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 10px 28px -18px rgba(0, 0, 0, 0.6);
-  padding: 18px 20px;
+.vz-pipe-step + .vz-pipe-step {
+  border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
 }
-.vz-pipe-cell.is-step {
+.vz-pipe-step-copy {
   display: grid;
   gap: 4px;
 }
@@ -284,13 +276,6 @@ export function VicinoPipelineViz() {
   font-weight: 300;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.72);
-}
-.vz-pipe-arrow {
-  justify-self: center;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 14px;
-  line-height: 1;
-  color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 70%, transparent);
 }
 /* the loop-back rail — the Vicino path can revisit any earlier step */
 .vz-pipe-revisit {
@@ -386,15 +371,12 @@ export function VicinoPipelineViz() {
           <div className="vz-pipe-body">
             <div className="vz-pipe-stack">
               {vicinoSteps.map((step, i) => (
-                <div className="vz-pipe-item" key={step.title}>
-                  <div className="vz-pipe-cell is-step">
-                    <span className="vz-pipe-cell-n">{index2(i)}</span>
+                <div className="vz-pipe-step" key={step.title}>
+                  <span className="vz-pipe-cell-n">{index2(i)}</span>
+                  <div className="vz-pipe-step-copy">
                     <span className="vz-pipe-cell-title">{step.title}</span>
                     <span className="vz-pipe-cell-note">{step.note}</span>
                   </div>
-                  {i < vicinoSteps.length - 1 && (
-                    <span className="vz-pipe-arrow">&darr;</span>
-                  )}
                 </div>
               ))}
             </div>

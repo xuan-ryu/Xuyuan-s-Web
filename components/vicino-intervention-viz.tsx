@@ -160,18 +160,6 @@ export function VicinoInterventionViz() {
 .vz-int-row:last-child .vz-int-rail::before {
   display: none;
 }
-/* short tie from the node out to the paired cells */
-.vz-int-rail::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: var(--vz-node-center);
-  width: calc(var(--vz-rail) / 2 + var(--vz-row-colgap));
-  height: 1px;
-  transform: translateY(-0.5px);
-  background: var(--v-line, rgba(255, 255, 255, 0.1));
-  z-index: 0;
-}
 .vz-int-node {
   position: relative;
   z-index: 2;
@@ -197,31 +185,12 @@ export function VicinoInterventionViz() {
   gap: var(--vz-pair-gap);
   align-items: stretch;
 }
-/* connecting tick: the two halves meet across the gap */
-.vz-int-pair::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--vz-pair-gap);
-  height: 1px;
-  transform: translate(-50%, -50%);
-  background: var(--v-line, rgba(255, 255, 255, 0.1));
-}
+/* the stage halves sit OPEN on the canvas — text on the spine, no cards
+   (boxes are reserved for genuine product-UI recreations) */
 .vz-int-cell {
   display: grid;
   gap: 9px;
   align-content: start;
-  padding: 18px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 12px;
-  /* frosted glass over the dot grid — the product's panel material */
-  background: rgba(32, 32, 36, 0.55);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  backdrop-filter: blur(10px) saturate(120%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 10px 28px -18px rgba(0, 0, 0, 0.6);
 }
 .vz-int-head {
   display: flex;
@@ -244,18 +213,12 @@ export function VicinoInterventionViz() {
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
 }
+/* design-principle footer: a divider, not another box */
 .vz-int-footer {
-  position: relative;
-  overflow: hidden;
   display: grid;
   gap: 6px;
-  padding: 16px 18px 16px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 12px;
-  background: rgba(32, 32, 36, 0.55);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  backdrop-filter: blur(10px) saturate(120%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding-top: clamp(16px, 1.8vw, 20px);
+  border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
 }
 .vz-int-footer-label {
   font-family: var(--font-mono, ui-monospace, monospace);
@@ -275,21 +238,13 @@ export function VicinoInterventionViz() {
 @media (max-width: 980px) {
   .vz-int-pair {
     grid-template-columns: 1fr;
-    gap: var(--vz-row-colgap);
-  }
-  .vz-int-pair::before {
-    display: none;
+    gap: var(--vz-row-gap);
   }
 }
 @media (max-width: 720px) {
   .vz-int {
     --vz-rail: 46px;
-    --vz-row-gap: 18px;
-    gap: 18px;
-    padding: 18px 14px 20px;
-  }
-  .vz-int-cell {
-    padding: 14px 15px;
+    padding: 20px 16px 22px;
   }
 }
 @media (prefers-reduced-motion: no-preference) {

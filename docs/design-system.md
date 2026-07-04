@@ -150,6 +150,20 @@ Surface rules:
   single readable column with no horizontal scroll.
 - Use rules and empty space before adding boxes.
 
+#### Section rhythm (owner rule, 2026-07-05)
+
+Two gap standards, each ONE value site-wide (`app/globals.css` `@theme`):
+
+| Token | Value | Meaning |
+| --- | --- | --- |
+| `--gap-section` | `clamp(144px, 16vw, 272px)` | Major section → next section. Each section pads half of it above and half below its boundary, so the visible gap is always exactly one `--gap-section`. |
+| `--gap-block` | `clamp(40px, 5vw, 64px)` | Blocks inside a section: title → content, stacked artifacts/figures. |
+
+Artifact-INTERNAL spacing (inside a coded viz/board) rides the local gutter
+per the design skill's Density & Anchors rules — not these tokens. Do not
+invent per-section paddings; wire page rhythm vars to these (see
+`--v-pad-top/--v-pad-bottom/--v-head-gap` in `vicino-case-layout.tsx`).
+
 ### Muller-Brockmann Editorial Grid
 
 The working grid is adapted from Josef Muller-Brockmann's Swiss grid practice:

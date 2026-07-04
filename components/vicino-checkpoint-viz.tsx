@@ -8,8 +8,8 @@
 // Design language matches the rest of the Vicino case page (tokens inherited
 // from .vicino-case-page): near-black surfaces, hairline borders, mono/gold
 // eyebrows. Verdict is carried by the track heads alone (✗ warm-red /
-// ✓ teal condensed titles) plus a faint warm tint on the failing cells —
-// no single-edge color bars (owner rule: that pattern reads generic-AI).
+// ✓ teal sentence-case captions) — steps sit open on the canvas, no cards,
+// no single-edge color bars (owner rules: both read generic-AI).
 // The warm-red is deliberately NOT var(--seal-red).
 
 const tracks = [
@@ -22,19 +22,16 @@ const tracks = [
         title: "Prompt → Video",
         body:
           "User writes a prompt and immediately generates a video. Slow, expensive, no preview of what the content will look like.",
-        tint: false,
       },
       {
         title: "Wrong composition?",
         body:
           "Wrong character, wrong angle, wrong scene — user only finds out after waiting and paying.",
-        tint: true,
       },
       {
         title: "Regenerate entire video",
         body:
           "No way to fix just the part that's wrong. Start over, spend more credits, wait again. Blind iteration.",
-        tint: true,
       },
     ],
   },
@@ -47,19 +44,16 @@ const tracks = [
         title: "Prompt → Image",
         body:
           "Generate an image in seconds. Costs a fraction of video. See the composition, character, and scene before committing.",
-        tint: false,
       },
       {
         title: "Fix at the image layer",
         body:
           "Wrong framing? Wrong look? Adjust and regenerate — fast and cheap. Most problems are content problems, not motion problems.",
-        tint: false,
       },
       {
         title: "Video with confidence",
         body:
           "Keyframes already confirmed. The expensive step happens with intention. Only duration, movement, and bounce are decided here.",
-        tint: false,
       },
     ],
   },
@@ -135,14 +129,13 @@ export function VicinoCheckpointViz() {
   font-size: 12px;
   line-height: 1;
 }
-/* the track heads are this block's anchors — condensed display voice */
+/* the track heads are this block's anchors — Pulse-style big sentence-case
+   captions (all-caps condensed stays at station/page display level) */
 .vz-chk-track-title {
-  font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
-  font-size: clamp(28px, 2.6vw, 38px);
-  font-weight: 300;
-  line-height: 1.05;
-  letter-spacing: 0;
-  text-transform: uppercase;
+  font-family: var(--font-text, var(--font-sans, system-ui));
+  font-size: clamp(22px, 1.9vw, 28px);
+  font-weight: 500;
+  line-height: 1.15;
 }
 .vz-chk-track.is-wrong .vz-chk-badge {
   border-color: rgba(224, 122, 90, 0.55);
@@ -162,8 +155,8 @@ export function VicinoCheckpointViz() {
 .vz-chk-flow {
   display: flex;
   align-items: stretch;
-  /* cells resolve to three equal fields; the connector occupies the gutter */
-  gap: calc(var(--v-gutter, 24px) / 2);
+  /* three equal OPEN fields; the connector occupies the gutter */
+  gap: var(--v-gutter, 24px);
 }
 .vz-chk-conn {
   flex: 0 0 auto;
@@ -177,25 +170,14 @@ export function VicinoCheckpointViz() {
   content: "→";
 }
 
+/* steps sit OPEN on the canvas — text and connectors, no cards (boxes are
+   reserved for genuine product-UI recreations) */
 .vz-chk-cell {
   flex: 1 1 0;
   min-width: 0;
   display: grid;
   gap: 8px;
   align-content: start;
-  padding: 18px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 12px;
-  /* frosted glass over the dot grid — the product's panel material */
-  background: rgba(32, 32, 36, 0.55);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  backdrop-filter: blur(10px) saturate(120%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 10px 28px -18px rgba(0, 0, 0, 0.6);
-}
-.vz-chk-track.is-wrong .vz-chk-cell.is-tint {
-  background: color-mix(in srgb, rgba(224, 122, 90, 1) 7%, rgba(32, 32, 36, 0.55));
 }
 .vz-chk-idx {
   font-family: var(--font-mono, ui-monospace, monospace);
@@ -310,10 +292,7 @@ export function VicinoCheckpointViz() {
           <div className="vz-chk-flow">
             {track.steps.flatMap((step, i) => {
               const cell = (
-                <div
-                  className={`vz-chk-cell${step.tint ? " is-tint" : ""}`}
-                  key={step.title}
-                >
+                <div className="vz-chk-cell" key={step.title}>
                   <span className="vz-chk-idx">
                     {String(i + 1).padStart(2, "0")}
                   </span>

@@ -132,6 +132,14 @@
   --space-11: 64px;
   --space-12: 88px;
 
+  /* ── Section rhythm (owner rule 2026-07-05): the big section-to-section gap
+     and the small intra-section block gap are each ONE standard, site-wide.
+     Sections apply half of --gap-section above and half below their boundary;
+     --gap-block spaces title→content and stacked artifacts inside a section.
+     Artifact-INTERNAL spacing rides the local gutter (design skill). */
+  --gap-section: clamp(144px, 16vw, 272px);
+  --gap-block: clamp(40px, 5vw, 64px);
+
   /* ── Radius policy — pill (999px) is retired on rectangular controls;
      50% stays reserved for true circles (view toggles, dots, moon gate). */
   --radius-control: 4px; /* buttons, inputs, chips */
