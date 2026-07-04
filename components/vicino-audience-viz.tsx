@@ -22,13 +22,17 @@ export function VicinoAudienceViz() {
           __html: `
 .vz-aud {
   display: grid;
-  gap: clamp(20px, 2.4vw, 28px);
-  padding: clamp(22px, 2.4vw, 30px) clamp(18px, 2.2vw, 30px);
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+  /* rhythm rides the station's own gutter — internal fields resolve to the
+     page grid instead of ad-hoc gaps */
+  gap: var(--v-gutter, 24px);
+  padding: var(--v-gutter, 24px) var(--v-gutter, 24px) calc(var(--v-gutter, 24px) + 4px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
+  /* the container is a piece of the product's Work Space: near-black canvas
+     with the faint dot grid; panels above it are frosted glass */
   background:
-    radial-gradient(120% 140% at 50% -20%, rgba(255, 255, 255, 0.035), transparent 60%),
-    rgba(255, 255, 255, 0.015);
+    radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
+    #0a0a0c;
 }
 .vz-aud-eyebrow {
   margin: 0;
@@ -44,7 +48,7 @@ export function VicinoAudienceViz() {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: start;
-  gap: clamp(14px, 2vw, 30px);
+  gap: var(--v-gutter, 24px);
 }
 /* faint dashed spectrum axis behind the medallions (medallion centre = 46px) */
 .vz-aud-axis {
@@ -71,8 +75,11 @@ export function VicinoAudienceViz() {
   width: 104px;
   height: 104px;
   border-radius: 999px;
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  background: radial-gradient(80% 80% at 50% 34%, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012) 72%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(32, 32, 36, 0.5);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -129,17 +136,16 @@ export function VicinoAudienceViz() {
   position: relative;
   max-width: 24ch;
   padding: 13px 22px;
-  border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 50%, transparent);
   border-radius: 999px;
-  /* material: faint amber wash from above + an inset paper highlight over ink,
-     lifted by a soft ink shadow — not a flat outline */
-  background:
-    radial-gradient(130% 200% at 50% -30%, color-mix(in srgb, var(--accent-amber, #e0902f) 18%, transparent), transparent 62%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 55%),
-    var(--ink-950, #08080a);
+  /* amber-tinted frosted glass — the product's panel material, one hairline
+     catch-light, no gradient washes */
+  background: color-mix(in srgb, var(--accent-amber, #e0902f) 9%, rgba(20, 20, 23, 0.55));
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  backdrop-filter: blur(10px) saturate(130%);
   box-shadow:
-    0 16px 32px -18px rgba(0, 0, 0, 0.85),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 12px 30px -18px rgba(0, 0, 0, 0.7);
   font-family: var(--font-text, var(--font-sans, system-ui));
   font-size: var(--text-meta, 15px);
   line-height: 1.5;

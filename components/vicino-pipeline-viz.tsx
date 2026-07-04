@@ -100,13 +100,15 @@ export function VicinoPipelineViz() {
           __html: `
 .vz-pipe {
   display: grid;
-  gap: 22px;
-  padding: 24px clamp(16px, 2vw, 26px) 24px;
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  border-radius: 14px;
+  gap: var(--v-gutter, 24px);
+  padding: var(--v-gutter, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  /* a piece of the product's Work Space: near-black canvas + faint dot grid;
+     panels above it are frosted glass */
   background:
-    radial-gradient(120% 140% at 50% -20%, rgba(255, 255, 255, 0.035), transparent 60%),
-    rgba(255, 255, 255, 0.015);
+    radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
+    #0a0a0c;
 }
 .vz-pipe-eyebrow {
   margin: 0;
@@ -119,7 +121,9 @@ export function VicinoPipelineViz() {
 .vz-pipe-cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(18px, 3vw, 46px);
+  /* two 6-col fields separated by a double gutter */
+  column-gap: calc(var(--v-gutter, 24px) * 2);
+  row-gap: var(--v-gutter, 24px);
   align-items: start;
 }
 .vz-pipe-col {
@@ -208,8 +212,11 @@ export function VicinoPipelineViz() {
   display: grid;
   place-items: center;
   border-radius: 999px;
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  background: var(--ink-950, #08080a);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(32, 32, 36, 0.6);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  backdrop-filter: blur(6px) saturate(120%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .vz-pipe-role-name {
   flex: 1 1 auto;
@@ -245,10 +252,16 @@ export function VicinoPipelineViz() {
   gap: 6px;
 }
 .vz-pipe-cell {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  /* frosted glass over the dot grid — the product's panel material */
+  background: rgba(32, 32, 36, 0.55);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 10px 28px -18px rgba(0, 0, 0, 0.6);
+  padding: 14px 16px;
 }
 .vz-pipe-cell.is-step {
   display: grid;

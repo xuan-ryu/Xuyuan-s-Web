@@ -76,13 +76,15 @@ export function VicinoCheckpointViz() {
           __html: `
 .vz-chk {
   display: grid;
-  gap: clamp(22px, 2.6vw, 30px);
-  padding: clamp(22px, 2.2vw, 28px) clamp(18px, 2vw, 28px) clamp(24px, 2.2vw, 28px);
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  border-radius: 14px;
+  gap: var(--v-gutter, 24px);
+  padding: var(--v-gutter, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  /* a piece of the product's Work Space: near-black canvas + faint dot grid;
+     panels above it are frosted glass */
   background:
-    radial-gradient(120% 140% at 50% -20%, rgba(255, 255, 255, 0.035), transparent 60%),
-    rgba(255, 255, 255, 0.015);
+    radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
+    #0a0a0c;
 }
 .vz-chk-head {
   display: grid;
@@ -158,7 +160,8 @@ export function VicinoCheckpointViz() {
 .vz-chk-flow {
   display: flex;
   align-items: stretch;
-  gap: clamp(8px, 1vw, 14px);
+  /* cells resolve to three equal fields; the connector occupies the gutter */
+  gap: calc(var(--v-gutter, 24px) / 2);
 }
 .vz-chk-conn {
   flex: 0 0 auto;
@@ -178,16 +181,23 @@ export function VicinoCheckpointViz() {
   display: grid;
   gap: 7px;
   align-content: start;
-  padding: clamp(15px, 1.5vw, 18px);
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-top: 2px solid transparent;
-  border-radius: 3px 3px 9px 9px;
-  background: rgba(255, 255, 255, 0.025);
+  border-radius: 4px 4px 12px 12px;
+  /* frosted glass over the dot grid — the product's panel material */
+  background: rgba(32, 32, 36, 0.55);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 28px -18px rgba(0, 0, 0, 0.6);
 }
 .vz-chk-track.is-wrong .vz-chk-cell {
   border-top-color: rgba(224, 122, 90, 0.9);
 }
 .vz-chk-track.is-wrong .vz-chk-cell.is-tint {
-  background: rgba(224, 122, 90, 0.06);
+  background: color-mix(in srgb, rgba(224, 122, 90, 1) 7%, rgba(32, 32, 36, 0.55));
 }
 .vz-chk-track.is-right .vz-chk-cell {
   border-top-color: #8bd6d9;

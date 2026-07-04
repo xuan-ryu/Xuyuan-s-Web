@@ -64,18 +64,22 @@ export function VicinoInterventionViz() {
           __html: `
 .vz-int {
   --vz-rail: clamp(48px, 5vw, 58px);
-  --vz-row-gap: clamp(16px, 2vw, 22px);
-  --vz-row-colgap: clamp(10px, 1.4vw, 16px);
-  --vz-pair-gap: clamp(14px, 1.8vw, 20px);
+  /* rhythm rides the station's gutter — rows a full gutter apart, the rail tie
+     half a gutter, the AI/User pair split by one gutter */
+  --vz-row-gap: var(--v-gutter, 24px);
+  --vz-row-colgap: calc(var(--v-gutter, 24px) / 2);
+  --vz-pair-gap: var(--v-gutter, 24px);
   --vz-node-center: 27px;
   display: grid;
-  gap: 20px;
-  padding: 24px clamp(16px, 2vw, 26px) 26px;
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
-  border-radius: 14px;
+  gap: var(--v-gutter, 24px);
+  padding: var(--v-gutter, 24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  /* a piece of the product's Work Space: near-black canvas + faint dot grid;
+     panels above it are frosted glass */
   background:
-    radial-gradient(120% 140% at 50% -20%, rgba(255, 255, 255, 0.035), transparent 60%),
-    rgba(255, 255, 255, 0.015);
+    radial-gradient(circle, rgba(255, 255, 255, 0.065) 1px, transparent 1.4px) 0 0 / 26px 26px,
+    #0a0a0c;
 }
 .vz-int-eyebrow {
   margin: 0;
@@ -205,10 +209,16 @@ export function VicinoInterventionViz() {
   display: grid;
   gap: 9px;
   align-content: start;
-  padding: 16px clamp(16px, 1.8vw, 20px);
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  /* frosted glass over the dot grid — the product's panel material */
+  background: rgba(32, 32, 36, 0.55);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 28px -18px rgba(0, 0, 0, 0.6);
 }
 .vz-int-head {
   display: flex;
@@ -237,9 +247,12 @@ export function VicinoInterventionViz() {
   display: grid;
   gap: 6px;
   padding: 16px 18px 16px 20px;
-  border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(32, 32, 36, 0.55);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 .vz-int-footer::before {
   content: "";
