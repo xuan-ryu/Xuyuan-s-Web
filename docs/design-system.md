@@ -49,6 +49,26 @@ Operational rule: if a touched rule needs black, white, orange, gold, or a
 hairline, use a token. Hard-coded values stay only when they are measured
 art-direction or Canvas/WebGL internals.
 
+#### Per-case palettes (owner rule, 2026-07-05)
+
+Case and poster pages derive their accent palette from THEIR OWN work — the
+product's UI colors, the artwork's tones, the brand — instead of the site
+gold/amber. Contract:
+
+- Scoped tokens on the page root class: `--case-accent` (the one
+  interactive/emphasis color), `--case-accent-soft` (a `color-mix` wash of
+  it), optional `--case-detail` (a second, static-detail color only if the
+  work clearly offers one).
+- That page's eyebrows/indices, accent rules, hover/focus emphasis, and
+  diagram marks hang on these tokens.
+- Invariants: site neutrals (ink/paper/hairline/stone), the ONE seal-red
+  moment per page, contrast (colored reading-size text ≥ 4.5:1 or move the
+  color to marks/rules). Gold/amber remain the default accents on non-case
+  surfaces (home, about, contact, work index).
+- Reference: the Vicino case uses the product's typed-connection colors
+  (text pink `#F1A0FA`, storyboard/image teal `#6EDDB3`/`#8BD6D9`, video
+  amber `#FFB347`).
+
 ### Typography
 
 | Role | Family | Usage | Rule |

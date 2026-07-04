@@ -21,6 +21,16 @@ const MEDIA = "/media/work/vr";
 
 const css = `
 .vrmb-page {
+  /* Case palette — drawn from the specimen itself (owner rule 2026-07-05):
+     --case-accent is the monarch's true wing orange, weighted-averaged from
+     the vivid highlight pixels across specimen.png (the plate hero image);
+     used only for the flight-line's rule/ticks, a graphic mark rather than
+     reading text. --case-detail is the same hue and saturation darkened
+     until it clears 4.5:1 on paper (raw --case-accent reads ~2.3:1 at
+     11px), so the repeating Plate/Fig. index labels stay legible while
+     still reading as the butterfly's own color, not site gold. */
+  --case-accent: #f7950e;
+  --case-detail: #a36105;
   background: var(--paper);
   color: var(--ink-950);
 }
@@ -90,7 +100,7 @@ const css = `
   font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--case-detail);
 }
 
 .vrmb-lede {
@@ -200,7 +210,7 @@ const css = `
 }
 
 .vrmb-flight-rule {
-  stroke: var(--accent-gold);
+  stroke: var(--case-accent);
   stroke-width: 1;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
@@ -208,7 +218,7 @@ const css = `
 }
 
 .vrmb-flight-tick {
-  stroke: var(--accent-gold);
+  stroke: var(--case-accent);
   stroke-width: 1;
   opacity: 0;
   transition: opacity 0.6s var(--ease-standard) 0.7s;

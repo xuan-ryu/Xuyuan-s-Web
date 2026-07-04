@@ -132,6 +132,19 @@ const froghireCss = `
   --froghire-ink-label: rgba(5, 5, 5, 0.48);
   --froghire-ink-tag: rgba(5, 5, 5, 0.42);
   --froghire-rule-dark: rgba(255, 255, 255, 0.18);
+
+  /* Case accent — FrogHire's own green (owner rule 2026-07-05: case pages
+     derive their accent from their own project, not the site's gold).
+     --case-accent is the product's real UI green, #5ac75a — sampled
+     straight off the "H1B / PERM / E-Verify" status chips and the sidebar
+     frog logomark in Fig. 01's cover shot — used here only for rule marks
+     and hover/focus strokes that don't carry small text. --case-detail is
+     the same hue darkened to hold AA contrast (raw #5ac75a is ~2.15:1 on
+     paper, well under the 4.5:1 floor for reading-size text), used for the
+     chapter index and figure-index labels.  */
+  --case-accent: #5ac75a;
+  --case-detail: #297a29;
+
   background: var(--paper);
   color: var(--ink-950);
 }
@@ -173,7 +186,7 @@ const froghireCss = `
   line-height: 1.5;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--case-detail);
 }
 
 /* ── docket hero ── */
@@ -310,7 +323,7 @@ const froghireCss = `
   font-size: var(--text-micro);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--case-detail);
 }
 
 /* ── the product in two rooms ── */
@@ -415,7 +428,7 @@ const froghireCss = `
 .froghire-marginalia {
   margin: clamp(20px, 2.2vw, 32px) 0 0;
   padding-left: 14px;
-  border-left: 2px solid var(--accent-gold);
+  border-left: 2px solid var(--case-accent);
 }
 .froghire-marginalia p {
   margin: 0;
@@ -625,7 +638,7 @@ const froghireCss = `
   right: 0;
   bottom: -6px;
   height: 2px;
-  background: var(--accent-amber);
+  background: var(--case-accent);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform var(--dur-gesture) var(--ease-silk);
@@ -728,7 +741,7 @@ const froghireCss = `
 }
 .froghire-map-note:hover rect,
 .froghire-map-note:focus-visible rect {
-  stroke: var(--accent-amber);
+  stroke: var(--case-accent);
   stroke-width: 1.5;
 }
 .froghire-map-note-label {
@@ -755,7 +768,7 @@ const froghireCss = `
   opacity: 0.9;
 }
 .froghire-map-path.is-hot {
-  stroke: var(--accent-amber);
+  stroke: var(--case-accent);
   stroke-width: 1.5;
   opacity: 1;
   transition: none;

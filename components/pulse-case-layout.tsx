@@ -19,6 +19,10 @@ import { adjacent, type CaseSection, type Project } from "@/data/projects";
 //   the belief (ink band, the one seal-red moment) → closer.
 // Chapter copy lives in data/projects.ts; this layout attaches the specimen
 // figures positionally. Scoped styles only (.pulse-*), sibling-case precedent.
+// Case accent (--case-accent, --case-detail, owner rule 2026-07-05) is Pulse's
+// own cyan — the same #49e0f5 / 700-stop shown in the Fig. 01 chips and Fig.
+// 02 "ready" ramp — carrying the page's own rule marks and figure/date
+// labels. The seal-red human-gate stamp stays the page's one red moment.
 
 // ── Specimen data (traced to the Pulse system source) ──────────────────────
 
@@ -263,6 +267,20 @@ const pulseCss = `
   --pp-cyan-dark: #0d7685;
   --pp-cyan-soft: #e5fbff;
   --pp-cyan-ring: rgba(73, 224, 245, 0.42);
+
+  /* Case accent — Pulse's own cyan (owner rule 2026-07-05: case pages derive
+     their accent from their own project, not the site's gold). --case-accent
+     is the product's real primary/interactive color, #49e0f5 — the same hex
+     drawn in the Fig. 01 token chips and the Fig. 02 "ready" ramp's base
+     stop — used here only for the page's own rule marks (the pp-* values
+     above stay reserved for the product-frame specimens). --case-detail
+     reuses the same ramp's 700/"text" stop (== --pp-cyan-dark, already the
+     product's own on-paper accent-text color in Fig. 14/16) for the
+     figure-index and timeline-date labels, since raw #49e0f5 fails AA
+     contrast as small text on paper. */
+  --case-accent: #49e0f5;
+  --case-detail: var(--pp-cyan-dark);
+
   /* dark-band hairline (DESIGN.md) */
   --pulse-rule-dark: rgba(255, 255, 255, 0.28);
 }
@@ -314,7 +332,7 @@ const pulseCss = `
 }
 .pulse-fig {
   font-style: normal;
-  color: var(--accent-gold);
+  color: var(--case-detail);
   /* JSX collapses the space after the inline em — restore the gap here */
   margin-right: 0.65em;
 }
@@ -406,7 +424,7 @@ const pulseCss = `
 .pulse-ledger {
   grid-column: 11 / -1;
   align-self: start;
-  border-top: 1px solid var(--accent-gold);
+  border-top: 1px solid var(--case-accent);
 }
 .pulse-ledger > div {
   display: flex;
@@ -1063,7 +1081,7 @@ const pulseCss = `
 
 /* ── Fig. 10 — build timeline (milestone narrative, closes Act I) ───────── */
 .pulse-log {
-  border-top: 1px solid var(--accent-gold);
+  border-top: 1px solid var(--case-accent);
 }
 .pulse-log-row {
   display: grid;
@@ -1081,8 +1099,8 @@ const pulseCss = `
   font-size: var(--text-micro);
   letter-spacing: 0.04em;
   white-space: nowrap;
-  /* static gold detail — the timeframe markers along the spine */
-  color: var(--accent-gold);
+  /* static case-accent detail — the timeframe markers along the spine */
+  color: var(--case-detail);
 }
 .pulse-log-subject {
   font-size: var(--text-meta);

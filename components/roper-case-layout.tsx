@@ -7,11 +7,19 @@ import { roperSamplePoll } from "./roper-poll-data";
 
 // "The Ledger and the Weathervane" — Roper Center's bespoke case layout
 // (spec-roper.json). The page is a quiet archival ledger: paper ground,
-// hairline tabular rhythm, mono numerals, gold dates. One interactive
-// Guess-vs-America module carries the product's pedagogy; one hairline
-// diagram shows the signature decision; one full-bleed ink band screens the
-// prototype video. All red on the page is the single seal-red ACTUAL marker
-// inside the guess module. data/projects.ts is read as-is (copy untouched).
+// hairline tabular rhythm, mono numerals, campaign-blue dates. One
+// interactive Guess-vs-America module carries the product's pedagogy; one
+// hairline diagram shows the signature decision; one full-bleed ink band
+// screens the prototype video. All red on the page is the single seal-red
+// ACTUAL marker inside the guess module. data/projects.ts is read as-is
+// (copy untouched).
+//
+// PALETTE — derived from Campaign Weathervane's own branding board
+// (public/media/work/roper/ch2-4.png, swatches 01–05: #D9534F red,
+// #39499E royal blue, #F4E3B8 parchment, #737373 gray, #1C3D6E navy).
+// The product's interactive royal blue is the case accent; its deep
+// archive navy is the static detail. The brand red stays reserved — the
+// page's one red moment remains the seal-red ACTUAL marker.
 //
 // GRID (named first): container `min(1440px, 100% − 2·clamp(24px,5vw,72px))`,
 // 12 columns, gutter clamp(18px,1.6vw,28px), 8px baseline; ledger rows pad
@@ -23,6 +31,10 @@ const roperCriticalCss = `
 .roper-case-page {
   --roper-gutter: clamp(18px, 1.6vw, 28px);
   --roper-margin: clamp(24px, 5vw, 72px);
+  /* case palette — Campaign Weathervane brand board (ch2-4.png) */
+  --case-accent: #39499e; /* the product's royal blue: buttons, poll bars, logo */
+  --case-accent-soft: color-mix(in srgb, var(--case-accent) 14%, transparent);
+  --case-detail: #1c3d6e; /* the year-wheel's deep archive navy */
   background: var(--paper);
   color: var(--ink-950);
   overflow: clip;
@@ -173,10 +185,10 @@ const roperCriticalCss = `
   line-height: 1.5;
   color: var(--ink-800);
 }
-.roper-meta dd.is-gold {
+.roper-meta dd.is-accent {
   font-family: var(--font-mono);
   font-size: 14px;
-  color: var(--accent-gold);
+  color: var(--case-accent);
 }
 .roper-hero-frame {
   margin: 0;
@@ -201,7 +213,7 @@ const roperCriticalCss = `
   opacity: 0.45;
 }
 .roper-pollrule-bar span.is-lead {
-  background: var(--ink-950);
+  background: var(--case-detail);
   opacity: 1;
 }
 .roper-pollrule-labels {
@@ -276,7 +288,7 @@ const roperCriticalCss = `
 .roper-guess-range:disabled { cursor: default; }
 .roper-guess-range::-webkit-slider-runnable-track {
   height: 2px;
-  background: var(--rule);
+  background: var(--case-accent-soft);
 }
 .roper-guess-range::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -285,21 +297,22 @@ const roperCriticalCss = `
   margin-top: -8px;
   border: 0;
   border-radius: 50%;
-  background: var(--ink-950);
+  background: var(--case-accent);
 }
 .roper-guess-range::-moz-range-track {
   height: 2px;
-  background: var(--rule);
+  background: var(--case-accent-soft);
 }
 .roper-guess-range::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border: 0;
   border-radius: 50%;
-  background: var(--ink-950);
+  background: var(--case-accent);
 }
 .roper-guess-range:focus-visible {
   outline: var(--focus-ring);
+  outline-color: var(--case-accent);
   outline-offset: var(--focus-offset);
   border-radius: 2px;
 }
@@ -340,7 +353,7 @@ const roperCriticalCss = `
   top: calc(50% - 1px);
   width: calc(var(--pct) * 1%);
   height: 2px;
-  background: var(--ink-950);
+  background: var(--case-accent);
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -511,7 +524,7 @@ const roperCriticalCss = `
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: var(--track-eyebrow);
-  color: var(--accent-gold);
+  color: var(--case-accent);
 }
 .roper-principle h3 {
   margin: 0 0 10px;
@@ -582,7 +595,7 @@ const roperCriticalCss = `
 .roper-seg-fill {
   position: absolute;
   inset: 0;
-  background: var(--ink-950);
+  background: var(--case-accent);
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -597,7 +610,7 @@ const roperCriticalCss = `
   bottom: calc(100% + 6px);
   width: 12px;
   height: 12px;
-  color: var(--ink-950);
+  color: var(--case-detail);
   opacity: 0;
   transform: translateY(3px);
 }
@@ -660,7 +673,7 @@ const roperCriticalCss = `
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: var(--track-eyebrow);
-  color: var(--accent-gold);
+  color: var(--case-accent);
 }
 .roper-deliverable h3 {
   margin: 0;
@@ -903,10 +916,10 @@ export function RoperCaseLayout({ project }: { project: Project }) {
             </div>
           </div>
           <dl className="roper-meta" data-fade>
-            {meta.map(([label, value, gold]) => (
+            {meta.map(([label, value, accent]) => (
               <div key={label}>
                 <dt>{label}</dt>
-                <dd className={gold ? "is-gold" : undefined}>{value}</dd>
+                <dd className={accent ? "is-accent" : undefined}>{value}</dd>
               </div>
             ))}
           </dl>

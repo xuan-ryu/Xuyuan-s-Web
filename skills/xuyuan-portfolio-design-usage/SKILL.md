@@ -28,7 +28,16 @@ The local repo is the current truth.
 
 - Favor editorial composition over SaaS dashboard structure.
 - Use ink, paper, warm off-white, hairlines, black bands, seal red, amber/gold
-  details, and media-derived imagery. Do not add a new accent palette.
+  details, and media-derived imagery. Do not invent accent colors from thin
+  air — but CASE/POSTER PAGES derive their accent palette from their own
+  work (owner rule 2026-07-05): the product's UI colors, the artwork's
+  tones, the brand. Define them as scoped tokens on the page root
+  (`--case-accent`, `--case-accent-soft`, optional `--case-detail`) and hang
+  that page's eyebrows/indices/rules/hover emphasis on them. Site neutrals
+  (ink/paper/hairline/stone) and the ONE seal-red moment per page are
+  invariant; gold/amber stay the default on non-case surfaces (home, about,
+  contact, work index). Vicino is the reference example (its connection
+  colors pink/teal/amber come from the product).
 - Build hierarchy with scale, spacing, tone, image placement, and rules before
   adding cards, boxes, glow, or borders.
 - Keep bold rare. Prefer weight 300-500, opacity, spacing, or size changes.

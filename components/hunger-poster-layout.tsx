@@ -10,9 +10,10 @@ import { OffscreenVideo } from "@/components/ui/offscreen-video";
 // Folio rules + dateline metadata run the sections; the broadsheet and the four
 // art boards are handled as documents (hairline frames, reading loupe, numbered
 // plates on a newsprint band). Seal red is rationed to the pull-quote rule and
-// the quiet-CTA contract; gold marks static plate numbers. Plate titles and
-// captions are hardcoded here (data/projects.ts additions are deferred to the
-// serialized data pass).
+// the quiet-CTA contract; the case accent (--case-accent, Wan Shouren's
+// navy-indigo jacket) marks static plate numbers and the active loupe ring.
+// Plate titles and captions are hardcoded here (data/projects.ts additions are
+// deferred to the serialized data pass).
 
 const SHEET_ALT =
   "Back to History — an aged 1942-style broadsheet dated 2023-04-20, the game-design document appendix. Its columns carry the oral histories the levels are built from: the Henan disaster, the storylines of Wan Shouren, Xuchang, and Zhengzhou.";
@@ -302,6 +303,13 @@ const hungerCss = `
    --work-rule) already declared on .poster-page.
    ============================================================ */
 .hunger-page {
+  /* Case palette — drawn from the work: the broadsheet is ink-on-newsprint
+     (already the family neutrals), so the one color the project owns is
+     Wan Shouren's ragged navy-indigo jacket (character sheets + every pixel
+     sprite). Seal red stays the pull-quote/CTA invariant; the granary-fire
+     orange and level-sky teal remain inside the media where they belong. */
+  --case-accent: #3e4a61;
+  --case-accent-soft: color-mix(in srgb, var(--case-accent) 14%, transparent);
   background: var(--paper);
   color: var(--ink-950);
 }
@@ -487,8 +495,8 @@ const hungerCss = `
   width: 220px;
   height: 220px;
   border-radius: 50%;
-  border: 1px solid var(--work-rule);
-  box-shadow: 0 14px 34px rgba(5, 5, 5, 0.18);
+  border: 1px solid var(--case-accent);
+  box-shadow: 0 0 0 5px var(--case-accent-soft), 0 14px 34px rgba(5, 5, 5, 0.18);
   background-color: var(--paper);
   background-repeat: no-repeat;
   background-size: 240cqw auto;
@@ -664,7 +672,7 @@ const hungerCss = `
   line-height: 1.25;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--case-accent);
 }
 .hunger-plate-title {
   margin: 0 0 14px;
