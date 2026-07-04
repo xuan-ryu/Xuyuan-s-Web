@@ -184,12 +184,13 @@ const meleeSources = [
   { made: "composited from images", trace: "screens as pictures — nothing wired" },
 ];
 
-// ── What migration broke (ch. 05) — repaired by hand against the original. ──
-const lossRows: Array<[string, string]> = [
-  ["hover states", "restored by hand"],
-  ["animations", "rebuilt from the original"],
-  ["layout drift", "re-aligned against capture"],
-  ["dead code", "cut, not carried"],
+// ── The brand rules (ch. 03) — the written identity, four rules + the
+//    generation ladder in one card (the prose stays at label budget). ──
+const brandRules: Array<[string, string]> = [
+  ["surface", "neutral first — gray stage, soft cyan light"],
+  ["type", "one face for everything · tabular numerals"],
+  ["hierarchy", "size · spacing · tone — never bold"],
+  ["color", "only with meaning · red = falling data"],
 ];
 
 // ── Commit stream (ch. 05) — commit-style subjects, paraphrased from the
@@ -223,12 +224,12 @@ const skillRules = [
   "run the consistency check before any handoff",
 ];
 
-// ── Four roles, one base (ch. 08) — who reads which surface. ──
-const roleRows: Array<[string, string]> = [
-  ["design", "the live preview + the Figma boards"],
-  ["engineering", "the typed package + component contracts"],
-  ["ml", "the playground's editable data states"],
-  ["product", "one runnable flow, ready to pitch"],
+// ── Four roles, one base (ch. 08) — the hub diagram's spokes. ──
+const hubRoles: Array<[string, string]> = [
+  ["design", "live preview + Figma boards"],
+  ["engineering", "typed package + contracts"],
+  ["ml", "editable data states"],
+  ["product", "one runnable flow"],
 ];
 
 // ── CI gate chain (ch. 06) — the five jobs, generalized. ──
@@ -879,45 +880,6 @@ const pulseCss = `
   .pulse-melee {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-/* ── Ch. 02 — the thin style pass ───────────────────────────────────────── */
-.pulse-stylepass-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 14px;
-}
-.pulse-stylepass-row strong {
-  font-family: var(--font-text);
-  font-size: 34px;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--pp-ink);
-}
-.pulse-stylepass-dots {
-  display: flex;
-  gap: 6px;
-}
-.pulse-stylepass-dots i {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid var(--pp-line);
-}
-.pulse-stylepass-note {
-  margin: 14px 0 0;
-  font-family: var(--pulse-mono);
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--pp-text-3);
-}
-.pulse-stylepass-note strong {
-  display: block;
-  font-family: var(--font-text);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--pp-ink);
 }
 
 /* ── Ch. 03 — the generation-status ladder ──────────────────────────────── */
@@ -1993,6 +1955,183 @@ const pulseCss = `
   }
 }
 
+/* ── Flow diagrams — the Pulse node idiom, light: white chips with typed
+   port dots on plain connection lines (no arrowheads; direction reads
+   left-to-right), and dashed loops whose SIZE is the argument. Loops are
+   amber (= attention in Pulse semantics — red stays reserved for declining
+   data); confident paths are green, neutral paths cyan. ── */
+.pflow {
+  display: grid;
+  row-gap: clamp(20px, 2.2vw, 30px);
+  padding: 14px 0 4px;
+}
+.pflow-lane {
+  display: grid;
+  row-gap: 10px;
+}
+.pflow-grid {
+  display: grid;
+  align-items: center;
+  column-gap: 0;
+}
+.pflow-node {
+  position: relative;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  border: 1px solid var(--pp-line-strong);
+  border-radius: 8px;
+  background: var(--pp-canvas);
+  box-shadow: var(--pp-shadow-rest);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pp-ink);
+}
+.pflow-node em {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--pp-text-4);
+}
+.pflow-line {
+  position: relative;
+  height: 2px;
+  min-width: 20px;
+  background: currentColor;
+}
+/* typed ports: out = filled dot, in = ring */
+.pflow-line::before,
+.pflow-line::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+}
+.pflow-line::before {
+  left: -2px;
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+}
+.pflow-line::after {
+  right: -2px;
+  width: 4px;
+  height: 4px;
+  background: var(--pp-canvas);
+  border: 2px solid currentColor;
+}
+.pflow-line.is-cyan { color: var(--pp-cyan-600); }
+.pflow-line.is-green { color: var(--pp-green); }
+.pflow-line.is-amber { color: #cc7f06; }
+.pflow-loop {
+  box-sizing: border-box;
+  height: 20px;
+  margin-top: -2px;
+  border: 1px dashed #cc7f06;
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+}
+.pflow-note {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--pp-text-3);
+}
+.pflow-note.is-amber { color: var(--pp-amber-dark); }
+.pflow-note.is-green { color: var(--pp-green-dark); }
+.pflow-note.is-center { text-align: center; }
+.pflow-note i {
+  font-style: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-size: 10px;
+  line-height: 1;
+  vertical-align: -4px;
+}
+/* the roles hub: one base bar, four stems, four role chips */
+.pflow-hub {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--work-grid-gap);
+  row-gap: 0;
+  padding: 14px 0 4px;
+}
+.pflow-hub-bar {
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  padding: 12px 18px;
+  border: 1px solid var(--pp-line-strong);
+  border-radius: 8px;
+  background: var(--pp-canvas);
+  box-shadow: var(--pp-shadow-rest);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pp-ink);
+}
+.pflow-hub-stem {
+  justify-self: center;
+  width: 2px;
+  height: 22px;
+  background: var(--pp-cyan-600);
+  position: relative;
+}
+.pflow-hub-stem::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--pp-canvas);
+  border: 2px solid var(--pp-cyan-600);
+}
+.pflow-hub-chip {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--pp-line);
+  border-radius: 8px;
+  background: var(--pp-canvas);
+  box-shadow: var(--pp-shadow-rest);
+}
+.pflow-hub-chip strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pp-ink);
+}
+.pflow-hub-chip span {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--pp-text-3);
+}
+@media (max-width: 809px) {
+  .pflow-node { padding: 8px 10px; font-size: 13px; }
+  .pflow-hub {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pflow-hub-stem { display: none; }
+  .pflow-hub-chip { margin-top: 10px; }
+}
+
 /* ── One-typeface support: the former mono labels hold their shape in the
    text face via weight + tabular numerals (placed last so it wins ties) ── */
 .pulse-spec-head,
@@ -2258,27 +2397,56 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <figure className="pulse-section-aside" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
-                      <span>style pass &middot; v0</span>
+                      <span>the bet &middot; two routes</span>
                     </header>
-                    <div className="pulse-stylepass-row">
-                      <strong>Aa</strong>
-                      <span className="pulse-stylepass-dots" aria-hidden="true">
-                        <i style={{ background: "#1d1d1f" }} />
-                        <i style={{ background: "#49e0f5" }} />
-                        <i style={{ background: "#43ba51" }} />
-                        <i style={{ background: "#f19a08" }} />
-                      </span>
+                    <div
+                      className="pflow"
+                      role="img"
+                      aria-label="Two routes to a pitch. Boards produce stills — they look right but cannot run or be recorded. Code, seeded with a thin style pass, produces a runnable flow you can click, record, and pitch in days."
+                    >
+                      <div className="pflow-lane" aria-hidden="true">
+                        <div
+                          className="pflow-grid"
+                          style={{
+                            gridTemplateColumns:
+                              "max-content minmax(20px, 1fr) max-content",
+                          }}
+                        >
+                          <span className="pflow-node">Boards</span>
+                          <span className="pflow-line is-amber" />
+                          <span className="pflow-node">Stills</span>
+                        </div>
+                        <p className="pflow-note is-amber">
+                          <i>✗</i>looks &mdash; can&rsquo;t run, can&rsquo;t
+                          record
+                        </p>
+                      </div>
+                      <div className="pflow-lane" aria-hidden="true">
+                        <div
+                          className="pflow-grid"
+                          style={{
+                            gridTemplateColumns:
+                              "max-content minmax(20px, 1fr) max-content",
+                          }}
+                        >
+                          <span className="pflow-node">
+                            Code
+                            <em>+ a thin style pass</em>
+                          </span>
+                          <span className="pflow-line is-green" />
+                          <span className="pflow-node">Runnable flow</span>
+                        </div>
+                        <p className="pflow-note is-green">
+                          <i>✓</i>click, record, pitch &mdash; in days
+                        </p>
+                      </div>
                     </div>
-                    <p className="pulse-stylepass-note">
-                      <strong>a look, not a system</strong>
-                      one typeface &middot; a palette &middot; a handful of
-                      rules &mdash; enough to rhyme, not enough to merge
-                    </p>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 03</em>The thin style
-                      pass that held the melee together, barely
+                      <em className="pulse-fig">Fig. 03</em>The bet &mdash;
+                      the style pass made six efforts rhyme; it was a look,
+                      not a system
                     </span>
                   </figcaption>
                 </figure>
@@ -2297,8 +2465,16 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <figure className="pulse-section-aside" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
-                      <span>generation status &middot; ladder</span>
+                      <span>brand rules &middot; written day one</span>
                     </header>
+                    <div className="pulse-kv">
+                      {brandRules.map(([rule, deal]) => (
+                        <div className="pulse-kv-row" key={rule}>
+                          <span>{rule}</span>
+                          <em>{deal}</em>
+                        </div>
+                      ))}
+                    </div>
                     <div className="pulse-ladder">
                       <span className="pulse-ladder-pill is-on" data-state="queued">
                         queued
@@ -2320,15 +2496,14 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                       </span>
                     </div>
                     <p className="pulse-spec-foot">
-                      red never appears in generation status &mdash; it is
-                      reserved for declining data
+                      the generation ladder &mdash; each hue has one job; they
+                      light in order as you arrive
                     </p>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 04</em>Six process
-                      states, each with one meaning &mdash; they light in
-                      order as you arrive
+                      <em className="pulse-fig">Fig. 04</em>Few rules, firmly
+                      held &mdash; color appears only when it means something
                     </span>
                   </figcaption>
                 </figure>
@@ -2446,6 +2621,52 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {wakeup.sections[1] && (
               <div className="pulse-section">
                 <SectionProse section={wakeup.sections[1]} />
+                <figure className="pulse-section-aside" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>own file first &middot; then the bar</span>
+                    </header>
+                    <div
+                      className="pflow"
+                      role="img"
+                      aria-label="Three steps: engineer my own file (split, structure, dead code out), ask engineering what shape they would accept, then hand over rebuilt in React on their conventions."
+                    >
+                      <div
+                        className="pflow-grid"
+                        aria-hidden="true"
+                        style={{
+                          gridTemplateColumns:
+                            "max-content minmax(18px, 1fr) max-content minmax(18px, 1fr) max-content",
+                        }}
+                      >
+                        <span className="pflow-node">
+                          My file
+                          <em>split &middot; structure</em>
+                        </span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">
+                          Their bar
+                          <em>&ldquo;what would you accept?&rdquo;</em>
+                        </span>
+                        <span className="pflow-line is-green" />
+                        <span className="pflow-node">
+                          React
+                          <em>handed over clean</em>
+                        </span>
+                      </div>
+                      <p className="pflow-note is-green" aria-hidden="true">
+                        <i>✓</i>one page maintainable &mdash; the rest of the
+                        product not yet
+                      </p>
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 08</em>Engineer my own
+                      page, then ask engineering
+                    </span>
+                  </figcaption>
+                </figure>
               </div>
             )}
         </section>
@@ -2461,23 +2682,49 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <figure className="pulse-section-aside" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
-                      <span>What migration broke</span>
+                      <span>the rescue &middot; one pipeline</span>
                     </header>
-                    <div className="pulse-kv">
-                      {lossRows.map(([what, fix]) => (
-                        <div className="pulse-kv-row" key={what}>
-                          <span>{what}</span>
-                          <em>{fix}</em>
-                        </div>
-                      ))}
+                    <div
+                      className="pflow"
+                      role="img"
+                      aria-label="Four stages: unify the surface, engineer file by file, migrate toward one stack, merge into one app. Under the migrate stage a repair loop: AI broke hover states, animations, and layout in transit and produced dead code — every page was repaired by hand against its original."
+                    >
+                      <div
+                        className="pflow-grid"
+                        aria-hidden="true"
+                        style={{
+                          gridTemplateColumns:
+                            "max-content minmax(14px, 1fr) max-content minmax(14px, 1fr) max-content minmax(14px, 1fr) max-content",
+                        }}
+                      >
+                        <span className="pflow-node">Unify</span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">Engineer</span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">Migrate</span>
+                        <span className="pflow-line is-green" />
+                        <span className="pflow-node">Merge</span>
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                        <span
+                          className="pflow-loop"
+                          style={{ gridColumn: "5 / 6" }}
+                        />
+                        <span aria-hidden="true" />
+                        <span aria-hidden="true" />
+                      </div>
+                      <p className="pflow-note is-amber is-center" aria-hidden="true">
+                        <i>↺</i>AI broke hover &middot; animation &middot;
+                        layout &middot; dead code &mdash; repaired by hand
+                        against the original
+                      </p>
                     </div>
-                    <p className="pulse-spec-foot">
-                      every page reviewed against its original
-                    </p>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 08</em>AI carried the
+                      <em className="pulse-fig">Fig. 09</em>AI carried the
                       bulk; the fidelity was hand work
                     </span>
                   </figcaption>
@@ -2512,7 +2759,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 09</em>The commit stream,
+                      <em className="pulse-fig">Fig. 10</em>The commit stream,
                       paraphrased from the repo&rsquo;s own log &mdash; no
                       hashes, no names
                     </span>
@@ -2579,7 +2826,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 10</em>The canonical
+                      <em className="pulse-fig">Fig. 11</em>The canonical
                       token sheet &mdash; six ramps, one scale, one rhythm
                     </span>
                     <InteractiveCue>click / tap a chip to copy its hex</InteractiveCue>
@@ -2596,7 +2843,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 11</em>The full registry
+                      <em className="pulse-fig">Fig. 12</em>The full registry
                       &mdash; 40 components, each its own folder over shared
                       tokens
                     </span>
@@ -2636,7 +2883,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 12</em>The CI gate chain
+                      <em className="pulse-fig">Fig. 13</em>The CI gate chain
                       &mdash; the standard enforces itself on every merge
                     </span>
                   </figcaption>
@@ -2653,6 +2900,67 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {skills.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={skills.sections[0]} />
+                <figure className="pulse-section-aside" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>where systems go to die</span>
+                    </header>
+                    <div
+                      className="pflow"
+                      role="img"
+                      aria-label="Two loops. Without a skill: prompt, generate, then re-type the rules — every single time, a repetition loop that never ends. With a skill: the rules load once before generation, and output is on-system by construction."
+                    >
+                      <div className="pflow-lane" aria-hidden="true">
+                        <div
+                          className="pflow-grid"
+                          style={{
+                            gridTemplateColumns:
+                              "max-content minmax(20px, 1fr) max-content",
+                          }}
+                        >
+                          <span className="pflow-node">Prompt</span>
+                          <span className="pflow-line is-amber" />
+                          <span className="pflow-node">Generate</span>
+                          <span
+                            className="pflow-loop"
+                            style={{ gridColumn: "1 / -1" }}
+                          />
+                        </div>
+                        <p className="pflow-note is-amber is-center">
+                          <i>↺</i>re-type the rules &mdash; every single time
+                        </p>
+                      </div>
+                      <div className="pflow-lane" aria-hidden="true">
+                        <div
+                          className="pflow-grid"
+                          style={{
+                            gridTemplateColumns:
+                              "max-content minmax(20px, 1fr) max-content",
+                          }}
+                        >
+                          <span className="pflow-node">
+                            Skill loads
+                            <em>once, before the work</em>
+                          </span>
+                          <span className="pflow-line is-green" />
+                          <span className="pflow-node">
+                            Generate
+                            <em>on-system by construction</em>
+                          </span>
+                        </div>
+                        <p className="pflow-note is-green">
+                          <i>✓</i>no loop &mdash; the rule lives in the repo
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 14</em>The repetition
+                      loop a skill deletes
+                    </span>
+                  </figcaption>
+                </figure>
                 <figure className="pulse-section-aside" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
@@ -2674,7 +2982,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 13</em>The rules, made
+                      <em className="pulse-fig">Fig. 15</em>The rules, made
                       loadable &mdash; on-system by construction, not by repair
                     </span>
                   </figcaption>
@@ -2691,7 +2999,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 14</em>Build timeline
+                      <em className="pulse-fig">Fig. 16</em>Build timeline
                       &mdash; five weeks from melee to system, late May to
                       early July 2026
                     </span>
@@ -2713,7 +3021,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <PulseComponentBrowser />
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 15</em>The component
+                      <em className="pulse-fig">Fig. 17</em>The component
                       browser, rebuilt live &mdash; real components from the
                       Pulse registry; the shipped browser holds all 40
                     </span>
@@ -2735,7 +3043,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 16</em>The sliced Figma
+                      <em className="pulse-fig">Fig. 18</em>The sliced Figma
                       board &mdash; deliberately non-interactive, built to be
                       imported into design review
                     </span>
@@ -2766,7 +3074,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 17</em>The package&rsquo;s
+                      <em className="pulse-fig">Fig. 19</em>The package&rsquo;s
                       plate &mdash; styles sync from the canonical CSS at build
                       time
                     </span>
@@ -2778,7 +3086,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 18</em>The playground
+                      <em className="pulse-fig">Fig. 20</em>The playground
                       idea, live &mdash; feed a component data and watch it
                       hold: empty, overflowing, broken
                     </span>
@@ -2800,7 +3108,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 19</em>The real
+                      <em className="pulse-fig">Fig. 21</em>The real
                       playground &mdash; the published AIPanel rendered live,
                       with per-component knobs and a JSON data editor
                     </span>
@@ -2811,11 +3119,29 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     <header className="pulse-spec-head">
                       <span>Four roles &middot; one base</span>
                     </header>
-                    <div className="pulse-kv">
-                      {roleRows.map(([role, reads]) => (
-                        <div className="pulse-kv-row" key={role}>
-                          <span>{role}</span>
-                          <em>{reads}</em>
+                    <div
+                      className="pflow-hub"
+                      role="img"
+                      aria-label="One base — the tokens and 40 components — read four ways: design reads the live preview and Figma boards, engineering reads the typed package and contracts, ML reads the editable data states, product reads one runnable flow."
+                    >
+                      <div className="pflow-hub-bar" aria-hidden="true">
+                        One base &mdash; tokens + 40 components
+                      </div>
+                      {hubRoles.map(([role]) => (
+                        <span
+                          className="pflow-hub-stem"
+                          key={`stem-${role}`}
+                          aria-hidden="true"
+                        />
+                      ))}
+                      {hubRoles.map(([role, reads]) => (
+                        <div
+                          className="pflow-hub-chip"
+                          key={role}
+                          aria-hidden="true"
+                        >
+                          <strong>{role}</strong>
+                          <span>{reads}</span>
                         </div>
                       ))}
                     </div>
@@ -2825,7 +3151,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 20</em>The interface,
+                      <em className="pulse-fig">Fig. 22</em>The interface,
                       read four ways
                     </span>
                   </figcaption>
@@ -2855,7 +3181,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 21</em>The unified Pulse
+                      <em className="pulse-fig">Fig. 23</em>The unified Pulse
                       app, Home &mdash; the page that forced the map, now on
                       the system
                     </span>
@@ -2886,7 +3212,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 22</em>Two more pages of
+                      <em className="pulse-fig">Fig. 24</em>Two more pages of
                       the same static export &mdash; the scheduling Calendar
                       and the weekly Analytics report, both from a file://
                       address
@@ -2906,7 +3232,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 23</em>Onboarding &mdash;
+                      <em className="pulse-fig">Fig. 25</em>Onboarding &mdash;
                       a new brand becomes working material: starter assets and
                       a vault that feeds every generative step after it
                     </span>
@@ -2924,7 +3250,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 24</em>The Creative
+                        <em className="pulse-fig">Fig. 26</em>The Creative
                         Brief &mdash; a person shapes the AI draft
                       </span>
                       <InteractiveCue>edit a field, then approve</InteractiveCue>
@@ -2967,7 +3293,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 25</em>Chat contract
+                        <em className="pulse-fig">Fig. 27</em>Chat contract
                         &mdash; the assistant follows the product component
                         contract
                       </span>
@@ -2998,7 +3324,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 26</em>Approval chain
+                      <em className="pulse-fig">Fig. 28</em>Approval chain
                       &mdash; SLA timers; escalation never auto-approves
                     </span>
                   </figcaption>
@@ -3043,7 +3369,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             </div>
             <footer className="pulse-spine-caption" data-fade>
               <span>
-                <em className="pulse-fig">Fig. 27</em>Create-with-AI &mdash;
+                <em className="pulse-fig">Fig. 29</em>Create-with-AI &mdash;
                 where a person stays in the loop
               </span>
               <span className="pulse-spine-legend">
