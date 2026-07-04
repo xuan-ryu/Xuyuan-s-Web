@@ -4,6 +4,7 @@ import { adjacent, type CaseSection, type Project } from "@/data/projects";
 import { BandStack } from "./band-stack";
 import { PulseComponentBrowser } from "./pulse-component-browser";
 import { PulseCreativeBrief } from "./pulse-creative-brief";
+import { PulseTokenChips } from "./pulse-token-chips";
 
 // Pulse — "the design system documents itself." A printed specimen document:
 // the page typesets Pulse's real tokens as ink-and-hairline specimen sheets on
@@ -31,14 +32,6 @@ import { PulseCreativeBrief } from "./pulse-creative-brief";
 
 // Six semantic base colors — tokens.css --color-* (role semantics from the
 // component-library "Keep color meanings separate" rule).
-const tokenChips = [
-  { hex: "#49e0f5", role: "ready" },
-  { hex: "#43ba51", role: "positive" },
-  { hex: "#3987f3", role: "scheduled" },
-  { hex: "#f19a08", role: "risk" },
-  { hex: "#6366f1", role: "in progress" },
-  { hex: "#ef4444", role: "decline" },
-];
 
 // Type scale — tokens.css --type-page-display: 64px, --type-h2: 28px, --fs-5: 15px.
 const typeScale = [
@@ -1831,14 +1824,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             <span>Pulse &middot; token sheet</span>
             <span className="pulse-fig">Fig. 01</span>
           </header>
-          <div className="pulse-spec-chips" data-fade>
-            {tokenChips.map((chip) => (
-              <div className="pulse-spec-chip" key={chip.hex}>
-                <i style={{ background: chip.hex }} aria-hidden="true" />
-                <span>{chip.hex}</span>
-              </div>
-            ))}
-          </div>
+          <PulseTokenChips />
           <div className="pulse-spec-type" data-fade>
             {typeScale.map((row) => (
               <div className="pulse-spec-type-row" key={row.px}>
