@@ -145,6 +145,64 @@ const vicinoCriticalCss = `
   height: calc(var(--v-pad-top) - 12px);
 }
 
+/* ── Theme bands — the page breathes between ink and paper (owner rule:
+   an all-black scroll is tiring). Narrative logic: ink = inside the
+   product's canvas (hero, the flow, the interface); paper = the designer
+   stepping back to speak (overview, context, the closing). Each band after
+   the first slides over the previous as an About-style sheet: rounded
+   shoulders, a lifting shadow, a small overlap. The header's luminance
+   sampler reads the band background and flips the nav ink on its own. ── */
+.vicino-band {
+  position: relative;
+}
+.vicino-band.is-ink {
+  background: var(--ink-950);
+}
+.vicino-band.is-paper {
+  background: var(--paper-warm);
+}
+.vicino-band + .vicino-band {
+  margin-top: calc(-1 * clamp(32px, 4vw, 56px));
+  border-radius: clamp(32px, 5vw, 64px) clamp(32px, 5vw, 64px) 0 0;
+  box-shadow: 0 -44px 90px rgba(5, 5, 5, 0.22);
+}
+/* stations inside a band paint no ground of their own — the band owns it
+   (retires the per-station ink washes and the brief's 100vmax bleed) */
+.vicino-band .vicino-station,
+.vicino-band .vicino-hero {
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+}
+/* ── paper ink: the reading stations flip to ink-on-paper ── */
+.vicino-band.is-paper .vicino-station h2,
+.vicino-band.is-paper .vicino-thesis,
+.vicino-band.is-paper .vicino-closing-title {
+  color: var(--ink-950);
+}
+.vicino-band.is-paper .vicino-body-copy {
+  color: rgba(17, 17, 17, 0.78);
+}
+.vicino-band.is-paper .vicino-sub-label {
+  color: rgba(17, 17, 17, 0.88);
+}
+.vicino-band.is-paper .vicino-model-invite {
+  color: rgba(17, 17, 17, 0.62);
+}
+.vicino-band.is-paper .vicino-wide-figure figcaption {
+  color: rgba(17, 17, 17, 0.56);
+}
+.vicino-band.is-paper .vicino-station-rule,
+.vicino-band.is-paper .vicino-closing-rule {
+  background: var(--rule);
+}
+.vicino-band.is-paper .vicino-station-index::before {
+  background: rgba(17, 17, 17, 0.35);
+}
+.vicino-band.is-paper .vicino-next-title {
+  color: var(--ink-950);
+}
+
 .vicino-station-rule {
   display: block;
   grid-column: 1 / -1;
@@ -3281,6 +3339,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
     <article className="vicino-case-page">
       <style dangerouslySetInnerHTML={{ __html: vicinoCriticalCss }} />
 
+      {/* ── theme bands: ink = inside the product's canvas; paper = the
+          designer stepping back to speak. Bands slide over each other as
+          About-style sheets (see .vicino-band CSS). ── */}
+      <div className="vicino-band is-ink">
       <section className="vicino-hero" id="header">
         <div className="vicino-hero-copy">
           <h1 data-fade>Vicino AI</h1>
@@ -3302,7 +3364,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           <VicinoWorkflowCanvas project={project} />
         </div>
       </section>
+      </div>
 
+      <div className="vicino-band is-paper">
       <section
         className="vicino-station vicino-opening-statement"
         aria-labelledby="vicino-opening-title"
@@ -3380,7 +3444,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           <VicinoPipelineViz />
         </div>
       </section>
+      </div>
 
+      <div className="vicino-band is-ink">
       <section className="vicino-station vicino-flow">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
@@ -3474,7 +3540,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           <VicinoModelBoard />
         </div>
       </section>
+      </div>
 
+      <div className="vicino-band is-paper">
       {project.moment && (
         <section className="vicino-station vicino-closing">
           <figure className="vicino-seal" data-fade>
@@ -3506,6 +3574,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           </Link>
         </aside>
       )}
+      </div>
     </article>
   );
 }
