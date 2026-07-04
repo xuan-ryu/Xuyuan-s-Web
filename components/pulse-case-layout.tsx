@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type CaseSection, type Project } from "@/data/projects";
 import { BandStack } from "./band-stack";
+import { PulseComponentBrowser } from "./pulse-component-browser";
 
 // Pulse — "the design system documents itself." A printed specimen document:
 // the page typesets Pulse's real tokens as ink-and-hairline specimen sheets on
@@ -465,7 +466,7 @@ const pulseCss = `
 .pulse-ledger {
   grid-column: 11 / -1;
   align-self: start;
-  border-top: 1px solid var(--case-accent);
+  border-top: 1px solid var(--work-rule);
 }
 .pulse-ledger > div {
   display: flex;
@@ -1203,9 +1204,9 @@ const pulseCss = `
   order: 2;
 }
 
-/* ── Fig. 10 — build timeline (milestone narrative, closes Act I) ───────── */
+/* ── Fig. 09 — build timeline (milestone narrative, closes Act I) ───────── */
 .pulse-log {
-  border-top: 1px solid var(--case-accent);
+  border-top: 1px solid var(--work-rule);
 }
 .pulse-log-row {
   display: grid;
@@ -2183,20 +2184,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             <div className="pulse-section">
               <SectionProse section={iface.sections[0]} />
               <figure className="pulse-section-full" data-fade>
-                <div className="pulse-shot">
-                  <Image
-                    src="/media/work/pulse/component-preview.png"
-                    alt="Pulse HTML Component Preview: category sidebar and the AIPanel component specimen with a live demo"
-                    width={SHOT_W}
-                    height={SHOT_H}
-                    sizes="(max-width: 1080px) 100vw, 1376px"
-                    style={{ width: "100%", height: "auto" }}
-                  />
-                </div>
+                <PulseComponentBrowser />
                 <figcaption className="pulse-fig-caption">
-                  <em className="pulse-fig">Fig. 10</em> The live component
-                  browser &mdash; 40 components by this capture; the inventory
-                  sheet above abridges to 37 named sources
+                  <em className="pulse-fig">Fig. 10</em> The component browser,
+                  rebuilt live &mdash; real components from the Pulse registry,
+                  interactive right here; the shipped browser held 40
                 </figcaption>
               </figure>
               <figure className="pulse-section-inset" data-fade>
