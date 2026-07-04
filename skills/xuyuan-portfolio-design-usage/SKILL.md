@@ -55,10 +55,13 @@ The local repo is the current truth.
   lines, radii, and easing.
 - Letter spacing defaults to zero. Add tracking only for labels, nav, vertical
   text, and compact uppercase UI.
-- Large display titles (section headers, big editorial titles) may use the
-  condensed face `var(--font-condensed)` (Saira Condensed) in uppercase, light
-  weight (300), tight tracking (`-0.05em`) — the wordmark's look. This is the
-  one sanctioned negative tracking; elsewhere tracking stays 0.
+- Large display titles may use the condensed face `var(--font-condensed)`
+  (Saira Condensed) in uppercase, light weight (300). Negative tracking
+  (`var(--track-display)`, -0.05em) is reserved for STYLIZED SHORT DISPLAY
+  NAMES only — the wordmark, hero/gate/poster/index project names, one-to-few
+  word page titles. Readable multi-word titles — section claims, statements,
+  artifact/viz heads — keep tracking 0 even in condensed uppercase (owner
+  rule 2026-07-05: they are read, not glanced; readability wins).
 - Long prose should stay calm: about 55-68ch, line-height 1.5-1.7, no dense
   blocks pressed against media.
 - Dark surfaces use ink tones, subtle hairlines, and soft shadows. Avoid neon
@@ -80,7 +83,8 @@ this site's ink/condensed voice, not Pulse's visual style.
 
 - Every section AND every embedded artifact (coded viz, board, diagram block)
   gets ONE unmistakable visual anchor: a display-voice title (condensed,
-  uppercase, weight 300, `var(--track-display)`) sized to be seen first.
+  uppercase, weight 300, normal tracking — see Visual Rules; negative
+  tracking is reserved for stylized short names) sized to be seen first.
   Inside embedded artifacts that means ~`clamp(28px, 2.6vw, 38px)` or larger —
   never a 15-16px "small title". If a block's largest text is label-sized,
   the block has no anchor; fix the block.

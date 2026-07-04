@@ -141,7 +141,7 @@ export function VicinoCheckpointViz() {
   font-size: clamp(28px, 2.6vw, 38px);
   font-weight: 300;
   line-height: 1.05;
-  letter-spacing: var(--track-display, -0.05em);
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 .vz-chk-track.is-wrong .vz-chk-badge {

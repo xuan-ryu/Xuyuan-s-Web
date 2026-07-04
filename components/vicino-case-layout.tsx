@@ -181,7 +181,9 @@ const vicinoCriticalCss = `
   font-size: var(--text-display-3);
   font-weight: 300;
   line-height: 1.04;
-  letter-spacing: -0.05em;
+  /* section claims are read, not glanced — normal tracking (owner rule);
+     negative tracking stays reserved for stylized short display names */
+  letter-spacing: 0;
   text-transform: uppercase;
   text-wrap: balance;
   color: var(--paper);

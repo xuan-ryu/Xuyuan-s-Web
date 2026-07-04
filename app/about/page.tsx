@@ -341,7 +341,8 @@ h2.about-habits-title.abf-t,
   font-size: var(--text-display-3);
   font-weight: 300;
   line-height: 1.02;
-  letter-spacing: var(--track-display);
+  /* readable section claims take normal tracking (owner rule) */
+  letter-spacing: 0;
   text-transform: uppercase;
   text-align: left;
 }
@@ -422,6 +423,7 @@ h2.about-habits-title.abf-t,
   position: relative;
   z-index: 2;
   background: var(--ink-950);
+  border-radius: clamp(30px, 5vw, 64px) clamp(30px, 5vw, 64px) 0 0;
   isolation: isolate;
 }
 .about-dark.abf-dark {
@@ -576,7 +578,8 @@ h2.about-habits-title.abf-t,
   font-size: clamp(42px, 5.6vw, 74px);
   font-weight: 300;
   line-height: 1.04;
-  letter-spacing: var(--track-display);
+  /* a full read-through statement — normal tracking (owner rule) */
+  letter-spacing: 0;
   text-transform: uppercase;
   text-align: left;
   color: var(--ink-950);

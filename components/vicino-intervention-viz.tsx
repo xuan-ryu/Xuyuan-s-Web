@@ -187,7 +187,7 @@ export function VicinoInterventionViz() {
   font-size: clamp(26px, 2.2vw, 32px);
   font-weight: 300;
   line-height: 1;
-  letter-spacing: var(--track-display, -0.05em);
+  letter-spacing: 0;
   color: var(--accent-gold, #d9a441);
 }
 .vz-int-pair {
