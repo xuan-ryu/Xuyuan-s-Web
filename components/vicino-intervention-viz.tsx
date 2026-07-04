@@ -254,16 +254,6 @@ export function VicinoInterventionViz() {
   backdrop-filter: blur(10px) saturate(120%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
-.vz-int-footer::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--accent-amber, #e0902f);
-  opacity: 0.9;
-}
 .vz-int-footer-label {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: var(--text-label, 13px);

@@ -7,9 +7,10 @@
 //
 // Design language matches the rest of the Vicino case page (tokens inherited
 // from .vicino-case-page): near-black surfaces, hairline borders, mono/gold
-// eyebrows. Verdict is carried by a 2px top rule per cell — warm-red for the
-// direct-to-video path, teal for the image-first path — instead of heavy
-// per-cell borders. The warm-red is deliberately NOT var(--seal-red).
+// eyebrows. Verdict is carried by the track heads alone (✗ warm-red /
+// ✓ teal condensed titles) plus a faint warm tint on the failing cells —
+// no single-edge color bars (owner rule: that pattern reads generic-AI).
+// The warm-red is deliberately NOT var(--seal-red).
 
 const tracks = [
   {
@@ -183,8 +184,7 @@ export function VicinoCheckpointViz() {
   align-content: start;
   padding: 16px 18px;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-top: 2px solid transparent;
-  border-radius: 4px 4px 12px 12px;
+  border-radius: 12px;
   /* frosted glass over the dot grid — the product's panel material */
   background: rgba(32, 32, 36, 0.55);
   -webkit-backdrop-filter: blur(10px) saturate(120%);
@@ -193,14 +193,8 @@ export function VicinoCheckpointViz() {
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 10px 28px -18px rgba(0, 0, 0, 0.6);
 }
-.vz-chk-track.is-wrong .vz-chk-cell {
-  border-top-color: rgba(224, 122, 90, 0.9);
-}
 .vz-chk-track.is-wrong .vz-chk-cell.is-tint {
   background: color-mix(in srgb, rgba(224, 122, 90, 1) 7%, rgba(32, 32, 36, 0.55));
-}
-.vz-chk-track.is-right .vz-chk-cell {
-  border-top-color: #8bd6d9;
 }
 .vz-chk-idx {
   font-family: var(--font-mono, ui-monospace, monospace);

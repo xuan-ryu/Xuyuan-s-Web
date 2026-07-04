@@ -263,7 +263,6 @@ export function VicinoPipelineViz() {
 .vz-pipe-cell.is-step {
   display: grid;
   gap: 2px;
-  border-left: 2px solid color-mix(in srgb, var(--accent-amber, #e0902f) 72%, transparent);
 }
 .vz-pipe-cell-n {
   font-family: var(--font-mono, ui-monospace, monospace);
