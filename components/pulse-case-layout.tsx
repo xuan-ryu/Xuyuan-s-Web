@@ -2501,6 +2501,158 @@ const pulseCss = `
   font-weight: 500;
 }
 
+/* ── Diagram assembly on arrival ─────────────────────────────────────────
+   Each figure carries data-fade; FadeReveal adds .is-visible on enter, so
+   the figure rises as a frame and ~220ms later its parts assemble in
+   reading order — nodes drop, connections draw toward their target, loops
+   sweep in, notes settle. One orchestrated reveal per diagram, then still
+   (no ambient loops). Motion-only: every hidden initial state lives inside
+   @media (prefers-reduced-motion: no-preference), so reduced motion — and
+   the forced-visible/no-JS fallback — shows the finished diagram. ── */
+@keyframes pAssembleDrop {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pAssembleDraw {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+@keyframes pAssembleLoop {
+  from { opacity: 0; transform: scaleY(0.4); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+@keyframes pAssembleGrow {
+  from { opacity: 0; transform: scaleY(0); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+@keyframes pAssembleRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* pflow flow diagrams — stagger children by column position */
+  .pulse-case-page .pflow-grid > :nth-child(2) { --pd: 90ms; }
+  .pulse-case-page .pflow-grid > :nth-child(3) { --pd: 180ms; }
+  .pulse-case-page .pflow-grid > :nth-child(4) { --pd: 270ms; }
+  .pulse-case-page .pflow-grid > :nth-child(5) { --pd: 360ms; }
+  .pulse-case-page .pflow-grid > :nth-child(6) { --pd: 450ms; }
+  .pulse-case-page .pflow-grid > :nth-child(7) { --pd: 540ms; }
+  .pulse-case-page .pflow-lane:nth-child(2) { --ld: 300ms; }
+
+  .pulse-case-page figure[data-fade] .pflow-node,
+  .pulse-case-page figure[data-fade] .pflow-line,
+  .pulse-case-page figure[data-fade] .pflow-loop,
+  .pulse-case-page figure[data-fade] .pflow-note {
+    opacity: 0;
+  }
+  .pulse-case-page figure[data-fade] .pflow-node { transform: translateY(10px); }
+  .pulse-case-page figure[data-fade] .pflow-line {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .pulse-case-page figure[data-fade] .pflow-loop {
+    transform: scaleY(0.4);
+    transform-origin: top;
+  }
+  .pulse-case-page figure[data-fade].is-visible .pflow-node {
+    animation: pAssembleDrop 0.42s var(--ease-spring) forwards;
+    animation-delay: calc(220ms + var(--ld, 0ms) + var(--pd, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pflow-line {
+    animation: pAssembleDraw 0.34s var(--ease-silk) forwards;
+    animation-delay: calc(250ms + var(--ld, 0ms) + var(--pd, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pflow-loop {
+    animation: pAssembleLoop 0.4s var(--ease-silk) forwards;
+    animation-delay: calc(540ms + var(--ld, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pflow-note {
+    animation: pAssembleDrop 0.42s var(--ease-silk) forwards;
+    animation-delay: calc(580ms + var(--ld, 0ms));
+  }
+
+  /* melee — the four source scenes rise in sequence */
+  .pulse-case-page figure[data-fade] .pulse-melee-cell { opacity: 0; }
+  .pulse-case-page .pulse-melee-cell:nth-child(1) { --cd: 0ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(2) { --cd: 110ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(3) { --cd: 220ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(4) { --cd: 330ms; }
+  .pulse-case-page figure[data-fade].is-visible .pulse-melee-cell {
+    animation: pAssembleRise 0.5s var(--ease-spring) forwards;
+    animation-delay: calc(180ms + var(--cd, 0ms));
+  }
+
+  /* build timeline — the commit spine grows as the rows stagger in */
+  .pulse-case-page figure[data-fade] .pulse-timeline::before {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  .pulse-case-page figure[data-fade] .pulse-timeline-row,
+  .pulse-case-page figure[data-fade] .pulse-timeline-legend {
+    opacity: 0;
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-timeline::before {
+    animation: pAssembleGrow 0.72s var(--ease-silk) forwards;
+    animation-delay: 200ms;
+  }
+  .pulse-case-page .pulse-timeline-row:nth-child(1) { --rd: 0ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(2) { --rd: 56ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(3) { --rd: 112ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(4) { --rd: 168ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(5) { --rd: 224ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(6) { --rd: 280ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(7) { --rd: 336ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(8) { --rd: 392ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(9) { --rd: 448ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(10) { --rd: 504ms; }
+  .pulse-case-page figure[data-fade].is-visible .pulse-timeline-row {
+    animation: pAssembleRise 0.44s var(--ease-silk) forwards;
+    animation-delay: calc(300ms + var(--rd, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-timeline-legend {
+    animation: pAssembleDrop 0.42s var(--ease-silk) forwards;
+    animation-delay: 900ms;
+  }
+
+  /* roles hub — the base bar drops, stems extend down, chips rise */
+  .pulse-case-page figure[data-fade] .pflow-hub-bar { opacity: 0; transform: translateY(-8px); }
+  .pulse-case-page figure[data-fade] .pflow-hub-stem { transform: scaleY(0); transform-origin: top; }
+  .pulse-case-page figure[data-fade] .pflow-hub-chip { opacity: 0; transform: translateY(12px); }
+  .pulse-case-page figure[data-fade].is-visible .pflow-hub-bar {
+    animation: pAssembleDrop 0.42s var(--ease-spring) forwards;
+    animation-delay: 200ms;
+  }
+  .pulse-case-page figure[data-fade].is-visible .pflow-hub-stem {
+    animation: pAssembleGrow 0.34s var(--ease-silk) forwards;
+    animation-delay: 360ms;
+  }
+  .pulse-case-page figure[data-fade].is-visible .pflow-hub-chip {
+    animation: pAssembleRise 0.44s var(--ease-spring) forwards;
+    animation-delay: 500ms;
+  }
+
+  /* approval + CI chains — cells and links rise left to right */
+  .pulse-case-page figure[data-fade] .pulse-chain-cell,
+  .pulse-case-page figure[data-fade] .pulse-chain-link { opacity: 0; }
+  .pulse-case-page .pulse-chain-row > :nth-child(1) { --nd: 0ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(2) { --nd: 110ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(3) { --nd: 220ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(4) { --nd: 330ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(5) { --nd: 440ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(6) { --nd: 550ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(7) { --nd: 660ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(8) { --nd: 770ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(9) { --nd: 880ms; }
+  .pulse-case-page figure[data-fade].is-visible .pulse-chain-cell {
+    animation: pAssembleRise 0.44s var(--ease-spring) forwards;
+    animation-delay: calc(200ms + var(--nd, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-chain-link {
+    animation: pAssembleDrop 0.36s var(--ease-silk) forwards;
+    animation-delay: calc(200ms + var(--nd, 0ms));
+  }
+}
+
 /* ── Reduced motion: render final state; kill scoped loops ──────────────── */
 @media (prefers-reduced-motion: reduce) {
   .pulse-case-page [data-fade] {

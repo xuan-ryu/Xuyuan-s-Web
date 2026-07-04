@@ -252,6 +252,48 @@ export function VicinoCheckpointViz() {
     gap: 4px;
   }
 }
+/* ── Assembly on arrival ─────────────────────────────────────────────────
+   The viz sits in a .vicino-flow-viz[data-fade] wrapper; FadeReveal adds
+   .is-visible on enter. The block rises as a whole, then the pipeline draws
+   itself lane by lane — nodes drop, connections draw toward their target,
+   the redo loops sweep in last (the loop is the argument, so it lands last).
+   Motion-only: hidden states live inside prefers-reduced-motion:no-preference
+   so reduced motion shows the finished diagram. ── */
+@keyframes vzDrop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes vzDraw { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes vzLoop { from { opacity: 0; transform: scaleY(0.4); } to { opacity: 1; transform: scaleY(1); } }
+@media (prefers-reduced-motion: no-preference) {
+  .vicino-flow-viz .vz-chk-node { opacity: 0; transform: translateY(10px); }
+  .vicino-flow-viz .vz-chk-conn { opacity: 0; transform: scaleX(0); transform-origin: left; }
+  .vicino-flow-viz .vz-chk-loop-big,
+  .vicino-flow-viz .vz-chk-loop-small { opacity: 0; transform: scaleY(0.4); transform-origin: top; }
+  .vicino-flow-viz .vz-chk-over,
+  .vicino-flow-viz .vz-chk-loop-label,
+  .vicino-flow-viz .vz-chk-path { opacity: 0; }
+  .vicino-flow-viz .vz-chk-lane:nth-child(2) { --vlane: 440ms; }
+  .vicino-flow-viz.is-visible .vz-chk-path {
+    animation: vzDrop 0.42s var(--ease-silk, ease) forwards;
+    animation-delay: calc(160ms + var(--vlane, 0ms));
+  }
+  .vicino-flow-viz.is-visible .vz-chk-node {
+    animation: vzDrop 0.42s var(--ease-spring, ease) forwards;
+    animation-delay: calc(220ms + var(--vlane, 0ms));
+  }
+  .vicino-flow-viz.is-visible .vz-chk-conn {
+    animation: vzDraw 0.4s var(--ease-silk, ease) forwards;
+    animation-delay: calc(360ms + var(--vlane, 0ms));
+  }
+  .vicino-flow-viz.is-visible .vz-chk-loop-big,
+  .vicino-flow-viz.is-visible .vz-chk-loop-small {
+    animation: vzLoop 0.44s var(--ease-silk, ease) forwards;
+    animation-delay: calc(540ms + var(--vlane, 0ms));
+  }
+  .vicino-flow-viz.is-visible .vz-chk-over,
+  .vicino-flow-viz.is-visible .vz-chk-loop-label {
+    animation: vzDrop 0.42s var(--ease-silk, ease) forwards;
+    animation-delay: calc(620ms + var(--vlane, 0ms));
+  }
+}
 `,
         }}
       />

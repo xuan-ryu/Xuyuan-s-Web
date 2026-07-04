@@ -309,6 +309,45 @@ export function VicinoInterventionViz() {
     gap: 4px;
   }
 }
+/* ── Assembly on arrival ─────────────────────────────────────────────────
+   The viz sits in a .vicino-flow-viz[data-fade] wrapper; FadeReveal adds
+   .is-visible on enter. The block rises, then the timeline builds stage by
+   stage left to right: each stage core drops, its track segments draw, the
+   AI/You stems grow out, the phrases settle. Column index (--col, already
+   set per stage) drives the left-to-right stagger. Motion-only, so reduced
+   motion shows the finished timeline. ── */
+@keyframes vziDrop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes vziDraw { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes vziGrow { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+@media (prefers-reduced-motion: no-preference) {
+  .vicino-flow-viz .vz-int-core { opacity: 0; transform: translateY(8px); }
+  .vicino-flow-viz .vz-int-seg { opacity: 0; transform: scaleX(0); transform-origin: left; }
+  .vicino-flow-viz .vz-int-stem-line { transform: scaleY(0); }
+  .vicino-flow-viz .vz-int-stem.is-up .vz-int-stem-line { transform-origin: bottom; }
+  .vicino-flow-viz .vz-int-stem.is-dn .vz-int-stem-line { transform-origin: top; }
+  .vicino-flow-viz .vz-int-mark { opacity: 0; }
+  .vicino-flow-viz .vz-int-phrase { opacity: 0; transform: translateY(6px); }
+  .vicino-flow-viz.is-visible .vz-int-core {
+    animation: vziDrop 0.42s var(--ease-spring, ease) forwards;
+    animation-delay: calc(220ms + (var(--col, 1) - 1) * 150ms);
+  }
+  .vicino-flow-viz.is-visible .vz-int-seg {
+    animation: vziDraw 0.34s var(--ease-silk, ease) forwards;
+    animation-delay: calc(300ms + (var(--col, 1) - 1) * 150ms);
+  }
+  .vicino-flow-viz.is-visible .vz-int-stem-line {
+    animation: vziGrow 0.3s var(--ease-silk, ease) forwards;
+    animation-delay: calc(340ms + (var(--col, 1) - 1) * 150ms);
+  }
+  .vicino-flow-viz.is-visible .vz-int-mark {
+    animation: vziDrop 0.3s var(--ease-silk, ease) forwards;
+    animation-delay: calc(420ms + (var(--col, 1) - 1) * 150ms);
+  }
+  .vicino-flow-viz.is-visible .vz-int-phrase {
+    animation: vziDrop 0.42s var(--ease-silk, ease) forwards;
+    animation-delay: calc(400ms + (var(--col, 1) - 1) * 150ms);
+  }
+}
 `,
         }}
       />
