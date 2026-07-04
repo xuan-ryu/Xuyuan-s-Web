@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adjacent, type CaseSection, type Project } from "@/data/projects";
 import { BandStack } from "./band-stack";
 import { PulseComponentBrowser } from "./pulse-component-browser";
+import { PulseCreativeBrief } from "./pulse-creative-brief";
 
 // Pulse — "the design system documents itself." A printed specimen document:
 // the page typesets Pulse's real tokens as ink-and-hairline specimen sheets on
@@ -152,14 +153,6 @@ const gateSteps = [
 
 // Creative Brief fields — the field list from the ch. 06 flow copy;
 // values are specimen sample data (clearly illustrative, brand-neutral).
-const briefFields = [
-  { label: "Audience", value: "Urban runners, 18–29, early-morning crews", editing: false },
-  { label: "Key message", value: "City miles before the city wakes", editing: true },
-  { label: "Content direction", value: "Short-form video · street-level POV", editing: false },
-  { label: "Tone", value: "Confident, unhurried", editing: false },
-  { label: "Visual style", value: "Natural light, muted brand palette", editing: false },
-];
-
 // Figures ledger — the project's own numbers (summary, chapters). The
 // five-week figure matches the repo's git log (2026-05-30 → 2026-07-02).
 const ledger: Array<[string, string]> = [
@@ -2379,36 +2372,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <SectionProse section={product.sections[1]} />
               <figure className="pulse-section-aside" data-fade>
                 <div className="pulse-artifact">
-                  <div className="pulse-brief">
-                    <header className="pulse-brief-head">
-                      <strong>Creative Brief</strong>
-                      <span className="pulse-brief-chip">Drafted by Pulse</span>
-                    </header>
-                    {briefFields.map((field) => (
-                      <div
-                        className={`pulse-brief-field${field.editing ? " is-editing" : ""}`}
-                        key={field.label}
-                      >
-                        <span>{field.label}</span>
-                        <p>
-                          {field.value}
-                          {field.editing && (
-                            <i className="pulse-brief-caret" aria-hidden="true" />
-                          )}
-                        </p>
-                      </div>
-                    ))}
-                    <footer className="pulse-brief-foot">
-                      <span className="pulse-brief-budget">
-                        Est. spend &middot; 320 credits
-                      </span>
-                      <span className="pulse-brief-approve">Approve brief</span>
-                    </footer>
-                  </div>
+                  <PulseCreativeBrief />
                 </div>
                 <figcaption className="pulse-fig-caption">
                   <em className="pulse-fig">Fig. 19</em> The Creative Brief &mdash;
-                  editable fields inside the chat
+                  edit a field, then approve; a person shapes the AI draft
                 </figcaption>
               </figure>
             </div>
