@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
+import { BandStack } from "./band-stack";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { VicinoAudienceViz } from "./vicino-audience-viz";
 import { VicinoCheckpointViz } from "./vicino-checkpoint-viz";
@@ -148,10 +149,10 @@ const vicinoCriticalCss = `
 /* ── Theme bands — the page breathes between ink and paper (owner rule:
    an all-black scroll is tiring). Narrative logic: ink = inside the
    product's canvas (hero, the flow, the interface); paper = the designer
-   stepping back to speak (overview, context, the closing). Each band after
-   the first slides over the previous as an About-style sheet: rounded
-   shoulders, a lifting shadow, a small overlap. The header's luminance
-   sampler reads the band background and flips the nav ink on its own. ── */
+   stepping back to speak (overview, context, the closing). Each band pins by
+   its bottom edge and the next slides UP over it (BandStack + sticky) — a
+   scroll-driven page-turn, not a static stack. The header's luminance sampler
+   reads the topmost band and flips the nav ink on its own. ── */
 .vicino-band {
   position: relative;
 }
@@ -161,10 +162,39 @@ const vicinoCriticalCss = `
 .vicino-band.is-paper {
   background: var(--paper-warm);
 }
+/* every band after the first is a sheet: rounded shoulder + lifting shadow,
+   clipped to its own top radius */
 .vicino-band + .vicino-band {
-  margin-top: calc(-1 * clamp(32px, 4vw, 56px));
   border-radius: clamp(32px, 5vw, 64px) clamp(32px, 5vw, 64px) 0 0;
-  box-shadow: 0 -44px 90px rgba(5, 5, 5, 0.22);
+  box-shadow: 0 -44px 90px rgba(5, 5, 5, 0.28);
+  overflow: clip;
+}
+/* a hairline catch-light along the incoming sheet's shoulder — paper takes a
+   soft ink edge, ink takes a light one — so the rise reads as a lifting page */
+.vicino-band + .vicino-band::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(64px, 8vw, 120px);
+  pointer-events: none;
+  z-index: 4;
+}
+.vicino-band.is-ink + .vicino-band.is-ink::before,
+.vicino-band.is-paper + .vicino-band.is-ink::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+}
+.vicino-band.is-ink + .vicino-band.is-paper::before,
+.vicino-band.is-paper + .vicino-band.is-paper::before {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), transparent);
+}
+/* scroll-driven page-turn: BandStack measures each band, pins it by its bottom
+   so it reads fully then holds while the next sheet rises over it (rising
+   z-index). CSS sticky = smooth, GPU, Lenis-friendly; prefers-reduced-motion
+   never gets .is-stacked, so bands stay in normal flow. */
+.vicino-band.is-stacked {
+  position: sticky;
+  top: var(--vb-top, 0px);
+  z-index: var(--vb-z, 1);
 }
 /* stations inside a band paint no ground of their own — the band owns it
    (retires the per-station ink washes and the brief's 100vmax bleed) */
@@ -3338,6 +3368,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   return (
     <article className="vicino-case-page">
       <style dangerouslySetInnerHTML={{ __html: vicinoCriticalCss }} />
+      <BandStack selector=".vicino-case-page > .vicino-band" />
 
       {/* ── theme bands: ink = inside the product's canvas; paper = the
           designer stepping back to speak. Bands slide over each other as
