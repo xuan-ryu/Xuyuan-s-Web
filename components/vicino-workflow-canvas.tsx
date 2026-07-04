@@ -341,14 +341,120 @@ function VideoNodeBody() {
   );
 }
 
-export function NodeContent({ node }: { node: CanvasNode }) {
+// Placeholder bodies for the runnable (from-empty) canvas: same structural
+// chrome as the real bodies, media and text swapped for skeletons, so a Run
+// visibly generates each stage's content from nothing.
+function ScriptPlaceholder() {
+  return (
+    <div className="vicino-script-node-body">
+      {[0, 1].map((i) => (
+        <div className="vicino-script-scene-card script-node-scene-card is-ph" key={i}>
+          <span className="vicino-ph-bar is-w40" />
+          <span className="vicino-ph-bar" />
+          <span className="vicino-ph-bar is-w70" />
+        </div>
+      ))}
+      <p className="vicino-script-scene-more">&hellip;</p>
+    </div>
+  );
+}
+
+function StoryboardPlaceholder() {
+  return (
+    <div className="vicino-storyboard-node-body">
+      <div className="vicino-storyboard-grid story-scenes-container">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div
+            className="vicino-storyboard-scene-block story-scene-block is-ph"
+            key={index}
+          >
+            <div className="vicino-storyboard-scene-head story-scene-header">
+              <span className="vicino-storyboard-scene-num story-scene-number">
+                {index + 1}
+              </span>
+              <span className="vicino-storyboard-scene-label story-scene-label">
+                Scene {index + 1}
+              </span>
+            </div>
+            <div className="vicino-storyboard-scene-img is-ph-media" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ShootPlaceholder() {
+  return (
+    <div className="vicino-shoot-node-body shoot-node-body">
+      <div className="vicino-shoot-shot-card shoot-node-shot-card is-ph">
+        <div className="vicino-shoot-shot-title-row">
+          <strong>Shot 3</strong>
+          <span aria-hidden="true" className="vicino-shoot-refresh" />
+        </div>
+        <div className="vicino-shoot-frame-box shoot-node-frame-box">
+          <span className="vicino-shoot-box-label shoot-node-box-label">First Frame</span>
+          <div className="vicino-ph-media" />
+        </div>
+        <div className="vicino-shoot-prompt-box shoot-node-prompt-box">
+          <span className="vicino-shoot-box-label shoot-node-box-label">Video Prompt</span>
+          <div className="vicino-shoot-ph-lines">
+            <span className="vicino-ph-bar" />
+            <span className="vicino-ph-bar is-w70" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VideoPlaceholder() {
+  return (
+    <div className="vicino-video-output-node-body video-node-v3-video-area">
+      <div className="video-node-v3-stage">
+        <div className="vicino-ph-media" />
+      </div>
+      <div className="vicino-story-video-controls">
+        <i />
+        <i />
+      </div>
+    </div>
+  );
+}
+
+function NodePlaceholder({ node }: { node: CanvasNode }) {
+  if (node.kind === "script") return <ScriptPlaceholder />;
+  if (node.kind === "storyboard") return <StoryboardPlaceholder />;
+  if (node.kind === "shoot") return <ShootPlaceholder />;
+  return <VideoPlaceholder />;
+}
+
+export function NodeContent({
+  node,
+  revealed = true,
+}: {
+  node: CanvasNode;
+  revealed?: boolean;
+}) {
+  if (!revealed) return <NodePlaceholder node={node} />;
   if (node.kind === "script") return <ScriptNodeBody />;
   if (node.kind === "storyboard") return <StoryboardNodeBody />;
   if (node.kind === "shoot") return <ShootNodeBody />;
   return <VideoNodeBody />;
 }
 
-export function VicinoWorkflowCanvas({ project: _project }: { project: Project }) {
+export function VicinoWorkflowCanvas({
+  project: _project,
+  runnable = false,
+  caption = "Board recreation — a few of the node library's types",
+}: {
+  project: Project;
+  // runnable: the station-03 "interactive example" mode — node bodies start
+  // as placeholders and a Run control generates the path stage by stage.
+  // The hero instance stays ambient (drag only, full content).
+  runnable?: boolean;
+  caption?: string;
+}) {
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
     id: string;
@@ -400,7 +506,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
     }
     setRunIndex(0);
     for (let i = 1; i <= nodeCount; i += 1) {
-      runTimers.current.push(window.setTimeout(() => setRunIndex(i), 760 * i));
+      runTimers.current.push(window.setTimeout(() => setRunIndex(i), 850 * i));
     }
   };
 
@@ -478,7 +584,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
   return (
     <div
       ref={rootRef}
-      className={`vicino-live-canvas is-storyboard-animation${isPaused ? " is-paused" : ""}${runActive ? " is-flow-run" : ""}`}
+      className={`vicino-live-canvas is-storyboard-animation${isPaused ? " is-paused" : ""}${runActive ? " is-flow-run" : ""}${runnable ? " is-runnable" : ""}`}
       onPointerMove={handlePointerMove}
       onPointerUp={stopDragging}
       onPointerCancel={stopDragging}
@@ -541,7 +647,7 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
               ) : null}
               <div className={`vicino-product-node-shell ${productShellClassName[node.kind]}`}>
                 <ProductHeader node={node} />
-                <NodeContent node={node} />
+                <NodeContent node={node} revealed={!runnable || runIndex > nodeIndex} />
               </div>
             </div>
           );
@@ -549,15 +655,19 @@ export function VicinoWorkflowCanvas({ project: _project }: { project: Project }
       </div>
 
       <div className="vicino-live-caption">
-        <span>Board recreation — a few of the node library&rsquo;s types</span>
-        <button
-          type="button"
-          className="vicino-live-run"
-          onClick={playFlow}
-          aria-label="Play the generation flow — script to storyboard to shot to video"
-        >
-          {runLabel}
-        </button>
+        <span>{caption}</span>
+        {runnable ? (
+          <button
+            type="button"
+            className="vicino-live-run"
+            onClick={playFlow}
+            aria-label="Play the generation flow — script to storyboard to shot to video"
+          >
+            {runLabel}
+          </button>
+        ) : (
+          <span>Drag nodes</span>
+        )}
       </div>
     </div>
   );

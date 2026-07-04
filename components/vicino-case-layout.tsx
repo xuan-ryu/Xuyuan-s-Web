@@ -441,7 +441,7 @@ const vicinoCriticalCss = `
   opacity: 1;
   transition: opacity 0.35s ease;
 }
-.vicino-product-node.is-generating .vicino-product-node-shell {
+.vicino-live-canvas .vicino-product-node.is-generating .vicino-product-node-shell {
   border-color: var(--node-color, #6eddb3);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--node-color, #6eddb3) 70%, transparent),
@@ -462,15 +462,84 @@ const vicinoCriticalCss = `
   background-size: 240% 100%;
   animation: vicino-gen-sweep 0.85s linear infinite;
 }
-.vicino-product-node.is-generated .vicino-product-node-shell {
-  border-color: color-mix(in srgb, var(--node-color, #6eddb3) 52%, rgba(255, 255, 255, 0.12));
-}
 @keyframes vicino-gen-sweep {
   from {
     background-position: 130% 0;
   }
   to {
     background-position: -130% 0;
+  }
+}
+/* run-from-empty placeholders (runnable canvas): bodies render skeleton bars
+   and dashed media frames until their stage generates, then the real content
+   reveals — the flow visibly goes from nothing to output */
+.vicino-ph-bar {
+  display: block;
+  height: 7px;
+  margin: 6px 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.09);
+}
+.vicino-ph-bar.is-w40 {
+  width: 40%;
+}
+.vicino-ph-bar.is-w70 {
+  width: 70%;
+}
+.vicino-ph-media {
+  flex: 1;
+  align-self: stretch;
+  min-height: 40px;
+  margin: 0 8px 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.vicino-storyboard-scene-img.is-ph-media {
+  min-height: 0;
+  margin: 0;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.vicino-product-node.is-video .video-node-v3-stage .vicino-ph-media {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  border-radius: 8px;
+}
+.vicino-shoot-ph-lines {
+  padding: 0 8px 8px;
+}
+.vicino-shoot-ph-lines .vicino-ph-bar {
+  margin: 4px 0;
+}
+.vicino-storyboard-scene-block.is-ph .vicino-storyboard-scene-num {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.55);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .vicino-product-node.is-generating .vicino-ph-bar,
+  .vicino-product-node.is-generating .vicino-ph-media {
+    animation: vicino-ph-pulse 0.9s ease-in-out infinite;
+  }
+  .vicino-live-canvas.is-runnable .vicino-product-node.is-generated .vicino-script-node-body,
+  .vicino-live-canvas.is-runnable .vicino-product-node.is-generated .vicino-storyboard-node-body,
+  .vicino-live-canvas.is-runnable .vicino-product-node.is-generated .vicino-shoot-node-body,
+  .vicino-live-canvas.is-runnable .vicino-product-node.is-generated .vicino-video-output-node-body {
+    animation: vicino-node-reveal 0.55s var(--ease-silk) both;
+  }
+}
+@keyframes vicino-ph-pulse {
+  50% {
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+}
+@keyframes vicino-node-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: brightness(1.35);
   }
 }
 .vicino-live-caption {
@@ -520,12 +589,12 @@ const vicinoCriticalCss = `
   box-sizing: border-box;
   transition: border-color 0.15s ease, box-shadow 0.2s ease;
 }
-/* Per-kind card surfaces and borders — the shipped values:
-   the script-node styles (near-black card, #404040 border), the storyboard-node styles
-   (2px teal multiview border), the shot-node styles and VideoNode (hairline
-   white 0.07). */
+/* Per-kind card surfaces and borders. Owner decision: every node wears the
+   storyboard treatment — a 2px border in its OWN connection-type color
+   (text pink, storyboard/image teal, video amber) at half strength, full
+   strength on hover — instead of the shipped near-invisible hairlines. */
 .vicino-product-node.is-script .vicino-product-node-shell {
-  border: 1px solid #404040;
+  border: 2px solid rgba(241, 160, 250, 0.5);
   background: rgba(0, 0, 0, 0.9);
 }
 .vicino-product-node.is-storyboard .vicino-product-node-shell {
@@ -533,22 +602,21 @@ const vicinoCriticalCss = `
   background: var(--image-node-card-bg);
 }
 .vicino-product-node.is-shoot .vicino-product-node-shell {
-  border: 1px solid var(--image-node-card-border);
+  border: 2px solid rgba(110, 221, 179, 0.5);
   background: var(--image-node-card-bg);
 }
 .vicino-product-node.is-video .vicino-product-node-shell {
-  border: 1px solid var(--video-node-card-border);
+  border: 2px solid rgba(255, 179, 71, 0.5);
   background: var(--video-node-card-bg);
 }
-/* Hover + selection borders — the shipped selection language
-   (script rgba(232,232,232,.9); storyImage #8BD6D9; shoot teal 0.6;
-   video white 0.5) with the shared selected shadow. */
 .vicino-product-node.is-script:hover .vicino-product-node-shell {
-  border-color: #555555;
+  border-color: #F1A0FA;
 }
-.vicino-product-node.is-shoot:hover .vicino-product-node-shell,
+.vicino-product-node.is-shoot:hover .vicino-product-node-shell {
+  border-color: #6EDDB3;
+}
 .vicino-product-node.is-video:hover .vicino-product-node-shell {
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: #FFB347;
 }
 .vicino-product-node.is-storyboard:hover .vicino-product-node-shell {
   border-color: #8BD6D9;
@@ -583,7 +651,12 @@ const vicinoCriticalCss = `
   padding: 2px;
   pointer-events: none;
 }
-.vicino-product-node.is-storyboard .vicino-product-node-shell::after {
+/* the type-colored 2px borders replace the inner edge gradient on all four
+   canvas node kinds (the storyboard precedent, extended) */
+.vicino-product-node.is-script .vicino-product-node-shell::after,
+.vicino-product-node.is-storyboard .vicino-product-node-shell::after,
+.vicino-product-node.is-shoot .vicino-product-node-shell::after,
+.vicino-product-node.is-video .vicino-product-node-shell::after {
   content: none;
 }
 .vicino-product-node-header {
@@ -1191,6 +1264,9 @@ const vicinoCriticalCss = `
   grid-column: 1 / -1;
   margin: var(--v-head-gap) 0 0;
   min-width: 0;
+}
+.vicino-flow-viz .vicino-model-invite {
+  margin: 0 0 16px;
 }
 
 /* ---- station 03 — Block A: the flow, told once ---- */
@@ -3335,6 +3411,17 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             </figcaption>
           </figure>
         )}
+        <div className="vicino-flow-viz" data-fade>
+          <p className="vicino-model-invite">
+            The same path, live — press Run and watch it generate from empty:
+            script, storyboard, shot, video
+          </p>
+          <VicinoWorkflowCanvas
+            project={project}
+            runnable
+            caption="The main path on the board — specimen data"
+          />
+        </div>
         <div className="vicino-flow-viz" data-fade>
           <VicinoCheckpointViz />
         </div>
