@@ -100,8 +100,9 @@ export function VicinoPipelineViz() {
           __html: `
 .vz-pipe {
   display: grid;
-  gap: var(--v-gutter, 24px);
-  padding: var(--v-gutter, 24px);
+  /* density stays LOW (skill: Density & Anchors) */
+  gap: calc(var(--v-gutter, 24px) * 1.5);
+  padding: clamp(32px, 3.2vw, 52px);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   /* a piece of the product's Work Space: near-black canvas + faint dot grid;
@@ -140,13 +141,14 @@ export function VicinoPipelineViz() {
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 56px;
+  min-height: 64px;
 }
 /* column heads speak in the family's condensed display voice */
 .vz-pipe-sublabel {
   margin: 0;
   font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
-  font-size: clamp(21px, 1.9vw, 27px);
+  /* the column heads are this block's anchors (skill: Density & Anchors) */
+  font-size: clamp(28px, 2.6vw, 38px);
   font-weight: 300;
   line-height: 1.05;
   letter-spacing: var(--track-display, -0.05em);
@@ -173,7 +175,7 @@ export function VicinoPipelineViz() {
   stroke-linejoin: round;
 }
 .vz-pipe-chip svg { width: 18px; height: 18px; display: block; stroke-width: 1.4; }
-.vz-pipe-figure svg { display: block; height: 56px; width: auto; stroke-width: 1.6; }
+.vz-pipe-figure svg { display: block; height: 64px; width: auto; stroke-width: 1.6; }
 .vz-pipe-frame { stroke: rgba(244, 241, 234, 0.42); }
 .vz-pipe-gold { stroke: var(--accent-gold, #d9a441); }
 .vz-pipe-figure { flex: 0 0 auto; line-height: 0; }
@@ -182,7 +184,7 @@ export function VicinoPipelineViz() {
 .vz-pipe-list {
   position: relative;
   display: grid;
-  gap: 4px;
+  gap: 10px;
 }
 .vz-pipe-list::before {
   content: "";
@@ -241,12 +243,12 @@ export function VicinoPipelineViz() {
 .vz-pipe-stack {
   flex: 1 1 auto;
   display: grid;
-  gap: 6px;
+  gap: 10px;
   min-width: 0;
 }
 .vz-pipe-item {
   display: grid;
-  gap: 6px;
+  gap: 10px;
 }
 .vz-pipe-cell {
   border: 1px solid rgba(255, 255, 255, 0.09);
@@ -258,11 +260,11 @@ export function VicinoPipelineViz() {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 10px 28px -18px rgba(0, 0, 0, 0.6);
-  padding: 14px 16px;
+  padding: 18px 20px;
 }
 .vz-pipe-cell.is-step {
   display: grid;
-  gap: 2px;
+  gap: 4px;
 }
 .vz-pipe-cell-n {
   font-family: var(--font-mono, ui-monospace, monospace);

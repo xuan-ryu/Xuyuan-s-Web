@@ -64,15 +64,16 @@ export function VicinoInterventionViz() {
           __html: `
 .vz-int {
   --vz-rail: clamp(48px, 5vw, 58px);
-  /* rhythm rides the station's gutter — rows a full gutter apart, the rail tie
-     half a gutter, the AI/User pair split by one gutter */
-  --vz-row-gap: var(--v-gutter, 24px);
+  /* rhythm rides the station's gutter — rows 1.5 gutters apart, the rail tie
+     half a gutter, the AI/User pair split by one gutter (skill: Density &
+     Anchors — density stays LOW) */
+  --vz-row-gap: calc(var(--v-gutter, 24px) * 1.5);
   --vz-row-colgap: calc(var(--v-gutter, 24px) / 2);
   --vz-pair-gap: var(--v-gutter, 24px);
-  --vz-node-center: 27px;
+  --vz-node-center: 30px;
   display: grid;
-  gap: var(--v-gutter, 24px);
-  padding: var(--v-gutter, 24px);
+  gap: calc(var(--v-gutter, 24px) * 1.5);
+  padding: clamp(32px, 3.2vw, 52px);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   /* a piece of the product's Work Space: near-black canvas + faint dot grid;
@@ -177,14 +178,16 @@ export function VicinoInterventionViz() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 30px;
-  height: 26px;
-  padding: 0 6px;
-  border-radius: 999px;
+  min-width: 34px;
+  padding: 0 4px;
   background: var(--ink-950, #08080a);
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
-  letter-spacing: var(--track-label, 0.14em);
+  /* the stage numerals are this block's anchors — big condensed wayfinding
+     down the spine (the cell titles stay the readable titles) */
+  font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
+  font-size: clamp(26px, 2.2vw, 32px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: var(--track-display, -0.05em);
   color: var(--accent-gold, #d9a441);
 }
 .vz-int-pair {
@@ -209,7 +212,7 @@ export function VicinoInterventionViz() {
   display: grid;
   gap: 9px;
   align-content: start;
-  padding: 16px 18px;
+  padding: 18px 20px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 12px;
   /* frosted glass over the dot grid — the product's panel material */

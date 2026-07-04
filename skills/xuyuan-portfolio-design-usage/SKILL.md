@@ -72,6 +72,30 @@ The local repo is the current truth.
 - Visual assets should show the real project, material, object, or prototype.
 - Mobile collapses to a readable single column with no horizontal scroll.
 
+## Density & Anchors (owner rule, 2026-07-05)
+
+Modeled on the Pulse discipline (its Campaign page: one big title, calm
+vertical rhythm, hierarchy by scale and spacing before boxes) — applied in
+this site's ink/condensed voice, not Pulse's visual style.
+
+- Every section AND every embedded artifact (coded viz, board, diagram block)
+  gets ONE unmistakable visual anchor: a display-voice title (condensed,
+  uppercase, weight 300, `var(--track-display)`) sized to be seen first.
+  Inside embedded artifacts that means ~`clamp(28px, 2.6vw, 38px)` or larger —
+  never a 15-16px "small title". If a block's largest text is label-sized,
+  the block has no anchor; fix the block.
+- Eyebrows, labels, and indices remain metadata (existing rule) — big mono
+  numerals may act as graphic wayfinding, but the readable title above body
+  copy is the anchor.
+- Keep information density LOW. Interior padding of a framed artifact ≥ 1.25x
+  its local gutter; block-to-block gaps ≥ 1.5x gutter; cells breathe. When a
+  layout feels dense, widen spacing or cut content — never shrink type or
+  spacing to make content fit.
+- Banned "generic-AI" patterns (owner): single-edge accent color bars on
+  cards/cells, blobby radial-gradient container washes / decorative sheen
+  highlights, unlabeled mini-diagrams that need a legend to read, and
+  hardcoded 13-14px component type instead of the DS ladder.
+
 ## Muller-Brockmann Grid System
 
 - Before changing layout, design the grid first: name the container, margins,

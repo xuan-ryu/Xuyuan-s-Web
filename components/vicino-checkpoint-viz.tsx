@@ -77,8 +77,9 @@ export function VicinoCheckpointViz() {
           __html: `
 .vz-chk {
   display: grid;
-  gap: var(--v-gutter, 24px);
-  padding: var(--v-gutter, 24px);
+  /* density stays LOW (skill: Density & Anchors) */
+  gap: calc(var(--v-gutter, 24px) * 1.5);
+  padding: clamp(32px, 3.2vw, 52px);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   /* a piece of the product's Work Space: near-black canvas + faint dot grid;
@@ -114,7 +115,7 @@ export function VicinoCheckpointViz() {
 /* --- one track = header + a left→right flow of cells --- */
 .vz-chk-track {
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 .vz-chk-track-head {
   display: flex;
@@ -126,18 +127,18 @@ export function VicinoCheckpointViz() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
   border-radius: 999px;
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 12px;
   line-height: 1;
 }
-/* track heads speak in the family's condensed display voice */
+/* the track heads are this block's anchors — condensed display voice */
 .vz-chk-track-title {
   font-family: var(--font-condensed, "Saira Condensed", system-ui, sans-serif);
-  font-size: clamp(21px, 1.9vw, 27px);
+  font-size: clamp(28px, 2.6vw, 38px);
   font-weight: 300;
   line-height: 1.05;
   letter-spacing: var(--track-display, -0.05em);
@@ -180,9 +181,9 @@ export function VicinoCheckpointViz() {
   flex: 1 1 0;
   min-width: 0;
   display: grid;
-  gap: 7px;
+  gap: 8px;
   align-content: start;
-  padding: 16px 18px;
+  padding: 18px 20px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 12px;
   /* frosted glass over the dot grid — the product's panel material */

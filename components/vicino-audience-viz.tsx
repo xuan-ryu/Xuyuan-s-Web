@@ -22,10 +22,10 @@ export function VicinoAudienceViz() {
           __html: `
 .vz-aud {
   display: grid;
-  /* rhythm rides the station's own gutter — internal fields resolve to the
-     page grid instead of ad-hoc gaps */
-  gap: var(--v-gutter, 24px);
-  padding: var(--v-gutter, 24px) var(--v-gutter, 24px) calc(var(--v-gutter, 24px) + 4px);
+  /* density stays LOW (skill: Density & Anchors) — block gaps at 1.5x the
+     station gutter, interior padding well past 1.25x */
+  gap: calc(var(--v-gutter, 24px) * 1.5);
+  padding: clamp(32px, 3.2vw, 52px);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   /* the container is a piece of the product's Work Space: near-black canvas
@@ -98,8 +98,9 @@ export function VicinoAudienceViz() {
 .vz-aud-name h4 {
   margin: 0;
   font-family: var(--font-text, var(--font-sans, system-ui));
-  font-size: var(--text-body, 17px);
-  font-weight: 500;
+  /* the persona names are this block's anchors — lead size, calm weight */
+  font-size: var(--text-lead, 21px);
+  font-weight: 400;
   color: var(--paper, #f4f1ea);
 }
 .vz-aud-dot {
