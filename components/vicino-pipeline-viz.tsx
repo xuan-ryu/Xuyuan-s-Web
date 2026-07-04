@@ -289,10 +289,9 @@ export function VicinoPipelineViz() {
 .vz-pipe-revisit-text {
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
-  letter-spacing: var(--track-label, 0.14em);
-  text-transform: uppercase;
+  font-family: var(--font-text, var(--font-sans, system-ui));
+  font-size: 12px;
+  letter-spacing: 0.04em;
   color: var(--v-body-ink, rgba(255, 255, 255, 0.62));
 }
 

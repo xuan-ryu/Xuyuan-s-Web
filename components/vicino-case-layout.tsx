@@ -162,8 +162,7 @@ const vicinoCriticalCss = `
   font-size: var(--text-label);
   font-weight: 400;
   line-height: 1.6;
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--accent-gold);
 }
 .vicino-station-index::before {
@@ -555,10 +554,8 @@ const vicinoCriticalCss = `
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-text);
+  font-size: 13px;
   color: var(--stone);
   pointer-events: none;
 }
@@ -2167,8 +2164,7 @@ const vicinoCriticalCss = `
   margin: 0;
   font-family: var(--font-mono);
   font-size: var(--text-micro);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--stone);
   pointer-events: none;
 }
@@ -2565,8 +2561,7 @@ h2.vicino-closing-title {
   padding-left: 18px;
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--accent-gold);
 }
 .vicino-next-link {
@@ -3015,17 +3010,17 @@ h2.vicino-closing-title {
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
+/* zone annotation titles read as titles — sentence case, text face */
 .v-mb-fnote-eyebrow {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0 0 7px;
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-family: var(--font-text);
+  font-size: var(--text-meta);
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--paper);
 }
 .v-mb-fnote-tick {
   flex: 0 0 auto;
