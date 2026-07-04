@@ -41,6 +41,7 @@ export function PageTransition() {
         revealingRef.current = false;
         veil.style.pointerEvents = "none";
         gsap.set(veil, { y: 0, yPercent: 100 });
+        window.dispatchEvent(new Event("xuyuan:nav-resample"));
       },
     });
     // full black lifts away bottom-to-top, the lower soft edge sweeping
@@ -167,6 +168,7 @@ export function PageTransition() {
   return (
     <div
       ref={veilRef}
+      data-nav-sample-ignore=""
       aria-hidden="true"
       style={{
         position: "fixed",

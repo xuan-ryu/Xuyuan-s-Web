@@ -9,6 +9,8 @@ import {
   useRef,
   type CSSProperties,
 } from "react";
+import type Lenis from "lenis";
+import { subscribeLenis } from "@/lib/lenis-bus";
 
 gsap.registerPlugin(CustomEase);
 CustomEase.create("inkSoft", "0.25,1,0.5,1");
@@ -33,8 +35,22 @@ const rootStyle: CSSProperties = {
   zIndex: 9999,
   cursor: "pointer",
   overflow: "hidden",
+  touchAction: "none",
   userSelect: "none",
 };
+
+const scrollLockCss = `
+html:has([data-app-loader]),
+html:has([data-app-loader]) body,
+body:has([data-app-loader]) {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+body:has([data-app-loader]) {
+  touch-action: none !important;
+}
+`;
 
 const doorStyle: CSSProperties = {
   position: "absolute",
@@ -111,7 +127,7 @@ const hintStyle: CSSProperties = {
 };
 
 export function Loader() {
-  const [shouldRun, setShouldRun] = useState<boolean | null>(null);
+  const [shouldRun, setShouldRun] = useState(true);
   const [gone, setGone] = useState(false);
   const leftDoorRef = useRef<HTMLDivElement | null>(null);
   const rightDoorRef = useRef<HTMLDivElement | null>(null);
@@ -125,12 +141,21 @@ export function Loader() {
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const broadcastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restoreBodyRef = useRef<(() => void) | null>(null);
+  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     // sessionStorage flag = escape hatch for capture/measure tooling
     setShouldRun(!hasShownThisLoad && !sessionStorage.getItem("skip-loader"));
   }, []);
+
+  useEffect(
+    () =>
+      subscribeLenis((lenis) => {
+        lenisRef.current = lenis;
+      }),
+    [],
+  );
 
   const unlockBody = useCallback(() => {
     restoreBodyRef.current?.();
@@ -144,6 +169,8 @@ export function Loader() {
     timersRef.current = [];
     hasShownThisLoad = true;
     introTlRef.current?.kill();
+    lenisRef.current?.scrollTo(0, { immediate: true, force: true });
+    window.scrollTo(0, 0);
 
     if (broadcastTimerRef.current) clearTimeout(broadcastTimerRef.current);
     broadcastTimerRef.current = setTimeout(() => {
@@ -160,6 +187,8 @@ export function Loader() {
     }
     const exit = gsap.timeline({
       onComplete: () => {
+        lenisRef.current?.scrollTo(0, { immediate: true, force: true });
+        window.scrollTo(0, 0);
         unlockBody();
         setGone(true);
       },
@@ -194,14 +223,46 @@ export function Loader() {
     if (!shouldRun) return;
     const originalOverflow = document.body.style.overflow;
     const originalTouchAction = document.body.style.touchAction;
+    const originalOverscroll = document.body.style.overscrollBehavior;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalHtmlOverscroll =
+      document.documentElement.style.overscrollBehavior;
+    const lockedLenis = lenisRef.current;
+    lockedLenis?.stop();
+    lockedLenis?.scrollTo(0, { immediate: true, force: true });
+    window.scrollTo(0, 0);
+    document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.overscrollBehavior = "none";
     document.body.style.overflow = "hidden";
     document.body.style.touchAction = "none";
+    document.body.style.overscrollBehavior = "none";
     restoreBodyRef.current = () => {
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.documentElement.style.overscrollBehavior = originalHtmlOverscroll;
       document.body.style.overflow = originalOverflow;
       document.body.style.touchAction = originalTouchAction;
+      document.body.style.overscrollBehavior = originalOverscroll;
+      lockedLenis?.start();
     };
     return unlockBody;
   }, [unlockBody, shouldRun]);
+
+  useEffect(() => {
+    if (!shouldRun) return;
+    const preventScroll = (event: Event) => event.preventDefault();
+    window.addEventListener("wheel", preventScroll, {
+      capture: true,
+      passive: false,
+    });
+    window.addEventListener("touchmove", preventScroll, {
+      capture: true,
+      passive: false,
+    });
+    return () => {
+      window.removeEventListener("wheel", preventScroll, { capture: true });
+      window.removeEventListener("touchmove", preventScroll, { capture: true });
+    };
+  }, [shouldRun]);
 
   useEffect(() => {
     if (!shouldRun) return;
@@ -289,8 +350,11 @@ export function Loader() {
       data-app-loader=""
       style={rootStyle}
       onClick={exitLoader}
+      onWheel={(event) => event.preventDefault()}
+      onTouchMove={(event) => event.preventDefault()}
       aria-hidden="true"
     >
+      <style dangerouslySetInnerHTML={{ __html: scrollLockCss }} />
       {/* shoji doors — they ARE the backdrop, and slide apart on exit */}
       <div ref={leftDoorRef} style={{ ...doorStyle, left: 0 }}>
         <div style={{ ...grainStyle, left: 0 }} />

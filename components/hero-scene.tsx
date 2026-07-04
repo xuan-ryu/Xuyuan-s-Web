@@ -25,14 +25,12 @@ type BirdDatum = {
 }
 
 type Props = {
-    sealComponent?: React.ReactNode
     mobileBgUrl?: string
     liteMode?: boolean
     heroWord1: string
     heroWord2: string
     heroWord3: string
     heroSubtitle: string
-    rightVerticalText: string
     quoteLine: string
     scrollHint: string
     page2Title?: string
@@ -602,14 +600,12 @@ export default function DigitalLandscape(props: Props) {
     const isCanvas = false
     const enableMouseSpotlight = true
     const {
-        sealComponent,
         mobileBgUrl,
         liteMode = false,
         heroWord1,
         heroWord2,
         heroWord3,
         heroSubtitle,
-        rightVerticalText,
         isLoaded = true,
         quoteLine,
         scrollHint,
@@ -2508,8 +2504,6 @@ export default function DigitalLandscape(props: Props) {
             @keyframes appleRevealHint {
                 to { opacity: 1; transform: translateY(0); filter: blur(0); }
             }
-            .hero-right-vertical { opacity: 0; transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.30s; }
-            .scene-loaded .hero-right-vertical { opacity: 0.9; }
 
             /* 朱红落款印 — the site's single red accent, set against the ink */
             .hero-seal {
@@ -2753,7 +2747,6 @@ export default function DigitalLandscape(props: Props) {
               .framer-xy-hero h1 { font-size: clamp(28px, 9vw, 42px); gap: 10px; margin: 0 0 14px 0; }
               .framer-xy-sub { font-size: 13px; line-height: 1.7; }
               .hero-quote { font-size: 13px; max-width: 88vw; }
-              .hero-right-vertical { display: none; }
               .profile-sticky { padding-top: 8vh; }
               .page2-center-container { max-width: 92vw; transform: translateY(0); }
               .page2-sky-wash {
@@ -2787,7 +2780,6 @@ export default function DigitalLandscape(props: Props) {
                 .framer-xy-hero .w, .framer-xy-sub, .hero-quote, .hero-scroll-hint, .p2-fade, .page2-char { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
                 .page2-title { animation: none !important; }
                 .page2-name-rule, .page2-brand-line { transition: none !important; }
-                .hero-right-vertical { opacity: 0.9 !important; transition: none !important; }
             }
 
 `,
@@ -2888,42 +2880,6 @@ export default function DigitalLandscape(props: Props) {
                         willChange: "opacity",
                     }}
                 >
-                    <div
-                        style={{
-                            position: "absolute",
-                            top: "50%",
-                            right: "6vw",
-                            transform: "translateY(-50%)",
-                            // right-side inscription cleared too
-                            display: "none",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            gap: "24px",
-                        }}
-                    >
-                        <div
-                            className="hero-right-vertical"
-                            style={{
-                                writingMode: "vertical-rl",
-                                letterSpacing: "0.5em",
-                                fontWeight: 300,
-                                fontFamily: "var(--font-sans)",
-                                fontSize: "var(--text-meta)",
-                                color: "#8a8a8a",
-                                whiteSpace: "pre-line",
-                                textAlign: "center",
-                            }}
-                        >
-                            {rightVerticalText}
-                        </div>
-                        {sealComponent && (
-                            <div
-                                style={{ pointerEvents: "auto", opacity: 0.95 }}
-                            >
-                                {sealComponent}
-                            </div>
-                        )}
-                    </div>
                     <div
                         style={{
                             position: "absolute",

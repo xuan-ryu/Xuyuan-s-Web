@@ -21,7 +21,6 @@ export default function Home() {
         heroWord2={site.greeting[1]}
         heroWord3={site.greeting[2]}
         heroSubtitle={site.heroSub}
-        rightVerticalText={site.sideText}
         quoteLine={site.brandCorner.zh}
         scrollHint={site.scrollHint}
         page2Title={site.brandmark}
@@ -35,7 +34,7 @@ export default function Home() {
       {/* Selected Work — the moon gate: an editorial index whose preview is
           framed in a round opening in the white garden wall beneath the eaves.
           Replaces the earlier moon-dial selector. */}
-      <div id="featured">
+      <div id="featured" style={{ backgroundColor: "#020305" }}>
         <FeaturedGate projects={projects} />
       </div>
 

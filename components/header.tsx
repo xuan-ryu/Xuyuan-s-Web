@@ -82,6 +82,7 @@ export function Header() {
         if (
           el.closest(".content-nav") ||
           el.closest(".nav-drawer") ||
+          el.closest("[data-nav-sample-ignore]") ||
           el.hasAttribute("data-hero-bg") ||
           el.tagName === "BODY" ||
           el.tagName === "HTML"
@@ -108,7 +109,12 @@ export function Header() {
       return overlayDark(); // stack transparent → the night overlay shows through
     };
     let raf = 0;
+    let disposed = false;
+    let settleRaf1 = 0;
+    let settleRaf2 = 0;
+    const settleTimers: number[] = [];
     const update = () => {
+      if (disposed) return;
       raf = 0;
       document
         .querySelectorAll<HTMLElement>(".nav-logo-zh, .nav-links a")
@@ -124,9 +130,32 @@ export function Header() {
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
-    update();
+    const clearSettledSamples = () => {
+      if (settleRaf1) cancelAnimationFrame(settleRaf1);
+      if (settleRaf2) cancelAnimationFrame(settleRaf2);
+      settleRaf1 = 0;
+      settleRaf2 = 0;
+      while (settleTimers.length) {
+        const timer = settleTimers.pop();
+        if (timer) window.clearTimeout(timer);
+      }
+    };
+    const scheduleSettledSamples = () => {
+      clearSettledSamples();
+      update();
+      settleRaf1 = requestAnimationFrame(() => {
+        update();
+        settleRaf2 = requestAnimationFrame(update);
+      });
+      for (const delay of [80, 180, 360, 760, 1200]) {
+        settleTimers.push(window.setTimeout(update, delay));
+      }
+    };
+
+    scheduleSettledSamples();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("xuyuan:nav-resample", scheduleSettledSamples);
     // The hero's night overlay fades via inline opacity while its scroll-spring
     // settles (no scroll/class event fires) — observe its style attribute
     // directly instead of polling, so non-hero pages pay nothing.
@@ -135,10 +164,13 @@ export function Header() {
     if (overlay)
       mo!.observe(overlay, { attributes: true, attributeFilter: ["style"] });
     return () => {
+      disposed = true;
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      window.removeEventListener("xuyuan:nav-resample", scheduleSettledSamples);
       mo?.disconnect();
       if (raf) cancelAnimationFrame(raf);
+      clearSettledSamples();
     };
   }, [pathname]);
 

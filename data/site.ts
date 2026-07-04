@@ -21,7 +21,6 @@ export const site = {
     zh: "构图灵感源自《潇湘八景图》\nInspired by the Eight Views of Xiaoxiang",
     en: "GAWAIN · UX STRATEGY × VIBE CODING",
   },
-  sideText: "先行先聽 萬縷歸心",
   scrollHint: "Scroll down to explore",
   blackPage: {
     zh: "深 邃",
@@ -29,19 +28,19 @@ export const site = {
   },
   workMethods: [
     {
-      title: "Observe",
-      heading: "See what others settle for",
-      body: "I look past surface-level feedback to find the friction people have learned to live with. Precision starts with attention — UX audits, pain-point mapping, and sitting with ambiguity before jumping to solutions.",
+      title: "Diagnose",
+      heading: "Find the problem underneath the request",
+      body: "I start where the product is already hurting: complaints, failed states, awkward handoffs, and the workaround nobody names. The first move is turning noise into the real constraint.",
     },
     {
-      title: "Build",
-      heading: "Prototype before certainty",
-      body: "I use prototypes and code as thinking tools, not deliverables. Building early exposes what's missing, sharpens priorities, and turns abstract direction into something a team can react to.",
+      title: "Prototype",
+      heading: "Make the argument tangible",
+      body: "I build early because a working surface tells the truth faster than a perfect deck. Code prototypes, motion tests, and workflow mockups let teams react while the direction is still cheap to change.",
     },
     {
-      title: "Align",
-      heading: "Connect vision, logic, and execution",
-      body: "I work in the spaces between product, design, and engineering — aligning priorities, negotiating trade-offs, and helping scattered input become coherent momentum.",
+      title: "Structure",
+      heading: "Turn good decisions into systems",
+      body: "Once the direction is clear, I make it repeatable: tokens, component contracts, checkpoints, roles, and AI guardrails. The work should keep making sense after the first handoff.",
     },
   ],
 } as const;

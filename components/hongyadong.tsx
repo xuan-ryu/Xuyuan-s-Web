@@ -349,6 +349,7 @@ export default function HongyadongFramer(props: Props) {
             const textT = smoothstep(0.12, 0.48, progress)
             // live: signature reveal kicks in around scrollY≈480 (progress≈0.7)
             const signatureReady = progress >= 0.7
+            stageRef.current?.toggleAttribute("data-nav-dark", textT > 0.62)
             setStyleIfChanged(
                 topRef.current,
                 "color",
