@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { adjacent, type CaseSection, type Project } from "@/data/projects";
+import { BandStack } from "./band-stack";
 
 // Pulse — "the design system documents itself." A printed specimen document:
 // the page typesets Pulse's real tokens as ink-and-hairline specimen sheets on
@@ -744,6 +745,89 @@ const pulseCss = `
   font-size: var(--text-micro);
   line-height: 1.5;
   color: rgba(5, 5, 5, 0.5);
+}
+
+/* ── Theme bands — the page turns between paper and ink, mapped to the arc
+   (paper identity → ink melee origin → paper system → ink Turn → paper
+   close). BandStack pins each band by its bottom edge and the next sheet
+   rises over it on scroll (rising z-index), rounded shoulder + shadow + a
+   hairline catch-light along the incoming edge. prefers-reduced-motion keeps
+   the bands in normal flow. The header luminance sampler flips the nav ink
+   per band on its own. ── */
+.pulse-band {
+  position: relative;
+}
+.pulse-band.is-paper {
+  background: var(--paper);
+}
+.pulse-band.is-ink {
+  background: var(--ink-950);
+}
+/* every band after the first is a sheet: rounded shoulder + a lifting shadow,
+   clipped to its own top radius */
+.pulse-band + .pulse-band {
+  border-radius: clamp(28px, 4vw, 52px) clamp(28px, 4vw, 52px) 0 0;
+  box-shadow: 0 -40px 84px rgba(5, 5, 5, 0.24);
+  overflow: clip;
+}
+/* a hairline catch-light along the incoming sheet's shoulder — ink takes a
+   light edge, paper a soft dark one — so the rise reads as a lifting page */
+.pulse-band + .pulse-band::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(56px, 7vw, 104px);
+  pointer-events: none;
+  z-index: 4;
+}
+.pulse-band + .pulse-band.is-ink::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+}
+.pulse-band + .pulse-band.is-paper::before {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.045), transparent);
+}
+.pulse-band.is-stacked {
+  position: sticky;
+  top: var(--vb-top, 0px);
+  z-index: var(--vb-z, 1);
+}
+
+/* ── Ink bands: the page chrome flips to light; the white specimen cards stay
+   white and read as lit evidence seated on a dark board. ── */
+.pulse-band.is-ink .pulse-chapter-index,
+.pulse-band.is-ink .pulse-section-tags,
+.pulse-band.is-ink .pulse-fig-caption {
+  color: rgba(255, 255, 255, 0.5);
+}
+.pulse-band.is-ink .pulse-chapter-claim,
+.pulse-band.is-ink .pulse-section-copy h3 {
+  color: var(--paper);
+}
+.pulse-band.is-ink .pulse-section-copy p {
+  color: rgba(255, 255, 255, 0.74);
+}
+.pulse-band.is-ink .pulse-chapter-headrule {
+  background: var(--pulse-rule-dark);
+}
+/* the figure-index em uses cyan-700 on paper (AA on white); on ink switch to
+   the brighter base cyan, which reads against near-black */
+.pulse-band.is-ink .pulse-fig {
+  color: var(--case-accent);
+}
+/* seat the white specimen cards on the dark board (a resting shadow, not a
+   glow) so they read as pinned evidence rather than floating cut-outs */
+.pulse-band.is-ink .pulse-melee-cell,
+.pulse-band.is-ink .pulse-spec-card {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.42);
+}
+/* the Turn drops its own full-bleed ink ground — the ink band owns it now,
+   so the horizontal 100vmax bleed can retire (it fought the band's clip) */
+.pulse-band .pulse-turn {
+  margin-top: clamp(56px, 6vw, 104px);
+  margin-bottom: clamp(56px, 6vw, 104px);
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
 }
 
 /* ── Fig. 02 — semantic color ramps (one row per role) ──────────────────── */
@@ -1733,7 +1817,15 @@ export function PulseCaseLayout({ project }: { project: Project }) {
   return (
     <article className="case-study-page pulse-case-page" data-has-cover="false">
       <style dangerouslySetInnerHTML={{ __html: pulseCss }} />
+      <BandStack selector=".pulse-case-page > .pulse-band" />
 
+      {/* ── Theme bands, mapped to the arc: paper (the clean specimen
+          identity) → ink (the melee / wake-up / rescue: the dark, tangled
+          origin, its evidence lit on a dark board) → paper (the system that
+          emerged, order restored) → ink (the Turn: the solemn reflection) →
+          paper (the quiet close). BandStack pins each band by its bottom and
+          slides the next up over it — a scroll-driven page-turn. ── */}
+      <div className="pulse-band is-paper">
       {/* ── Hero: H1 + lede + meta rail + token-sheet specimen ── */}
       <section className="case-study-hero" id="header">
         <p className="case-hero-kicker" data-fade>
@@ -1812,7 +1904,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           </p>
         </aside>
       </section>
+      </div>
 
+      <div className="pulse-band is-ink">
       {/* ── 01 · The melee — one product, six tools, no shared line ── */}
       {melee && (
         <section className="case-chapter pulse-chapter">
@@ -1933,7 +2027,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           )}
         </section>
       )}
+      </div>
 
+      <div className="pulse-band is-paper">
       {/* ── 04 · The system — the base, the standards, the skills ── */}
       {system && (
         <section className="case-chapter pulse-chapter">
@@ -2404,7 +2500,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           )}
         </section>
       )}
+      </div>
 
+      <div className="pulse-band is-ink">
       {/* ── The Turn — the reflective climax, after the arc has run from
           melee to system to product: the one ink band, with the human-gate
           spine (the page's one seal-red moment) ── */}
@@ -2446,7 +2544,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           </footer>
         </section>
       )}
+      </div>
 
+      <div className="pulse-band is-paper">
       {/* ── Adjacent case — quiet close ── */}
       {next && (
         <aside className="pulse-next">
@@ -2458,6 +2558,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           </Link>
         </aside>
       )}
+      </div>
     </article>
   );
 }
