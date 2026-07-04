@@ -809,6 +809,12 @@ const pulseCss = `
   grid-column: 1 / -1;
   max-width: 1080px;
 }
+/* multi-node flow diagrams: full-row placement at a reading width —
+   they are the act's anchor, not a sidebar card */
+.pulse-inset-medium {
+  grid-column: 1 / -1;
+  max-width: 760px;
+}
 .pulse-section-full {
   grid-column: 1 / -1;
 }
@@ -2122,6 +2128,12 @@ const pulseCss = `
   .pulse-section-aside {
     grid-column: 6 / -1;
   }
+  /* multi-node flow diagrams don't survive the narrow tablet aside —
+     they drop to full width instead */
+  .pulse-aside-wide {
+    grid-column: 1 / -1;
+    max-width: 560px;
+  }
   .pulse-section-inset,
   .pulse-section-full {
     grid-column: 1 / -1;
@@ -2303,6 +2315,14 @@ const pulseCss = `
   line-height: 1.35;
   color: var(--pp-text-3);
 }
+/* four-node rows ride a compact scale so every word fits its track */
+.pflow-grid.is-tight .pflow-node {
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.pflow-grid.is-tight .pflow-node em {
+  font-size: 11px;
+}
 /* stage tints — Pulse's own semantics carried into the diagrams:
    cyan = ready/neutral work, purple = generating/in-flight, amber = the
    risky step, green = confirmed good */
@@ -2343,8 +2363,8 @@ const pulseCss = `
 .pflow-line.is-amber { color: #cc7f06; }
 .pflow-loop {
   box-sizing: border-box;
-  height: 24px;
-  margin-top: -2px;
+  height: 26px;
+  margin-top: -4px;
   border: 2px dashed #cc7f06;
   border-top: 0;
   border-radius: 0 0 12px 12px;
@@ -2766,7 +2786,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           className="pflow-grid"
                           style={{
                             gridTemplateColumns:
-                              "max-content minmax(20px, 1fr) max-content",
+                              "minmax(0, 1fr) 32px minmax(0, 1fr)",
                           }}
                         >
                           <span className="pflow-node">Boards</span>
@@ -2783,7 +2803,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           className="pflow-grid"
                           style={{
                             gridTemplateColumns:
-                              "max-content minmax(20px, 1fr) max-content",
+                              "minmax(0, 1fr) 32px minmax(0, 1fr)",
                           }}
                         >
                           <span className="pflow-node is-cyan">
@@ -2977,7 +2997,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {wakeup.sections[1] && (
               <div className="pulse-section">
                 <SectionProse section={wakeup.sections[1]} />
-                <figure className="pulse-section-aside" data-fade>
+                <figure className="pulse-inset-medium" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
                       <span>own file first &middot; then the bar</span>
@@ -2992,7 +3012,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                         aria-hidden="true"
                         style={{
                           gridTemplateColumns:
-                            "max-content minmax(18px, 1fr) max-content minmax(18px, 1fr) max-content",
+                            "minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr)",
                         }}
                       >
                         <span className="pflow-node is-cyan">
@@ -3035,7 +3055,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {rescue.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={rescue.sections[0]} />
-                <figure className="pulse-section-aside" data-fade>
+                <figure className="pulse-inset-medium" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
                       <span>the rescue &middot; one pipeline</span>
@@ -3050,7 +3070,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                         aria-hidden="true"
                         style={{
                           gridTemplateColumns:
-                            "max-content minmax(14px, 1fr) max-content minmax(14px, 1fr) max-content minmax(14px, 1fr) max-content",
+                            "minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr)",
                         }}
                       >
                         <span className="pflow-node is-cyan">Unify</span>
@@ -3256,7 +3276,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {skills.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={skills.sections[0]} />
-                <figure className="pulse-section-aside" data-fade>
+                <figure className="pulse-section-aside pulse-aside-wide" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
                       <span>where systems go to die</span>
@@ -3271,7 +3291,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           className="pflow-grid"
                           style={{
                             gridTemplateColumns:
-                              "max-content minmax(20px, 1fr) max-content",
+                              "minmax(0, 1fr) 32px minmax(0, 1fr)",
                           }}
                         >
                           <span className="pflow-node">Prompt</span>
@@ -3291,7 +3311,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           className="pflow-grid"
                           style={{
                             gridTemplateColumns:
-                              "max-content minmax(20px, 1fr) max-content",
+                              "minmax(0, 1fr) 32px minmax(0, 1fr)",
                           }}
                         >
                           <span className="pflow-node is-cyan">
@@ -3348,7 +3368,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {skills.sections[1] && (
               <div className="pulse-section">
                 <SectionProse section={skills.sections[1]} />
-                <figure className="pulse-section-aside" data-fade>
+                <figure className="pulse-inset-medium" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
                       <span>harness control &middot; the loop that stays</span>
@@ -3363,7 +3383,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                         aria-hidden="true"
                         style={{
                           gridTemplateColumns:
-                            "max-content minmax(12px, 1fr) max-content minmax(12px, 1fr) max-content minmax(12px, 1fr) max-content",
+                            "minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr)",
                         }}
                       >
                         <span className="pflow-node">Decide</span>
