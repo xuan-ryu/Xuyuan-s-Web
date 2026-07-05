@@ -23,12 +23,16 @@ const bespokeLayouts: Record<string, ComponentType<{ project: Project }>> = {
   "vr-education": VrmbPosterLayout,
 };
 
+type WorkPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata(
-  props: PageProps<"/work/[slug]">,
+  props: WorkPageProps,
 ): Promise<Metadata> {
   const { slug } = await props.params;
   const project = projectsBySlug[slug];
@@ -39,7 +43,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function CaseStudy(props: PageProps<"/work/[slug]">) {
+export default async function CaseStudy(props: WorkPageProps) {
   const { slug } = await props.params;
   const project = projectsBySlug[slug];
   if (!project) notFound();
