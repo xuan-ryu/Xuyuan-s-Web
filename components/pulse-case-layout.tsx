@@ -250,13 +250,14 @@ const hubRoles: Array<[string, string]> = [
   ["product", "one runnable flow"],
 ];
 
-// ── CI gate chain (ch. 06) — the five jobs, generalized. ──
+// ── CI guard checks (ch. 06) — the jobs that protect the canonical HTML
+//    library on every merge. The pipeline's later publish/pages jobs ship
+//    the SEPARATE npm package (ch. 08), so they're not shown here — the
+//    package hasn't been introduced yet at this point in the story. ──
 const ciSteps: Array<[string, string]> = [
   ["verify", "inventory ↔ preview ↔ board"],
   ["tokens", "drift advisory"],
   ["generated", "hand-edit guard"],
-  ["publish", "package release"],
-  ["pages", "playground deploy"],
 ];
 
 // ── Build timeline (ch. 07 close), drawn as a commit spine. Notes at label
@@ -867,6 +868,21 @@ const pulseCss = `
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--work-grid-gap);
 }
+/* before/after takeover pair — a labeled column per state */
+.pulse-shot-labeled {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.pulse-shot-label {
+  font-family: var(--pulse-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.pulse-shot-label.is-before { color: var(--pp-amber-dark); }
+.pulse-shot-label.is-after { color: var(--pp-green-dark); }
 
 /* ── Ch. 01 — the melee grid ────────────────────────────────────────────── */
 .pulse-melee {
@@ -2530,14 +2546,15 @@ const pulseCss = `
   to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  /* pflow flow diagrams — stagger children by column position */
-  .pulse-case-page .pflow-grid > :nth-child(2) { --pd: 90ms; }
-  .pulse-case-page .pflow-grid > :nth-child(3) { --pd: 180ms; }
-  .pulse-case-page .pflow-grid > :nth-child(4) { --pd: 270ms; }
-  .pulse-case-page .pflow-grid > :nth-child(5) { --pd: 360ms; }
-  .pulse-case-page .pflow-grid > :nth-child(6) { --pd: 450ms; }
-  .pulse-case-page .pflow-grid > :nth-child(7) { --pd: 540ms; }
-  .pulse-case-page .pflow-lane:nth-child(2) { --ld: 300ms; }
+  /* pflow flow diagrams — stagger children by column position (slowed ~1.4x
+     from the first pass; the assembly read too fast) */
+  .pulse-case-page .pflow-grid > :nth-child(2) { --pd: 130ms; }
+  .pulse-case-page .pflow-grid > :nth-child(3) { --pd: 260ms; }
+  .pulse-case-page .pflow-grid > :nth-child(4) { --pd: 390ms; }
+  .pulse-case-page .pflow-grid > :nth-child(5) { --pd: 520ms; }
+  .pulse-case-page .pflow-grid > :nth-child(6) { --pd: 650ms; }
+  .pulse-case-page .pflow-grid > :nth-child(7) { --pd: 780ms; }
+  .pulse-case-page .pflow-lane:nth-child(2) { --ld: 440ms; }
 
   .pulse-case-page figure[data-fade] .pflow-node,
   .pulse-case-page figure[data-fade] .pflow-line,
@@ -2555,31 +2572,31 @@ const pulseCss = `
     transform-origin: top;
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-node {
-    animation: pAssembleDrop 0.42s var(--ease-spring) forwards;
-    animation-delay: calc(220ms + var(--ld, 0ms) + var(--pd, 0ms));
+    animation: pAssembleDrop 0.58s var(--ease-spring) forwards;
+    animation-delay: calc(300ms + var(--ld, 0ms) + var(--pd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-line {
-    animation: pAssembleDraw 0.34s var(--ease-silk) forwards;
-    animation-delay: calc(250ms + var(--ld, 0ms) + var(--pd, 0ms));
+    animation: pAssembleDraw 0.48s var(--ease-silk) forwards;
+    animation-delay: calc(340ms + var(--ld, 0ms) + var(--pd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-loop {
-    animation: pAssembleLoop 0.4s var(--ease-silk) forwards;
-    animation-delay: calc(540ms + var(--ld, 0ms));
+    animation: pAssembleLoop 0.56s var(--ease-silk) forwards;
+    animation-delay: calc(760ms + var(--ld, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-note {
-    animation: pAssembleDrop 0.42s var(--ease-silk) forwards;
-    animation-delay: calc(580ms + var(--ld, 0ms));
+    animation: pAssembleDrop 0.58s var(--ease-silk) forwards;
+    animation-delay: calc(820ms + var(--ld, 0ms));
   }
 
   /* melee — the four source scenes rise in sequence */
   .pulse-case-page figure[data-fade] .pulse-melee-cell { opacity: 0; }
   .pulse-case-page .pulse-melee-cell:nth-child(1) { --cd: 0ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(2) { --cd: 110ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(3) { --cd: 220ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(4) { --cd: 330ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(2) { --cd: 150ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(3) { --cd: 300ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(4) { --cd: 450ms; }
   .pulse-case-page figure[data-fade].is-visible .pulse-melee-cell {
-    animation: pAssembleRise 0.5s var(--ease-spring) forwards;
-    animation-delay: calc(180ms + var(--cd, 0ms));
+    animation: pAssembleRise 0.68s var(--ease-spring) forwards;
+    animation-delay: calc(240ms + var(--cd, 0ms));
   }
 
   /* build timeline — the commit spine grows as the rows stagger in */
@@ -2592,26 +2609,26 @@ const pulseCss = `
     opacity: 0;
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-timeline::before {
-    animation: pAssembleGrow 0.72s var(--ease-silk) forwards;
-    animation-delay: 200ms;
+    animation: pAssembleGrow 1s var(--ease-silk) forwards;
+    animation-delay: 260ms;
   }
   .pulse-case-page .pulse-timeline-row:nth-child(1) { --rd: 0ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(2) { --rd: 56ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(3) { --rd: 112ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(4) { --rd: 168ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(5) { --rd: 224ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(6) { --rd: 280ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(7) { --rd: 336ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(8) { --rd: 392ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(9) { --rd: 448ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(10) { --rd: 504ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(2) { --rd: 78ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(3) { --rd: 156ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(4) { --rd: 234ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(5) { --rd: 312ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(6) { --rd: 390ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(7) { --rd: 468ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(8) { --rd: 546ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(9) { --rd: 624ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(10) { --rd: 702ms; }
   .pulse-case-page figure[data-fade].is-visible .pulse-timeline-row {
-    animation: pAssembleRise 0.44s var(--ease-silk) forwards;
-    animation-delay: calc(300ms + var(--rd, 0ms));
+    animation: pAssembleRise 0.6s var(--ease-silk) forwards;
+    animation-delay: calc(400ms + var(--rd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-timeline-legend {
-    animation: pAssembleDrop 0.42s var(--ease-silk) forwards;
-    animation-delay: 900ms;
+    animation: pAssembleDrop 0.58s var(--ease-silk) forwards;
+    animation-delay: 1240ms;
   }
 
   /* roles hub — the base bar drops, stems extend down, chips rise */
@@ -2619,37 +2636,37 @@ const pulseCss = `
   .pulse-case-page figure[data-fade] .pflow-hub-stem { transform: scaleY(0); transform-origin: top; }
   .pulse-case-page figure[data-fade] .pflow-hub-chip { opacity: 0; transform: translateY(12px); }
   .pulse-case-page figure[data-fade].is-visible .pflow-hub-bar {
-    animation: pAssembleDrop 0.42s var(--ease-spring) forwards;
-    animation-delay: 200ms;
+    animation: pAssembleDrop 0.58s var(--ease-spring) forwards;
+    animation-delay: 280ms;
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-hub-stem {
-    animation: pAssembleGrow 0.34s var(--ease-silk) forwards;
-    animation-delay: 360ms;
+    animation: pAssembleGrow 0.48s var(--ease-silk) forwards;
+    animation-delay: 500ms;
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-hub-chip {
-    animation: pAssembleRise 0.44s var(--ease-spring) forwards;
-    animation-delay: 500ms;
+    animation: pAssembleRise 0.6s var(--ease-spring) forwards;
+    animation-delay: 700ms;
   }
 
   /* approval + CI chains — cells and links rise left to right */
   .pulse-case-page figure[data-fade] .pulse-chain-cell,
   .pulse-case-page figure[data-fade] .pulse-chain-link { opacity: 0; }
   .pulse-case-page .pulse-chain-row > :nth-child(1) { --nd: 0ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(2) { --nd: 110ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(3) { --nd: 220ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(4) { --nd: 330ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(5) { --nd: 440ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(6) { --nd: 550ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(7) { --nd: 660ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(8) { --nd: 770ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(9) { --nd: 880ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(2) { --nd: 150ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(3) { --nd: 300ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(4) { --nd: 450ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(5) { --nd: 600ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(6) { --nd: 750ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(7) { --nd: 900ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(8) { --nd: 1050ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(9) { --nd: 1200ms; }
   .pulse-case-page figure[data-fade].is-visible .pulse-chain-cell {
-    animation: pAssembleRise 0.44s var(--ease-spring) forwards;
-    animation-delay: calc(200ms + var(--nd, 0ms));
+    animation: pAssembleRise 0.6s var(--ease-spring) forwards;
+    animation-delay: calc(280ms + var(--nd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-chain-link {
-    animation: pAssembleDrop 0.36s var(--ease-silk) forwards;
-    animation-delay: calc(200ms + var(--nd, 0ms));
+    animation: pAssembleDrop 0.5s var(--ease-silk) forwards;
+    animation-delay: calc(280ms + var(--nd, 0ms));
   }
 }
 
@@ -3377,6 +3394,27 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </span>
                   </figcaption>
                 </figure>
+                <figure className="pulse-section-inset" data-fade>
+                  <div className="pulse-chain-row">
+                    {ciSteps.map(([label, note], i) => (
+                      <Fragment key={label}>
+                        {i > 0 && <span className="pulse-chain-link" aria-hidden="true" />}
+                        <div className="pulse-chain-cell">
+                          <i>{String(i + 1).padStart(2, "0")}</i>
+                          <strong>{label}</strong>
+                          <em>{note}</em>
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 13</em>The CI guard checks
+                      &mdash; inventory, tokens, and hand-edits, reconciled on
+                      every merge
+                    </span>
+                  </figcaption>
+                </figure>
                 <figure className="pulse-doc-quote pulse-section-inset" data-fade>
                   <blockquote>{doctrineQuote}</blockquote>
                   <figcaption>
@@ -3394,26 +3432,6 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <figcaption>
                     Verbatim from the repo&rsquo;s README &mdash; the floor,
                     written into law.
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-chain-row">
-                    {ciSteps.map(([label, note], i) => (
-                      <Fragment key={label}>
-                        {i > 0 && <span className="pulse-chain-link" aria-hidden="true" />}
-                        <div className="pulse-chain-cell">
-                          <i>{String(i + 1).padStart(2, "0")}</i>
-                          <strong>{label}</strong>
-                          <em>{note}</em>
-                        </div>
-                      </Fragment>
-                    ))}
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 13</em>The CI gate chain
-                      &mdash; the standard enforces itself on every merge
-                    </span>
                   </figcaption>
                 </figure>
               </div>
@@ -3931,6 +3949,94 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 </div>
               </div>
             )}
+            {product.sections[3] && (
+              <div className="pulse-section">
+                <SectionProse section={product.sections[3]} />
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-shot-pair">
+                    <div className="pulse-shot-labeled">
+                      <span className="pulse-shot-label is-before">
+                        Before &middot; the teammate&rsquo;s vibe-code
+                      </span>
+                      <div className="pulse-shot">
+                        <Image
+                          src="/media/work/pulse/campaign-before.png"
+                          alt="The rough campaign prototype: a flat Campaign Library — a KPI strip, filter tabs, search, and a scroll of campaign cards, with the assistant collapsed to a chat pill"
+                          width={SHOT_W}
+                          height={SHOT_H}
+                          sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 560px"
+                          style={{ width: "100%", height: "auto" }}
+                        />
+                      </div>
+                    </div>
+                    <div className="pulse-shot-labeled">
+                      <span className="pulse-shot-label is-after">
+                        After &middot; rebuilt on the base
+                      </span>
+                      <div className="pulse-shot">
+                        <Image
+                          src="/media/work/pulse/campaign-after.png"
+                          alt="The rebuilt campaign page: a decision-first Overview with an approvals card, a segmented production queue, and a Pulse-suggests rail of signal-driven campaign directions"
+                          width={SHOT_W}
+                          height={SHOT_H}
+                          sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 560px"
+                          style={{ width: "100%", height: "auto" }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 30</em>Same brief, rebuilt
+                      &mdash; a browse-first Campaign Library became a
+                      decision-first Overview
+                    </span>
+                  </figcaption>
+                </figure>
+                <figure className="pulse-inset-medium" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>the intake &middot; then the base</span>
+                    </header>
+                    <div
+                      className="pflow"
+                      role="img"
+                      aria-label="The campaign page went from a vibe-coded intake — one four-thousand-line HTML file with inline styles, base64 images and no system — to a rebuild on the base: shared tokens and components, ten CSS modules and fifteen JS component modules, consuming three design-system components directly."
+                    >
+                      <div
+                        className="pflow-grid"
+                        aria-hidden="true"
+                        style={{
+                          gridTemplateColumns:
+                            "minmax(0, 1fr) 32px minmax(0, 1fr)",
+                        }}
+                      >
+                        <span className="pflow-node is-amber">
+                          The intake
+                          <em>one 4,000-line file &middot; inline &middot; base64 &middot; no system</em>
+                        </span>
+                        <span className="pflow-line is-amber" />
+                        <span className="pflow-node is-green">
+                          On the base
+                          <em>shared tokens + 10 CSS &middot; 15 JS modules &middot; 3 DS components</em>
+                        </span>
+                      </div>
+                      <p className="pflow-note is-green is-center" aria-hidden="true">
+                        <i>✓</i>207 commits over ~2.5 weeks &mdash; a picture
+                        refined into a handoff-ready product
+                      </p>
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 31</em>The refinement, in
+                      the build &mdash; monolith to modular, on the design
+                      system
+                    </span>
+                  </figcaption>
+                </figure>
+              </div>
+            )}
         </section>
       )}
 
@@ -3965,7 +4071,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             </div>
             <footer className="pulse-spine-caption" data-fade>
               <span>
-                <em className="pulse-fig">Fig. 30</em>Create-with-AI &mdash;
+                <em className="pulse-fig">Fig. 32</em>Create-with-AI &mdash;
                 where a person stays in the loop
               </span>
               <span className="pulse-spine-legend">

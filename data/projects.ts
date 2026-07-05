@@ -166,11 +166,12 @@ export const projects: Project[] = [
             ],
           },
           {
-            tags: "OWN FILE FIRST · DELIVERY BAR",
+            tags: "OWN FILE FIRST · THE MILESTONE",
             heading:
-              "Engineer my own page, then ask engineering",
+              "If it’s all code anyway, hand it off clean",
             body: [
-              "I started with my own file: split it, structured it, cleared the dead code. Then I asked the engineers a question nobody had raised yet — if design ships code, what shape would you actually accept? Their stack was React, so I rebuilt on their conventions. The handover went cleanly, and it showed how far the rest of the product still had to go.",
+              "I started with my own file: split it, structured it, cleared the dead code. The realization underneath became the whole project. A prototype that looks right but is chaos in the code is still just a prototype — and since generating clean, structured code costs about the same as generating a mess, and it is all code either way, why not generate it in the shape engineering can actually receive, so the designer owns the real front-end result instead of throwing a picture over the wall?",
+              "So I asked the engineers a question nobody had raised yet: if design ships code, what shape would you actually accept? Their stack was React, so I rebuilt on their conventions and the handover went cleanly. To me that was the real milestone — AI quietly closing the old, contentious gap between what design draws and what engineering has to build.",
             ],
           },
         ],
@@ -188,11 +189,11 @@ export const projects: Project[] = [
             ],
           },
           {
-            tags: "DATA · ML HANDOFF",
+            tags: "DATA CONTRACT · A LESSON",
             heading:
               "Then the data didn’t fit",
             body: [
-              "A pitch needs a real case, so I wired in the ML team’s data, and the shapes didn’t match what the front end expected. Mapping fields, states, and edge cases into components pushed me into the invisible half of front-end work. The mockup still shipped on time. What also shipped was a conviction that this could not be allowed to happen twice.",
+              "A pitch needs a real case, so I wired in the ML team’s data — and the shapes didn’t match what the screens had assumed. That was our inexperience showing: we built the UI first and treated the data as a detail to pour in later, when the honest order is the reverse — start from the data that actually exists, tag it, and design the chart around what it can give you. Mapping fields, states, and the empty and loading cases by hand taught me a component’s data contract is part of its design, not an afterthought. The mockup still shipped on time; the lesson shipped with it.",
             ],
           },
         ],
@@ -214,7 +215,7 @@ export const projects: Project[] = [
             heading:
               "Stepping down from React, on purpose",
             body: [
-              "I had proven the React path and still chose plain HTML and CSS as the team’s prototype stack, because a mockup a teammate can’t open might as well not exist. The floor mattered more than the ceiling here. The discipline lives in the tokens and the checks, not in the framework.",
+              "I had proven I could ship the React path, and still made plain HTML and CSS the team’s prototype stack — an interim call, and one I stay honest about. Not everyone on the team can fully own engineering standards yet, and plain files meet everyone where they are: a designer and an engineer can both edit them, they export straight to Figma design boards, they preview from a double-click with no dev server to run, and they still convert cleanly into React or another framework later. A mockup a teammate can’t open might as well not exist. The floor mattered more than the ceiling — the discipline lives in the tokens and the checks, not the framework.",
             ],
           },
         ],
@@ -253,11 +254,11 @@ export const projects: Project[] = [
             ],
           },
           {
-            tags: "PACKAGE · DATA STATES",
+            tags: "PACKAGE · A SEPARATE MIGRATION",
             heading:
               "From preview to infrastructure",
             body: [
-              "A teammate then wrapped the library as a typed React package on the team’s private registry, with a build step that copies the canonical CSS in so the package cannot drift from its source. Its playground goes past looks: you feed a component data and watch it hold. That was the thing the melee had been missing — not talent, but an interface between the people involved.",
+              "The HTML library stayed the source of truth. Separately, and later, a teammate re-migrated it into a typed React package on the team’s private registry — a distinct build that copies the canonical CSS in so the package can’t drift from its origin, then a CI job publishes that package and deploys its playground. The playground goes past looks: you feed a component data and watch it hold. That was the thing the melee had been missing — not talent, but an interface between the people who had to work together.",
             ],
           },
         ],
@@ -290,6 +291,18 @@ export const projects: Project[] = [
               "Two gates and a guardrail keep a person in charge",
             body: [
               "Approval runs through an ordered chain — reviewer, brand admin, org owner — with SLA timers and an escalation that never auto-approves. A plan gate signs off direction and spend before any credits burn; a content gate signs off the finished creative before it goes live.",
+            ],
+          },
+          {
+            tags: "CAMPAIGN PAGE · TAKEOVER",
+            // Fig. attach in the layout: before/after screenshots + a build-diff
+            // card. Numbers from the Pulse repo's own git record (campaign
+            // standalone track): 207 commits, 2026-06-18 → 07-04.
+            heading:
+              "Rebuilding a vibe-coded page, step by step",
+            body: [
+              "The clearest proof of all this is the Campaign page. It reached me as a teammate’s quick, vibe-coded prototype — one four-thousand-line HTML file, styles inlined, images pasted in as data, no system underneath. It looked like a product and behaved like a draft.",
+              "Over about two and a half weeks I rebuilt it on the base, a commit at a time: I pulled the status tabs and badges out as real components, reshaped the flow from a flat Campaign Library into a decision-first Overview — what needs your approval and what’s mid-production, with the assistant proposing directions from the week’s signals — added the plan-diff gate and the approval chain, and finally let it consume the design-system components directly. Same brief; a real product. A picture became something engineering could receive and a designer could keep owning — which is the whole point.",
             ],
           },
         ],

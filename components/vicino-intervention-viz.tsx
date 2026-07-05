@@ -327,25 +327,26 @@ export function VicinoInterventionViz() {
   .vicino-flow-viz .vz-int-stem.is-dn .vz-int-stem-line { transform-origin: top; }
   .vicino-flow-viz .vz-int-mark { opacity: 0; }
   .vicino-flow-viz .vz-int-phrase { opacity: 0; transform: translateY(6px); }
+  /* per-stage timings slowed ~1.4x from the first pass (read too fast) */
   .vicino-flow-viz.is-visible .vz-int-core {
-    animation: vziDrop 0.42s var(--ease-spring, ease) forwards;
-    animation-delay: calc(220ms + (var(--col, 1) - 1) * 150ms);
+    animation: vziDrop 0.58s var(--ease-spring, ease) forwards;
+    animation-delay: calc(300ms + (var(--col, 1) - 1) * 210ms);
   }
   .vicino-flow-viz.is-visible .vz-int-seg {
-    animation: vziDraw 0.34s var(--ease-silk, ease) forwards;
-    animation-delay: calc(300ms + (var(--col, 1) - 1) * 150ms);
+    animation: vziDraw 0.48s var(--ease-silk, ease) forwards;
+    animation-delay: calc(400ms + (var(--col, 1) - 1) * 210ms);
   }
   .vicino-flow-viz.is-visible .vz-int-stem-line {
-    animation: vziGrow 0.3s var(--ease-silk, ease) forwards;
-    animation-delay: calc(340ms + (var(--col, 1) - 1) * 150ms);
+    animation: vziGrow 0.42s var(--ease-silk, ease) forwards;
+    animation-delay: calc(460ms + (var(--col, 1) - 1) * 210ms);
   }
   .vicino-flow-viz.is-visible .vz-int-mark {
-    animation: vziDrop 0.3s var(--ease-silk, ease) forwards;
-    animation-delay: calc(420ms + (var(--col, 1) - 1) * 150ms);
+    animation: vziDrop 0.42s var(--ease-silk, ease) forwards;
+    animation-delay: calc(560ms + (var(--col, 1) - 1) * 210ms);
   }
   .vicino-flow-viz.is-visible .vz-int-phrase {
-    animation: vziDrop 0.42s var(--ease-silk, ease) forwards;
-    animation-delay: calc(400ms + (var(--col, 1) - 1) * 150ms);
+    animation: vziDrop 0.58s var(--ease-silk, ease) forwards;
+    animation-delay: calc(540ms + (var(--col, 1) - 1) * 210ms);
   }
 }
 `,

@@ -270,28 +270,29 @@ export function VicinoCheckpointViz() {
   .vicino-flow-viz .vz-chk-over,
   .vicino-flow-viz .vz-chk-loop-label,
   .vicino-flow-viz .vz-chk-path { opacity: 0; }
-  .vicino-flow-viz .vz-chk-lane:nth-child(2) { --vlane: 440ms; }
+  /* lane offset + timings slowed ~1.4x from the first pass (read too fast) */
+  .vicino-flow-viz .vz-chk-lane:nth-child(2) { --vlane: 620ms; }
   .vicino-flow-viz.is-visible .vz-chk-path {
-    animation: vzDrop 0.42s var(--ease-silk, ease) forwards;
-    animation-delay: calc(160ms + var(--vlane, 0ms));
-  }
-  .vicino-flow-viz.is-visible .vz-chk-node {
-    animation: vzDrop 0.42s var(--ease-spring, ease) forwards;
+    animation: vzDrop 0.58s var(--ease-silk, ease) forwards;
     animation-delay: calc(220ms + var(--vlane, 0ms));
   }
+  .vicino-flow-viz.is-visible .vz-chk-node {
+    animation: vzDrop 0.58s var(--ease-spring, ease) forwards;
+    animation-delay: calc(300ms + var(--vlane, 0ms));
+  }
   .vicino-flow-viz.is-visible .vz-chk-conn {
-    animation: vzDraw 0.4s var(--ease-silk, ease) forwards;
-    animation-delay: calc(360ms + var(--vlane, 0ms));
+    animation: vzDraw 0.56s var(--ease-silk, ease) forwards;
+    animation-delay: calc(500ms + var(--vlane, 0ms));
   }
   .vicino-flow-viz.is-visible .vz-chk-loop-big,
   .vicino-flow-viz.is-visible .vz-chk-loop-small {
-    animation: vzLoop 0.44s var(--ease-silk, ease) forwards;
-    animation-delay: calc(540ms + var(--vlane, 0ms));
+    animation: vzLoop 0.6s var(--ease-silk, ease) forwards;
+    animation-delay: calc(760ms + var(--vlane, 0ms));
   }
   .vicino-flow-viz.is-visible .vz-chk-over,
   .vicino-flow-viz.is-visible .vz-chk-loop-label {
-    animation: vzDrop 0.42s var(--ease-silk, ease) forwards;
-    animation-delay: calc(620ms + var(--vlane, 0ms));
+    animation: vzDrop 0.58s var(--ease-silk, ease) forwards;
+    animation-delay: calc(860ms + var(--vlane, 0ms));
   }
 }
 `,
