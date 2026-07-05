@@ -4,6 +4,7 @@ import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond-lazy";
 import { FeaturedGate } from "@/components/featured-gate";
+import { KoiLotusFrame } from "@/components/fg-lotus-layer";
 import { RoofTransition } from "@/components/roof-transition";
 import { KoiHowOverlay } from "@/components/koi-how-overlay";
 
@@ -61,6 +62,7 @@ export default function Home() {
                 heroBoxXvw={50}
               />
             ) : null}
+            {!liteScenesEnabled ? <KoiLotusFrame /> : null}
           </div>
         </div>
         <KoiHowOverlay

@@ -21,6 +21,7 @@ export default function InkKoiEcosystem(props: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const fishCanvasRef = useRef<HTMLCanvasElement | null>(null)
     const padCanvasRef = useRef<HTMLCanvasElement | null>(null)
+    const showLilyPads = false
 
     const uiBoxRef = useRef<HTMLDivElement | null>(null)
     const scrollTipRef = useRef<HTMLDivElement | null>(null)
@@ -122,8 +123,12 @@ export default function InkKoiEcosystem(props: Props) {
             const fishProgress = clamp(scrollY / 100, 0, 1)
             canvas.style.opacity = String(1 - Math.pow(1 - fishProgress, 2))
 
-            const padProgress = clamp(scrollY / 160, 0, 1)
-            padCanvas.style.opacity = String(1 - Math.pow(1 - padProgress, 2))
+            if (showLilyPads) {
+                const padProgress = clamp(scrollY / 160, 0, 1)
+                padCanvas.style.opacity = String(1 - Math.pow(1 - padProgress, 2))
+            } else {
+                padCanvas.style.opacity = "0"
+            }
 
             if (scrollTip)
                 scrollTip.style.opacity = String(Math.max(0, 1 - scrollY / 120))
@@ -1691,6 +1696,7 @@ drawBody() {
         }
 
         function drawLilyPads() {
+            if (!showLilyPads) return
             padCtx.clearRect(0, 0, width, height)
             const SEGS = qualityTier >= 2 ? 52 : qualityTier === 1 ? 36 : 24
             padCtx.save()
@@ -1826,7 +1832,7 @@ drawBody() {
                 f.update(fishes, foodParticles, eggs, now, dt)
                 f.draw()
             }
-            if (now - lastPadDrawAt >= padFrameInterval) {
+            if (showLilyPads && now - lastPadDrawAt >= padFrameInterval) {
                 drawLilyPads()
                 lastPadDrawAt = now
             }
@@ -1951,7 +1957,7 @@ drawBody() {
             }
             #padCanvas{
               position:absolute; inset:0; width:100%; height:100%;
-              display:block; pointer-events:none;
+              display:none; pointer-events:none;
               opacity:0; will-change: opacity;
             }
             

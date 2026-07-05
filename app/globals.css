@@ -2699,7 +2699,7 @@ body.hero-night .nav-links a.active {
 }
 .home-koi-inner {
   position: absolute;
-  inset: 0 0 237px 0; /* the pond keeps its ~1318px stage inside the band */
+  inset: 0; /* the pond must fill the whole band until the footer takes over */
   background: #020305;
   overflow: hidden;
 }
@@ -2746,7 +2746,7 @@ body.hero-night .nav-links a.active {
     height: 100%;
   }
   .home-koi-inner {
-    inset: 0 0 119px 0;
+    inset: 0;
   }
   .proj-summary {
     display: block;

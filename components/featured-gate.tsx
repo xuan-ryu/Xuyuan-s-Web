@@ -17,8 +17,8 @@
 // short runway the gate scales until the round opening swallows the viewport
 // and sinks to ink; lotus leaves then condense over the ink (the ink is now
 // the pond's water) until the viewport is covered; continued scroll parts
-// the pads outward from the center while a lotus blossom blooms between
-// them; at the very end the blossom and the last chrome dissolve and the
+// the pads outward from the center; at the very end the crossing layer and
+// last chrome dissolve and the
 // koi section (pulled up -100vh so it waits right behind) has risen into
 // place — one flick passes through the moon gate, through the lotus, onto
 // the pond; an up-flick folds the leaves shut and restores the wall (the
@@ -32,7 +32,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
-import { FgLotusLayer, FG_LEAVES } from "@/components/fg-lotus-layer";
+import {
+  FgLotusLayer,
+  FG_FLOWERS,
+  FG_LEAVES,
+} from "@/components/fg-lotus-layer";
 import { subscribeLenis } from "@/lib/lenis-bus";
 
 const FEATURED = 4;
@@ -49,14 +53,19 @@ const ZOOM_END = 0.37; // gate fully scaled by here (hidden under full ink)
 const INK_AT = 0.13; // veil starts…
 const INK_DUR = 0.18; // …and the gate is solid ink by 0.31
 const LEAF_IN = 0.33; // pads condense over the ink until the water is covered
-const LEAF_IN_SPREAD = 0.07; // per-pad start scatter
-const LEAF_IN_DUR = 0.08;
+const LEAF_IN_SPREAD = 0.04; // per-pad start scatter
+const LEAF_IN_DUR = 0.1;
 const PART_AT = 0.5; // the canopy parts from the center…
-const PART_STAGGER = 0.12; // …center pads first, edges last
-const PART_DUR = 0.26;
-const BLOOM_OUTER = 0.54; // the blossom opens while the pads drift out
-const BLOOM_INNER = 0.63;
-const FADE_AT = 0.88; // ink + wall dissolve over the (by now) risen pond
+const PART_STAGGER = 0.07; // …center pads first, edges last
+const PART_DUR = 0.34;
+const BLOOM_AT = 0.46;
+const BLOOM_STAGGER = 0.02;
+const BLOOM_DUR = 0.16;
+// The reveal is sequenced AFTER the part finishes (~0.907) and AFTER the
+// crossing lotus layer has dissolved, so the koi + static KoiLotusFrame are
+// never shown while the transient crossing garland is still on screen (that
+// doubled/mis-registered ghost was the crossing's worst artifact).
+const FADE_AT = 0.945; // ink + wall dissolve over the (by now) risen pond
 const SNAP_FREE = 0.13; // below this progress there is no snap — rest and read
 
 export function FeaturedGate({ projects }: { projects: Project[] }) {
@@ -271,18 +280,24 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               ZOOM_START,
             )
             .to(veil, { opacity: 1, duration: INK_DUR }, INK_AT)
-            // the handoff: ink (and the white wall) dissolve at the very end,
-            // once the koi section has (mostly) risen behind — autoAlpha so
-            // the faded layers also stop hit-testing. Until then the ink
-            // veil IS the pond surface the lotus pads sit on.
-            .to([bg, gate], { autoAlpha: 0, duration: 0.09 }, FADE_AT);
+            // the white wall goes to the pond-water color BEHIND the still-
+            // opaque ink veil (invisible now) so that when the wall dissolves
+            // the koi emerge from dark-over-dark, never through a fading white
+            // sheet (that white sheet was washing the near-black koi to a
+            // milky gray). Reverts below 0.90 on up-scroll.
+            .set(bg, { backgroundColor: "#020305" }, 0.9)
+            // the handoff: ink (and the now-dark wall) dissolve at the very
+            // end, after the crossing layer is gone and the koi section has
+            // risen behind — autoAlpha so the faded layers also stop
+            // hit-testing. Until then the ink veil IS the pond surface the
+            // lotus pads sit on.
+            .to([bg, gate], { autoAlpha: 0, duration: 0.05 }, FADE_AT);
 
-          // ── lotus arrival: pads condense over the ink, part from the
-          //    center, and a blossom blooms in the opening — all scrubbed,
-          //    geometry from FgLotusLayer, motion params from FG_LEAVES ──
+          // Lotus arrival: leaves condense over the ink, then part from the
+          // center. The crossing is leaf-only so it reads as a pond surface,
+          // not a flower-opening demo.
           const layer = section.querySelector<HTMLElement>(".fgl-layer");
           if (layer) {
-            const rad = (deg: number) => (deg * Math.PI) / 180;
             const leaves = gsap.utils.toArray<HTMLElement>(".fgl-leaf", layer);
             leaves.forEach((el, i) => {
               const cfg = FG_LEAVES[i];
@@ -300,78 +315,98 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                 { opacity: 1, scale: 1, duration: LEAF_IN_DUR },
                 LEAF_IN + cfg.inOrder * LEAF_IN_SPREAD,
               );
-              // part along its own radial vector — center pads first; the
-              // slow-in ease reads as surface tension letting go. x/y are
-              // function-based so invalidateOnRefresh re-measures them.
+              // Part as a single horizontal pond curtain: center leaves give
+              // first, edge leaves follow. The y drift is intentionally small
+              // in FG_LEAVES so the scroll reads as left/right retreat, not
+              // independent objects scattering around the viewport.
               tl.to(
                 el,
                 {
                   x: () =>
-                    Math.cos(rad(cfg.partAng)) * cfg.travel * window.innerWidth,
+                    ((cfg.frameX - cfg.x) / 100) * window.innerWidth,
                   y: () =>
-                    Math.sin(rad(cfg.partAng)) * cfg.travel * window.innerHeight,
-                  rotation: cfg.rot + cfg.drot,
+                    ((cfg.frameY - cfg.y) / 100) * window.innerHeight,
+                  rotation: cfg.frameRot,
+                  scale: cfg.frameScale,
                   duration: PART_DUR,
-                  ease: "power2.in",
+                  ease: "sine.inOut",
                 },
                 PART_AT + cfg.order * PART_STAGGER,
               );
             });
+            const flowers = gsap.utils.toArray<HTMLElement>(
+              ".fgl-flower",
+              layer,
+            );
+            flowers.forEach((el, i) => {
+              const cfg = FG_FLOWERS[i];
+              if (!cfg) return;
+              const bud = el.querySelector<HTMLElement>(".fgl-f-bud");
+              const half = el.querySelector<HTMLElement>(".fgl-f-half");
+              const full = el.querySelector<HTMLElement>(".fgl-f-full");
 
-            const lotus = layer.querySelector<HTMLElement>(".fgl-lotus");
-            if (lotus) {
-              gsap.set(lotus, { xPercent: -50, yPercent: -50, autoAlpha: 0 });
-              const outer = gsap.utils.toArray<SVGGElement>(
-                ".fgl-petal-o",
-                lotus,
-              );
-              const inner = gsap.utils.toArray<SVGGElement>(
-                ".fgl-petal-i",
-                lotus,
-              );
-              const heart = lotus.querySelector<SVGGElement>(".fgl-heart");
-              // bud: petals furled into a swirl knot at the flower center.
-              // Each petal group is drawn unrotated with its base at the
-              // center (a static rotate() wrapper fans it), so its bbox
-              // bottom-center IS the flower center — scale/rotate about that.
-              // (svgOrigin is a trap here: with a negative viewBox min its
-              // global-coordinate math displaced the petals.)
-              gsap.set([...outer, ...inner], {
-                scale: 0.14,
-                rotation: -48,
-                transformOrigin: "50% 100%",
+              gsap.set(el, {
+                xPercent: -50,
+                yPercent: -50,
+                rotation: cfg.rot,
+                // a fuller seed so the closed-bud cluster actually reads
+                // against the 26vmin leaves before it opens (was 0.45 — a
+                // speck); the bloom still swells to cfg.frameScale
+                scale: 0.6,
+                transformOrigin: "50% 50%",
               });
-              if (heart)
-                gsap.set(heart, {
-                  scale: 0.4,
-                  opacity: 0,
-                  transformOrigin: "50% 50%",
-                });
-              // the bud surfaces among the pads…
-              tl.to(lotus, { autoAlpha: 1, duration: 0.06 }, LEAF_IN + 0.07);
-              // …and blooms while they part: outer ring first, then inner,
-              // then the seedpod
-              outer.forEach((p, k) =>
-                tl.to(
-                  p,
-                  { scale: 1, rotation: 0, duration: 0.18, ease: "power2.out" },
-                  BLOOM_OUTER + k * 0.012,
-                ),
-              );
-              inner.forEach((p, k) =>
-                tl.to(
-                  p,
-                  { scale: 1, rotation: 0, duration: 0.16, ease: "power2.out" },
-                  BLOOM_INNER + k * 0.012,
-                ),
-              );
-              if (heart)
-                tl.to(heart, { opacity: 1, scale: 1, duration: 0.08 }, 0.72);
-            }
+              gsap.set(bud, { opacity: 0.82 });
+              gsap.set(half, { opacity: 0 });
+              gsap.set(full, { opacity: 0 });
 
-            // the blossom (and any straggler pads) dissolve with the chrome —
-            // the unpin lands on the live pond alone
-            tl.to(layer, { autoAlpha: 0, duration: 0.08 }, 0.9);
+              const bloomAt =
+                BLOOM_AT + cfg.order * BLOOM_STAGGER + (cfg.bloomAt ?? 0);
+
+              tl.to(
+                el,
+                { opacity: 1, duration: LEAF_IN_DUR },
+                LEAF_IN + cfg.inOrder * LEAF_IN_SPREAD,
+              );
+              tl.to(bud, { opacity: 0, duration: BLOOM_DUR * 0.5 }, bloomAt);
+              tl.to(
+                half,
+                { opacity: 0.82, duration: BLOOM_DUR * 0.5 },
+                bloomAt,
+              );
+              tl.to(
+                half,
+                { opacity: 0, duration: BLOOM_DUR * 0.5 },
+                bloomAt + BLOOM_DUR * 0.5,
+              );
+              tl.to(
+                full,
+                { opacity: 0.82, duration: BLOOM_DUR * 0.5 },
+                bloomAt + BLOOM_DUR * 0.5,
+              );
+              tl.to(
+                el,
+                { scale: cfg.frameScale, duration: BLOOM_DUR },
+                bloomAt,
+              );
+              tl.to(
+                el,
+                {
+                  x: () =>
+                    ((cfg.frameX - cfg.x) / 100) * window.innerWidth,
+                  y: () =>
+                    ((cfg.frameY - cfg.y) / 100) * window.innerHeight,
+                  rotation: cfg.frameRot,
+                  duration: PART_DUR,
+                  ease: "sine.inOut",
+                },
+                PART_AT + cfg.order * PART_STAGGER,
+              );
+            });
+            // the transient crossing layer dissolves once the part has
+            // finished (~0.907) and BEFORE the wall/ink reveal (FADE_AT
+            // 0.945), so the crossing garland is fully gone before the koi +
+            // static KoiLotusFrame appear — no doubled/offset ghost.
+            tl.to(layer, { autoAlpha: 0, duration: 0.03 }, 0.91);
           }
 
           return () => {
