@@ -189,11 +189,11 @@ export const projects: Project[] = [
             ],
           },
           {
-            tags: "DATA CONTRACT · A LESSON",
+            tags: "MEETS REALITY · SAME LESSON",
             heading:
-              "Then the data didn’t fit",
+              "Then the real data didn’t fit",
             body: [
-              "A pitch needs a real case, so I wired in the ML team’s data — and the shapes didn’t match what the screens had assumed. That was our inexperience showing: we built the UI first and treated the data as a detail to pour in later, when the honest order is the reverse — start from the data that actually exists, tag it, and design the chart around what it can give you. Mapping fields, states, and the empty and loading cases by hand taught me a component’s data contract is part of its design, not an afterthought. The mockup still shipped on time; the lesson shipped with it.",
+              "For the pitch I wired in the ML team’s real data — and the shapes didn’t match what the screens had assumed. It was the code lesson again, from the other side: a mockup that looks finished but can’t hold real data is still just a picture. We had built the UI first and treated data as a detail to pour in later, when the honest order is the reverse — start from the data that exists, tag it, and design the chart around what it can actually give. Looking right was never the bar; being real enough for engineering to receive — real code and real data both — was. That is the gap the shared base was built to close.",
             ],
           },
         ],
