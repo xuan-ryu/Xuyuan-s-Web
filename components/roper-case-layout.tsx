@@ -512,12 +512,23 @@ const roperCriticalCss = `
   border-bottom: 1px solid var(--rule);
 }
 .roper-principle {
+  position: relative;
   min-width: 0;
   padding: 28px 24px 32px 0;
 }
 .roper-principle + .roper-principle {
   padding-left: 24px;
-  border-left: 1px solid var(--rule);
+}
+/* left divider as a scaleY-able bar (a border can't be drawn in) */
+.roper-principle + .roper-principle::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule);
+  transform-origin: top;
 }
 .roper-principle-index {
   margin: 0 0 14px;
@@ -662,12 +673,23 @@ const roperCriticalCss = `
   border-top: 1px solid var(--rule);
 }
 .roper-deliverable {
+  position: relative;
   display: grid;
   grid-template-columns: 56px minmax(0, 0.85fr) minmax(0, 1.15fr);
   gap: 20px;
   align-items: baseline;
   padding-block: 22px;
-  border-bottom: 1px solid var(--rule);
+}
+/* bottom hairline as a scaleX-able bar (a border can't be drawn in) */
+.roper-deliverable::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--rule);
+  transform-origin: left;
 }
 .roper-deliverable-index {
   font-family: var(--font-mono);
@@ -733,7 +755,8 @@ const roperCriticalCss = `
   .roper-principles-table { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .roper-principle { padding: 24px 20px 26px 0; }
   .roper-principle:nth-child(even) { padding-left: 20px; }
-  .roper-principle:nth-child(odd) { border-left: 0; padding-left: 0; }
+  .roper-principle:nth-child(odd) { padding-left: 0; }
+  .roper-principle:nth-child(odd)::before { content: none; }
   .roper-principle:nth-child(n + 3) { border-top: 1px solid var(--rule); }
 }
 
@@ -762,8 +785,8 @@ const roperCriticalCss = `
   .roper-principle,
   .roper-principle:nth-child(even) {
     padding: 20px 0 22px;
-    border-left: 0;
   }
+  .roper-principle + .roper-principle::before { content: none; }
   .roper-principle:nth-child(n + 2) { border-top: 1px solid var(--rule); }
   .roper-principle p { max-width: none; }
   .roper-fig { padding: 12px; }
@@ -773,6 +796,83 @@ const roperCriticalCss = `
     row-gap: 6px;
   }
   .roper-deliverable p { grid-column: 2; }
+}
+
+/* ── Assembly on arrival ──────────────────────────────────────────
+   FadeReveal adds .is-visible to each [data-fade] container on enter;
+   the container runs the global fadeUp, then ~200ms later its parts
+   assemble in reading order — the hero PollRule segments grow from the
+   left (the lead settling last), the four principle cells rise left→
+   right with their dividers drawing down, and the closing deliverables
+   rise in sequence with each bottom hairline drawing in. Zero new JS,
+   transform+opacity only. Every hidden initial state lives inside
+   @media (prefers-reduced-motion: no-preference), so reduced motion —
+   and the no-JS / forced-visible fallback — shows the finished layout. */
+@keyframes roperBarGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes roperCellRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes roperVDraw { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes roperRowRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes roperHDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 01 · hero PollRule — segments grow from the left, the lead settles last */
+  .roper-case-page .roper-hero-media[data-fade] .roper-pollrule-bar span {
+    transform: scaleX(0);
+    transform-origin: left;
+    --pbd: 0ms;
+  }
+  .roper-case-page .roper-hero-media[data-fade] .roper-pollrule-bar span:nth-child(2) { --pbd: 90ms; }
+  .roper-case-page .roper-hero-media[data-fade] .roper-pollrule-bar span:nth-child(3) { --pbd: 180ms; }
+  .roper-case-page .roper-hero-media[data-fade] .roper-pollrule-bar span.is-lead { --pbd: 300ms; }
+  .roper-case-page .roper-hero-media[data-fade].is-visible .roper-pollrule-bar span {
+    animation: roperBarGrow 0.5s var(--ease-silk) forwards;
+    animation-delay: calc(240ms + var(--pbd, 0ms));
+  }
+
+  /* 04 · principle cells rise left→right, each divider drawing down with it */
+  .roper-case-page .roper-principles-table[data-fade] .roper-principle {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .roper-case-page .roper-principles-table[data-fade] .roper-principle::before {
+    transform: scaleY(0);
+  }
+  .roper-case-page .roper-principles-table[data-fade] .roper-principle:nth-child(2) { --rpd: 100ms; }
+  .roper-case-page .roper-principles-table[data-fade] .roper-principle:nth-child(3) { --rpd: 200ms; }
+  .roper-case-page .roper-principles-table[data-fade] .roper-principle:nth-child(4) { --rpd: 300ms; }
+  .roper-case-page .roper-principles-table[data-fade].is-visible .roper-principle {
+    animation: roperCellRise 0.5s var(--ease-spring) forwards;
+    animation-delay: calc(200ms + var(--rpd, 0ms));
+  }
+  .roper-case-page .roper-principles-table[data-fade].is-visible .roper-principle::before {
+    animation: roperVDraw 0.44s var(--ease-silk) forwards;
+    animation-delay: calc(240ms + var(--rpd, 0ms));
+  }
+
+  /* 07 · closing deliverables rise in sequence, each bottom hairline drawing in */
+  .roper-case-page .roper-deliverables[data-fade] .roper-deliverable {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .roper-case-page .roper-deliverables[data-fade] .roper-deliverable::after {
+    transform: scaleX(0);
+  }
+  .roper-case-page .roper-deliverables[data-fade] .roper-deliverable:nth-child(2) { --rdd: 120ms; }
+  .roper-case-page .roper-deliverables[data-fade] .roper-deliverable:nth-child(3) { --rdd: 240ms; }
+  .roper-case-page .roper-deliverables[data-fade].is-visible .roper-deliverable {
+    animation: roperRowRise 0.5s var(--ease-spring) forwards;
+    animation-delay: calc(200ms + var(--rdd, 0ms));
+  }
+  .roper-case-page .roper-deliverables[data-fade].is-visible .roper-deliverable::after {
+    animation: roperHDraw 0.44s var(--ease-silk) forwards;
+    animation-delay: calc(250ms + var(--rdd, 0ms));
+  }
 }
 
 /* ── reduced motion: charts render final state, no stagger ─────── */

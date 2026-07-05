@@ -129,7 +129,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
 
       {/* ── 3 · Dispatch — the claim ──────────────────────────── */}
       <section className="hunger-section hunger-dispatch" aria-labelledby="hunger-dispatch-title">
-        <span className="hunger-rule" aria-hidden="true" />
+        <span className="hunger-rule" aria-hidden="true" data-fade />
         <p className="hunger-kicker" data-fade>
           01 · Dispatch
         </p>
@@ -156,7 +156,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
 
       {/* ── 4 · The game in motion ────────────────────────────── */}
       <section className="hunger-section hunger-motion" aria-labelledby="hunger-motion-title">
-        <span className="hunger-rule" aria-hidden="true" />
+        <span className="hunger-rule" aria-hidden="true" data-fade />
         <p className="hunger-kicker" data-fade>
           02 · In Motion
         </p>
@@ -191,7 +191,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
 
       {/* ── 5 · Editorial — why this history became a game ───── */}
       <section className="hunger-section hunger-editorial" aria-labelledby="hunger-editorial-title">
-        <span className="hunger-rule" aria-hidden="true" />
+        <span className="hunger-rule" aria-hidden="true" data-fade />
         <p className="hunger-kicker" data-fade>
           03 · Editorial
         </p>
@@ -332,9 +332,18 @@ const hungerCss = `
 
 /* folio rule — the newspaper's running head, reused by every section */
 .hunger-rule {
+  position: relative;
   grid-column: 1 / -1;
   height: 1px;
+}
+/* the ink is a ::before bar so it can draw (scaleX); the span stays full-width
+   so the reveal observer sees real area. Identical hairline at rest. */
+.hunger-rule::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: var(--work-rule);
+  transform-origin: left;
 }
 
 .hunger-kicker {
@@ -598,12 +607,25 @@ const hungerCss = `
   grid-row: 4;
 }
 .hunger-pull {
+  position: relative;
   grid-column: 1 / 4;
   grid-row: 5;
   align-self: start;
   margin-top: 22px;
-  padding-top: 18px;
-  border-top: 2px solid var(--seal-red);
+  padding-top: 20px;
+}
+/* seal-red accent as a drawable bar (was border-top:2px; a border can't
+   scaleX). Same 2px seal rule, same resting position — padding absorbs the
+   2px the border used to add. */
+.hunger-pull::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--seal-red);
+  transform-origin: left;
 }
 .hunger-pull-quote {
   margin: 0;
@@ -849,6 +871,94 @@ const hungerCss = `
   .hunger-plate-caption {
     position: static;
     margin-bottom: 20px;
+  }
+}
+
+/* ── Set-in-print motion — the sheet assembles as it enters view ─────────
+   Restrained and period-true: the section column rules strike in from the
+   left (letterpress), the seal presses down, and the pull-quote's seal-red
+   accent draws before its words set. Zero new JS: the global FadeReveal adds
+   .is-visible on scroll-enter. Motion-only — every hidden initial state lives
+   inside @media (prefers-reduced-motion: no-preference), so reduced motion and
+   the forced-visible fallback show the finished, fully-inked layout. ── */
+@keyframes hungerRuleDraw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes hungerStampPress {
+  from { opacity: 0.001; transform: scale(1.06); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes hungerPullRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* 1 · section column rules strike in from the left (letterpress). The span
+     is a silent full-width host — neutralize the base translateY slide — and
+     its ::before hairline draws scaleX 0→1. (Scaling the span itself would
+     collapse its box to zero width and starve the reveal observer.) */
+  .hunger-page .hunger-rule[data-fade] {
+    opacity: 1;
+    transform: none;
+  }
+  .hunger-page .hunger-rule[data-fade].is-visible {
+    animation: none;
+  }
+  .hunger-page .hunger-rule[data-fade]::before {
+    transform: scaleX(0);
+  }
+  .hunger-page .hunger-rule[data-fade].is-visible::before {
+    animation: hungerRuleDraw var(--dur-gesture) var(--ease-silk) forwards;
+  }
+
+  /* 2 · the seal presses in — a settle from slightly oversized, no slide */
+  .hunger-page .hunger-stamp[data-fade] {
+    opacity: 0.001;
+    transform: scale(1.06);
+  }
+  .hunger-page .hunger-stamp[data-fade].is-visible {
+    animation: hungerStampPress 0.5s var(--ease-spring) forwards;
+  }
+
+  /* 3 · pull-quote — the aside is a silent host (no move of its own); its
+     seal-red accent draws, then the quote and source set in a two-beat rise */
+  .hunger-page .hunger-pull[data-fade] {
+    opacity: 1;
+    transform: none;
+  }
+  .hunger-page .hunger-pull[data-fade].is-visible {
+    animation: none;
+  }
+  .hunger-page .hunger-pull[data-fade]::before {
+    transform: scaleX(0);
+  }
+  .hunger-page .hunger-pull[data-fade].is-visible::before {
+    animation: hungerRuleDraw var(--dur-gesture) var(--ease-silk) forwards;
+  }
+  .hunger-page .hunger-pull[data-fade] .hunger-pull-quote,
+  .hunger-page .hunger-pull[data-fade] .hunger-pull-source {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .hunger-page .hunger-pull[data-fade].is-visible .hunger-pull-quote {
+    animation: hungerPullRise 0.5s var(--ease-spring) forwards;
+    animation-delay: 120ms;
+  }
+  .hunger-page .hunger-pull[data-fade].is-visible .hunger-pull-source {
+    animation: hungerPullRise 0.5s var(--ease-spring) forwards;
+    animation-delay: 220ms;
+  }
+
+  /* 4 · masthead sets line by line — calm cascade (delays only, base fadeUp) */
+  .hunger-hero h1[data-fade].is-visible {
+    animation-delay: 80ms;
+  }
+  .hunger-hero .hunger-lede[data-fade].is-visible {
+    animation-delay: 160ms;
+  }
+  .hunger-hero .hunger-meta[data-fade].is-visible {
+    animation-delay: 240ms;
   }
 }
 

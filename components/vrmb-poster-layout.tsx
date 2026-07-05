@@ -503,6 +503,69 @@ const css = `
   color: var(--stone);
 }
 
+/* ---- assembly on arrival ----
+   Each container below carries data-fade, so FadeReveal adds .is-visible on
+   scroll-enter: the container rises as a frame, then a beat later its rows /
+   notes settle in reading order (a short staggered rise). One orchestrated
+   reveal per block, then still. Motion-only: every hidden initial state lives
+   inside @media (prefers-reduced-motion: no-preference), so reduced motion —
+   and the forced-visible fallback — shows the finished layout. */
+@keyframes vrmbRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* workbench callouts — three notes stagger-rise */
+  .vrmb-page .vrmb-callouts[data-fade] li {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .vrmb-page .vrmb-callouts[data-fade] li:nth-child(1) { --cd: 0ms; }
+  .vrmb-page .vrmb-callouts[data-fade] li:nth-child(2) { --cd: 90ms; }
+  .vrmb-page .vrmb-callouts[data-fade] li:nth-child(3) { --cd: 180ms; }
+  .vrmb-page .vrmb-callouts[data-fade].is-visible li {
+    animation: vrmbRise 0.44s var(--ease-spring) forwards;
+    animation-delay: calc(160ms + var(--cd, 0ms));
+  }
+
+  /* credits ledger — four rows stagger-rise */
+  .vrmb-page .vrmb-credit-list[data-fade] div {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .vrmb-page .vrmb-credit-list[data-fade] div:nth-child(1) { --rd: 0ms; }
+  .vrmb-page .vrmb-credit-list[data-fade] div:nth-child(2) { --rd: 56ms; }
+  .vrmb-page .vrmb-credit-list[data-fade] div:nth-child(3) { --rd: 112ms; }
+  .vrmb-page .vrmb-credit-list[data-fade] div:nth-child(4) { --rd: 168ms; }
+  .vrmb-page .vrmb-credit-list[data-fade].is-visible div {
+    animation: vrmbRise 0.44s var(--ease-spring) forwards;
+    animation-delay: calc(120ms + var(--rd, 0ms));
+  }
+
+  /* about details rail — four rows stagger-rise, top -> bottom.
+     .poster-details is a shared poster-template block, so every rule is
+     scoped tightly under .vrmb-page and never leaks to other poster pages. */
+  .vrmb-page .poster-details[data-fade] .poster-details-row {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .vrmb-page .poster-details[data-fade] .poster-details-row:nth-child(1) { --dd: 0ms; }
+  .vrmb-page .poster-details[data-fade] .poster-details-row:nth-child(2) { --dd: 56ms; }
+  .vrmb-page .poster-details[data-fade] .poster-details-row:nth-child(3) { --dd: 112ms; }
+  .vrmb-page .poster-details[data-fade] .poster-details-row:nth-child(4) { --dd: 168ms; }
+  .vrmb-page .poster-details[data-fade].is-visible .poster-details-row {
+    animation: vrmbRise 0.44s var(--ease-spring) forwards;
+    animation-delay: calc(160ms + var(--dd, 0ms));
+  }
+}
+
 /* ---- reduced motion ---- */
 @media (prefers-reduced-motion: reduce) {
   .vrmb-flight-rule {

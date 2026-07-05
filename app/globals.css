@@ -2410,6 +2410,39 @@ body.hero-night .nav-links a.active {
   }
 }
 
+/* Dojo wall — the eight prints pin in one by one instead of the whole wall
+   fading as a single block. Opacity-only: each .about-dojo-item carries its
+   own scatter transform via .abf-dark nth-child, so a transform entrance
+   would fight its placement. Hidden state lives under no-preference so
+   reduced motion / no-JS shows the finished wall; under reduced motion the
+   block aboutMediaIn above still runs (host not overridden). */
+@media (prefers-reduced-motion: no-preference) {
+  .about-dojo-wall[data-fade] {
+    transform: none;
+    filter: none;
+    opacity: 1;
+    animation: none;
+  }
+  .about-dojo-wall[data-fade] .about-dojo-item {
+    opacity: 0.001;
+  }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item {
+    animation: aboutDojoPin 0.56s var(--ease-silk) both;
+  }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(1) { animation-delay: 40ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(2) { animation-delay: 100ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(3) { animation-delay: 160ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(4) { animation-delay: 220ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(5) { animation-delay: 280ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(6) { animation-delay: 340ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(7) { animation-delay: 400ms; }
+  .about-dojo-wall[data-fade].is-visible .about-dojo-item:nth-child(8) { animation-delay: 460ms; }
+}
+@keyframes aboutDojoPin {
+  from { opacity: 0.001; }
+  to { opacity: 1; }
+}
+
 @media (max-width: 1079.98px) {
   .about-header,
   .about-essay,

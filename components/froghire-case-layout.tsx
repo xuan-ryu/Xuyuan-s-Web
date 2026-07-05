@@ -947,6 +947,72 @@ const froghireCss = `
     transition: none;
   }
 }
+
+/* ── assembly on arrival ──────────────────────────────────────────────────
+   Each container carries data-fade; FadeReveal adds .is-visible on enter, so
+   the container rises as a frame (global fadeUp) and its parts settle a beat
+   later — the chapter rule draws, the claim rises behind it; the hero stats
+   stagger up in reading order; each figure caption follows its media. One
+   orchestrated reveal per element, then still. Motion-only: every hidden
+   initial state lives inside prefers-reduced-motion: no-preference, so reduced
+   motion — and the forced-visible/no-JS fallback — shows the finished layout. */
+@keyframes frogAssembleRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes frogAssembleDraw {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* 1 · chapter head — the hairline draws, then the claim rises behind it */
+  .froghire-chapter-head[data-fade] .froghire-chapter-rule {
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .froghire-chapter-head[data-fade] h2 {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .froghire-chapter-head[data-fade].is-visible .froghire-chapter-rule {
+    animation: frogAssembleDraw 0.36s var(--ease-silk) forwards;
+    animation-delay: 200ms;
+  }
+  .froghire-chapter-head[data-fade].is-visible h2 {
+    animation: frogAssembleRise 0.42s var(--ease-spring) forwards;
+    animation-delay: 320ms;
+  }
+
+  /* 2 · hero stats — stagger-rise in reading order (+110ms), opacity-led */
+  .froghire-stats[data-fade] .froghire-stat {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .froghire-stats[data-fade].is-visible .froghire-stat {
+    animation: frogAssembleRise 0.42s var(--ease-spring) forwards;
+  }
+  .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(1) {
+    animation-delay: 90ms;
+  }
+  .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(2) {
+    animation-delay: 200ms;
+  }
+  .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(3) {
+    animation-delay: 310ms;
+  }
+
+  /* 3 · figure caption follows its media — the media rides the parent fade,
+     only the caption is delayed */
+  .froghire-figrow[data-fade] .froghire-figcap {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .froghire-figrow[data-fade].is-visible .froghire-figcap {
+    animation: frogAssembleRise 0.42s var(--ease-spring) forwards;
+    animation-delay: 150ms;
+  }
+}
 `;
 
 /* ── layout ─────────────────────────────────────────────────────────────── */

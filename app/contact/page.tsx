@@ -134,6 +134,52 @@ a.ctc-ledger-value:focus-visible {
   filter: drop-shadow(0 6px 14px rgba(5, 5, 5, 0.22));
 }
 
+/* Reveal choreography — the address is written line by line, and the chop
+   presses onto the print (a scale settle that keeps the chop's placement
+   transform). Hidden states live under no-preference so reduced motion /
+   no-JS show the finished letterhead; both containers become silent hosts
+   so only the rows / the chop carry the motion, not a competing block fade. */
+@media (prefers-reduced-motion: no-preference) {
+  .ctc-ledger[data-fade] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    animation: none;
+  }
+  .ctc-ledger[data-fade] .ctc-ledger-row {
+    opacity: 0.001;
+    transform: translateY(12px);
+  }
+  .ctc-ledger[data-fade].is-visible .ctc-ledger-row {
+    animation: ctcRowIn 0.5s var(--ease-silk) both;
+  }
+  .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(1) { animation-delay: 80ms; }
+  .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(2) { animation-delay: 160ms; }
+  .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(3) { animation-delay: 240ms; }
+  .ctc-portrait[data-fade] .ctc-portrait-chop {
+    opacity: 0.001;
+    transform: translate(-40%, 30%) rotate(-6deg) scale(1.18);
+  }
+  .ctc-portrait[data-fade].is-visible .ctc-portrait-chop {
+    animation: ctcChopPress 0.52s var(--ease-spring) both;
+    animation-delay: 220ms;
+  }
+}
+@keyframes ctcRowIn {
+  from { opacity: 0.001; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ctcChopPress {
+  from {
+    opacity: 0.001;
+    transform: translate(-40%, 30%) rotate(-6deg) scale(1.18);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-40%, 30%) rotate(-6deg) scale(1);
+  }
+}
+
 /* ── Fold rule + form — Write a note ────────────────────────────
    Same shell as the hero. Full-width hairline "fold", 96px below
    it the H2 (cols 1–7); form continues the left reading rail on
