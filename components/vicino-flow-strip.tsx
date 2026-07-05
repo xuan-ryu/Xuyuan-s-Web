@@ -10,7 +10,7 @@
 // level even when a step name wraps to two lines (see .v-fs-* CSS in
 // vicino-case-layout.tsx).
 
-// Colors are the product's typed connections (the connection types).
+// Colors are the product's typed connection types.
 type FlowStop = {
   id: string;
   label: string;

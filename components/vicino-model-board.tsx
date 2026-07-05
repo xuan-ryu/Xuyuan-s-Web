@@ -13,26 +13,22 @@
 // the zone text is paraphrased in the designer's own words (no verbatim internal
 // PRD paragraphs, no "Detail PRD" doc links, no internal screenshots or names).
 //
-// The node is a recreation of Vicino's shipped Image node (READ-ONLY source in
-// the-product-codebase). What each zone reproduces:
-//   Node Panel   — nodes/the image node + the image-node styles: teal-bordered card
-//                  (#8BD6D9, rgba(139,214,217,.5)); header = image icon +
-//                  "Image" + glass play/generate button; body = the image area
-//                  only (the in-node prompt is "commented out — not in PDR").
-//   Floating Bar — nodes/image/the node toolbar + shared/the base-node styles: glass
-//                  strip above the node — utility icons, a divider, then
+// The node is a faithful recreation of the product's shipped Image node.
+// What each zone reproduces:
+//   Node Panel   — teal-bordered card (#8BD6D9, rgba(139,214,217,.5));
+//                  header = image icon + "Image" + glass play/generate button;
+//                  body = the image area only (the in-node prompt is omitted).
+//   Floating Bar — glass strip above the node — utility icons, a divider, then
 //                  Canvas Editor · Multi-views · Generate Video.
-//   Sliding Panel— slidingPanel/the sliding panel + panels/the node panel: opens
-//                  flush to the node's LEFT at node width; the auto-open row,
-//                  Input(s) (Prompt + Images), then a Prompt box. Its toggle tab
-//                  is the panel's handle — anchored to the panel edge, slides
-//                  with it (sp-toggle-bar left animation).
-//   Sidebar      — inspector/the inspector panel + the model dropdown + the run bar: the
-//                  right-docked inspector — node title, Model ("Nano Banana
+//   Sliding Panel— opens flush to the node's LEFT at node width; the auto-open
+//                  row, Input(s) (Prompt + Images), then a Prompt box. Its
+//                  toggle tab is the panel's handle — anchored to the panel
+//                  edge, slides with it (sp-toggle-bar left animation).
+//   Sidebar      — the right-docked inspector — node title, Model ("Nano Banana
 //                  Pro") with its subtext, Aspect ratio (16:9), Variations, and
 //                  the bottom Total-cost + Generate run bar.
-// Handle slots follow core/connections/the handle positions (first slot 56px from
-// the top, +40px per slot). Field values are clearly-labeled specimen data.
+// Handle slots follow the product's handle positions (first slot 56px from the
+// top, +40px per slot). Field values are clearly-labeled specimen data.
 import type { CSSProperties, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -55,7 +51,7 @@ const DOCK_Y = 128;
 const DOCK_W = 304;
 const DOCK_H = 556;
 
-// The Image node's teal (the image-node styles border / theme --handle-image); the
+// The Image node's teal (border / theme --handle-image); the
 // Prompt (text) input keeps the connection pink.
 const IMAGE_ACCENT = "#8BD6D9";
 const TEXT_HANDLE = "#F1A0FA";

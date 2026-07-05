@@ -79,7 +79,7 @@ export const projects: Project[] = [
     oneliner:
       "Pulse is an AI marketing platform — strategic signal to published post, with a person at every gate. I joined a team prototyping it in six different tools, a week from a pitch — and built the design production system so that rescue never happens twice.",
     blurb:
-      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. I joined to design its homepage — and left owning the way the whole team ships: the unified pitch mockup merged from everyone's prototypes, a token-driven design system of 40 components, the standards and automation that keep AI-generated UI on-system, and the campaign production flow with a person at every gate.\n\nTwo beliefs run through the work. Pages that look alike aren't a product until they share one system. And AI should draft while humans decide — every generative step is wrapped in an editable brief, a review, or an approval gate.",
+      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. I joined to design its homepage — and left owning the way the whole team ships: the unified pitch mockup merged from everyone’s prototypes, a token-driven design system of 40 components, the standards and automation that keep AI-generated UI on-system, and the campaign production flow with a person at every gate.\n\nTwo beliefs run through the work. Pages that look alike aren’t a product until they share one system. And AI should draft while humans decide — every generative step is wrapped in an editable brief, a review, or an approval gate.",
     role: "Product Designer · Design System · Front-end",
     duration: "2025 - present",
     type: "Intern",
@@ -185,7 +185,7 @@ export const projects: Project[] = [
             heading:
               "Unify, engineer, migrate, merge",
             body: [
-              "A week out, the call came to fold every prototype into one mockup and record the pitch video. I took them all: unify the surface, engineer file by file, migrate toward one stack, merge into a single runnable app. AI carried the bulk of the conversion and kept breaking things in transit, so every page was reviewed against its original and repaired by hand. With a teammate, it took a week of nights.",
+              "A week out, the call came to fold every prototype into one mockup and record the pitch video. I took them all: unify the surface, engineer file by file, migrate toward one stack, merge into a single runnable app. AI carried the bulk of the conversion and kept breaking things in transit, so I reviewed every page against its original and repaired every break by hand — a week of nights with a teammate.",
             ],
           },
           {
@@ -207,7 +207,7 @@ export const projects: Project[] = [
             heading:
               "One canonical base, checked by machines",
             body: [
-              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — under 40 standalone components, and every screen composes from those contracts before inventing anything page-local. The standard became commits rather than advice: Prettier normalized the codebase, 1,905 verified-dead lines were purged, and a dependency-free check now enforces all of it in CI.",
+              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — beneath the 40 standalone components, and every screen composes from those contracts before inventing anything page-local. The standard became commits rather than advice: Prettier normalized the codebase, I purged 1,905 verified-dead lines, and a dependency-free check now enforces all of it in CI.",
             ],
           },
           {
@@ -229,11 +229,11 @@ export const projects: Project[] = [
             heading:
               "Teaching the AI the system",
             body: [
-              "A library only holds if every new prototype follows it, and re-typing the rules into a chat box every time is exactly how that falls apart. So I wrote the rules as skills the AI loads before it generates or edits: maintenance skills keep tokens, components, and previews in sync, and a design skill makes new work start on-system instead of getting repaired into it. Calendar and Campaign both began from that baseline, and the melee never came back.",
+              "A library only holds if every new prototype follows it, and re-typing the rules into a chat box every time is exactly how that falls apart. So I wrote the rules as skills the AI loads before it generates or edits: maintenance skills keep tokens, components, and previews in sync, and a design skill makes new work start on-system instead of getting repaired into it. Calendar began from that baseline, and the melee never came back.",
             ],
           },
           {
-            tags: "HARNESS CONTROL · LIVING RULES",
+            tags: "LIVING RULES · COMPOUNDING QUALITY",
             heading: "The skill is a living document",
             body: [
               "When a review catches a drift, the fix lands in the skill’s markdown, not in someone’s memory. I keep editing those files the way engineers keep tests green: each decision we settle — a token, a component pattern, a rule about states — gets written where the AI reads it before it works. That is what makes the generation quality compound: every edit raises the floor of everything produced after it.",
@@ -250,7 +250,7 @@ export const projects: Project[] = [
             heading:
               "A surface for each side of the table",
             body: [
-              "The system grew a reading surface for each side of the table. A live component browser renders every component and state from its standalone source, and a sliced, deliberately non-interactive Figma board exists purely to be imported, so code UI flows back into design review. The handoff is not a snapshot either: when the system changes, a sync pass carries the decision back out to the designer surfaces.",
+              "I grew a reading surface for each side of the table: a live component browser that renders every component and state from its standalone source, and a sliced, deliberately non-interactive Figma board built purely to be imported, so code UI flows back into design review. The handoff is not a snapshot either: when the system changes, a sync pass carries the decision back out to the designer surfaces.",
             ],
           },
           {
@@ -358,7 +358,7 @@ export const projects: Project[] = [
             heading:
               "The product was becoming more capable, but no one could clearly describe one end-to-end workflow",
             body: [
-              "When I joined, the core problem wasn't visual polish — and it wasn't missing editing depth; we were never trying to out-edit Photoshop. It was that the models advanced fast but stayed unpredictable, and a near-blank canvas gave so much freedom that getting from an idea to a usable video was hard to learn and easy to get lost in. The tell was in the feedback: most of it wasn't about the interface, but about how to use the models correctly and make the output more precise — people weren't asking where a control lived, they were asking how to steer the generation and recover when a result came back wrong. B2B raised the stakes: the audience ran from creative-production veterans to marketers new to AI video, and the product had to guide both without slowing either down.",
+              "When I joined, the core problem wasn’t visual polish — and it wasn’t missing editing depth; we were never trying to out-edit Photoshop. It was that the models advanced fast but stayed unpredictable, and a near-blank canvas gave so much freedom that getting from an idea to a usable video was hard to learn and easy to get lost in. The tell was in the feedback: most of it wasn’t about the interface, but about how to use the models correctly and make the output more precise — people weren’t asking where a control lived, they were asking how to steer the generation and recover when a result came back wrong. B2B raised the stakes: the audience ran from creative-production veterans to marketers new to AI video, and the product had to guide both without slowing either down.",
               "The clearest signal came during review. Different teammates described the same workflow in different ways, which told me the issue was deeper than feature planning. The product did not simply need more capability. It needed a structure that people could actually hold in their heads. That became my starting point.",
             ],
             image: `/media/work/vicino/ch1-1.png`,

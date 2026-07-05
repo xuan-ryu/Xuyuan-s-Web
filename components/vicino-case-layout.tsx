@@ -58,7 +58,7 @@ const vicinoCriticalCss = `
   --v-pad-top: calc(var(--gap-section) / 2);
   --v-pad-bottom: calc(var(--gap-section) / 2);
   --v-head-gap: var(--gap-block);
-  /* exact shipped connection colors — src/core/connections/the connection types */
+  /* exact shipped connection colors from the product's connection types */
   --handle-text: #F1A0FA;
   --handle-image: #6EDDB3;
   --handle-storyboard: #6EDDB3;
@@ -163,7 +163,7 @@ const vicinoCriticalCss = `
 .vicino-band {
   position: relative;
 }
-/* Zones ride the product's OWN two themes (s:/the-product-codebase/src/styles/themes):
+/* Zones ride the product's OWN two themes:
    dark = inside the Work Space (canvas / flow / interface); light = the reading
    sections, using the real light mode (#fff ground, ink text) so prose reads
    easily. Authentic, not an arbitrary ink/paper alternation. */
@@ -254,6 +254,7 @@ const vicinoCriticalCss = `
   font-weight: 400;
   line-height: 1.6;
   letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--accent-gold);
 }
 .vicino-station-index::before {
@@ -460,7 +461,7 @@ const vicinoCriticalCss = `
   animation: vicino-story-edge-flow 8.4s linear infinite;
 }
 /* STORYBOARD connections ship heavier than the default edge
-   (strokeWidth 3 vs 2 in the connection types) — same ratio at
+   (strokeWidth 3 vs 2 in the shipped connection types) — same ratio at
    recreation stroke scale. */
 .vicino-live-edges path.is-storyboard {
   stroke-width: 2.4;
@@ -782,7 +783,7 @@ const vicinoCriticalCss = `
   background: var(--node-header-bg);
 }
 /* ScriptNode ships its own compact 42px transparent header
-   (the script-node styles .script-node-header); the other three use the shared
+   (the script node's own header); the other three use the shared
    node-header with its #333 bottom rule. */
 .vicino-product-node.is-script .vicino-product-node-header {
   height: 42px;
@@ -1131,7 +1132,7 @@ const vicinoCriticalCss = `
   opacity: 0.88;
 }
 /* ShootNode — one shot sub-card with its labeled First Frame and Video
-   Prompt boxes (the shot-node styles: glass shot card, --glass-border boxes,
+   Prompt boxes (glass shot card, --glass-border boxes,
    11px/600 box labels). */
 .vicino-shoot-node-body {
   display: flex;
@@ -1580,7 +1581,7 @@ const vicinoCriticalCss = `
 
 /* Sliding Panel — opens flush to the node's LEFT at node height, with the
    shipped surface: 10px rgba(32,32,32,.94) border, 16px radius, frosted
-   rgba(48,46,48,.93) glass (the sliding panel). */
+   rgba(48,46,48,.93) glass. */
 .v-mb-panel {
   position: absolute;
   /* slide-phone: the panel (keyboard) sits level with the node top and tucks
@@ -1794,9 +1795,8 @@ const vicinoCriticalCss = `
 }
 
 /* Floating Bar — the node-adjacent next-step layer, recreated from the
-   shipped toolbar (the base-node styles .base-node-toolbar: glass strip 6px above
-   the node; icon utilities, divider, iridescent action buttons from
-   the image-node styles). Appears when its node is selected. */
+   shipped toolbar (glass strip 6px above the node; icon utilities,
+   divider, iridescent action buttons). Appears when its node is selected. */
 .v-mb-floatbar {
   position: absolute;
   bottom: calc(100% + 6px);
@@ -2695,7 +2695,7 @@ h2.vicino-closing-title {
 }
 
 /* ---- station 04 — the one Image node (recreation of Vicino's ImageNode) ---- */
-/* Card: the image-node styles teal border rgba(139,214,217,.5); #8BD6D9 on hover /
+/* Card: teal border rgba(139,214,217,.5); #8BD6D9 on hover /
    select, with the shared selected shadow. */
 .vicino-product-node.is-image {
   cursor: pointer;
@@ -3376,7 +3376,13 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
 
   return (
     <article className="vicino-case-page">
-      <style dangerouslySetInnerHTML={{ __html: vicinoCriticalCss }} />
+      {/* Strip CSS comments before serving: dev-facing provenance notes stay in
+          source but never ship to the browser (keeps internal names out of view-source). */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: vicinoCriticalCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+        }}
+      />
 
       {/* ── reading zones: large flat color blocks (canvas black ↔ graphite)
           for scroll rhythm — continuous, no page-turn, no rounded sheets ── */}
@@ -3493,9 +3499,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <h2 data-fade>The Main Path, Built to Keep Intent Legible</h2>
         <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
-            The main path holds four checkpoints — script, storyboard, shot,
-            video — each a place to inspect and redirect before the next, costlier
-            step. Each also asks the person to state their intent plainly, and
+            I rebuilt the main path around four checkpoints — script, storyboard,
+            shot, video — each a place to inspect and redirect before the next,
+            costlier step. Each also asks the person to state their intent plainly, and
             that stated intent is the clearest prompt any model can act on: the
             flow does prompt-engineering by design, and teaches it as people work.
           </p>
@@ -3514,7 +3520,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             <div className="vicino-decision-media">
               <Image
                 src={mainPathFigure}
-                alt="The main path as a node flow: Script Node refines or writes the script, Storyboard turns it into six sketch scenes, Shot Node generates detailed keyframes, an Image Editor refines frames, and Video Generation produces the clips — each stage a checkpoint before the next."
+                alt="The main path as a node flow: Script Node refines or writes the script, Storyboard turns it into six sketch scenes, Shot Node generates detailed keyframes, a lighter Image Editor preview lets you refine frames before the costly step, and Video Generation produces the clips — script, storyboard, shot, and video each a checkpoint to inspect and redirect before the next, costlier one."
                 width={1851}
                 height={854}
                 sizes="(max-width: 1080px) 100vw, 1280px"
@@ -3522,9 +3528,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               />
             </div>
             <figcaption>
-              The path as nodes on the canvas — script, storyboard, shot, image
-              refine, video — each stage a place to inspect and redirect before
-              the next, more expensive one.
+              The path as nodes on the canvas — script, storyboard, shot, and
+              video, with a lighter image-refine preview between shot and video —
+              each checkpoint a place to inspect and redirect before the next,
+              more expensive one.
             </figcaption>
           </figure>
         )}
@@ -3562,7 +3569,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             a UI language that could scale with it.
           </p>
           <p className="vicino-body-copy">
-            So every kind of function got a designated home: the Work Space
+            So I gave every kind of function a designated home: the Work Space
             stages the nodes, the Floating Bar carries the next step, the
             Sidebar holds global settings and model selection, the Sliding
             Panel takes node-level adjustment, the Node Panel stays minimal,

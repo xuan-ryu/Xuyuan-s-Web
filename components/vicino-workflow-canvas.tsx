@@ -31,9 +31,8 @@ export const VICINO_STAGE_W = 1360;
 export const VICINO_STAGE_H = 620;
 const STAGE_BLEED = 24; // soft clamp: dragged nodes may bleed this far past the stage
 
-// Exact connection colors from the product's typed-edge model
-// (src/core/connections/the connection types): TEXT #F1A0FA, STORYBOARD and
-// IMAGE #6EDDB3, VIDEO #FFB347.
+// Exact connection colors from the product's typed-edge model:
+// TEXT #F1A0FA, STORYBOARD and IMAGE #6EDDB3, VIDEO #FFB347.
 export const handleColor: Record<HandleType, string> = {
   text: "#F1A0FA",
   storyboard: "#6EDDB3",
@@ -41,12 +40,10 @@ export const handleColor: Record<HandleType, string> = {
   video: "#FFB347",
 };
 
-// Real wrapper/shell/header class names from the product's node components:
-// the script-node styles (.script-node / .script-node-card / .script-node-header),
-// the storyboard-node styles (.story-image-card / .story-image-header),
-// the shot-node styles (.shoot-node-card / .shoot-node-header),
-// the video-node styles (.video-node-v3 family). Styling for the recreation lives in
-// the .vicino-product-* rules; these names keep the anatomy legible.
+// Wrapper/shell/header class names mirror the product's own node components
+// (script / story-image / shoot / video node cards and headers). Styling for
+// the recreation lives in the .vicino-product-* rules; these names keep the
+// anatomy legible.
 export const productClassName: Record<NodeKind, string> = {
   script: "base-node-wrapper script-node",
   storyboard: "base-node-wrapper story-image-node",
