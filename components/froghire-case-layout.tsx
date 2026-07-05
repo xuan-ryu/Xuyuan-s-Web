@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Project, CaseSection } from "@/data/projects";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { FroghireAffinityMap } from "@/components/froghire-affinity-map";
 import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
@@ -60,6 +60,37 @@ const MARGINALIA: Record<string, { quote: string; source: string }> = {
     source: "My mentor",
   },
 };
+
+const TRIAGE_FLOW = [
+  {
+    index: "01",
+    label: "Collect",
+    title: "One-star reviews and weekly bug passes",
+    note: "Chrome reviews, dashboard walkthroughs, subscription states, resume mismatches.",
+    stat: "~100 issues",
+  },
+  {
+    index: "02",
+    label: "Diagnose",
+    title: "Three flaws underneath the noise",
+    note: "No onboarding, broken hierarchy, and missing trust became the real backlog.",
+    stat: "3 flaws",
+  },
+  {
+    index: "03",
+    label: "Negotiate",
+    title: "Every fix met the startup constraint",
+    note: "Animated onboarding, subscription clarity, resume control, and filters all had to survive cost.",
+    stat: "4 trade-offs",
+  },
+  {
+    index: "04",
+    label: "Ship",
+    title: "Small fixes kept the product moving",
+    note: "Tooltips shipped, filters held, partial wins still restored a path forward.",
+    stat: "registration recovered",
+  },
+];
 
 /* ── building blocks ────────────────────────────────────────────────────── */
 
@@ -224,6 +255,23 @@ const froghireCss = `
   line-height: 1.5;
   color: rgba(5, 5, 5, 0.68);
 }
+.froghire-hero-proof {
+  grid-column: 1 / -1;
+  align-self: start;
+  min-width: 0;
+  margin: clamp(40px, 4.4vw, 64px) 0 0;
+}
+.froghire-hero-proof-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 7;
+  border: 1px solid var(--work-rule);
+  background: var(--paper-warm);
+}
+.froghire-hero-proof-media img {
+  object-fit: cover;
+  object-position: left top;
+}
 .froghire-meta {
   grid-column: 10 / -1;
   grid-row: 2 / span 2;
@@ -333,20 +381,24 @@ const froghireCss = `
   row-gap: clamp(24px, 3vw, 40px);
   margin-top: clamp(28px, 3vw, 44px);
 }
+/* The two product surfaces are both wide (dashboard 2.17:1, extension reel
+   16:9), so they stack full-width and show whole instead of cropped slices. */
 .froghire-room-a {
-  grid-column: 1 / 9;
+  grid-column: 1 / -1;
 }
 .froghire-room-b {
-  grid-column: 9 / -1;
+  grid-column: 1 / -1;
 }
 .froghire-room-a .froghire-fig {
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 2.17;
 }
 .froghire-room-b .froghire-fig {
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 2.1;
 }
 .froghire-room-b .froghire-fig-media {
-  object-position: 68% 50%;
+  /* the recording is 16:9 with a baked-in black bar (~13% top, ~3% bottom);
+     bias the vertical cover position to crop the black, full width visible. */
+  object-position: 50% 72%;
 }
 
 /* ── brief ── */
@@ -383,6 +435,117 @@ const froghireCss = `
 .froghire-brief-copy p + p,
 .froghire-sec-copy p + p {
   margin-top: 22px;
+}
+
+/* ── triage spine: the method made visible early ── */
+.froghire-triage {
+  margin-top: clamp(70px, 8vw, 124px);
+}
+.froghire-triage-inner {
+  padding: clamp(56px, 6vw, 88px) 0;
+  border-top: 1px solid var(--work-rule);
+  border-bottom: 1px solid var(--work-rule);
+  row-gap: clamp(24px, 3vw, 40px);
+}
+.froghire-triage-label {
+  grid-column: 1 / 3;
+}
+.froghire-triage-copy {
+  grid-column: 3 / 8;
+}
+.froghire-triage-copy h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-heading);
+  font-weight: 400;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.froghire-triage-copy p {
+  max-width: 58ch;
+  margin: 20px 0 0;
+  font-size: var(--text-body);
+  line-height: 1.58;
+  color: var(--froghire-ink-soft);
+}
+.froghire-triage-board {
+  grid-column: 8 / -1;
+  position: relative;
+  display: grid;
+  gap: 14px;
+  align-self: start;
+  min-width: 0;
+  padding-left: 24px;
+}
+.froghire-triage-board::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--case-accent),
+    rgba(5, 5, 5, 0.18)
+  );
+  transform-origin: top;
+}
+.froghire-triage-step {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding: 18px 0 18px 24px;
+  border-top: 1px solid var(--work-rule);
+}
+.froghire-triage-step:first-child {
+  border-top: 0;
+}
+.froghire-triage-step::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 22px;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--case-detail);
+  background: var(--paper);
+}
+.froghire-triage-step-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.froghire-triage-step-label {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--case-detail);
+}
+.froghire-triage-step-stat {
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--froghire-ink-label);
+  text-align: right;
+}
+.froghire-triage-step h3 {
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: 400;
+  line-height: 1.22;
+}
+.froghire-triage-step p {
+  max-width: 44ch;
+  margin: 0;
+  font-size: var(--text-meta);
+  line-height: 1.5;
+  color: var(--froghire-ink-mute);
 }
 
 /* ── chapter banners ── */
@@ -812,8 +975,30 @@ const froghireCss = `
 
 /* ── tablet: 8-col behavior — figures full-width, margin captions below ── */
 @media (max-width: 1079.98px) {
+  .froghire-kicker {
+    order: 1;
+  }
+  .froghire-hero h1 {
+    order: 2;
+  }
+  .froghire-lede {
+    order: 3;
+  }
+  .froghire-hero-proof {
+    order: 4;
+  }
+  .froghire-meta {
+    order: 5;
+  }
+  .froghire-stats {
+    order: 6;
+  }
   .froghire-hero h1,
   .froghire-lede,
+  .froghire-hero-proof,
+  .froghire-triage-label,
+  .froghire-triage-copy,
+  .froghire-triage-board,
   .froghire-chapter-head h2,
   .froghire-brief-inner h2,
   .froghire-brief-copy,
@@ -830,8 +1015,16 @@ const froghireCss = `
     column-gap: var(--work-grid-gap);
     margin-top: clamp(36px, 5vw, 56px);
   }
+  .froghire-hero-proof {
+    grid-row: auto;
+    max-width: none;
+    margin-top: clamp(28px, 4vw, 48px);
+  }
   .froghire-brief-inner h2 {
     margin-bottom: 8px;
+  }
+  .froghire-triage-board {
+    margin-top: 8px;
   }
   .froghire-sec-margin {
     margin-bottom: clamp(22px, 3vw, 32px);
@@ -843,7 +1036,7 @@ const froghireCss = `
     grid-column: 1 / -1;
   }
   .froghire-room-b {
-    grid-column: 1 / 8;
+    grid-column: 1 / -1;
   }
   .froghire-f-a,
   .froghire-f-b,
@@ -892,6 +1085,29 @@ const froghireCss = `
   }
   .froghire-stat:last-child {
     border-bottom: 0;
+  }
+  .froghire-brief-copy p,
+  .froghire-sec-copy p:not(.froghire-sec-tags),
+  .froghire-triage-copy p {
+    font-size: var(--text-meta);
+    line-height: 1.58;
+  }
+  .froghire-triage-inner {
+    padding: 48px 0;
+  }
+  .froghire-triage-board {
+    padding-left: 18px;
+  }
+  .froghire-triage-step {
+    padding-left: 18px;
+  }
+  .froghire-triage-step-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .froghire-triage-step-stat {
+    text-align: left;
   }
   .froghire-room-b {
     grid-column: 1 / -1;
@@ -964,6 +1180,14 @@ const froghireCss = `
   from { opacity: 0; transform: scaleX(0); }
   to { opacity: 1; transform: scaleX(1); }
 }
+@keyframes frogAssembleDrawY {
+  from { opacity: 0; transform: scaleY(0); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+@keyframes frogProofSettle {
+  from { transform: scale(1.04); }
+  to { transform: scale(1); }
+}
 @media (prefers-reduced-motion: no-preference) {
   /* 1 · chapter head — the hairline draws, then the claim rises behind it */
   .froghire-chapter-head[data-fade] .froghire-chapter-rule {
@@ -1000,6 +1224,28 @@ const froghireCss = `
   }
   .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(3) {
     animation-delay: 310ms;
+  }
+
+  /* 2b - triage spine: the rail draws, then the work steps settle */
+  .froghire-triage-board[data-fade]::before {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  .froghire-triage-board[data-fade] .froghire-triage-step {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .froghire-triage-board[data-fade].is-visible::before {
+    animation: frogAssembleDrawY 0.48s var(--ease-silk) forwards;
+    animation-delay: 140ms;
+  }
+  .froghire-triage-board[data-fade].is-visible .froghire-triage-step {
+    animation: frogAssembleRise 0.46s var(--ease-spring) forwards;
+    animation-delay: calc(260ms + var(--fro-d, 0ms));
+  }
+
+  .froghire-hero-proof[data-fade].is-visible img {
+    animation: frogProofSettle 1.2s var(--ease-silk) forwards;
   }
 
   /* 3 · figure caption follows its media — the media rides the parent fade,
@@ -1074,6 +1320,50 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
         </div>
       </section>
 
+      {/* ── the operating model: overview + triage spine, one section ── */}
+      <section
+        className="froghire-triage froghire-shell"
+        aria-labelledby="froghire-triage-title"
+      >
+        <div className="froghire-grid froghire-triage-inner">
+          <p className="froghire-index-label froghire-triage-label" data-fade>
+            The operating model
+          </p>
+          <div className="froghire-triage-copy" data-fade>
+            <h2 id="froghire-triage-title">
+              Trust was the real backlog.
+            </h2>
+            {(project.summary ?? [project.blurb]).map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
+          <div
+            className="froghire-triage-board"
+            data-fade
+            role="list"
+            aria-label="The FrogHire triage flow from complaints to shipped fixes"
+          >
+            {TRIAGE_FLOW.map((step, i) => (
+              <article
+                className="froghire-triage-step"
+                key={step.index}
+                role="listitem"
+                style={{ "--fro-d": `${i * 90}ms` } as CSSProperties}
+              >
+                <div className="froghire-triage-step-head">
+                  <span className="froghire-triage-step-label">
+                    <span>{step.index}</span>
+                    {step.label}
+                  </span>
+                </div>
+                <h3>{step.title}</h3>
+                <p>{step.note}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── the product in two rooms ── */}
       <section
         className="froghire-rooms froghire-shell froghire-grid"
@@ -1110,20 +1400,6 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
             The Chrome extension, in place on a LinkedIn posting
           </FigCaption>
         </figure>
-      </section>
-
-      {/* ── brief ── */}
-      <section className="froghire-brief froghire-shell" aria-labelledby="froghire-brief-title">
-        <div className="froghire-grid froghire-brief-inner">
-          <h2 id="froghire-brief-title" data-fade>
-            Trust was the real backlog.
-          </h2>
-          <div className="froghire-brief-copy" data-fade>
-            {(project.summary ?? [project.blurb]).map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* ── chapter 01: diagnosis ── */}
@@ -1186,7 +1462,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                   {ch1.sections[2].image && (
                     <Image
                       src={ch1.sections[2].image}
-                      alt="Competitor benchmark comparing FrogHire with Simplify, Teal and others"
+                      alt="Resume tutorial benchmark showing onboarding, in-context feature education, and feedback states"
                       width={2752}
                       height={1536}
                       sizes="100vw"
@@ -1194,8 +1470,8 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                   )}
                 </div>
                 <FigCaption index="05" className="froghire-c-below">
-                  Benchmarking Simplify, Teal, and the rest — sleek AI
-                  autofill, at a cost a startup couldn’t afford
+                  Resume tutorial benchmark — instant launch, contextual
+                  teaching, and feedback after the tour
                 </FigCaption>
               </figure>
             </Sec>
