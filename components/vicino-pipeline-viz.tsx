@@ -88,6 +88,8 @@ const vicinoSteps = [
 
 const index2 = (i: number) => (i + 1).toString().padStart(2, "0");
 
+import { stripCssComments } from "@/lib/css-sanitize";
+
 export function VicinoPipelineViz() {
   return (
     <div
@@ -97,7 +99,7 @@ export function VicinoPipelineViz() {
     >
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
 .vz-pipe {
   display: grid;
   /* density stays LOW (skill: Density & Anchors) */
@@ -322,7 +324,7 @@ export function VicinoPipelineViz() {
   .vz-pipe-figure svg { height: 48px; }
   .vz-pipe-head-fig { min-height: 48px; }
 }
-`,
+`),
         }}
       />
       <div className="vz-pipe-cols" aria-hidden="true">

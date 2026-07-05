@@ -217,7 +217,7 @@ const flowerSrc = (v: FgFlowerCfg["variant"], state: "bud" | "half" | "full") =>
 - **No baked shadow** (matches the leaves; the near-black water + blur hides grounding, and a baked shadow would fringe).
 
 **Naming (matches `flowerSrc`):** `lotus-flower-01-bud.png`, `-01-half.png`, `-01-full.png`, … `-03-full.png`.
-**Folder:** `this Next.js repo\public\media\home\lotus\individual\` (same as leaves).
+**Folder:** `public/media/home/lotus/individual/` (same as leaves).
 **Extra leaf states:** **none** — the leaf loop only condenses + translates, never crossfades; the existing 8 PNGs are reused unchanged.
 
 ### Generation pipeline — reference-locked (mandatory)
@@ -267,7 +267,7 @@ Three independent text-to-image generations yield three *different* flowers, not
 
 ## 8. Files to touch + build order for Codex
 
-1. **Produce assets** → 9 PNGs into `this Next.js repo\public\media\home\lotus\individual\` per Section 6. (Nothing renders until these exist.)
+1. **Produce assets** → 9 PNGs into `public/media/home/lotus/individual/` per Section 6. (Nothing renders until these exist.)
 2. **`portfolio/components/fg-lotus-layer.tsx`** (additive + one CSS scope edit):
    a. Add `FgFlowerCfg` type after line 20; add `FG_FLOWERS` array + `flowerSrc` helper after line 65 (Section 5).
    b. In `LotusField`, add a **second `.map`** after the leaf map (ends ~line 105) rendering `.fgl-item.fgl-flower` — with `width/height = c.size vmin` on the item, and **three stacked imgs in layer mode / the `-full` img only in `fixed` mode** (Section 4). Add `decoding="async"` to all; add `loading="lazy" fetchPriority="low"` to the frame img.

@@ -5,6 +5,7 @@ import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { FroghireAffinityMap } from "@/components/froghire-affinity-map";
 import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
 import { FroghireTradeLedger } from "@/components/froghire-trade-ledger";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // FrogHire.ai — the triage ledger.
 // A calm ink-on-paper working document: hairline-ruled dockets, numbered
@@ -1286,7 +1287,11 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
 
   return (
     <article className="froghire-case-page">
-      <style dangerouslySetInnerHTML={{ __html: froghireCss + ICUE_CSS }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: stripCssComments(froghireCss + ICUE_CSS),
+        }}
+      />
 
       {/* ── docket hero ── */}
       <section className="froghire-hero froghire-shell froghire-grid" id="header">

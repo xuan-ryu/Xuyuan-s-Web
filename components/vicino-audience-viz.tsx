@@ -1,3 +1,5 @@
+import { stripCssComments } from "@/lib/css-sanitize";
+
 // Station-02 visualization: who actually uses the product, and why the real gap
 // is methodology — not the interface. Redesigned from a stacked card grid ("too
 // AI") into a SPECTRUM: two profile-bust medallions face each other across an
@@ -19,7 +21,7 @@ export function VicinoAudienceViz() {
     >
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
 .vz-aud {
   display: grid;
   /* density stays LOW (skill: Density & Anchors) — block gaps at 1.5x the
@@ -255,7 +257,7 @@ export function VicinoAudienceViz() {
     background: linear-gradient(to bottom, var(--accent-amber, #e0902f), transparent);
   }
 }
-`,
+`),
         }}
       />
       <p className="vz-aud-eyebrow" aria-hidden="true">

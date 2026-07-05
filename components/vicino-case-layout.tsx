@@ -9,6 +9,7 @@ import { VicinoInterventionViz } from "./vicino-intervention-viz";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoPipelineViz } from "./vicino-pipeline-viz";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 const SEAL_SRC = "/media/shared/seal.png";
 
@@ -1120,6 +1121,7 @@ const vicinoCriticalCss = `
   text-overflow: ellipsis;
 }
 .vicino-storyboard-scene-img {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -3376,11 +3378,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
 
   return (
     <article className="vicino-case-page">
-      {/* Strip CSS comments before serving: dev-facing provenance notes stay in
-          source but never ship to the browser (keeps internal names out of view-source). */}
       <style
         dangerouslySetInnerHTML={{
-          __html: vicinoCriticalCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+          __html: stripCssComments(vicinoCriticalCss),
         }}
       />
 

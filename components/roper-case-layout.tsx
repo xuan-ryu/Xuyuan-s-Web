@@ -4,6 +4,7 @@ import { OffscreenVideo } from "./ui/offscreen-video";
 import { RoperGuessVsAmerica } from "./roper-guess-vs-america";
 import { RoperCheckpointDiagram } from "./roper-checkpoint-diagram";
 import { roperSamplePoll } from "./roper-poll-data";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The Ledger and the Weathervane" — Roper Center's bespoke case layout
 // (spec-roper.json). The page is a quiet archival ledger: paper ground,
@@ -972,7 +973,11 @@ export function RoperCaseLayout({ project }: { project: Project }) {
 
   return (
     <article className="roper-case-page">
-      <style dangerouslySetInnerHTML={{ __html: roperCriticalCss }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: stripCssComments(roperCriticalCss),
+        }}
+      />
 
       {/* 00 · archive masthead */}
       <header className="roper-hero">

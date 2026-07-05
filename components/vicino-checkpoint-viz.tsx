@@ -1,3 +1,5 @@
+import { stripCssComments } from "@/lib/css-sanitize";
+
 // Station visualization: why the product inserts a cheap image-preview layer
 // before the expensive video step — redrawn as a pipeline diagram whose
 // argument IS the drawing: the cost of being wrong is the SIZE of the redo
@@ -20,7 +22,7 @@ export function VicinoCheckpointViz() {
     >
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
 .vz-chk {
   /* open on the canvas — no card frame, no dot grid; density stays low */
   display: grid;
@@ -295,7 +297,7 @@ export function VicinoCheckpointViz() {
     animation-delay: calc(860ms + var(--vlane, 0ms));
   }
 }
-`,
+`),
         }}
       />
       <p className="vz-chk-anchor" aria-hidden="true">

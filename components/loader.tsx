@@ -11,6 +11,7 @@ import {
 } from "react";
 import type Lenis from "lenis";
 import { subscribeLenis } from "@/lib/lenis-bus";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 gsap.registerPlugin(CustomEase);
 CustomEase.create("inkSoft", "0.25,1,0.5,1");
@@ -146,7 +147,10 @@ export function Loader() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     // sessionStorage flag = escape hatch for capture/measure tooling
-    setShouldRun(!hasShownThisLoad && !sessionStorage.getItem("skip-loader"));
+    const timer = window.setTimeout(() => {
+      setShouldRun(!hasShownThisLoad && !sessionStorage.getItem("skip-loader"));
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(
@@ -307,10 +311,11 @@ export function Loader() {
       );
     }
 
-    if (hintRef.current) {
-      tl.to(hintRef.current, { opacity: 1, duration: 1.0 }, 2.2);
+    const hint = hintRef.current;
+    if (hint) {
+      tl.to(hint, { opacity: 1, duration: 1.0 }, 2.2);
       // gentle pulse while waiting
-      gsap.to(hintRef.current, {
+      gsap.to(hint, {
         opacity: 0.4,
         duration: 1.2,
         repeat: -1,
@@ -331,7 +336,7 @@ export function Loader() {
       introTlRef.current = null;
       exitTlRef.current?.kill();
       exitTlRef.current = null;
-      if (hintRef.current) gsap.killTweensOf(hintRef.current);
+      if (hint) gsap.killTweensOf(hint);
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
       if (broadcastTimerRef.current) {
@@ -354,7 +359,9 @@ export function Loader() {
       onTouchMove={(event) => event.preventDefault()}
       aria-hidden="true"
     >
-      <style dangerouslySetInnerHTML={{ __html: scrollLockCss }} />
+      <style
+        dangerouslySetInnerHTML={{ __html: stripCssComments(scrollLockCss) }}
+      />
       {/* shoji doors — they ARE the backdrop, and slide apart on exit */}
       <div ref={leftDoorRef} style={{ ...doorStyle, left: 0 }}>
         <div style={{ ...grainStyle, left: 0 }} />
@@ -395,6 +402,7 @@ export function Loader() {
           ))}
         </div>
         {/* the studio's own red seal, pressed beside the name */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- GSAP animates this exact img node through a ref. */}
         <img ref={sealRef} src={SEAL_SRC} alt="" style={sealStyle} />
       </div>
 

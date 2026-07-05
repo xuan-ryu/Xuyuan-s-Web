@@ -8,14 +8,14 @@ Current visual source of truth:
 
 Local asset/export source:
 
-- `local Framer exportpackage`
+- Local Framer export package
 - Framer export via NoCodeXport
 - 9 exported pages
 - Used primarily as the asset pool and fallback HTML reference.
 
 React target:
 
-- `this Next.js repo`
+- This Next.js repo
 - Next.js App Router
 - Static routes plus generated project detail pages
 

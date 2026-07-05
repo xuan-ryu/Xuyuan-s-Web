@@ -6,6 +6,7 @@ import { site } from "@/data/site";
 import { Cta } from "@/components/ui/cta";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import HongyadongScene from "@/components/hongyadong";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 export const metadata: Metadata = {
   title: "About",
@@ -325,7 +326,7 @@ export default function About() {
           everything new or overridden lives here under the abf prefix. */}
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
 /* ─ condensed family voice for the display titles; gold = static detail ─ */
 .about-essay .section-intro h2.abf-t,
 .about-dark .section-intro h2.abf-t,
@@ -1018,7 +1019,7 @@ h2.about-habits-title.abf-t,
     transform: none;
   }
 }
-`,
+`),
         }}
       />
     </>

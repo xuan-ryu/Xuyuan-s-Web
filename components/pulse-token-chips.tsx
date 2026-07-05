@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 /* ── The hero token chips (Fig. 01), made copyable — a design system's tokens
    should be usable, not just shown. Click a swatch to copy its hex; the label
@@ -34,7 +35,7 @@ export function PulseTokenChips() {
 
   return (
     <div className="pulse-spec-chips pulse-spec-chips--live" data-fade>
-      <style dangerouslySetInnerHTML={{ __html: CHIP_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(CHIP_CSS) }} />
       {CHIPS.map((c) => (
         <button
           type="button"

@@ -2,6 +2,8 @@
 
 /* eslint-disable @next/next/no-img-element */
 
+import { stripCssComments } from "@/lib/css-sanitize";
+
 type FrameTarget = {
   frameX: number;
   frameY: number;
@@ -187,7 +189,7 @@ function LotusField({
 
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
         .fgl-layer,
         .koi-lotus-frame {
           position: absolute;
@@ -242,7 +244,7 @@ function LotusField({
             display: none;
           }
         }
-      `,
+      `),
         }}
       />
     </div>

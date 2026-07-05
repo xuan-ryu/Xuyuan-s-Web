@@ -4,6 +4,7 @@
 
 import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
+import { stripCssComments } from "@/lib/css-sanitize"
 
 
 type Props = {
@@ -1931,7 +1932,7 @@ drawBody() {
             feedBtn.removeEventListener("keydown", onFeedKeyDown)
             container.classList.remove("feed-mode")
         }
-    }, [props.introDurationMs])
+    }, [props.introDurationMs, showLilyPads])
 
     return (
         <div
@@ -1944,7 +1945,7 @@ drawBody() {
                 ["--koi-hero-x" as string]: String(props.heroBoxXvw),
             }}
         >
-            <style>{`
+            <style>{stripCssComments(`
             .koi-container{
               position:absolute; inset:0; width:100%; height:100%;
               overflow:hidden; cursor:default; z-index:0;
@@ -2098,7 +2099,7 @@ drawBody() {
               box-shadow: 0 0 4px rgba(255,255,255,0.45);
             }
             .koi-container.feed-mode #feed-cursor { display:block; }
-            `}</style>
+            `)}</style>
 
             <div className="koi-container" ref={containerRef}>
                 <div className="vignette-overlay" />

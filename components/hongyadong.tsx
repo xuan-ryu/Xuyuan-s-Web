@@ -4,6 +4,7 @@
 
 import * as React from "react"
 import { useEffect, useRef } from "react"
+import { stripCssComments } from "@/lib/css-sanitize"
 
 
 type Props = {
@@ -1086,7 +1087,7 @@ export default function HongyadongFramer(props: Props) {
                 color: "#000",
             }}
         >
-            <style>{`
+            <style>{stripCssComments(`
                 .hyf-stage {
                     position: sticky;
                     top: 0;
@@ -1532,9 +1533,10 @@ export default function HongyadongFramer(props: Props) {
                         letter-spacing: 0.05em;
                     }
                 }
-            `}</style>
+            `)}</style>
 
             <div ref={stageRef} className="hyf-stage">
+                {/* eslint-disable-next-line @next/next/no-img-element -- canvas samples this exact source image via ref/crossOrigin. */}
                 <img
                     ref={sourceImageRef}
                     className="hyf-source-image"
@@ -1563,6 +1565,7 @@ export default function HongyadongFramer(props: Props) {
                     >
                         {profilePhoto && (
                             <div ref={avatarRef} className="hyf-avatar hyf-reveal-copy">
+                                {/* eslint-disable-next-line @next/next/no-img-element -- GSAP reveal animation targets the avatar image inside this Framer-ported scene. */}
                                 <img src={profilePhoto} alt="" />
                             </div>
                         )}

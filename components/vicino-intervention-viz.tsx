@@ -47,6 +47,8 @@ const stages = [
   },
 ] as const;
 
+import { stripCssComments } from "@/lib/css-sanitize";
+
 export function VicinoInterventionViz() {
   return (
     <div
@@ -56,7 +58,7 @@ export function VicinoInterventionViz() {
     >
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
 .vz-int {
   /* open on the canvas — no card frame, no dot grid; density stays low */
   display: grid;
@@ -349,7 +351,7 @@ export function VicinoInterventionViz() {
     animation-delay: calc(540ms + (var(--col, 1) - 1) * 210ms);
   }
 }
-`,
+`),
         }}
       />
       <p className="vz-int-anchor" aria-hidden="true">

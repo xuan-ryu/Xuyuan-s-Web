@@ -1,5 +1,5 @@
 // Project data transcribed verbatim from the Framer export
-// (local Framer export...\work\*\index.html). Two templates exist on the
+// (local Framer export work/*/index.html). Two templates exist on the
 // live site: "case" (vicino-ai, froghire-ai, roper-center) and "poster"
 // (hunger1942, vr-education). Copy intentionally preserves the source text,
 // including its quirks ("one more features", full-width colon).

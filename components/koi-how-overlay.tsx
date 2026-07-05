@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ValueCard } from "./value-card";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 type Method = {
   readonly title: string;
@@ -71,7 +72,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
       ref={rootRef}
       className={`koi-how${revealed ? " is-revealed" : ""}`}
     >
-      <style>{`
+      <style>{stripCssComments(`
         .koi-how {
           position: absolute; inset: 0;
           z-index: 4;
@@ -178,7 +179,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             min-height: 972px;
           }
         }
-      `}</style>
+      `)}</style>
       <div className="koi-how-canvas">
         <h2 className="koi-how-title">{title}</h2>
         {methods.map((method, i) => (

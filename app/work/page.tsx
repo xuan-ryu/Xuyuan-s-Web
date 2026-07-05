@@ -22,6 +22,7 @@ import type { CSSProperties } from "react";
 import { projects, projectsBySlug, type Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { WorkIndexPlate } from "@/components/work-index-plate";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -149,7 +150,7 @@ export default function WorkIndex() {
 
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
         /* ── 检索 · the printed catalogue index (prefix wki-) ─────────
            12-col case-shell, 8px baseline, 144px row module. All red on
            this page is the seal tick; gold = the static fallback-plate
@@ -635,7 +636,7 @@ export default function WorkIndex() {
             transform: translate(0, -50%);
           }
         }
-      `,
+      `),
         }}
       />
     </div>

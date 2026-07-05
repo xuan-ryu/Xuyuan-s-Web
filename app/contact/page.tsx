@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { site } from "@/data/site";
 import { ContactForm } from "@/components/contact-form";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -460,7 +461,7 @@ a.ctc-ledger-value:focus-visible {
 export default function Contact() {
   return (
     <div className="ctc-page">
-      <style dangerouslySetInnerHTML={{ __html: contactCss }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(contactCss) }} />
 
       <section className="ctc-hero" id="header">
         <h1 className="ctc-title" data-fade>

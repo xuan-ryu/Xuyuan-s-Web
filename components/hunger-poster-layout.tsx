@@ -4,6 +4,7 @@ import { adjacent, type Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { HungerLoupeFrame } from "@/components/hunger-loupe-frame";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The 1942 Edition" (spec-hunger1942): the project printed its own broadsheet,
 // so the case page becomes the desk it lies on — an archival reading room.
@@ -68,7 +69,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
 
   return (
     <article className="poster-page hunger-page">
-      <style dangerouslySetInnerHTML={{ __html: hungerCss }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(hungerCss) }} />
 
       {/* ── 1 · Dateline masthead ─────────────────────────────── */}
       <header className="hunger-hero" id="header">

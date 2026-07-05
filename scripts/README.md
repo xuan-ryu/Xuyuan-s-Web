@@ -28,7 +28,7 @@ own bootstrap. Exports:
 Conventions:
 
 - **`PW_EXEC`** — set to an absolute `chrome.exe` path to force a specific
-  browser build (`PW_EXEC=C:/.../chrome.exe node scripts/...`). Needed when
+  browser build (`PW_EXEC=<absolute chrome.exe path> node scripts/...`). Needed when
   the installed `playwright` package and the browser cache revisions drift
   (that drift is exactly why `launchBrowser` exists).
 - **skip-loader** — capture/measure scripts skip the intro loader by default;

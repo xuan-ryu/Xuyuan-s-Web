@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react"
 // fallback before init3D ever runs) never download or parse the ~150KB engine.
 import { subscribeLenis } from "@/lib/lenis-bus"
 import { Wordmark } from "@/components/wordmark"
+import { stripCssComments } from "@/lib/css-sanitize"
 
 
 type BirdDatum = {
@@ -689,7 +690,7 @@ export default function DigitalLandscape(props: Props) {
                 )
             }
         }
-    }, [scrollDemo])
+    }, [isCanvas, scrollDemo])
 
     useEffect(() => {
         if (typeof window === "undefined") return
@@ -2471,7 +2472,7 @@ export default function DigitalLandscape(props: Props) {
         >
             <style
                 dangerouslySetInnerHTML={{
-                    __html: `
+                    __html: stripCssComments(`
             *, *::before, *::after { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; box-sizing: border-box; }
             
             .noise-overlay {
@@ -2782,7 +2783,7 @@ export default function DigitalLandscape(props: Props) {
                 .page2-name-rule, .page2-brand-line { transition: none !important; }
             }
 
-`,
+`),
                 }}
             />
 
@@ -2990,6 +2991,7 @@ export default function DigitalLandscape(props: Props) {
                                     style={{ pointerEvents: "auto" }}
                                 >
                                     {photoUrl ? (
+                                        // eslint-disable-next-line @next/next/no-img-element -- Framer-ported scene CSS owns this circular crop.
                                         <img
                                             className="page2-card-image"
                                             src={photoUrl}

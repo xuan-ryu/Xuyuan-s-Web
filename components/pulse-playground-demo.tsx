@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // Pulse playground demo — the npm package's data-testing story, live on the
 // page: feed a component JSON and watch it hold. The left pane is an editable
@@ -287,7 +288,7 @@ export function PulsePlaygroundDemo() {
 
   return (
     <div className="ppg" data-fade>
-      <style dangerouslySetInnerHTML={{ __html: PPG_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(PPG_CSS) }} />
       <div className="ppg-pane">
         <div className="ppg-pane-head">
           <span>payload &middot; json</span>

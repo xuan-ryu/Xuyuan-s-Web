@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useRef } from "react";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 type Props = {
   title: string;
@@ -158,7 +159,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
           } as React.CSSProperties),
         }}
       >
-        <style>{`
+        <style>{stripCssComments(`
           @keyframes cardReveal {
             from { opacity: 0; transform: translateY(14px) scale(0.97); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -230,7 +231,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
               transition: none;
             }
           }
-        `}</style>
+        `)}</style>
 
         <div className="vibe-grain" />
         <div

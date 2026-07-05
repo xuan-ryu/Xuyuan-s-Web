@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // Saira Condensed ExtraLight, -10% tracking, glyph outlines (opentype.js). The
 // name is two lines — XUYUAN / LIU — each line a self-contained SVG so the
@@ -87,7 +88,7 @@ export function Wordmark({ style }: { style?: CSSProperties }) {
           PORTFOLI<span className="wm-o">O</span>
         </div>
       </div>
-      <style>{`
+      <style>{stripCssComments(`
         .wm-stack {
           display: flex;
           flex-direction: column;
@@ -149,7 +150,7 @@ export function Wordmark({ style }: { style?: CSSProperties }) {
           .wm-portfolio { transform: none; }
           .scene-loaded .wm-letter, .scene-loaded .wm-portfolio { animation: none; }
         }
-      `}</style>
+      `)}</style>
     </div>
   );
 }

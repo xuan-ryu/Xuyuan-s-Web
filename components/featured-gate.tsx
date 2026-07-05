@@ -38,6 +38,7 @@ import {
   FG_LEAVES,
 } from "@/components/fg-lotus-layer";
 import { subscribeLenis } from "@/lib/lenis-bus";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 const FEATURED = 4;
 // the pin + lotus layer run only here; the same query gates the layer mount
@@ -610,7 +611,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
 
       <style
         dangerouslySetInnerHTML={{
-          __html: `
+          __html: stripCssComments(`
         /* The ScrollTrigger pin-spacer otherwise swallows pointer events over
            the risen koi section after the crossing (the pond was unfeedable).
            The spacer goes transparent to events; the section re-enables its
@@ -842,7 +843,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           .fg-gate:hover .fg-cover, .fg-gate:hover .fg-video { transform: none; }
           .fg-row-link { opacity: 1; transform: none; }
         }
-      `,
+      `),
         }}
       />
     </section>

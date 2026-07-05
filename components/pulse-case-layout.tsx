@@ -8,6 +8,7 @@ import { PulseCreativeBrief } from "./pulse-creative-brief";
 import { PulsePlaygroundDemo } from "./pulse-playground-demo";
 import { PulseTokenChips } from "./pulse-token-chips";
 import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // Pulse — "Studio Bloom" (owner direction, 2026-07-04): the one case page
 // that steps INSIDE its product's world. The ink/paper specimen document and
@@ -2756,7 +2757,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
   return (
     <article className="case-study-page pulse-case-page" data-has-cover="false">
-      <style dangerouslySetInnerHTML={{ __html: pulseCss + ICUE_CSS }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: stripCssComments(pulseCss + ICUE_CSS),
+        }}
+      />
       <PulseScroll />
       <div className="pulse-blooms" aria-hidden="true">
         <i className="pulse-bloom" />

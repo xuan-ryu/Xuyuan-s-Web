@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 /* ── The Creative Brief (Fig. 19), made genuinely editable — the caption
    claims "editable fields inside the chat," so it should be true. A person
@@ -87,7 +88,7 @@ export function PulseCreativeBrief() {
 
   return (
     <div className="pulse-brief pulse-brief--live">
-      <style dangerouslySetInnerHTML={{ __html: BRIEF_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(BRIEF_CSS) }} />
       <header className="pulse-brief-head">
         <strong>Creative Brief</strong>
         <span className="pulse-brief-chip">Drafted by Pulse</span>

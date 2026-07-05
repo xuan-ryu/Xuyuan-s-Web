@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { adjacent, type Project } from "@/data/projects";
 import { VrmbFlightLine } from "@/components/vrmb-flight-line";
 import { VrmbParticleStrip } from "@/components/vrmb-particle-strip";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 // VR Monarch Butterfly — "a naturalist's field folio for a virtual migration"
 // (art-direction spec: scratchpad specs/spec-vr-butterfly.json).
@@ -738,7 +739,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
 
   return (
     <article className="poster-page vrmb-page">
-      <style dangerouslySetInnerHTML={{ __html: css }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(css) }} />
 
       {/* 1 · Specimen plate */}
       <header className="vrmb-shell vrmb-grid vrmb-hero" id="header">

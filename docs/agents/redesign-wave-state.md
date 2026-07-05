@@ -16,7 +16,7 @@ w/ tabular numerals; real mono ONLY for literal code (commit ticker, JSON
 editor). H1 + next-title de-condensed on this page only. Page-local
 .pulse-navscrim fades content under the transparent fixed nav.
 
-**Numbers re-verified against private Pulse repo git history (2026-07-04):**
+**Numbers re-verified against the private Pulse repo git history (2026-07-04):**
 peak file = 10,180 lines (rev 5652305 root index.html — the old 13,020 claim
 did NOT survive audit and is corrected everywhere); 824 commits over 5 weeks,
 308 structural; 40 handoff components (37 React); 1,905 net dead lines
@@ -88,7 +88,7 @@ scratchpad (`specs/spec-*.json`) — if gone, regenerate from the
 | /work | done | **full QA ✓** | catalogue index; card view + WebGL deleted; keyboard parity verified |
 | /work/hunger1942 | done | **full QA ✓** | broadsheet; loupe shipped (hover/fine-pointer only); adjacent-nav reused |
 | /about | done | **interrupted** | film-roll rebuild; needs QA pass |
-| /work/pulse | done | **full QA ✓** | specimen document; values traced to the real Pulse repo (private Pulse repo); 2 iterations + reduced-motion/phone verified; copy trims deferred to owner pass |
+| /work/pulse | done | **full QA ✓** | specimen document; values traced to the private Pulse repo; 2 iterations + reduced-motion/phone verified; copy trims deferred to owner pass |
 | /work/froghire-ai | done | **interrupted** | triage ledger + affinity map + trade ledger; needs QA |
 | /work/roper-center | done | **full QA ✓** | poll figures verified by frame-grabbing the project's own video (80/16/4 women's-status sample question, NOT the spec's assumed 45/52/4); keyboard-only GuessVsAmerica passed; composed connective copy flagged for owner review |
 | /work/vr-education | done | **interrupted** | field folio + particle strip (40-sprite cap to verify) + public/media/vrmb/ derived assets |
@@ -109,7 +109,7 @@ scratchpad (`specs/spec-*.json`) — if gone, regenerate from the
    callback (or DOM event) → home page mounts the cards overlay.
 3. **Pulse case material expansion** (owner sanction for pulse copy edits in
    data/projects.ts): source material = the private prototype repo
-   AND the local repo at `private Pulse repo`. Add interactive pages/components
+   AND the private Pulse repo. Add interactive pages/components
    as evidence (screenshots or embedded specimens). Narrative arc to write
    from the owner's own git commit history + work history, five beats:
    (a) starting to explore a code design-system component library;
@@ -117,7 +117,7 @@ scratchpad (`specs/spec-*.json`) — if gone, regenerate from the
    standardization; (c) shipping fast HTML/React demos the team could use;
    (d) refactoring the mess into a maintainable component library, up to npm
    packaging; (e) serving non-coding designers throughout — Figma export and
-   easy hand-around previews. Mine `git -C "private Pulse repo" log` for real
+   easy hand-around previews. Mine the private Pulse repo git log for real
    dates/commit subjects; screenshots of the component library/handoff pages
    can be captured from that repo's own preview surfaces.
 

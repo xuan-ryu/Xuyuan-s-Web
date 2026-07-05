@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { stripCssComments } from "@/lib/css-sanitize";
 
 /* ── The live component browser (Fig. 10), recreated as a real interactive
    specimen instead of a screenshot. Every piece here is a faithful rebuild of
@@ -232,7 +233,7 @@ export function PulseComponentBrowser() {
   const active = CATEGORIES.find((c) => c.id === cat)!;
   return (
     <div className="pcb">
-      <style dangerouslySetInnerHTML={{ __html: PCB_CSS }} />
+      <style dangerouslySetInnerHTML={{ __html: stripCssComments(PCB_CSS) }} />
       <header className="pcb-head">
         <span className="pcb-head-title">Component browser</span>
         <span className="pcb-head-live">
