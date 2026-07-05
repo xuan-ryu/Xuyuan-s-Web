@@ -18,14 +18,17 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
+        shell: bash
         run: |
           node -v
           npm -v
-          npm ci
+          if ! npm ci --no-audit --fund=false > npm-ci.log 2>&1; then
+            node -e "const fs=require('fs'); const text='npm ci failed. First 80 lines:\\n'+fs.readFileSync('npm-ci.log','utf8').split(/\\r?\\n/).slice(0,80).join('\\n'); const esc=text.replace(/%/g,'%25').replace(/\\r/g,'%0D').replace(/\\n/g,'%0A'); console.log('::error file=package-lock.json,line=1::'+esc)"
+            cat npm-ci.log
+            exit 1
+          fi
 
       - name: Lint
         run: npm run lint
