@@ -70,6 +70,9 @@ const FLAWS = [
   { label: "MISSING TRUST", count: "2 of 6 complaints" },
 ];
 
+const matchesMedia = (query: string) =>
+  typeof window !== "undefined" && window.matchMedia(query).matches;
+
 // ── Geometry ────────────────────────────────────────────────────────────────
 // Desktop: viewBox 1200×560, 12 internal fields of 100. Notes on fields 1–5,
 // slabs on fields 8–12, connectors crossing fields 5–8.
@@ -108,15 +111,20 @@ function stackedGeo() {
 
 export function FroghireAffinityMap() {
   const rootRef = useRef<SVGSVGElement>(null);
-  const [stacked, setStacked] = useState(false);
-  const [live, setLive] = useState(false);
-  const [settled, setSettled] = useState(false);
+  const [stacked, setStacked] = useState(() =>
+    matchesMedia("(max-width: 809.98px)"),
+  );
+  const [live, setLive] = useState(() =>
+    matchesMedia("(prefers-reduced-motion: reduce)"),
+  );
+  const [settled, setSettled] = useState(() =>
+    matchesMedia("(prefers-reduced-motion: reduce)"),
+  );
   const [hot, setHot] = useState<number | null>(null);
 
   // Phone restack — the SVG swaps to the vertical composition.
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 809.98px)");
-    setStacked(mq.matches);
     const onChange = () => setStacked(mq.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -128,8 +136,6 @@ export function FroghireAffinityMap() {
     const el = rootRef.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setLive(true);
-      setSettled(true);
       return;
     }
     let timer: ReturnType<typeof setTimeout> | undefined;

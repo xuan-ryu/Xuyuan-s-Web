@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font -- Google Fonts are script-created here on purpose; see the hydration note below. */
 import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";

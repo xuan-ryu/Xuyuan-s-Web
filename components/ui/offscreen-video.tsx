@@ -26,11 +26,14 @@ export function OffscreenVideo({
   ...rest
 }: OffscreenVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [reduced, setReduced] = useState(false);
+  const [reduced, setReduced] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
     const onChange = () => setReduced(mq.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -58,7 +61,6 @@ export function OffscreenVideo({
   }, [reduced, threshold]);
 
   return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption -- decorative evidence reels; context is in surrounding copy
     <video
       ref={ref}
       className={className}

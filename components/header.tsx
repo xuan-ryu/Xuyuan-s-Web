@@ -25,7 +25,8 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
+    const timer = window.setTimeout(() => setOpen(false), 0);
+    return () => window.clearTimeout(timer);
   }, [pathname]);
 
   // Real-time nav ink: every nav element (logo + each link) takes its colour

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
@@ -281,7 +282,12 @@ function StoryboardNodeBody() {
               </span>
             </div>
             <div className="vicino-storyboard-scene-img">
-              <img src="/media/work/vicino/storyboard-sketch.png" alt="" />
+              <Image
+                src="/media/work/vicino/storyboard-sketch.png"
+                alt=""
+                fill
+                sizes="80px"
+              />
             </div>
           </div>
         ))}
@@ -302,10 +308,12 @@ function ShootNodeBody() {
         </div>
         <div className="vicino-shoot-frame-box shoot-node-frame-box">
           <span className="vicino-shoot-box-label shoot-node-box-label">First Frame</span>
-          <img
+          <Image
             className="vicino-shoot-frame-image shoot-node-frame-image"
             src="/media/work/vicino/shootnode-board.png"
             alt="Cinematic shot board preview"
+            width={220}
+            height={124}
           />
         </div>
         <div className="vicino-shoot-prompt-box shoot-node-prompt-box">
@@ -322,10 +330,12 @@ function VideoNodeBody() {
     <div className="vicino-video-output-node-body video-node-v3-video-area">
       <div className="video-node-v3-stage">
         <div className="video-node-v3-media">
-          <img
+          <Image
             className="video-node-v3-player"
             src="/media/work/vicino/video-preview.png"
             alt="Video output preview"
+            width={260}
+            height={148}
           />
         </div>
         <span className="vicino-video-play-overlay" />

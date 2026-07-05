@@ -53,15 +53,18 @@ const TRADES: Trade[] = [
   },
 ];
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function FroghireTradeLedger() {
   const tableRef = useRef<HTMLDivElement>(null);
-  const [stamped, setStamped] = useState(false);
+  const [stamped, setStamped] = useState(prefersReducedMotion);
 
   useEffect(() => {
     const el = tableRef.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setStamped(true);
       return;
     }
     const io = new IntersectionObserver(

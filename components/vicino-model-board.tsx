@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 // Station-04 (Block B) interactive: the owner's own PDR *schematic*, rebuilt
 // live. A Work Space canvas holds the node cluster centered-left (a single real
 // Image node, smaller, with its floating bar above and its sliding panel to the
@@ -262,7 +264,12 @@ function ImageNodeBody() {
   return (
     <div className="vicino-image-node-body">
       <div className="vicino-image-node-frame">
-        <img src={GEN_IMAGE} alt="Generated image output — specimen" />
+        <Image
+          src={GEN_IMAGE}
+          alt="Generated image output"
+          fill
+          sizes="(min-width: 1024px) 220px, 44vw"
+        />
         <span className="vicino-image-node-expand" aria-hidden="true" />
       </div>
     </div>
