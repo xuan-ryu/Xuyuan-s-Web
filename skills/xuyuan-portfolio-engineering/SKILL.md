@@ -93,6 +93,48 @@ touching them or adding a scene, the lifecycle contract is:
   shared bundle.
 - Respect `prefers-reduced-motion` and provide a static fallback.
 
+## Entrance motion & coded diagrams (patterns + landmines)
+
+The case pages (Pulse, Vicino, FrogHire) share an **assembly-on-arrival**
+entrance pattern — sections and diagrams assemble as they scroll in:
+
+- Drive it with CSS descendant rules keyed on `[data-fade].is-visible` (the
+  global FadeReveal paints `.is-visible` on scroll-enter). Every hidden initial
+  state is wrapped in `@media (prefers-reduced-motion: no-preference)` so
+  reduced-motion AND no-JS both show the FINISHED state. Animate only
+  `transform`/`opacity`/`scaleX`/`scaleY`. Zero new JS. `@keyframes` are
+  page-local and uniquely named — don't share `pAssemble*`/`frogAssemble*`
+  across pages.
+- **Borders can't scale.** To "draw" a rule/spine, convert the `border` to an
+  absolutely-positioned `::before`/`::after` bar with `transform-origin` +
+  `scaleX/scaleY`.
+- **Never scale the IntersectionObserver host to zero.** Scaling the element
+  that carries `[data-fade]` (the observed node) to `scaleX/Y(0)` gives it a
+  zero-size box that never intersects — `.is-visible` never fires and it stays
+  invisible forever. Keep the observed host full-size; animate a child or a
+  `::before` bar instead.
+- **ScrollTrigger enter-triggers are unreliable under Lenis.** On programmatic
+  scroll jumps they fire late or never — use IntersectionObserver for
+  enter-once reveals and reserve ScrollTrigger for true scrubs/pins.
+- **Tune the pace.** Assembly that plays too fast reads cheap; this session
+  slowed the Pulse + Vicino diagrams ~1.4x (durations + staggers). Verify each
+  diagram still ENDS fully visible after any slowdown.
+
+Coded diagrams (viz blocks — Pulse CI/skills, Vicino pipeline/checkpoint,
+FrogHire triage/affinity):
+
+- Grid connection lines collapse when long node labels force `max-content`
+  tracks (the track eats the connector down to a sliver). Use `minmax(0, 1fr)`
+  node tracks + FIXED px connector widths, and put multi-node diagrams in a
+  bounded reading-width inset.
+- Content sits OPEN on the canvas (big sentence-case caption anchor + type
+  scale + hairlines + spacing); glass/boxed surfaces are only for genuine
+  product-UI recreations. Node/handle geometry that faithfully repros a
+  product is exempt from the even-px rule (carry a comment).
+- Screenshot landmine: a big programmatic scroll JUMP skips FadeReveal's
+  observer, so a probe reports `[data-fade]` content "stuck invisible" that is
+  actually fine under progressive wheel scroll — confirm before "fixing".
+
 ## Asset policy (`public/`)
 
 - Canonical media tree: `public/assets/framerusercontent.com/**` (the Framer
@@ -145,6 +187,33 @@ touching them or adding a scene, the lifecycle contract is:
   — there is no serif or Newsreader on the site anymore; don't "restore" them.
 - `backups/`, `assets-backup/`, `audit-screenshots/` are local working
   snapshots, not source. Don't lint, refactor, or "clean up" from them.
+- **Injected critical-CSS comments ship to view-source.** CSS in a
+  `dangerouslySetInnerHTML={{ __html: … }}` template literal (e.g.
+  `vicino-case-layout.tsx`'s node-recreation CSS) is served verbatim — its
+  `/* comments */` reach the browser. Internal source-tree identifiers (repo
+  names, local paths, a product's component/file names) must NEVER sit there.
+  Strip comments at injection (`__html: css.replace(/\/\*[\s\S]*?\*\//g, "")`)
+  or keep provenance notes as non-served `//` TSX comments outside the literal.
+- **Public repo = source AND git history are exposed**, even when the served
+  DOM is clean. To purge internal identifiers from history: make a `git bundle`
+  backup first, then `git filter-repo --replace-text <f> --replace-message <f>`
+  (target only strings that never appear as live code identifiers — file names
+  WITH extensions, full component names — so a blanket replace can't corrupt
+  code), re-add `origin`, re-set the branch upstream
+  (`git branch --set-upstream-to=origin/main main`), and force-push. Verify
+  with a full-history grep of patches AND commit messages before pushing.
+- **Turbopack staleness bites after `cp`/external file rewrites too**, not just
+  `globals.css` edits — a restored or tool-rewritten component can serve stale.
+  `touch` the file, `curl` the route, wait ~2-3s, then screenshot. Diagnose off
+  the SOURCE plus a served-DOM `curl | grep`, never off a possibly-stale
+  screenshot ("Hydration" in the DOM is usually just `suppressHydrationWarning`,
+  not an error).
+- **Probe media before styling it.** Get real dimensions (a throwaway
+  Playwright page reading `video.videoWidth/videoHeight`, or a PNG-header
+  parse) before picking `aspect-ratio`/`object-position`. Recordings often
+  carry baked-in black bars — see the design skill's Media Framing rules.
+  `object-fit: cover` in a box TALLER than a wide asset has no vertical
+  overflow, so its vertical `object-position` is a no-op there.
 
 ## Deferred backlog (agreed, not yet done)
 

@@ -32,3 +32,29 @@ For layout work, follow the Muller-Brockmann grid rules in the design skill and
 `docs/design-system.md`: define the container, margins, columns/modules,
 gutters, and baseline before placing content. Align elements to grid fields, not
 gutters.
+
+## Case-page lessons (all agents — Claude Code and Codex)
+
+Hard-won fixing a case page a previous pass got wrong (2026-07-05). These bind
+whether or not you loaded the skills above:
+
+- **Before ADDING a section or figure, check what already exists.** Do not
+  duplicate the cover (in the hero AND as Fig. 1), and do not add a block that
+  restates numbers/story already on the page — a stats band + an overview
+  paragraph + a diagram all reciting the same figures is triple redundancy.
+  Reframe new material onto the page's ONE thesis; don't bolt on a competing
+  section.
+- **Wide media is shown WHOLE.** Product screenshots/recordings are wide
+  (dashboards ~2.2:1, screen recordings 16:9). Full-width, or a box matching
+  the asset's real aspect — never a narrow tall column, which crops it to an
+  unreadable vertical slice. Check the asset's real dimensions first.
+- **Baked-in black bars** on recordings are cropped with an `object-position`
+  bias on `object-fit: cover`, never `object-fit: contain` (double-letterbox).
+- **A caption describes the actual image, not the section title** — open the
+  image before captioning or relabeling it.
+- **Never put internal source identifiers** (repo names, local paths, a
+  product's component/file names) in served CSS comments or copy; this is a
+  public repo (source + git history included).
+
+The CSS mechanics + confidentiality detail live in the two skills; load them for
+case-page work.

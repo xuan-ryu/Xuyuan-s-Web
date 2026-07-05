@@ -131,6 +131,13 @@ Motion rules:
 - Scroll choreography belongs in `HeroScene`, `RoofTransition`, `FeaturedWindows`,
   `KoiPondScene`, `HongyadongFramer`, and small parallax helpers only.
 - Ordinary content reveal uses `[data-fade]` plus `FadeReveal`.
+- Case-page sections and diagrams use ASSEMBLY-ON-ARRIVAL: CSS keyed on
+  `[data-fade].is-visible`, with hidden initial states wrapped in
+  `@media (prefers-reduced-motion: no-preference)` so reduced-motion and no-JS
+  show the finished state; transform/opacity/scale only; page-local
+  `@keyframes`; paced on the slow side. Full recipe + landmines (border-scale,
+  IntersectionObserver starvation, ScrollTrigger-vs-IO) live in the
+  engineering skill's "Entrance motion & coded diagrams".
 - Respect reduced motion. If a scene cannot be reduced cleanly, provide a static fallback.
 
 ### Radii And Surfaces
@@ -397,6 +404,21 @@ Contract:
 - Summary and poster detail blocks are dark formal panels.
 - Full-width figures are preferred over nested cards.
 - Adjacent project nav is subdued and thumbnail-led.
+- Product figures are wide, so show them whole. Screenshots and screen
+  recordings are almost always wide (dashboards ~2.2:1, recordings 16:9). Give
+  them full width (stack figures) or a box matching the asset's real aspect —
+  never squeeze wide media into a narrow tall column, which cover-crops it to
+  an unreadable vertical slice. Check the asset's actual dimensions before
+  choosing an `aspect-ratio`.
+- Screen recordings often ship a baked-in black bar (browser chrome / capture
+  letterbox). Crop it by biasing `object-position` on `object-fit: cover`
+  (e.g. `object-position: 50% 72%`), NOT with `object-fit: contain` (which
+  double-letterboxes). A box taller than a wide asset has no vertical overflow,
+  so that box's vertical `object-position` is a no-op — widen the box first.
+- Show any asset once (not the cover in the hero AND as Fig. 1), give each
+  fact one home (don't let a stats band, an overview paragraph, and a diagram
+  all recite the same numbers), and caption to the actual IMAGE, not the
+  section title.
 
 ### Scroll Scenes
 
@@ -452,6 +474,8 @@ Contract:
 - Does every effect clean up after itself?
 - Does mobile collapse into a calm, readable single column?
 - Did we avoid adding a generic card where a rule, image, or empty space works?
+- Is every product figure shown WHOLE (full-width for wide media), free of
+  baked-in letterbox, shown once, and captioned to match the actual image?
 - Did we define the Muller-Brockmann grid: container, margins, columns/modules,
   gutters, and baseline?
 - If this touches a measured section, did we compare against `DESIGN.md`?

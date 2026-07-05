@@ -163,6 +163,16 @@ this site's ink/condensed voice, not Pulse's visual style.
   external subscriptions.
 - Respect reduced motion and avoid replaying entrance animations on ordinary
   re-render.
+- Case pages use **assembly-on-arrival**: sections and diagrams assemble as they
+  scroll in (`[data-fade].is-visible` + CSS, zero new JS). Keep it calm and
+  legible — transform/opacity only — and TUNE THE PACE: assembly that plays too
+  fast reads cheap (this session slowed the Pulse + Vicino diagrams ~1.4x). A
+  diagram must still END fully visible after any slowdown.
+- Reduced-motion AND no-JS must show the FINISHED state, never a blank one —
+  every hidden initial state lives inside `@media (prefers-reduced-motion:
+  no-preference)`. The reusable CSS mechanics (draw-a-rule via `::before` bar,
+  the IntersectionObserver-starvation trap, ScrollTrigger-vs-IO) are in the
+  engineering skill's "Entrance motion & coded diagrams".
 
 ## Case Study Rules
 
@@ -170,8 +180,40 @@ this site's ink/condensed voice, not Pulse's visual style.
 - Hero content must make the project/object visible in the first viewport.
 - Explain design work through decisions, workflow, artifacts, and tradeoffs.
 - Use full-width media and generous sequence gaps before explanatory cards.
+- Prefer a labeled diagram to a wall of dense or hard-to-follow text —
+  visualize the structure (Pulse's CI/skills diagrams, Vicino's pipeline/
+  checkpoint viz, FrogHire's triage spine + affinity map). Every diagram still
+  needs its big sentence-case caption anchor and must read WITHOUT a legend
+  (see Density & Anchors); accent it from the work's own colors, one seal-red
+  moment per page.
 - Interactive canvases, node graphs, and product UI must be big enough to
   inspect, with breathing room and story alignment.
+
+## Media Framing (owner rule, 2026-07-05)
+
+Hard-won on the FrogHire case-page rescue.
+
+- **Wide media, shown whole.** Product screenshots and screen recordings are
+  almost always wide (a dashboard cover was 2.17:1; an extension reel was
+  16:9). Squeezing wide media into a narrow tall column cover-crops it to an
+  unreadable vertical slice — the reader sees a strip, not the product. Give
+  wide figures full width (stack them) or a box matching the asset's real
+  aspect. PROBE the asset's actual dimensions first (a Playwright page reading
+  `video.videoWidth/videoHeight`, or a PNG-header read) before choosing
+  `aspect-ratio`.
+- **Baked-in letterbox.** Screen recordings often carry a black bar baked into
+  the frame (browser chrome / capture letterbox). Crop it with an
+  `object-position` bias on `object-fit: cover` (e.g. `50% 72%` to drop a top
+  black strip), never `object-fit: contain` (that double-letterboxes). Note: a
+  tall box holding a WIDE asset has no vertical overflow, so a vertical
+  `object-position` there is a no-op — widen the box to create the crop. Prefer
+  a non-destructive CSS crop over re-encoding the owner's asset.
+- **Show it once.** Don't place the cover in the hero AND as Fig. 1.
+- **Caption the image, not the section.** Open the actual image before writing
+  or relabeling a caption — a figure can carry an image whose topic differs
+  from its surrounding section (a "competitive analysis" section held a
+  resume-tutorial diagram; the caption must match the image, and the mismatch
+  is a data bug worth flagging, not a caption to force).
 
 ## Case Study Hierarchy
 
@@ -183,6 +225,11 @@ this site's ink/condensed voice, not Pulse's visual style.
   below. Do not use a tiny uppercase eyebrow as the visible title of a section.
 - Eyebrows, labels, tags, and indices are metadata only. They may support a
   title, but they should not be the first or strongest thing the reader sees.
+  An eyebrow/tag must describe THIS section's actual content — a recurring bug
+  is an eyebrow left over from an earlier draft that no longer matches the copy
+  beneath it (the "小标题对不上" trap). Casing is applied by CSS
+  `text-transform` consistently per page; a lone un-uppercased eyebrow is a
+  slip, not a style.
 - Keep title copy concrete and editorial. Avoid AI-showcase words such as
   "magic", "powerful", "seamless", "next-gen", "supercharged", or generic
   "AI workflow" phrasing unless quoting a real product label.
@@ -191,7 +238,10 @@ this site's ink/condensed voice, not Pulse's visual style.
   the model or automation feel like the protagonist.
 - Before finishing a case-study pass, run a redundancy check: if a section
   title, row label, tag, or paragraph repeats the same idea, delete or demote
-  one of them.
+  one of them. Watch ADJACENT blocks especially — a stats band, an overview
+  paragraph, and a diagram board that all recite the same numbers/story are
+  triple redundancy; merge to one home per fact (numbers in the stats band,
+  method in the diagram).
 
 ## Validation
 
