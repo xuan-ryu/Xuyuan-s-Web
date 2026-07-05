@@ -807,6 +807,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-gate-rim {
           position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 5;
           box-shadow:
+            0 0 0 2px #000,
             inset 0 0 0 1px rgba(15,16,20,0.16),
             0 18px 56px rgba(15,16,20,0.12);
         }
