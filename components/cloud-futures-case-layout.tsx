@@ -1,5 +1,6 @@
 import type { Project } from "@/data/projects";
 import Image from "next/image";
+import { Roboto, Roboto_Mono } from "next/font/google";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
 import {
@@ -7,15 +8,33 @@ import {
   CfFutures,
   CfSeats,
 } from "@/components/cloud-futures-interactives";
+import { CfCaseRail, CfGate } from "@/components/cloud-futures-scroll";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Cloud Support Futures — a Cornell × Google Cloud sponsored studio.
-// Editorial ink-on-paper case page; the case accent is the product world's
-// own blue, and the four mid-fi scenarios carry the four product colors as
-// wayfinding. One seal-red moment: the closing speculative question.
+// The page adopts the work's own design language wholesale (owner rule
+// 2026-07-07, design skill "per-work typefaces"): a "Google Sans"-first →
+// Roboto stack for text and Roboto Mono for the data voice, page-scoped via
+// next/font — site chrome keeps the global fonts. The case accent is the
+// product world's blue, the four mid-fi scenarios carry the four product
+// colors as wayfinding, and one seal-red moment closes the page.
 // Bespoke layout per the vicino precedent (scoped critical CSS, switched in
 // app/work/[slug]/page.tsx). Prose comes from data/projects.ts; the diagram
 // and interactive structures live with their components.
+
+const cfSans = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
+  variable: "--cf-roboto",
+});
+
+const cfMonoFont = Roboto_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--cf-roboto-mono",
+});
 
 const PRINCIPLES = [
   {
@@ -285,9 +304,10 @@ const LIMITS_AND_NEXT = [
 
 export function CloudFuturesCaseLayout({ project }: { project: Project }) {
   return (
-    <article className="cf-page">
+    <article className={`cf-page ${cfSans.variable} ${cfMonoFont.variable}`}>
+      <CfCaseRail />
       {/* ── hero ─────────────────────────────────────────────────────── */}
-      <header className="cf-shell cf-hero">
+      <header className="cf-shell cf-hero" data-cf-stage="detect">
         <div className="cf-brandbar" data-fade>
           <div className="cf-brand-lockup cf-brand-google" aria-label="Google Cloud">
             <span className="cf-cloud-mark" aria-hidden="true">
@@ -310,11 +330,20 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           </div>
         </div>
         <p className="cf-kicker" data-fade>
+          <span className="cf-kicker-wave" aria-hidden="true">
+            <i /><i /><i /><i /><i />
+          </span>
           Google Cloud × Cornell · Sponsored studio — Fall 2025
         </p>
         <h1 className="cf-title" data-fade>
-          Cloud Support Futures
+          {"Cloud Support Futures".split(" ").map((word, i) => (
+            <span className="cf-title-word" key={word} style={{ ["--w" as string]: i }}>
+              {word}
+              {i < 2 ? " " : ""}
+            </span>
+          ))}
         </h1>
+        <div className="cf-hero-rule" data-fade aria-hidden="true" />
         <div className="cf-grid cf-hero-row" data-fade>
           <p className="cf-lede">
             A research-led speculative design study for Google Cloud support:
@@ -419,7 +448,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
       </section>
 
       {/* ── 02 · foundational review ─────────────────────────────────── */}
-      <section className="cf-shell cf-section cf-section--dark" aria-label="Foundational review" data-nav-dark>
+      <section className="cf-shell cf-section cf-section--dark" aria-label="Foundational review" data-nav-dark data-cf-stage="ground">
         <span className="cf-section-bg" data-nav-dark aria-hidden="true" />
         <div className="cf-grid">
           <p className="cf-rail" data-fade>
@@ -463,7 +492,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
       </section>
 
       {/* ── 02 · lo-fi probes ────────────────────────────────────────── */}
-      <section className="cf-shell cf-section cf-section--light" aria-label="Lo-fi probes">
+      <section className="cf-shell cf-section cf-section--light" aria-label="Lo-fi probes" data-cf-stage="probe">
         <div className="cf-grid">
           <p className="cf-rail" data-fade>
             03 · Testing round 1
@@ -581,7 +610,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
       </section>
 
       {/* ── 03 · four futures ────────────────────────────────────────── */}
-      <section className="cf-shell cf-section cf-section--dark" aria-label="Four futures" data-nav-dark>
+      <section className="cf-shell cf-section cf-section--dark" aria-label="Four futures" data-nav-dark data-cf-stage="film">
         <span className="cf-section-bg" data-nav-dark aria-hidden="true" />
         <div className="cf-grid">
           <p className="cf-rail" data-fade>
@@ -639,7 +668,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
       </section>
 
       {/* ── 05 · framework ───────────────────────────────────────────── */}
-      <section className="cf-shell cf-section cf-section--light" aria-label="Framework">
+      <section className="cf-shell cf-section cf-section--light" aria-label="Framework" data-cf-stage="frame">
         <div className="cf-grid">
           <p className="cf-rail" data-fade>
             05 · Framework
@@ -716,7 +745,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
       </section>
 
       {/* ── 06 · AI prototyping ─────────────────────────────────────── */}
-      <section className="cf-shell cf-section cf-section--dark" aria-label="AI prototyping" data-nav-dark>
+      <section className="cf-shell cf-section cf-section--dark" aria-label="AI prototyping" data-nav-dark data-cf-stage="build">
         <span className="cf-section-bg" data-nav-dark aria-hidden="true" />
         <div className="cf-grid">
           <p className="cf-rail" data-fade>
@@ -864,6 +893,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             ))}
           </div>
         </div>
+        <CfGate />
         <figure className="cf-film" data-fade>
           <div className="cf-film-frame">
             <OffscreenVideo
@@ -888,7 +918,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
       </section>
 
       {/* ── 08 · limits and next work ────────────────────────────────── */}
-      <section className="cf-shell cf-section cf-section--dark" aria-label="Limits and future work" data-nav-dark>
+      <section className="cf-shell cf-section cf-section--dark" aria-label="Limits and future work" data-nav-dark data-cf-stage="decide">
         <span className="cf-section-bg" data-nav-dark aria-hidden="true" />
         <div className="cf-grid">
           <p className="cf-rail" data-fade>
@@ -949,10 +979,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           --g-green: #34a853;
           --cf-ink: #101216;
           --cf-stone: rgba(16, 18, 22, 0.62);
+          --cf-sans: "Google Sans", var(--cf-roboto), "Helvetica Neue", Arial, sans-serif;
+          --cf-mono: var(--cf-roboto-mono), "Roboto Mono", monospace;
           --icue-accent: var(--case-accent);
           background: #ffffff;
           color: var(--cf-ink);
-          font-family: var(--font-text);
+          font-family: var(--cf-sans);
           padding-top: clamp(140px, 18vh, 220px);
           padding-bottom: 0;
           overflow-x: clip;
@@ -982,19 +1014,85 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           z-index: -1;
           pointer-events: none;
         }
-        .cf-section::after {
-          content: "";
-          position: absolute;
+        /* the four-color band lives in exactly two places now: the hero rule
+           and the fixed reading-progress bar — not on every section seam */
+        .cf-progress {
+          position: fixed;
           top: 0;
-          left: 50%;
-          width: 100vw;
-          height: 2px;
-          transform: translateX(-50%);
-          transform-origin: left center;
-          z-index: 2;
+          left: 0;
+          right: 0;
+          height: 3px;
+          z-index: 90;
           pointer-events: none;
+        }
+        .cf-progress span {
+          display: block;
+          height: 100%;
+          transform: scaleX(0);
+          transform-origin: 0 50%;
           background:
-            linear-gradient(90deg, var(--g-blue), var(--g-blue) 24%, var(--g-red) 24%, var(--g-red) 48%, var(--g-yellow) 48%, var(--g-yellow) 72%, var(--g-green) 72%);
+            linear-gradient(90deg, var(--g-blue), var(--g-blue) 25%, var(--g-red) 25%, var(--g-red) 50%, var(--g-yellow) 50%, var(--g-yellow) 75%, var(--g-green) 75%);
+        }
+        .cf-rail-nav {
+          position: fixed;
+          left: clamp(12px, 1.6vw, 28px);
+          top: 50%;
+          translate: 0 -50%;
+          z-index: 70;
+          display: grid;
+          gap: 16px;
+        }
+        @media (max-width: 1280px) {
+          .cf-rail-nav { display: none; }
+        }
+        .cf-rail-nav button {
+          appearance: none;
+          border: 0;
+          background: transparent;
+          padding: 2px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          color: var(--cf-ink);
+        }
+        .cf-rail-nav button:focus-visible {
+          outline: var(--focus-ring);
+          outline-offset: var(--focus-offset);
+        }
+        .cf-rail-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 9999px;
+          border: 1px solid rgba(16, 18, 22, 0.44);
+          background: transparent;
+          flex: none;
+          transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+        }
+        .cf-rail-label {
+          font-family: var(--cf-mono);
+          font-size: 10px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          opacity: 0;
+          translate: -4px 0;
+          transition: opacity var(--dur-fast) ease, translate var(--dur-fast) ease;
+        }
+        .cf-rail-nav button:hover .cf-rail-label,
+        .cf-rail-nav button.is-on .cf-rail-label {
+          opacity: 0.66;
+          translate: 0 0;
+        }
+        .cf-rail-nav button.is-on .cf-rail-dot {
+          background: var(--case-accent);
+          border-color: var(--case-accent);
+          transform: scale(1.25);
+        }
+        .cf-rail-nav.is-dark button { color: #f8fafd; }
+        .cf-rail-nav.is-dark .cf-rail-dot { border-color: rgba(248, 250, 252, 0.44); }
+        .cf-rail-nav.is-dark button.is-on .cf-rail-dot {
+          background: #8ab4f8;
+          border-color: #8ab4f8;
         }
         .cf-section--light::before {
           background:
@@ -1005,6 +1103,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           --rule: rgba(248, 250, 252, 0.18);
           --case-accent: #8ab4f8;
           --case-accent-soft: rgba(138, 180, 248, 0.18);
+          --icue-text: rgba(248, 250, 252, 0.62);
           color: #f8fafd;
         }
         .cf-section--dark::before {
@@ -1090,7 +1189,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: #202124;
         }
         .cf-brand-google {
-          font-family: "Google Sans", var(--font-text);
+          font-family: "Google Sans", var(--cf-sans);
           font-size: clamp(22px, 1.8vw, 30px);
           font-weight: 500;
           letter-spacing: 0;
@@ -1142,7 +1241,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: var(--g-green);
         }
         .cf-brand-plus {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--cf-stone);
           text-transform: uppercase;
@@ -1175,7 +1274,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           padding: clamp(10px, 1.2vw, 18px);
         }
         .cf-hero-proof-copy span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--g-green);
           text-transform: uppercase;
@@ -1208,19 +1307,43 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
 
         .cf-kicker {
           margin: 0 0 clamp(20px, 2.6vw, 36px);
+          display: flex;
+          align-items: center;
+          gap: 12px;
           font-size: var(--text-label);
           letter-spacing: var(--track-label);
           text-transform: uppercase;
           color: var(--case-accent);
         }
-        .cf-title {
+        .cf-kicker-wave {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          height: 14px;
+        }
+        .cf-kicker-wave i {
+          width: 3px;
+          height: 14px;
+          border-radius: 2px;
+          background: var(--case-accent);
+          transform: scaleY(0.55);
+        }
+        .cf-title-word { display: inline-block; }
+        .cf-title-word:not(:last-child) { margin-right: 0.24em; }
+        .cf-hero-rule {
+          height: 4px;
           margin: 0 0 clamp(28px, 3.4vw, 48px);
-          font-family: var(--font-condensed);
-          font-size: var(--text-display-1);
-          font-weight: 300;
-          line-height: 0.94;
-          letter-spacing: var(--track-display);
-          text-transform: uppercase;
+          background:
+            linear-gradient(90deg, var(--g-blue), var(--g-blue) 25%, var(--g-red) 25%, var(--g-red) 50%, var(--g-yellow) 50%, var(--g-yellow) 75%, var(--g-green) 75%);
+        }
+        .cf-title {
+          /* Google-voice display: sentence case, tight but readable */
+          margin: 0 0 clamp(28px, 3.4vw, 48px);
+          font-family: var(--cf-sans);
+          font-size: clamp(56px, 7.4vw, 116px);
+          font-weight: 500;
+          line-height: 1.02;
+          letter-spacing: -0.02em;
         }
         .cf-hero-row { align-items: end; margin-bottom: var(--gap-block); }
         .cf-lede {
@@ -1264,7 +1387,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           max-width: 62ch;
         }
         .cf-fig-index {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           flex: none;
@@ -1304,7 +1427,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-process-note {
           margin: 0;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -1352,7 +1475,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           padding: 10px 14px;
           border: 1px solid rgba(176, 96, 0, 0.4);
           border-radius: 4px;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           line-height: 1.4;
           text-align: center;
@@ -1392,7 +1515,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: #fbeccc;
         }
         .cf-flow-index {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: #8f5700;
         }
@@ -1409,7 +1532,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           text-align: center;
         }
         .cf-flow-branch span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: #8f5700;
           text-transform: uppercase;
@@ -1468,7 +1591,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: rgba(255, 255, 255, 0.72);
         }
         .cf-framework-core span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -1496,7 +1619,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: rgba(255, 255, 255, 0.72);
         }
         .cf-framework-principle span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
         }
@@ -1516,7 +1639,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-rail {
           grid-column: 1 / 4;
           margin: 0;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-label);
           letter-spacing: 0.08em;
           text-transform: uppercase;
@@ -1525,12 +1648,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-body { grid-column: 4 / 12; min-width: 0; }
         .cf-h2 {
           margin: 0 0 clamp(16px, 2vw, 26px);
-          font-family: var(--font-condensed);
-          font-size: var(--text-display-3);
-          font-weight: 300;
-          line-height: 1.04;
-          letter-spacing: 0;
-          text-transform: uppercase;
+          font-family: var(--cf-sans);
+          font-size: clamp(34px, 3.4vw, 54px);
+          font-weight: 400;
+          line-height: 1.12;
+          letter-spacing: -0.01em;
         }
         .cf-p {
           margin: 0 0 1em;
@@ -1553,7 +1675,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border-top: 1px solid var(--rule);
         }
         .cf-rq-num {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
         }
@@ -1613,7 +1735,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-industry-eyebrow {
           margin: 0;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -1635,7 +1757,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: #ffffff;
         }
         .cf-industry-index {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
         }
@@ -1703,7 +1825,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           padding-top: 4px;
         }
         .cf-design-beat-kicker {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           letter-spacing: 0.08em;
           text-transform: uppercase;
@@ -1788,7 +1910,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           align-content: center;
         }
         .cf-evidence-caption span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -1843,11 +1965,158 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-futures-flow figcaption {
           /* lives only in the dark four-futures section */
           margin-top: 10px;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           line-height: 1.5;
           color: rgba(248, 250, 252, 0.6);
         }
+
+        /* pinned four-futures stage: one viewport, scroll scrubs the four
+           power structures; the wash under it takes each scenario's color */
+        .cf-futures.is-live {
+          height: 380vh;
+        }
+        .cf-futures-stage {
+          position: relative;
+          z-index: 0;
+        }
+        .cf-futures.is-live .cf-futures-stage {
+          position: sticky;
+          top: clamp(64px, 9vh, 96px);
+          min-height: calc(100vh - clamp(120px, 16vh, 170px));
+          display: grid;
+          align-content: center;
+        }
+        .cf-futures-stage::before {
+          content: "";
+          position: absolute;
+          inset-block: -6%;
+          left: 50%;
+          width: 100vw;
+          transform: translateX(-50%);
+          z-index: -1;
+          pointer-events: none;
+          background:
+            radial-gradient(88% 72% at 50% 10%, color-mix(in srgb, var(--cf-sc) 15%, transparent), transparent 72%);
+          transition: background 0.6s var(--ease-silk);
+        }
+        .cf-futures.is-live .cf-futures-flow-media img {
+          width: 100%;
+          max-height: 34vh;
+          object-fit: contain;
+          background: #fff;
+        }
+
+        /* the authority gate, enacted: sticky three-step scrub */
+        .cf-gate {
+          margin-top: var(--gap-block);
+        }
+        .cf-gate.is-live {
+          height: 260vh;
+        }
+        .cf-gate-stage {
+          display: grid;
+          justify-items: center;
+          text-align: center;
+          gap: clamp(18px, 2.2vw, 28px);
+          padding: clamp(24px, 3vw, 44px) 0;
+          border-block: 1px solid var(--rule);
+        }
+        .cf-gate.is-live .cf-gate-stage {
+          position: sticky;
+          top: clamp(72px, 10vh, 110px);
+          min-height: calc(100vh - clamp(140px, 20vh, 200px));
+          align-content: center;
+        }
+        .cf-gate-kicker {
+          margin: 0;
+          font-family: var(--cf-mono);
+          font-size: var(--text-micro);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--case-accent);
+        }
+        .cf-gate-title {
+          margin: 0;
+          font-family: var(--cf-sans);
+          font-size: clamp(30px, 3vw, 48px);
+          font-weight: 400;
+          line-height: 1.1;
+          letter-spacing: -0.01em;
+          max-width: 18em;
+        }
+        .cf-gate-stage[data-step="3"] .cf-gate-title { color: var(--g-green); }
+        .cf-gate-track {
+          width: min(560px, 72%);
+          height: 2px;
+          background: rgba(16, 18, 22, 0.14);
+          overflow: hidden;
+        }
+        .cf-gate-fill {
+          display: block;
+          height: 100%;
+          transform: scaleX(var(--gate-p, 1));
+          transform-origin: 0 50%;
+          background: linear-gradient(90deg, var(--case-accent), var(--g-green));
+        }
+        .cf-gate-steps {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: clamp(16px, 2.4vw, 40px);
+          width: min(920px, 100%);
+        }
+        .cf-gate-steps li {
+          display: grid;
+          justify-items: center;
+          gap: 8px;
+          opacity: 0.38;
+          transition: opacity 0.4s var(--ease-silk);
+        }
+        .cf-gate-steps li.is-current,
+        .cf-gate-steps li.is-done { opacity: 1; }
+        .cf-gate-dot {
+          width: 36px;
+          height: 36px;
+          display: grid;
+          place-items: center;
+          border-radius: 9999px;
+          border: 1px solid rgba(16, 18, 22, 0.3);
+          font-family: var(--cf-mono);
+          font-size: var(--text-micro);
+          transition: background 0.4s var(--ease-silk), color 0.4s var(--ease-silk), border-color 0.4s var(--ease-silk);
+        }
+        .cf-gate-steps li.is-current .cf-gate-dot {
+          border-color: var(--case-accent);
+          color: var(--case-accent);
+        }
+        .cf-gate-steps li.is-done .cf-gate-dot {
+          background: var(--g-green);
+          border-color: var(--g-green);
+          color: #fff;
+        }
+        .cf-gate-steps strong {
+          font-size: clamp(17px, 1.3vw, 20px);
+          font-weight: 500;
+          line-height: 1.3;
+        }
+        .cf-gate-steps p {
+          margin: 0;
+          max-width: 26ch;
+          font-size: var(--text-label);
+          line-height: 1.45;
+          color: var(--cf-stone);
+        }
+        .cf-gate-note {
+          margin: 0;
+          font-family: var(--cf-mono);
+          font-size: var(--text-micro);
+          letter-spacing: 0.04em;
+          color: var(--cf-stone);
+        }
+        .cf-gate-stage[data-step="3"] .cf-gate-note { color: var(--g-green); }
 
         .cf-chip {
           appearance: none;
@@ -1923,7 +2192,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-worlds-board figcaption {
           margin-top: 10px;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           line-height: 1.5;
           color: var(--cf-stone);
@@ -1933,7 +2202,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           margin: clamp(24px, 3vw, 36px) 0 0;
         }
         .cf-finding-quote { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.45; font-weight: 500; max-width: 34em; }
-        .cf-finding-source { font-size: var(--text-micro); font-family: var(--font-mono); color: var(--cf-stone); }
+        .cf-finding-source { font-size: var(--text-micro); font-family: var(--cf-mono); color: var(--cf-stone); }
         .cf-affinity {
           margin-top: clamp(28px, 3.4vw, 48px);
           display: grid;
@@ -1959,7 +2228,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-affinity-cluster h3 {
           margin: 0;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -1990,19 +2259,17 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-node { text-align: center; display: grid; gap: 8px; justify-items: center; }
         .cf-node-name {
-          font-family: var(--font-condensed);
-          font-size: clamp(20px, 1.8vw, 28px);
-          font-weight: 400;
-          text-transform: uppercase;
-          letter-spacing: 0.02em;
-          line-height: 1.1;
+          font-family: var(--cf-sans);
+          font-size: clamp(18px, 1.5vw, 24px);
+          font-weight: 500;
+          line-height: 1.2;
           padding-bottom: 8px;
           border-bottom: 2px solid transparent;
           transition: border-color 0.3s ease;
         }
         .cf-node.has-say .cf-node-name { border-bottom-color: var(--cf-sc, var(--case-accent)); }
         .cf-node-say {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--cf-sc, var(--case-accent));
           opacity: 0;
@@ -2034,7 +2301,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-arrow.is-left::after { left: 0; transform: translateY(-50%) rotate(-135deg); }
         .cf-lane-verb {
           font-size: var(--text-micro);
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           line-height: 1.45;
           text-align: center;
           color: var(--cf-stone);
@@ -2045,7 +2312,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           margin: clamp(20px, 2.4vw, 30px) 0 0;
         }
         .cf-verdict-quote { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.45; font-weight: 500; max-width: 34em; }
-        .cf-verdict-source { font-size: var(--text-micro); font-family: var(--font-mono); color: var(--cf-stone); }
+        .cf-verdict-source { font-size: var(--text-micro); font-family: var(--cf-mono); color: var(--cf-stone); }
         .cf-seats-panel { display: grid; gap: var(--gap-block); }
         .cf-seat-fig { margin: 0; }
         .cf-seat-media {
@@ -2106,7 +2373,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border-bottom: 1px solid var(--rule);
         }
         .cf-eval-label {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -2175,7 +2442,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           align-content: center;
         }
         .cf-motion-label {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: rgba(248, 250, 252, 0.58);
           text-transform: uppercase;
@@ -2223,7 +2490,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           list-style: none;
         }
         .cf-prompt-lines li {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           line-height: 1.5;
           color: rgba(248, 250, 252, 0.6);
@@ -2262,7 +2529,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-agent-sub {
           margin: 0;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           text-align: center;
           color: rgba(248, 250, 252, 0.52);
@@ -2306,9 +2573,9 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: rgba(248, 250, 252, 0.78);
         }
         .cf-output-list strong {
-          font-family: var(--font-condensed);
+          font-family: var(--cf-sans);
           font-size: clamp(22px, 1.9vw, 30px);
-          font-weight: 400;
+          font-weight: 500;
           color: #f8fafd;
           margin-right: 4px;
         }
@@ -2317,7 +2584,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           line-height: 1.45;
           color: rgba(248, 250, 252, 0.6);
@@ -2329,7 +2596,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           padding-bottom: 4px;
         }
         .cf-ai-motion-copy span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -2390,7 +2657,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-hifi-eyebrow {
           margin: 0;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -2414,7 +2681,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-hifi-index {
           padding-top: 4px;
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
         }
@@ -2442,7 +2709,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: var(--cf-stone);
         }
         .cf-hifi-compare span {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
           text-transform: uppercase;
@@ -2491,13 +2758,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-close-title {
           margin: 0 0 clamp(18px, 2.2vw, 28px);
-          font-family: var(--font-condensed);
-          font-size: var(--text-display-2);
-          font-weight: 300;
-          line-height: 1.02;
-          letter-spacing: var(--track-display);
-          text-transform: uppercase;
-          max-width: 22em;
+          font-family: var(--cf-sans);
+          font-size: clamp(40px, 4.4vw, 72px);
+          font-weight: 400;
+          line-height: 1.08;
+          letter-spacing: -0.015em;
+          max-width: 20em;
         }
         .cf-close-p {
           margin: 0 0 1em;
@@ -2514,12 +2780,13 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-signoff-main { font-size: var(--text-body); font-weight: 500; }
         .cf-signoff-meta {
-          font-family: var(--font-mono);
+          font-family: var(--cf-mono);
           font-size: var(--text-micro);
           color: var(--cf-stone);
         }
 
         ${ICUE_CSS}
+        .cf-page .icue { font-family: var(--cf-mono); }
 
         @media (prefers-reduced-motion: no-preference) {
           .cf-page [data-fade] {
@@ -2542,13 +2809,45 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             transition-delay: 140ms;
           }
           .cf-page [data-fade].is-visible { opacity: 1; transform: none; }
-          /* the four-color rule draws in once, on the first section only —
-             repeating the flourish per section dilutes it */
-          .cf-section:first-of-type::after {
-            transform: translateX(-50%) scaleX(0);
-            animation: cfSectionRule 1s var(--ease-silk) both;
-            animation-timeline: view();
-            animation-range: entry 0% entry 46%;
+          /* hero assembles like a transcript: words surface in reading
+             order, then the four-color rule draws once */
+          .cf-title-word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(0.4em);
+            transition: opacity 0.55s var(--ease-silk), transform 0.55s var(--ease-silk);
+            transition-delay: calc(var(--w, 0) * 110ms + 160ms);
+          }
+          .cf-title.is-visible .cf-title-word {
+            opacity: 1;
+            transform: none;
+          }
+          .cf-hero-rule {
+            transform: scaleX(0);
+            transform-origin: 0 50%;
+            transition: transform 0.9s var(--ease-silk) 560ms;
+          }
+          .cf-hero-rule.is-visible { transform: scaleX(1); }
+          .cf-kicker-wave i {
+            animation: cfWave 1.3s var(--ease-silk) infinite;
+            animation-delay: calc(var(--wv, 0) * 120ms);
+          }
+          .cf-kicker-wave i:nth-child(1) { --wv: 0; }
+          .cf-kicker-wave i:nth-child(2) { --wv: 1; }
+          .cf-kicker-wave i:nth-child(3) { --wv: 2; }
+          .cf-kicker-wave i:nth-child(4) { --wv: 3; }
+          .cf-kicker-wave i:nth-child(5) { --wv: 4; }
+          @keyframes cfWave {
+            0%, 100% { transform: scaleY(0.4); }
+            45% { transform: scaleY(1); }
+          }
+          /* section claims wipe open once their body arrives */
+          .cf-body[data-fade] .cf-h2 {
+            clip-path: inset(0 0 100% 0);
+            transition: clip-path 0.8s var(--ease-silk) 60ms;
+          }
+          .cf-body[data-fade].is-visible .cf-h2 {
+            clip-path: inset(0 0 -8% 0);
           }
           .cf-method-step, .cf-insight, .cf-tension, .cf-limit {
             opacity: 0;
@@ -2587,10 +2886,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           @keyframes cfStageIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: none; }
-          }
-          @keyframes cfSectionRule {
-            from { transform: translateX(-50%) scaleX(0); }
-            to { transform: translateX(-50%) scaleX(1); }
           }
           @keyframes cfTileIn {
             from { opacity: 0.78; transform: translateY(18px) scale(0.985); }

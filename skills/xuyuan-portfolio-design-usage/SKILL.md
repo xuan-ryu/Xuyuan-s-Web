@@ -38,6 +38,19 @@ The local repo is the current truth.
   invariant; gold/amber stay the default on non-case surfaces (home, about,
   contact, work index). Vicino is the reference example (its connection
   colors pink/teal/amber come from the product).
+- CASE/POSTER PAGES may also adopt the work's own TYPEFACE(S) (owner rule
+  2026-07-07), the same way they adopt its colors: when the work's product
+  world has a strong type identity (e.g. the Google Cloud studio → a
+  Roboto/`"Google Sans"`-first stack), the case page may load it as
+  page-scoped fonts. Rules: load via `next/font` in the case layout
+  (self-hosted, minimal weights/subsets, `display: swap`) and expose it as
+  page-root variables (`--cf-sans`-style), never by editing the global
+  script-created fonts `<link>`; site chrome (nav, footer) and every
+  non-case surface keep the global Manrope/Saira/mono stack; the swap must
+  be total enough to read as art direction (type ladder, casing, tracking
+  re-derived for the face), not one stray heading; note the choice in the
+  page's header comment. Everything else in this skill (grid, density,
+  anchors, even-px) still applies.
 - Build hierarchy with scale, spacing, tone, image placement, and rules before
   adding cards, boxes, glow, or borders.
 - Keep bold rare. Prefer weight 300-500, opacity, spacing, or size changes.

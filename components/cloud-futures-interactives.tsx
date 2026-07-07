@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { subscribeLenis } from "@/lib/lenis-bus";
+import type Lenis from "lenis";
 
 // Interactive beats for the Cloud Support Futures case page. Styles live in
 // the page's scoped critical CSS (prefix cf-, cloud-futures-case-layout.tsx);
@@ -201,14 +203,70 @@ const SCENARIOS: Scenario[] = [
 ];
 
 export function CfFutures() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
   const [active, setActive] = useState(0);
+  const [live, setLive] = useState(false);
   const sc = SCENARIOS[active];
+
+  // Desktop: the stage pins (position: sticky) and scroll scrubs through the
+  // four power structures — one quarter of the runway each. Mobile keeps the
+  // plain tab switcher; no-JS renders scenario one as a static block.
+  useEffect(() => {
+    const unsub = subscribeLenis((l) => {
+      lenisRef.current = l;
+    });
+    const narrow = window.matchMedia("(max-width: 900px)");
+    if (narrow.matches) return unsub;
+    let raf = 0;
+    const liveId = requestAnimationFrame(() => setLive(true));
+    const update = () => {
+      raf = 0;
+      const el = wrapRef.current;
+      if (!el) return;
+      const vh = window.innerHeight;
+      const total = el.offsetHeight - vh;
+      if (total <= 0) return;
+      const p = Math.min(1, Math.max(0, -el.getBoundingClientRect().top / total));
+      const idx = Math.min(3, Math.floor(p * 4));
+      setActive((cur) => (cur === idx ? cur : idx));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      unsub();
+      cancelAnimationFrame(liveId);
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  const goTo = (i: number) => {
+    setActive(i);
+    const el = wrapRef.current;
+    if (!live || !el) return;
+    const vh = window.innerHeight;
+    const y =
+      el.getBoundingClientRect().top +
+      window.scrollY +
+      ((i + 0.5) / 4) * (el.offsetHeight - vh);
+    const lenis = lenisRef.current;
+    if (lenis) lenis.scrollTo(y, { duration: 0.9 });
+    else window.scrollTo({ top: y, behavior: "smooth" });
+  };
 
   return (
     <div
-      className="cf-futures"
+      className={`cf-futures${live ? " is-live" : ""}`}
+      ref={wrapRef}
       style={{ "--cf-sc": sc.color } as CSSProperties}
     >
+      <div className="cf-futures-stage">
       <div className="cf-futures-tabs" role="group" aria-label="Four speculative futures">
         {SCENARIOS.map((s, i) => (
           <button
@@ -217,7 +275,7 @@ export function CfFutures() {
             className={`cf-chip cf-chip--dot${i === active ? " is-on" : ""}`}
             style={{ "--cf-dot": s.color } as CSSProperties}
             aria-pressed={i === active}
-            onClick={() => setActive(i)}
+            onClick={() => goTo(i)}
           >
             {s.name}
           </button>
@@ -267,6 +325,7 @@ export function CfFutures() {
           <span className="cf-verdict-quote">“{sc.verdict.quote}”</span>
           <span className="cf-verdict-source">{sc.verdict.source}</span>
         </p>
+      </div>
       </div>
     </div>
   );
