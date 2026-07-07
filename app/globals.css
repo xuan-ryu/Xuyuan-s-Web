@@ -776,6 +776,9 @@ body.hero-night .nav-links a.active {
 .cover-pulse {
   background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
 }
+.cover-cloud-futures {
+  background: linear-gradient(135deg, var(--ink-950) 0%, var(--paper-warm) 100%);
+}
 
 /* ============================================================
    Home — section intro + featured + value + quotes + CTA

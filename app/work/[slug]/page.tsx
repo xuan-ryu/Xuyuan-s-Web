@@ -8,6 +8,7 @@ import { VicinoCaseLayout } from "@/components/vicino-case-layout";
 import { PulseCaseLayout } from "@/components/pulse-case-layout";
 import { FroghireCaseLayout } from "@/components/froghire-case-layout";
 import { RoperCaseLayout } from "@/components/roper-case-layout";
+import { CloudFuturesCaseLayout } from "@/components/cloud-futures-case-layout";
 import { HungerPosterLayout } from "@/components/hunger-poster-layout";
 import { VrmbPosterLayout } from "@/components/vrmb-poster-layout";
 
@@ -19,6 +20,7 @@ const bespokeLayouts: Record<string, ComponentType<{ project: Project }>> = {
   pulse: PulseCaseLayout,
   "froghire-ai": FroghireCaseLayout,
   "roper-center": RoperCaseLayout,
+  "cloud-support-futures": CloudFuturesCaseLayout,
   hunger1942: HungerPosterLayout,
   "vr-education": VrmbPosterLayout,
 };

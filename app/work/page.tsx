@@ -34,7 +34,13 @@ const workGroups = [
     id: "uiux",
     index: "01",
     title: "UI/UX",
-    projectSlugs: ["pulse", "vicino-ai", "froghire-ai", "roper-center"],
+    projectSlugs: [
+      "pulse",
+      "vicino-ai",
+      "froghire-ai",
+      "cloud-support-futures",
+      "roper-center",
+    ],
   },
   {
     id: "interaction-games",

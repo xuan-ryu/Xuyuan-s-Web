@@ -679,8 +679,41 @@ export const projects: Project[] = [
         ],
       },
     ],
-    order: 3,
+    order: 4,
     featured: true,
+  },
+  {
+    slug: "cloud-support-futures",
+    title: "Cloud Support Futures",
+    template: "case",
+    cover: `/media/work/cloud-futures/cover.png`,
+    coverClass: "cover-cloud-futures",
+    tags: ["Speculative Design", "UX Research", "AI"],
+    oneliner:
+      "A Cornell × Google Cloud research studio on AI customer support: literature review, market analysis, speculative testing, and a framework for where AI should stop.",
+    blurb:
+      "How much of customer support should an AI be allowed to do? Over a semester-long sponsored studio with Google Cloud, our six-person Cornell team treated that as a research question before it became an interface question. We reviewed five domains, benchmarked support systems, ran low-fidelity probes with cloud users, and then tested four deliberately unbalanced human–AI power structures around the same billing case.\n\nThe consistent finding was not that users wanted a specific automation percentage. They wanted partnership with legible roles: AI could detect patterns, summarize evidence, and prepare the case; a human still needed to verify, interpret, and own the outcome. The final prototype became a synthesis artifact, but the main deliverable was a four-principle design framework and five tensions for evaluating future AI support systems.",
+    role: "Product Designer & Researcher",
+    duration: "Sep – Dec 2025",
+    type: "Sponsored studio",
+    teams: "Six-person Cornell MPS team · Google Cloud UX",
+    // Confidentiality (public repo): teammates and Google stakeholders stay
+    // unnamed; no internal links or file paths; demo personas (Jordan, Anna)
+    // are the prototype's own fiction. The hi-fi film ships as a trimmed cut —
+    // product story only. Copy voice: "we" for team work, "I" only where the
+    // owner speaks for himself.
+    summary: [
+      "Google Cloud’s support question is a scaling question: a growing customer base, increasingly complex needs, and human expertise that does not scale with either. The studio brief asked us not to optimize today’s ticket flow but to imagine support five years out, then work backwards through research, testing, and critique.",
+      "So instead of leading with a feature, we led with evidence. Literature review and market analysis shaped the research questions; two extreme worlds probed where users draw the automation line; four short films tested different power structures. Only after that did we build the value-centered world: AI does the reading, a human does the deciding.",
+    ],
+    moment: {
+      title:
+        "When we split the labor of care, what exactly are we redesigning?",
+      body: [
+        "Delegating presence and attention to AI while reserving judgment and action for humans is efficient — every study we ran says users prefer it. But the research left us with a sharper question than the one we started with: are we optimizing a service interaction, or fundamentally redesigning what a care relationship can be?",
+      ],
+    },
+    order: 3,
   },
   {
     slug: "hunger1942",
@@ -729,7 +762,7 @@ export const projects: Project[] = [
         `/media/work/hunger/gallery-4.png`,
       ],
     },
-    order: 4,
+    order: 5,
   },
   {
     slug: "vr-education",
@@ -770,7 +803,7 @@ export const projects: Project[] = [
         `/media/work/vr/gallery-4.png`,
       ],
     },
-    order: 5,
+    order: 6,
   },
 ];
 

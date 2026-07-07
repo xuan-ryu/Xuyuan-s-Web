@@ -1,0 +1,289 @@
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+import type { CSSProperties } from "react";
+
+// Interactive beats for the Cloud Support Futures case page. Styles live in
+// the page's scoped critical CSS (prefix cf-, cloud-futures-case-layout.tsx);
+// this file only carries state. All quotes are verbatim from the studio's
+// research sessions (participants anonymized as P1…P9 in the report).
+
+/* ── 01 · the two lo-fi extreme worlds ─────────────────────────────────── */
+
+const WORLDS = [
+  {
+    key: "ai",
+    name: "A world run entirely by AI",
+    traits: [
+      "Monitors your emotional state continuously",
+      "Opens support cases before you ask",
+      "Resolves billing issues autonomously — no human in the loop",
+    ],
+    reaction:
+      "Fast, but unsettling. Participants asked who is accountable when the machine misreads a financially sensitive case.",
+  },
+  {
+    key: "human",
+    name: "A world with no AI at all",
+    traits: [
+      "Every step handled by a person",
+      "Warm, accountable, deliberate",
+      "Queues, repetition, and answers that vary by agent",
+    ],
+    reaction:
+      "Reassuring in the abstract — but participants immediately recalled hour-long waits and humans reading from scripts.",
+  },
+] as const;
+
+export function CfWorlds() {
+  const [active, setActive] = useState(0);
+  const world = WORLDS[active];
+
+  return (
+    <div className="cf-worlds">
+      <div className="cf-worlds-switch" role="group" aria-label="Two extreme worlds">
+        {WORLDS.map((w, i) => (
+          <button
+            key={w.key}
+            type="button"
+            className={`cf-chip${i === active ? " is-on" : ""}`}
+            aria-pressed={i === active}
+            onClick={() => setActive(i)}
+          >
+            {i === 0 ? "World A · all AI" : "World B · all human"}
+          </button>
+        ))}
+      </div>
+      <div className="cf-worlds-panel" key={world.key}>
+        <p className="cf-worlds-name">{world.name}</p>
+        <ul className="cf-worlds-traits">
+          {world.traits.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+        <p className="cf-worlds-reaction">{world.reaction}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── 02 · four mid-fi futures: same case, four power structures ────────── */
+
+type Lane = {
+  /** arrow direction across the lane */
+  dir: "right" | "left";
+  verb: string;
+};
+
+type Scenario = {
+  key: string;
+  name: string;
+  color: string;
+  tagline: string;
+  /** lane between Customer and AI */
+  laneA: Lane;
+  /** lane between AI and Human agent */
+  laneB: Lane;
+  authority: 0 | 1 | 2; // node index holding the final say
+  verdict: { quote: string; source: string };
+};
+
+const NODES = ["Customer", "AI", "Human agent"] as const;
+
+const SCENARIOS: Scenario[] = [
+  {
+    key: "advocate",
+    name: "The Advocate",
+    color: "#4285F4",
+    tagline: "The AI takes the customer’s side against the company.",
+    laneA: { dir: "left", verb: "coaches the customer" },
+    laneB: { dir: "right", verb: "pushes the exception through" },
+    authority: 0,
+    verdict: {
+      quote:
+        "When AI suggests rule-bending, it feels more like something that is not allowed.",
+      source: "Mid-fi session, P1",
+    },
+  },
+  {
+    key: "supervisor",
+    name: "The Supervisor",
+    color: "#EA4335",
+    tagline: "The AI monitors the human agent and corrects them mid-call.",
+    laneA: { dir: "right", verb: "reports oversight upward" },
+    laneB: { dir: "right", verb: "monitors · overrides the agent" },
+    authority: 1,
+    verdict: {
+      quote:
+        "It undermines the integrity of human service and makes humans seem useless.",
+      source: "Mid-fi session, P5",
+    },
+  },
+  {
+    key: "badcop",
+    name: "The Bad Cop",
+    color: "#F9AB00",
+    tagline: "The AI enforces policy rigidly; only the human may bend it.",
+    laneA: { dir: "left", verb: "applies the rules, no exceptions" },
+    laneB: { dir: "left", verb: "human override, when justified" },
+    authority: 2,
+    verdict: {
+      quote: "A cold machine that rigidly enforces rules.",
+      source: "Mid-fi session, P9 — the human’s override read as “noble”",
+    },
+  },
+  {
+    key: "nurse",
+    name: "The Triage Nurse",
+    color: "#1E8E3E",
+    tagline: "Emotional signals decide who gets seen first.",
+    laneA: { dir: "right", verb: "emotion scored at the door" },
+    laneB: { dir: "right", verb: "priority queue to the agent" },
+    authority: 1,
+    verdict: {
+      quote: "Everyone gets an Oscar for acting frustrated.",
+      source: "Mid-fi session, P9",
+    },
+  },
+];
+
+export function CfFutures() {
+  const [active, setActive] = useState(0);
+  const sc = SCENARIOS[active];
+
+  return (
+    <div
+      className="cf-futures"
+      style={{ "--cf-sc": sc.color } as CSSProperties}
+    >
+      <div className="cf-futures-tabs" role="group" aria-label="Four speculative futures">
+        {SCENARIOS.map((s, i) => (
+          <button
+            key={s.key}
+            type="button"
+            className={`cf-chip cf-chip--dot${i === active ? " is-on" : ""}`}
+            style={{ "--cf-dot": s.color } as CSSProperties}
+            aria-pressed={i === active}
+            onClick={() => setActive(i)}
+          >
+            {s.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="cf-stage" key={sc.key}>
+        <p className="cf-stage-tagline">{sc.tagline}</p>
+        <div className="cf-diagram" aria-hidden="true">
+          {NODES.map((n, i) => (
+            <div
+              className={`cf-node${sc.authority === i ? " has-say" : ""}`}
+              key={n}
+            >
+              <span className="cf-node-name">{n}</span>
+              <span className="cf-node-say">final say</span>
+            </div>
+          ))}
+          <div className="cf-lane cf-lane-a">
+            <span className={`cf-arrow is-${sc.laneA.dir}`} />
+            <span className="cf-lane-verb">{sc.laneA.verb}</span>
+          </div>
+          <div className="cf-lane cf-lane-b">
+            <span className={`cf-arrow is-${sc.laneB.dir}`} />
+            <span className="cf-lane-verb">{sc.laneB.verb}</span>
+          </div>
+        </div>
+        <p className="cf-verdict">
+          <span className="cf-verdict-quote">“{sc.verdict.quote}”</span>
+          <span className="cf-verdict-source">{sc.verdict.source}</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── 03 · the hi-fi world: one case, two seats ─────────────────────────── */
+
+const SEATS = [
+  {
+    key: "customer",
+    label: "Customer’s seat",
+    figures: [
+      {
+        src: "/media/work/cloud-futures/scene-09.png",
+        alt: "Voice assistant explaining it can detect the duplicate charge but refund authorization requires human verification",
+        caption:
+          "The AI names its own boundary — it can detect and analyze the duplicate charge, but refund authorization requires a human. It asks before preparing the handoff.",
+      },
+      {
+        src: "/media/work/cloud-futures/scene-13.png",
+        alt: "Case packet assembling: transaction receipts, timestamp analysis, voice transcript",
+        caption:
+          "With consent given, the AI assembles receipts, timeline analysis, and the voice transcript into a case packet — so nobody re-explains anything.",
+      },
+    ],
+  },
+  {
+    key: "agent",
+    label: "Agent’s seat",
+    figures: [
+      {
+        src: "/media/work/cloud-futures/agent-pending.png",
+        alt: "Agent console showing the AI case packet and a refund locked pending human verification",
+        caption:
+          "The same packet lands on the agent’s desk. The refund is prepared but locked: “awaiting human verification.”",
+      },
+      {
+        src: "/media/work/cloud-futures/agent-ready.png",
+        alt: "Agent console after human confirmation, with the refund action now active",
+        caption:
+          "Only after the human confirms does the refund action go live. The AI reads, summarizes, and prepares — it never touches the money.",
+      },
+    ],
+  },
+] as const;
+
+export function CfSeats() {
+  const [active, setActive] = useState(0);
+  const seat = SEATS[active];
+
+  return (
+    <div className="cf-seats">
+      <div className="cf-seats-switch" role="group" aria-label="Two seats of the same case">
+        {SEATS.map((s, i) => (
+          <button
+            key={s.key}
+            type="button"
+            className={`cf-chip${i === active ? " is-on" : ""}`}
+            aria-pressed={i === active}
+            onClick={() => setActive(i)}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+      <div className="cf-seats-panel" key={seat.key}>
+        {seat.figures.map((f, i) => (
+          <figure className="cf-seat-fig" key={f.src}>
+            <div className="cf-seat-media">
+              <Image
+                src={f.src}
+                alt={f.alt}
+                width={1920}
+                height={1200}
+                sizes="(max-width: 900px) 100vw, 1080px"
+                priority={false}
+              />
+            </div>
+            <figcaption className="cf-seat-cap">
+              <span className="cf-fig-index">
+                Fig. {active === 0 ? `0${2 + i}` : `0${4 + i}`}
+              </span>
+              {f.caption}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
