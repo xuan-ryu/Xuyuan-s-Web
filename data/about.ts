@@ -6,7 +6,7 @@
 export const about = {
   heading: "About Me.",
   heroIntro:
-    "I'm a curious generalist with too many tabs open. I know a little about a lot, chase odd possibilities for fun, and lately I've been building with AI to see which ideas deserve to become real.",
+    "I'm an AI design engineer who likes making messy ideas behave: interfaces, prototypes, design systems, and the rules that help teams keep building after the first demo.",
   hometown: "My Hometown, Chongqing, China, A City that Grounded With People.",
   koan: {
     zh: "好雪片々，不落别處",
@@ -14,21 +14,24 @@ export const about = {
     caption: "— Zen kōan on full presence",
   },
   bio: [
-    "Hi, I’m Xuyuan Liu — a product designer and creative developer based in New York, by way of Cornell.",
-    "My work sits between product, humanities, and code. Sometimes it starts as research, sometimes as an interface, and sometimes as a prototype that becomes the research itself. Most of what I make returns to one small question: what would this be like if it were actually good?",
+    "Hi, I’m Xuyuan Liu, an AI design engineer based in New York, by way of Cornell.",
+    "My work sits between product, interface, and code. I still start from a human question, but more and more I find myself asking a systems question too: what should stay consistent after the first version works?",
   ],
   resumeNote:
-    "My Resume Tells You What I've Done. This Is What's In My Head While I'm Doing It.",
+    "My Resume Tells You What I've Done. This Is How I Think While Building It.",
 
   whatChanged: {
-    title: "What Changed",
+    title: "What AI Made Me Notice",
     body: [
-      "These days, I’m watching two things happen at once.",
-      "Technology is becoming genuinely more open. Tools are cheaper, faster, and kinder to beginners than they have ever been. More people can now make, write, design, build, and say what they mean in forms that used to require entire teams or years of training.",
-      "At the same time, that openness is reshaping the world I was trained to enter. The research habits, the design craft, the code I taught myself after midnight — none of that disappears. But it is being asked to do new work, in new shapes, at a different speed.",
-      "I don’t think the honest response is nostalgia. I also don’t think it is blind excitement. The harder thing is to keep moving without becoming careless — to use new tools without forgetting what craft was trying to teach me.",
+      "At first, AI mostly felt like speed. A page could appear quickly. An interaction that was only a feeling in my head could become something I could click a few minutes later.",
+      "That helped, especially when an idea was still fragile. But the more I used it, the less I was impressed by speed alone. The work came out fast, sometimes faster than I had time to understand it.",
+      "A screen would look finished, but underneath it I would still have questions. Why is this state here? Can this component survive another page? If someone else picks it up tomorrow, will they know what to do?",
+      "AI made me think harder about systems, frameworks, and design principles. What should be fixed before generation starts? What can stay open? What is a product rule, and what is only a nice-looking moment?",
+      "Pulse made that question concrete. We had plenty of pages, made in different tools and different styles of code. They looked like the same product, but they did not share the same skeleton.",
+      "So the work became less about making one more page and more about building the order underneath: tokens, components, state rules, handoff surfaces, checks, and the rules AI should read before it makes anything new.",
+      "That is where design started to feel more serious to me. Not every decision should be remade from taste. Some things need principles: what can change, what should hold, where the machine can run, and where a person has to stop and judge.",
     ],
-    closing: "I Learned A Lot. The Era Keeps Moving. So Do I.",
+    closing: "Fast Is Useful. Structure Is What Lets It Last.",
     // 5x4 logo wall, row-major, as rendered on the live site at 1440w
     logos: [
       `/media/about/logos/logo-01.svg`,
@@ -55,13 +58,13 @@ export const about = {
   },
 
   shutter: {
-    title: "Before the Shutter Closes",
+    title: "Before It Answers",
     body: [
-      "The feeling is close to what those darkroom photographers must have had when the first digital cameras hit the shelves. Glad, of course — the craft was reaching more hands. But quieter than glad, somewhere underneath. You can spend forty years over a tray of developer, learning by feel alone when a print has been in the bath long enough — no timer, no instructions — and then one morning that knowledge has nowhere left to go.",
-      "I shoot a little myself. Digital generation, obviously. But I'd rather come home with thirty frames I actually remember taking than two thousand I'll be meeting for the first time in Lightroom. So I keep going back to film. Film makes you decide what the photograph is before the shutter closes — no preview, no second take, just whether you read the light correctly the first time.",
-      "My friends and I have a \"Zen\" phrase for the kind of moment we're after: 恰好, QiaHao. Not perfect; not excessive; right. The light isn't flawless but it's enough. Sometimes you don't even raise the camera a second time, because you can already feel that the first frame was the one.",
-      "That's what I still trust about the older tools. Not slowness as virtue — slowness has nothing to do with it — but the way the constraint sharpens what you pay attention to. You eventually learn what it feels like when something has actually landed, as opposed to merely produced.",
-      "Same with the AI era. You can generate a hundred prototypes before lunch; that doesn't make 恰好 cheaper, only rarer.",
+      "I still like film, not because old tools are automatically better, but because film asks you to decide before the shutter closes.",
+      "That habit has followed me into AI work. Before the system answers, I want to know what it is answering for, what it is allowed to assume, and who gets to say whether the result is right.",
+      "My friends and I have a \"Zen\" phrase for the kind of moment we're after: 恰好, QiaHao. Not perfect; not excessive; right.",
+      "I want AI products to have that same feeling. Enough help to move the work forward. Enough structure to keep the person in charge.",
+      "A hundred prototypes before lunch can be useful. I care more about what happens after lunch: whether one of them can hold real data, real users, and real responsibility.",
     ],
     video: `/media/about/kyoto-reel.mp4`,
     caption: "01/25/2023 Kinkakuji, Kyoto, Japan",
@@ -70,11 +73,13 @@ export const about = {
   howIWork: {
     title: "How I Work",
     body: [
-      "Thinking and making have never quite lived in separate rooms for me. Research starts to matter only when it changes the shape of the thing. A sketch turns out to be less an idea presented than an idea tested — sometimes the test is what tells me the idea wasn't any good to begin with. A prototype that works isn't a demo bolted on at the end of the thinking; it's where the thinking finally gets caught in the act.",
-      "There's a phrase from the dōjō — 心・技・体, mind, technique, body. The intuition it points to, that surfaces under pressure in both design and budō, isn't mystical. It's what's left after years of designs that failed for reasons I couldn't yet see, and after a sensei broke and rebuilt my technique with a bokken that didn't care how I felt about it.",
-      "Later, under pressure, that work returns as a faster kind of seeing — an eye and a body that can tell good from bad before the conscious mind has language for why.",
-      "A client doesn't always give you a second draft. Neither does the bokken. All you can do is own the wrong call afterward — sit with it, study what happened, carry the responsibility — and let it quietly change how you see the next one.",
-      "That's the kind of design I'm after — not impressive in the abstract, and not just polished at the surface, but something handled and tested and adjusted enough times to start moving naturally. The best interfaces I've used have that quality: they don't announce themselves, they just arrive where your thought was already going.",
+      "Thinking and making have never quite lived in separate rooms for me. If an idea cannot be made, I usually do not understand it yet. Building is where the thought starts telling the truth.",
+      "I usually move in three steps. First, diagnose what is actually stuck: the unclear state, the awkward handoff, the step everyone works around but nobody names.",
+      "Then I prototype. A working surface gives a team something to react to while the direction is still cheap to change.",
+      "Then I structure what worked. If a decision is good, I do not want it to depend on me remembering it next time. It should become a token, a component, a workflow, a check, or a rule the AI reads before it starts.",
+      "There's a phrase from the dōjō — 心・技・体, mind, technique, body. I understand it very practically. Under pressure, taste is not enough. You need patterns your hands can repeat and responsibility when a call was wrong.",
+      "That is why I like this direction. AI rewards people who can move between ambiguity and implementation: read the product, shape the interaction, write the front end, inspect the output, then turn the lesson into a system.",
+      "I do not want AI to feel like a magic button pasted onto a page. I want it to feel like a good workspace: helpful, clear, and honest about where the human decision lives.",
     ],
     caption: "心・技・体 / mind, skill, body / Aikido · Kendo · Iaido",
   },
