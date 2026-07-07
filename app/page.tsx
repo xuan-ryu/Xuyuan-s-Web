@@ -55,8 +55,8 @@ export default function Home() {
                 eyebrow="INTERLUDE / INK ECOSYSTEM"
                 titleMain="A small pond"
                 titleSub="for the wandering eye"
-                tag="MOVE THE CURSOR. FEED THE FISH."
-                feedText="Feed the fish"
+                tag="three drops surface how I work"
+                feedText="Drop me a problem"
                 showScrollTip
                 introDurationMs={800}
                 heroBoxXvw={50}

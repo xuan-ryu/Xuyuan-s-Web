@@ -2716,7 +2716,7 @@ body.hero-night .nav-links a.active {
 }
 
 .home-koi-section {
-  height: 1555px;
+  height: max(1555px, 180dvh);
   min-height: 1180px;
   position: relative;
   /* full-bleed ink (owner decision): the moon-gate crossing dissolves black

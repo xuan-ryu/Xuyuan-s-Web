@@ -178,6 +178,13 @@ export default function InkKoiEcosystem(props: Props) {
             const chipW = uiBox.offsetWidth // layout width, unaffected by transform
             const dockX = DOCK_INSET + (chipW * DOCK_SCALE) / 2 - rect.width / 2
             uiBox.style.setProperty("--dock-x", dockX.toFixed(1) + "px")
+            // desktop: park at ~26% of the band's height — the left-column
+            // slot between the How-I-Work title and card 2 (a centre-left
+            // dock sat exactly on the PROTOTYPE card). Phones keep the
+            // x-only dock (their band hosts the stacked cards below).
+            const phone = window.matchMedia("(max-width: 740px)").matches
+            const dockY = phone ? 0 : rect.height * 0.26 - rect.height / 2
+            uiBox.style.setProperty("--dock-y", dockY.toFixed(1) + "px")
             uiBox.style.setProperty("--dock-s", String(DOCK_SCALE))
         }
         const dockTip = () => {
@@ -187,8 +194,12 @@ export default function InkKoiEcosystem(props: Props) {
             uiBox.classList.add("dismissed")
         }
         // The overlay reveals after enough feed drops — dock the tip then as
-        // well so the cards never rise under the centered pill.
-        const onHowReveal = () => dockTip()
+        // well so the cards never rise under the centered pill, and retire
+        // the "three drops" hint (its promise is fulfilled on screen).
+        const onHowReveal = () => {
+            dockTip()
+            container.classList.add("how-revealed")
+        }
         window.addEventListener("koi:how-reveal", onHowReveal)
         const syncFeedUi = () => {
             container.classList.toggle("feed-mode", feedMode)
@@ -281,10 +292,10 @@ export default function InkKoiEcosystem(props: Props) {
             // blur 从原来 3.2px 降到 1.5px，配合低 DPR，视觉模糊感相近但开销约少 5×
             canvas.style.filter =
                 qualityTier >= 2
-                    ? "blur(1.5px) contrast(1.15) brightness(0.93)"
+                    ? "blur(1.2px) contrast(1.18) brightness(1.08) saturate(1.08)"
                     : qualityTier === 1
-                      ? "blur(0.8px) contrast(1.12) brightness(0.94)"
-                      : "contrast(1.08) brightness(0.96)"
+                      ? "blur(0.6px) contrast(1.14) brightness(1.06) saturate(1.06)"
+                      : "contrast(1.1) brightness(1.04) saturate(1.04)"
         }
 
         // =========================
@@ -870,11 +881,12 @@ export default function InkKoiEcosystem(props: Props) {
                 const targetCX = centerX,
                     targetCY = centerY
                 const safeMargin = Math.max(90, 120 * this.scale)
+                const topSafeMargin = Math.max(safeMargin, 190 * this.scale)
 
                 if (
                     this.x < safeMargin ||
                     this.x > width - safeMargin ||
-                    this.y < safeMargin ||
+                    this.y < topSafeMargin ||
                     this.y > height - safeMargin
                 )
                     edgeTurn = true
@@ -1159,7 +1171,7 @@ export default function InkKoiEcosystem(props: Props) {
                 this.x += Math.cos(this.angle) * this.currentSpeed * dt
                 this.y += Math.sin(this.angle) * this.currentSpeed * dt
                 this.x = clamp(this.x, -50, width + 50)
-                this.y = clamp(this.y, -50, height + 50)
+                this.y = clamp(this.y, topSafeMargin, height + 50)
 
                 const speedRatio = clamp(
                     this.currentSpeed / this.baseSpeed,
@@ -1568,29 +1580,51 @@ drawBody() {
             }
         }
 
-        const maxFishCount = qualityTier >= 2 ? 24 : qualityTier === 1 ? 16 : 12
+        const maxFishCount = qualityTier >= 2 ? 34 : qualityTier === 1 ? 24 : 16
         const eggCap = qualityTier >= 2 ? 28 : qualityTier === 1 ? 18 : 10
         const foodCap = qualityTier >= 2 ? 180 : qualityTier === 1 ? 120 : 72
         const foodBurstMin = qualityTier >= 2 ? 7 : qualityTier === 1 ? 5 : 4
         const foodBurstMax = qualityTier >= 2 ? 14 : qualityTier === 1 ? 10 : 7
         const initialFishConfigs = [
-            [0.35, 0.45, "showa", 1.25],
-            [0.6, 0.55, "kohaku", 1.2],
-            [0.28, 0.52, "showa", 0.85],
-            [0.62, 0.42, "kohaku", 0.78],
-            [0.44, 0.68, "yamabuki", 0.75],
-            [0.76, 0.62, "sanke", 0.68],
-            [0.38, 0.32, "kohaku", 0.62],
-            [0.58, 0.78, "yamabuki", 0.55],
-            [0.18, 0.72, "sanke", 0.28],
-            [0.82, 0.28, "kohaku", 0.25],
+            [0.42, 0.11, "kohaku", 0.42],
+            [0.56, 0.13, "sanke", 0.34],
+            [0.66, 0.18, "showa", 0.46],
+            [0.36, 0.23, "kohaku", 0.52],
+            [0.50, 0.27, "yamabuki", 0.38],
+            [0.70, 0.31, "kohaku", 0.44],
+            [0.31, 0.36, "sanke", 0.36],
+            [0.47, 0.39, "showa", 1.25],
+            [0.60, 0.43, "kohaku", 1.12],
+            [0.39, 0.47, "yamabuki", 0.56],
+            [0.54, 0.50, "kohaku", 0.48],
+            [0.69, 0.55, "sanke", 0.38],
+            [0.34, 0.59, "showa", 0.42],
+            [0.48, 0.63, "kohaku", 0.34],
+            [0.63, 0.67, "yamabuki", 0.45],
+            [0.40, 0.71, "sanke", 0.32],
+            [0.56, 0.75, "kohaku", 0.36],
+            [0.68, 0.80, "showa", 0.28],
+            [0.45, 0.16, "kohaku", 0.24],
+            [0.62, 0.24, "showa", 0.26],
+            [0.33, 0.32, "sanke", 0.22],
+            [0.72, 0.45, "kohaku", 0.24],
+            [0.37, 0.55, "showa", 0.23],
+            [0.59, 0.61, "sanke", 0.25],
+            [0.46, 0.69, "kohaku", 0.22],
+            [0.64, 0.77, "showa", 0.24],
+            [0.29, 0.49, "kohaku", 0.23],
+            [0.74, 0.60, "yamabuki", 0.24],
+            [0.35, 0.78, "sanke", 0.22],
+            [0.52, 0.84, "kohaku", 0.2],
+            [0.72, 0.72, "showa", 0.21],
+            [0.28, 0.67, "yamabuki", 0.2],
         ] as const
         const initialFishLimit =
             qualityTier >= 2
                 ? initialFishConfigs.length
-                : qualityTier === 1
-                  ? 8
-                  : 6
+            : qualityTier === 1
+                  ? 18
+                  : 10
         const fishes: any[] = initialFishConfigs
             .slice(0, initialFishLimit)
             .map(
@@ -1599,13 +1633,13 @@ drawBody() {
             )
 
         if (qualityTier >= 1) {
-            const mat1 = new Koi(width * 0.52, height * 0.38, "kohaku", 1.35 * viewScale)
+            const mat1 = new Koi(width * 0.51, height * 0.32, "kohaku", 1.32 * viewScale)
             mat1.fat = 1.12
             mat1.fatTarget = 1.28
             fishes.push(mat1)
         }
         if (qualityTier >= 2) {
-            const mat2 = new Koi(width * 0.46, height * 0.6, "showa", 1.45 * viewScale)
+            const mat2 = new Koi(width * 0.48, height * 0.48, "showa", 1.42 * viewScale)
             mat2.fat = 1.14
             mat2.fatTarget = 1.3
             fishes.push(mat2)
@@ -1692,7 +1726,20 @@ drawBody() {
 
         function drawBackground() {
             ctx.globalCompositeOperation = "source-over"
-            ctx.fillStyle = "#020305"
+            ctx.fillStyle = "#041114"
+            ctx.fillRect(0, 0, width, height)
+            const glow = ctx.createRadialGradient(
+                centerX,
+                height * 0.42,
+                Math.min(width, height) * 0.08,
+                centerX,
+                height * 0.45,
+                Math.max(width, height) * 0.68
+            )
+            glow.addColorStop(0, "rgba(10, 42, 48, 0.42)")
+            glow.addColorStop(0.48, "rgba(5, 24, 29, 0.26)")
+            glow.addColorStop(1, "rgba(2, 3, 5, 0)")
+            ctx.fillStyle = glow
             ctx.fillRect(0, 0, width, height)
         }
 
@@ -1931,6 +1978,7 @@ drawBody() {
             feedBtn.removeEventListener("pointerdown", onFeedPointerDown)
             feedBtn.removeEventListener("keydown", onFeedKeyDown)
             container.classList.remove("feed-mode")
+            container.classList.remove("how-revealed")
         }
     }, [props.introDurationMs, showLilyPads])
 
@@ -1948,16 +1996,21 @@ drawBody() {
             <style>{stripCssComments(`
             .koi-container{
               position:absolute; inset:0; width:100%; height:100%;
-              overflow:hidden; cursor:default; z-index:0;
+              overflow:hidden; cursor:default;
               position: relative;
-              isolation: isolate;
+              /* NO z-index / isolation here: the container must NOT trap its
+                 children in a private stacking context, so the feed chip
+                 (z30) and feed cursor (z1000) can float ABOVE the lotus
+                 banks (.koi-lotus-frame z6) while the fish canvas (z1)
+                 stays beneath them */
             }
             #fishCanvas{
+              position:absolute; inset:0; z-index:1;
               display:block; width:100%; height:100%;
               opacity:0; will-change: opacity;
             }
             #padCanvas{
-              position:absolute; inset:0; width:100%; height:100%;
+              position:absolute; inset:0; z-index:2; width:100%; height:100%;
               display:none; pointer-events:none;
               opacity:0; will-change: opacity;
             }
@@ -1994,8 +2047,11 @@ drawBody() {
               to   { opacity:1; transform: translate(-50%, -50%); }
             }
             #hero-ui.dismissed {
-              transform: translate(calc(-50% + var(--dock-x, 0px)), -50%)
-                         scale(var(--dock-s, 1));
+              transform: translate(
+                  calc(-50% + var(--dock-x, 0px)),
+                  calc(-50% + var(--dock-y, 0px))
+                )
+                scale(var(--dock-s, 1));
               animation: none;
             }
             @media (max-width: 740px) {
@@ -2062,6 +2118,9 @@ drawBody() {
               0%,100%{ filter: drop-shadow(0 0 3px rgba(220,155,15,0.65)) drop-shadow(0 0 8px rgba(220,155,15,0.30)); }
               50%{ filter: drop-shadow(0 0 5px rgba(255,190,30,0.85)) drop-shadow(0 0 14px rgba(220,155,15,0.50)); }
             }
+            .feed-text-wrap {
+              display: flex; flex-direction: column; gap: 5px;
+            }
             .feed-text {
               font-family: var(--font-sans);
               font-size: var(--text-label);
@@ -2071,6 +2130,17 @@ drawBody() {
               white-space: nowrap;
               color: rgba(255,255,255,0.78); transition: color var(--dur-fast) ease;
             }
+            /* the payoff hint — names what feeding reveals (How I Work) */
+            .feed-sub {
+              font-size: var(--text-micro);
+              letter-spacing: 0.18em;
+              text-transform: uppercase;
+              line-height: 1;
+              white-space: nowrap;
+              color: rgba(255,255,255,0.42);
+            }
+            /* once the method is on screen the hint has done its job */
+            .koi-container.how-revealed .feed-sub { display: none; }
             #feed-ui:hover .feed-pellets { filter: drop-shadow(0 0 6px rgba(255,190,30,0.9)) drop-shadow(0 0 16px rgba(220,155,15,0.6)); animation:none; }
             #feed-ui:hover .feed-text { color:#fff; }
             .koi-container.feed-mode #feed-ui { background: rgba(20, 20, 20, 0.78); border-color: rgba(255,200,60,0.28); }
@@ -2114,7 +2184,11 @@ drawBody() {
                         ref={feedBtnRef}
                         role="button"
                         tabIndex={0}
-                        aria-label={props.feedText}
+                        aria-label={
+                            props.tag
+                                ? `${props.feedText} — ${props.tag}`
+                                : props.feedText
+                        }
                         aria-pressed={false}
                     >
                         <div className="feed-pellets">
@@ -2123,7 +2197,12 @@ drawBody() {
                             <span className="pellet" />
                             <span className="pellet" />
                         </div>
-                        <div className="feed-text">{props.feedText}</div>
+                        <div className="feed-text-wrap">
+                            <div className="feed-text">{props.feedText}</div>
+                            {props.tag ? (
+                                <div className="feed-sub">{props.tag}</div>
+                            ) : null}
+                        </div>
                     </div>
                 </div>
 

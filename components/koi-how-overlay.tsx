@@ -75,7 +75,10 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
       <style>{stripCssComments(`
         .koi-how {
           position: absolute; inset: 0;
-          z-index: 4;
+          /* above the lotus banks (.koi-lotus-frame z6) — the method cards
+             must never be occluded by pads; fish + pads stay readable
+             THROUGH the cards' ink glass instead */
+          z-index: 7;
           /* water stays feedable everywhere except the cards themselves */
           pointer-events: none;
         }
@@ -85,15 +88,22 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           margin: 0 auto;
         }
         .koi-how-title {
-          position: absolute; left: 192px; top: 96px;
+          /* top in vh: the crossing lands the pond ~12vh past its boundary,
+             so a px-anchored title sat clipped above the fold — 24vh keeps it
+             comfortably in the first view, under the nav */
+          position: absolute; left: 192px; top: 24vh;
           margin: 0;
           font-family: var(--font-condensed);
-          font-size: var(--text-display-3);
+          font-size: var(--text-display-2);
           font-weight: 300;
           letter-spacing: -0.05em;
           text-transform: uppercase;
           line-height: 1;
-          color: rgba(250, 250, 250, 0.92);
+          color: rgba(252, 252, 252, 0.97);
+          /* soft ink pool behind the strokes so the title carries over pads */
+          text-shadow:
+            0 2px 18px rgba(1, 2, 4, 0.85),
+            0 0 56px rgba(1, 2, 4, 0.6);
         }
         .koi-how-card {
           position: absolute;
@@ -101,17 +111,20 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           pointer-events: none;
         }
         .koi-how.is-revealed .koi-how-card { pointer-events: auto; }
-        .koi-how-card-1 { left: 624px; top: 168px; min-height: 356px; }
-        .koi-how-card-2 { left: 112px; top: 612px; min-height: 322px; }
-        .koi-how-card-3 { left: 688px; top: 1038px; min-height: 322px; }
+        /* staggered below the (bigger) title — card 1 clears its line */
+        .koi-how-card-1 { left: 624px; top: 400px; min-height: 356px; }
+        .koi-how-card-2 { left: 112px; top: 768px; min-height: 322px; }
+        .koi-how-card-3 { left: 688px; top: 1130px; min-height: 322px; }
 
         /* On the pond the cards drop ValueCard's heavy frosted glass (its
-           inline blur(28px) pops in during the fade — owner: keep them
-           essentially transparent, at most a slight blur). */
+           inline blur(28px) pops in during the fade). The pond grew dense
+           lotus banks (2026-07-06), so the glass is a step darker than the
+           original near-transparent take — the text must hold against pads
+           AND fish moving beneath it, while both stay visible through it. */
         .koi-how-card .vibe-card {
-          background: rgba(6, 8, 10, 0.42) !important;
-          backdrop-filter: blur(4px) !important;
-          -webkit-backdrop-filter: blur(4px) !important;
+          background: rgba(4, 7, 10, 0.66) !important;
+          backdrop-filter: blur(10px) !important;
+          -webkit-backdrop-filter: blur(10px) !important;
         }
 
         /* reveal — transform/opacity only, staggered */
@@ -145,9 +158,9 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
              one dense block. */
           .koi-how-title { left: 48px; }
           .koi-how-card { width: min(640px, calc(100vw - 96px)); }
-          .koi-how-card-1 { left: auto; right: 48px; top: 176px; }
-          .koi-how-card-2 { left: 48px; top: 612px; }
-          .koi-how-card-3 { left: auto; right: 48px; top: 1052px; }
+          .koi-how-card-1 { left: auto; right: 48px; top: 400px; }
+          .koi-how-card-2 { left: 48px; top: 768px; }
+          .koi-how-card-3 { left: auto; right: 48px; top: 1130px; }
         }
 
         @media (max-width: 740px) {
