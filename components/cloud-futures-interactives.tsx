@@ -250,14 +250,14 @@ const SEATS = [
     label: "Customer’s seat",
     figures: [
       {
-        src: "/media/work/cloud-futures/scene-09.png",
-        alt: "Voice assistant explaining it can detect the duplicate charge but refund authorization requires human verification",
+        src: "/media/work/cloud-futures/voice-boundary.png",
+        alt: "Voice assistant showing its duplicate-charge evidence, then explaining refund authorization requires human verification",
         caption:
           "The AI names its own boundary — it can detect and analyze the duplicate charge, but refund authorization requires a human. It asks before preparing the handoff.",
       },
       {
-        src: "/media/work/cloud-futures/scene-13.png",
-        alt: "Case packet assembling: transaction receipts, timestamp analysis, voice transcript",
+        src: "/media/work/cloud-futures/voice-packet.png",
+        alt: "Case packet assembling: transaction receipts, timestamp analysis, and a voice transcript shared with consent",
         caption:
           "With consent given, the AI assembles receipts, timeline analysis, and the voice transcript into a case packet — so nobody re-explains anything.",
       },
@@ -268,14 +268,14 @@ const SEATS = [
     label: "Agent’s seat",
     figures: [
       {
-        src: "/media/work/cloud-futures/agent-pending.png",
+        src: "/media/work/cloud-futures/agent-locked.png",
         alt: "Agent console showing the AI case packet and a refund locked pending human verification",
         caption:
-          "The same packet lands on the agent’s desk. The refund is prepared but locked: “awaiting human verification.”",
+          "The same packet lands on the agent’s desk. The refund is prepared but locked — “verify to enable.”",
       },
       {
-        src: "/media/work/cloud-futures/agent-ready.png",
-        alt: "Agent console after human confirmation, with the refund action now active",
+        src: "/media/work/cloud-futures/agent-live.png",
+        alt: "Agent console after human verification, with the refund release now an enabled human action",
         caption:
           "Only after the human confirms does the refund action go live. The AI reads, summarizes, and prepares — it never touches the money.",
       },
@@ -309,8 +309,8 @@ export function CfSeats() {
               <Image
                 src={f.src}
                 alt={f.alt}
-                width={1920}
-                height={1200}
+                width={2880}
+                height={1960}
                 sizes="(max-width: 900px) 100vw, 1080px"
                 priority={false}
               />
