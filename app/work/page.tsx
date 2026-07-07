@@ -36,6 +36,7 @@ const workGroups = [
     title: "UI/UX",
     projectSlugs: [
       "pulse",
+      "nyma",
       "vicino-ai",
       "froghire-ai",
       "cloud-support-futures",

@@ -312,6 +312,152 @@ export const projects: Project[] = [
     featured: true,
   },
   {
+    slug: "nyma",
+    title: "Nyma",
+    template: "case",
+    cover: `/media/work/nyma/cover.png`,
+    coverClass: "cover-nyma",
+    tags: ["Brand & Product", "Design System", "AI Workflow"],
+    oneliner:
+      "Nyma is a social resale platform for designer, luxury, and vintage fashion — people comment, save, and follow around the pieces, not just buy them. I joined as the only designer after the marketplace and auction architecture were built, and gave the platform what it didn’t have yet: a brand with a reason, a visual system, and design rules codified into the front-end repo.",
+    blurb:
+      "Nyma is a 2C social resale platform for designer, luxury, and vintage fashion — closer to a community formed around garments than a listing-based marketplace. When I joined, the transaction and auction architecture were already in place and a website was live, but the visual foundation was weak, the UI logic needed cleanup, and the founders liked the name Nyma without a story behind it.\n\nMy work was the design layer, end to end: I traced the name to νήμα — Greek for thread — and rebuilt the brand around continuity, designed the key pages by hand, wrote the 17-page brand manual, and then codified the system into the front-end repo so a team of one front-end engineer, one back-end engineer, and no designer can keep shipping consistently after my contract ends.",
+    role: "Brand & Product Designer — the only designer",
+    duration: "2025 - 2026",
+    type: "Intern",
+    teams: "2 founders · 1 front-end · 1 back-end",
+    summary: [
+      "Nyma is a 2C social resale platform for designer, luxury, and vintage fashion. Users don’t just buy and sell — they comment, save, and follow around the pieces, so the product has to feel like a community formed around garments, not a transaction site. When I joined, the marketplace and auction architecture were built and a website was live; what was missing was the design layer. The visual foundation was weak, the UI logic needed cleanup, and the founders liked the name Nyma without being able to say what it meant.",
+      "I traced the name to νήμα — Greek for thread — and everything hung from that: moodboards and AI-assisted direction studies, a 17-page brand manual with role-based color and an archival typographic voice, thirty-odd key pages designed by hand in Figma — and finally the whole system written into code, so the rules survive me and the team can build mobile without a designer in the room.",
+    ],
+    moment: {
+      title:
+        "When a name the founders just liked became the thread everything hangs from",
+      body: [
+        "Nyma didn’t need a logo first; it needed a reason. The founders liked the sound of the name, but nobody could say what it meant. Researching it, I found νήμα — Greek for thread — and the whole brand was suddenly in one word: garments carrying stories from one owner into the next, resale as continuity instead of clearance. Every decision after that pulled the same thread — the Fates on the moodboards, the role-based palette, the archival voice, the condition reports, and finally the rules written into the repo. And because the thread has to hold every wardrobe — designer, luxury, vintage — the system stayed deliberately quiet enough for all of them to enter.",
+        "The honest part: I’m not a trained graphic designer, and Nyma was my first time owning visual identity at this scale. Stakeholder feedback was positive and the visual quality moved far, but a sharper eye would have made some calls sharper still — next time I bring critique in earlier.",
+        "And I would codify from month one. The system I built at the end to hand off mobile is the system that would have made every earlier month faster. Same lesson as Vicino, from the other side: the earlier the framework exists, the more AI compounds. The later it exists, the more you are cleaning up retroactively.",
+      ],
+    },
+    // Arc (deck slides 22–27): inheritance → thread → rulebook → pages →
+    // codification → handoff; the Turn carries the νήμα discovery + the two
+    // honest reflections. Facts from the Smarttwigs archive: 17 brand-manual
+    // pages, 30–40 key desktop pages (deck claim, ~50 mocks in the final
+    // export), role-based palette (#1C1A17 / #CF882E / #0D5EAF), Murecho.
+    // Confidentiality: agency credit and mock personal data stay out of crops.
+    chapters: [
+      {
+        number: "01 · The inheritance",
+        title: "Architecture in place. Meaning missing.",
+        sections: [
+          {
+            tags: "2C SOCIAL RESALE · AS FOUND",
+            heading: "A working platform that didn’t know what it was",
+            body: [
+              "I joined after the hard plumbing was done: marketplace and auction architecture in place, a website already live. And Nyma was never meant to be a listing board — people comment, save, and follow around the items, so it has to feel like a community formed around fashion pieces. But the visual foundation was weak, the UI logic needed cleanup, and the brand rationale was underdeveloped. The founders liked the name; the name didn’t yet mean anything. My scope became the whole design layer: brand direction, visual system, UI logic — and, later, turning all of it into rules a two-engineer team can build from without me.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "02 · The thread",
+        title: "νήμα — the name already knew what the brand should be.",
+        sections: [
+          {
+            tags: "NAMING · RESEARCH",
+            heading: "Finding the thread inside Nyma",
+            body: [
+              "Researching the word, I found Nyma could connect to νήμα — Greek for thread. That one link gave the name narrative and visual potential it never had: garments carrying stories across owners, continuity instead of pure transaction, resale as something curated and cultural rather than clearance. I built the moodboards around that idea — the Fates spinning and cutting thread, Greek textile patterns, archival fashion photography — and the direction stopped being a taste question.",
+            ],
+          },
+          {
+            tags: "MOODBOARDS · AI EXPLORATION",
+            heading: "Directions as conversation material",
+            body: [
+              "In parallel I used AI to widen the search. I fed it my competitive research, the secondhand platforms I had studied, visual references, and the brand-language drafts I was writing, and had it generate brand directions, homepage narratives, positioning, and copy versions. That let us compare quickly whether Nyma should lean editorial like a fashion magazine, archival like a curated archive, transactional like a typical marketplace, or fashion-forward with louder style. The outputs were never final answers — they were conversation material that helped a name that merely sounded good become a grounded direction around thread, continuity, and curation.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "03 · The rulebook",
+        title: "Structural, not expressive — a brand designed to be maintained.",
+        sections: [
+          {
+            tags: "BRAND MANUAL · OPERATIONAL RULES",
+            heading: "Rules that protect the objects",
+            body: [
+              "The manual I wrote defines Nyma’s identity as structural rather than expressive: restrained, consistent, and secondary to the objects it carries. It reads as operational rules — what must remain constant, where variation is permitted, where expression is intentionally limited. When uncertainty arises, priority goes to clarity, reduction, and structural consistency. The line I kept coming back to: this brand is not meant to be reinterpreted — it is meant to be maintained.",
+            ],
+          },
+          {
+            tags: "COLOR ROLES · TYPOGRAPHY",
+            heading: "Color that signals, type that archives",
+            body: [
+              "Color at Nyma is role-based, never decorative. Ceramic Black contains; the archival whites surface; Ceramic Yellow appears only as a material trace; Activation Blue is reserved exclusively for interactive states. Any use of color outside its defined role is misuse — the palette signals structure, state, and continuity instead of expressing identity. Murecho carries the words in thin and regular weights — bold is nearly absent from the system — an archival voice that is quiet, precise, deliberately non-performative, with mono reserved for system data, the way an archive labels its objects.",
+              "The restraint is also hospitality. Nyma serves wardrobes that have nothing to do with each other — a couture archive, a designer drop, a worn pair of Levi’s — and the system has to receive all of them without re-styling itself. That is the real reason the rules are this quiet: inclusivity was the design decision underneath the design decisions.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "04 · The pages",
+        title: "Thirty-odd pages by hand; AI where hands weren’t needed.",
+        sections: [
+          {
+            tags: "FIGMA · BY HAND",
+            heading: "The pages AI couldn’t deliver",
+            body: [
+              "Once the direction settled, the work shifted into production — and AI’s role had to shrink. For the major feature pages it could suggest structure, but not the designer-level layout, hierarchy, and editorial pacing the brand needed. So I designed and iterated the thirty-to-forty key pages by hand in Figma: marketplace and auction surfaces, listing and seller flows, onboarding, profile, messaging — the spine of the product.",
+            ],
+          },
+          {
+            tags: "AI ASSETS · STYLE VS INCLUSIVITY",
+            heading: "Minimal enough for the items, editorial enough for a voice",
+            body: [
+              "Imagery was a different problem: a fashion resale platform needs a lot of it to feel alive, and there was no content library yet. Beyond public-domain and licensed references, I used AI-generated assets for mood imagery and atmosphere that matched the site’s tone while keeping copyright risk low. The judgment underneath everything was the trade between style and inclusivity — premium enough for designer-fashion users, welcoming enough for vintage and broader resale buyers. Most calls in the system were made to hold styles that share nothing: the same card, grid, and type have to serve an Hermès collector and a vintage seller without re-styling. That is why the language landed on minimal but editorial: minimal so the items carry the page, editorial so the brand keeps a voice.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "05 · The codification",
+        title: "The design system left Figma and moved into the repo.",
+        sections: [
+          {
+            tags: "FRONT-END REPO · DESIGN RULES",
+            heading: "Decisions written once, reused everywhere",
+            body: [
+              "Nyma is a small company; a heavy, formal design system was never the point. But the product kept growing, and I didn’t want to re-make the same design decisions every time a new surface appeared. So I started codifying the existing system directly into the front-end repo: layout rules, typography, spacing, component behavior, reusable patterns — design decisions as code the product can’t drift away from.",
+            ],
+          },
+          {
+            tags: "FIGMA · CLAUDE DESIGN · CLAUDE CODE",
+            heading: "Figma stopped being the only source of truth",
+            body: [
+              "That changed how I work. Instead of designing in Figma and handing off, I moved across Figma, Claude Design, and Claude Code as one loop: explore a direction with AI, generate the code, fix details back in Figma, re-export and let AI refine — or edit in Claude Design, or adjust the repo directly. Figma stayed for visual refinement, but the codified front-end system became where design rules are preserved, reused, and extended. The lesson I keep re-learning: AI only scales you when the framework is clear. Unclear brand, inconsistent system, vague prompt — AI just generates more noise. Framework first; then it compounds.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "06 · The handoff",
+        title: "A system that keeps working after I leave.",
+        sections: [
+          {
+            tags: "MOBILE · ROADMAP · CONTINUITY",
+            heading: "Prototypes and a roadmap the team can build against",
+            body: [
+              "The reason the system matters now: the team is starting their mobile build, and my contract is wrapping up. So I used the same AI workflow to prepare their continuity — AI-generated early prototype directions for mobile as starting points, and a product roadmap built from competitor study plus a structured conversation with AI, output as HTML, brought into Figma, and merged with the design system into a working prototype the team can build against. The codified system isn’t for me; it’s the layer that preserves visual and interaction consistency after I’m gone. That is the real test of whether a design system is doing its job.",
+            ],
+          },
+        ],
+      },
+    ],
+    order: 1,
+    featured: false,
+  },
+  {
     slug: "vicino-ai",
     title: "Vicino AI",
     template: "case",
@@ -371,7 +517,6 @@ export const projects: Project[] = [
               "One of the biggest shifts in my thinking came when I stopped looking at the product only through capability. A traditional studio workflow assumes multiple specialists, each owning a different part of the process. A product cannot. Even if Vicino was growing toward more professional and studio-level use cases, the people actually using it would not necessarily think like a full production team. That meant the design challenge was not to reproduce a traditional pipeline step by step. It was to redefine what a workflow should look like when one person, or a much smaller team, is trying to work through systems that used to belong to several roles.",
               "That changed the questions I asked. I stopped asking only what the product was able to generate, and started asking what kind of flow a user could actually follow, revise, and finish. That shift made the work less about exposing more power and more about making power usable.",
             ],
-            image: `/media/work/vicino/ch1-2.png`,
           },
           {
             tags: "WORKFLOW STRUCTURE · MODEL CONSTRAINTS",
@@ -381,7 +526,6 @@ export const projects: Project[] = [
               "Once I became more focused on feasibility, the main path started to clarify. Script, Storyboard, Image, and Video did not need to collapse into one “smart” object. They needed to do different jobs clearly. Script helped organize intent. Storyboard shaped pacing and visual sequence. Image worked better as a lighter preview and revision layer before users committed to video. Video then became the step that should happen with more intention, not less.",
               "One example made that logic very concrete for me. A video-first flow looked simpler on paper, but in practice it pushed users into the slowest and most expensive step before they could even confirm whether the content was right. By keeping image as a preview layer, users could correct composition, content, and direction before moving into motion. That made the workflow longer by one step, but much easier to control. It stopped being an idealized flow and became a usable one.",
             ],
-            image: `/media/work/vicino/ch1-3.png`,
           },
           {
             tags: "AI LIMITS · PRODUCT LOGIC",
@@ -391,7 +535,6 @@ export const projects: Project[] = [
               "The more I worked on the system, the more I realized that design was not happening after the technology was “done.” Some paths were too expensive, too unstable, or too uneven to be presented as a default experience. Some outputs needed an intermediate step where users could inspect and redirect the result before moving on. That meant design could not simply wrap an existing capability in a nicer interface. It had to help define the form that capability should take as a product.",
               "One of the clearest examples was our decision not to compress too much into a single node. A more collapsed version often looked cleaner at first, but it also removed the checkpoints users needed to understand and correct what was happening. In several cases, splitting one broad step into two smaller ones created a better product, not because the system became simpler underneath, but because the user finally had somewhere to pause, inspect, and decide.",
             ],
-            image: `/media/work/vicino/ch1-4.png`,
           },
         ],
       },
@@ -407,7 +550,6 @@ export const projects: Project[] = [
               "As we started thinking more seriously about how future assistive or agent-like behaviors might fit into the product, my position became clearer rather than more optimistic. I did not think better automation meant removing people from the process. Especially if the product was going to support more professional, higher-stakes creative work, users still needed room to inspect, revise, and redirect what the system was doing. A product could help them start faster, but it could not trap them inside a black box.",
               "That changed the way I thought about “smart workflows.” For me, a smart workflow was not one that made every decision on the user’s behalf. It was one that reduced friction without taking away control. Even if more assistive behaviors were introduced later, I wanted users to have visible points of intervention—places where they could step in, correct direction, and continue shaping the work.",
             ],
-            image: `/media/work/vicino/ch2-1.png`,
           },
           {
             tags: "INTERACTION ARCHITECTURE · INTERFACE LAYERS",
@@ -426,7 +568,6 @@ export const projects: Project[] = [
               "Another big shift for me was how I worked with the team. Because the roadmap, model behavior, and implementation state were all changing at once, this project did not fit a clean handoff model. Waiting until the design looked polished before sharing it would have slowed down the very conversations that needed to happen early. So I found myself relying much more on annotated flows, rough prototypes, and working structures that made the logic visible before the UI was fully refined.",
               "In one case, I even moved directly into a lightweight React prototype for the sliding panel instead of waiting to fully package everything in static specs first. That was not about skipping design craft. It was about helping PMs and engineers react to structure while the product logic was still moving. In this project, rough but clear prototypes were often the fastest way to build alignment.",
             ],
-            image: `/media/work/vicino/ch2-3.png`,
           },
           {
             tags: "DESIGN SYSTEMS · SCALABILITY",
@@ -436,12 +577,11 @@ export const projects: Project[] = [
               "At the same time, I stopped treating the design system as something you do after the main design work is finished. As more workflows, editors, and support layers entered the product, consistency was no longer just a visual concern. It became a way to keep the product readable, keep the team aligned, and make future iteration easier. Without a clearer system, every new feature risked reopening the same structural debates.",
               "That became even more important as the product started preparing for future expansion, including faster workflow creation and more assistive features that might be introduced later. In practice, this meant standardizing more than just colors or spacing. It meant giving the team a stable language for layers, components, and behaviors, so new workflows could enter the system without forcing everyone to renegotiate the same patterns from scratch.",
             ],
-            image: `/media/work/vicino/ch2-4.png`,
           },
         ],
       },
     ],
-    order: 1,
+    order: 2,
     featured: true,
   },
   {
@@ -486,7 +626,7 @@ export const projects: Project[] = [
             tags: "KICKOFF · PRD REVIEW · STAKEHOLDERS INTERVIEWS",
             heading: "The First Time Startup Urgency Hit Me",
             body: [
-              "At kickoff, the PM and mentor walked us through the product. It had many features, but they felt stitched together. The CEO pulled me aside and asked me to review every page, especially the negative reviews on the Chrome Web Store. Users were calling it “hard to use” and “confusing.”",
+              "At kickoff, the PM and mentor walked us through the product. It had many features, but they felt stitched together. The CEO pulled me aside and asked me to review every page, especially the negative reviews on the Chrome Web Store.",
               "Reading those comments, I realized this wasn’t school anymore—it was survival. No one was waiting for a polished framework; the CEO wanted metrics back up fast. That was when I felt it: design here wasn’t about ideal portfolios, but about relieving user pain immediately with limited resources.",
             ],
             image: `/media/work/froghire/ch1-1.png`,
@@ -496,7 +636,7 @@ export const projects: Project[] = [
             heading: "Testing Showed Me Users Weren’t Lost—They’d Been Left Behind",
             body: [
               "Every week I ran through the whole dashboard—subscriptions, resumes, job recommendations—logging every bug with screenshots. The problems piled up: hidden subscription flows, unclear resume states, job lists suggesting software engineering roles to marketing students.",
-              "Then I saw a review: “I honestly have no idea how to use this.” It stung, because I’d felt the same on my first try. The problem wasn’t user intelligence—it was the product’s silence. No onboarding, no guidance, no hand to hold. Users weren’t lost; they’d been abandoned.",
+              "Then one review stung more than the rest—I’d felt the same on my first try. The problem wasn’t user intelligence—it was the product’s silence. No onboarding, no guidance, no hand to hold. Users weren’t lost; they’d been abandoned.",
             ],
             image: `/media/work/froghire/ch1-2.png`,
           },
@@ -504,7 +644,7 @@ export const projects: Project[] = [
             tags: "COMPETITIVE ANALYSIS · COST EVALUATION · PRODUCT BENCHMARKING",
             heading: "I Learned That Chasing Trends Wasn’t an Option",
             body: [
-              "My mentor showed me Simplify, Teal, and other competitors. They had sleek AI autofill features, and at first I thought we should too. But once we calculated costs, it was clear a startup couldn’t afford that. My mentor reminded me: “We’re past early funding. Every design decision must make financial sense.”",
+              "My mentor showed me Simplify, Teal, and other competitors. They had sleek AI autofill features, and at first I thought we should too. But once we calculated costs, it was clear a startup couldn’t afford that.",
               "That reframed my mindset. Startup design wasn’t about piling on flashy features, but finding leverage points—low-cost changes that could restore trust and usability. It wasn’t about chasing the AI trend; it was about knowing what not to build.",
             ],
             image: `/media/work/froghire/ch1-3.png`,
@@ -529,10 +669,10 @@ export const projects: Project[] = [
             tags: "ONBOARDING FLOWS · STAKEHOLDER FEEDBACK· DESIGN TRADE-OFFS",
             heading: "The First Lesson in Startup Compromise",
             body: [
-              "I drafted three onboarding flows: pop-ups, a walkthrough, and an animated demo. The CEO immediately pushed for animation: “This will impress users the most.” Honestly, I felt a spark too—the animation looked more “designed.”",
-              "But engineering shut it down: it would slow load times and push release back two weeks. My excitement dropped instantly. If users had no onboarding at all, even the flashiest animation meant nothing.",
-              "Then my mentor cut in: “The real issue isn’t which format—it’s that there’s no onboarding at all.” That line hit me. We’d been debating how, when the real problem was whether.",
-              "We ended up with lightweight tooltips. Far from perfect, but better than nothing. And that was my first real startup lesson: elegant ideas rarely survive—the designs that ship are the ones that matter.",
+              "I drafted three onboarding flows: pop-ups, a walkthrough, and an animated demo. The CEO immediately pushed for animation. Honestly, I felt a spark too—it looked more “designed.”",
+              "But engineering shut it down flat, and my excitement dropped instantly. If users had no onboarding at all, even the flashiest animation meant nothing.",
+              "Then my mentor cut in with the line that reframed the whole standoff: we’d been debating how, when the real problem was whether.",
+              "And that was my first real startup lesson: elegant ideas rarely survive—the designs that ship are the ones that matter.",
             ],
             image: `/media/work/froghire/ch2-1.png`,
           },
@@ -540,9 +680,8 @@ export const projects: Project[] = [
             tags: "SUBSCRIPTION REDESIGN· RESUME MANAGEMENT · FILTERING EXPERIENCE",
             heading: "Fighting for Clarity, Accepting Half-Wins",
             body: [
-              "I redesigned the subscription page to show price and timeframes. The CEO agreed, but engineering pushed back: “Too heavy for the backend.” We shipped just the price. I hated losing the clarity—knowing what you bought felt so basic.",
-              "In resume management, I suggested active/inactive toggles to control recommendations. Engineering said no again, too complex. We cut it down to one highlighted resume. I knew it wasn’t flexible, but at least it gave users a little control.",
-              "For filters, I insisted on adding location and salary—my mentor reminded me those mattered most to job seekers. That time, I held the line. Each round felt like bargaining. Sometimes I won clarity, sometimes only half. But I learned to prioritize: if the perfect solution won’t ship, even a partial step forward is still progress.",
+              "Subscription clarity, resume control, filters—every redesign that summer went to the same bargaining table, and each round closed differently.",
+              "Each round felt like bargaining. Sometimes I won clarity, sometimes only half. But I learned to prioritize: if the perfect solution won’t ship, even a partial step forward is still progress.",
             ],
             image: `/media/work/froghire/ch2-2.png`,
           },
@@ -551,7 +690,7 @@ export const projects: Project[] = [
             heading: "Becoming My Own QA",
             body: [
               "After handoff, the frontend often ignored our Figma components and used their own templates. When I saw the first build, I froze: the structure was right, but the details were unrecognizable.",
-              "So I became my own QA—running every flow, screen-recording, capturing bugs. Subscription data missing, resume states broken, misaligned tooltips—I logged nearly a hundred issues. Once, an engineer even admitted: “We thought that feature wasn’t live yet.” It was both funny and painful.",
+              "So I became my own QA—running every flow, screen-recording, capturing bugs. Subscription data missing, resume states broken, misaligned tooltips—I logged nearly a hundred issues. One engineer’s mid-QA admission was both funny and painful.",
               "Frustrating as it was, I learned something essential: in a strapped startup, the designer isn’t just a flow creator—they’re also the last line of defense for what makes it to production.",
             ],
             image: `/media/work/froghire/ch2-3.png`,
@@ -561,7 +700,7 @@ export const projects: Project[] = [
             heading: "From Frustration to Redefining My Role",
             body: [
               "In review, the PM said at least registration rates had recovered. The CEO called a demo “complete,” even though its value was limited. I felt torn—by their definition, we’d succeeded. But I knew this “completeness” was fragile.",
-              "Then my mentor reminded us: “We’re still firefighting. Eventually we need standards.” That stuck with me. Yes, we were living in trade-offs. But I could still fight for clarity and consistency where it mattered.",
+              "Then my mentor said the line that stuck with me all summer. Yes, we were living in trade-offs. But I could still fight for clarity and consistency where it mattered.",
               "That’s when I reframed my role. Design wasn’t just about pixels—it was about helping the product survive and move forward, even if imperfect. In a startup, sometimes keeping the product alive is the most meaningful design you can deliver.",
             ],
             image: `/media/work/froghire/ch2-4.png`,
@@ -569,7 +708,7 @@ export const projects: Project[] = [
         ],
       },
     ],
-    order: 2,
+    order: 3,
     featured: true,
   },
   {
@@ -583,13 +722,13 @@ export const projects: Project[] = [
     oneliner:
       "Redesigning public opinion data discovery for researchers and the general public.",
     blurb:
-      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I delivered a high-fidelity prototype, UI kit, and research report that gave the client their first evidence-based UX process.",
+      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
     role: "UX Designer, Project Manager",
     duration: "09/01/2024 - 12/17/2024",
     type: "Client-Based Project",
     teams: "UX Designers, UX Researchers, Project Manager, Software Engineers",
     summary: [
-      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I delivered a high-fidelity prototype, UI kit, and research report that gave the client their first evidence-based UX process.",
+      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
     ],
     moment: {
       title:
@@ -670,16 +809,16 @@ export const projects: Project[] = [
           },
           {
             tags: "Iteration · Prototype Testing · Design System Alignment",
-            heading: "Delivering The First Evidence-Based UX Process For Roper",
+            heading: "The Redesign Shipped, But The Process Stayed",
             body: [
-              "The final delivery included a high-fidelity prototype, UI kit, and research report. But the real impact was showing Roper Center their first evidence-based UX process. Every design choice traced back to a pain point, every feature mapped to a principle. The redesign didn’t just make the tool usable—it made it educational.",
+              "The lasting impact wasn’t any single deliverable. Every design choice traced back to a pain point, every feature mapped to a principle. The redesign didn’t just make the tool usable—it made it educational.",
             ],
             image: `/media/work/roper/ch2-4.png`,
           },
         ],
       },
     ],
-    order: 4,
+    order: 5,
     featured: true,
   },
   {
@@ -713,7 +852,7 @@ export const projects: Project[] = [
         "Delegating presence and attention to AI while reserving judgment and action for humans is efficient — every study we ran says users prefer it. But the research left us with a sharper question than the one we started with: are we optimizing a service interaction, or fundamentally redesigning what a care relationship can be?",
       ],
     },
-    order: 3,
+    order: 4,
   },
   {
     slug: "hunger1942",
@@ -762,7 +901,7 @@ export const projects: Project[] = [
         `/media/work/hunger/gallery-4.png`,
       ],
     },
-    order: 5,
+    order: 6,
   },
   {
     slug: "vr-education",
@@ -772,28 +911,28 @@ export const projects: Project[] = [
     coverClass: "cover-vr-monarch",
     tags: ["VR Design", "Unity"],
     oneliner:
-      "An immersive VR education experience tracing the monarch butterfly migration through embodied perspective-taking.",
+      "A Unity VR documentary that puts you inside the monarch migration — education by embodiment.",
     blurb:
-      "VR Monarch Butterfly is an immersive VR experience showcasing the monarch butterfly migration.",
+      "A winter-term VR documentary of the monarch migration, built in Unity and explored through a headset.",
     role: "Designer, Developer",
-    duration: "12/2023-1/2024",
+    duration: "12/2022-1/2023",
     type: "Undergraduate",
     teams: "Digital Art, Immersive Experience, Digital Education",
     poster: {
-      lede: "VR Monarch Butterfly is an immersive VR experience showcasing the monarch butterfly migration.",
+      lede: "A winter-term VR documentary of the monarch migration, built in Unity and explored through a headset.",
       image: `/media/work/vr/cover.png`,
       intro: [
-        "VR Monarch Butterfly is an immersive and interactive virtual reality documentary created during Winter Term in January 2023, marking my first exploration into interaction design. Working collaboratively with two fellow students, we employed Unity as our primary development tool to construct an engaging virtual environment designed to authentically recreate the spectacular journey of monarch butterflies during their annual migration. To enhance immersion, we carefully crafted detailed visual scenes depicting the butterflies' habitats, migration routes, and behaviors, aiming to evoke genuine emotional and sensory responses from users.",
-        "Additionally, we integrated a documentary-style narration to provide educational context, making the experience informative as well as visually captivating. Interactive elements were intentionally designed and incorporated throughout the experience, allowing users to engage actively by exploring various scenes, triggering narrated explanations, and closely observing the butterflies' characteristics and migratory patterns. Ultimately, the project transcends traditional VR visualization by blending interactive technology, immersive storytelling, and educational documentary elements, providing an innovative approach to understanding and appreciating the monarch butterfly migration.",
+        "VR Monarch Butterfly is an interactive VR documentary built during Winter Term, January 2023 — my first exploration into interaction design. With two fellow students I constructed the environment in Unity, recreating the monarchs’ annual migration: habitats, routes, and behaviors staged to be felt, not just watched.",
+        "A documentary-style narration carries the educational context, and interactive triggers placed through the scene let users explore, listen, and observe the butterflies up close — the documentary read from inside it.",
       ],
       details: {
         project: "VR Monarch Butterfly",
         client: "Undergraduate",
-        year: "12/2023-1/2024",
+        year: "12/2022-1/2023",
         services: "Digital Art, Immersive Experience, Digital Education",
       },
       body: [
-        "Synopsis: This collaborative project was completed with classmates during Oberlin College’s Winter Term in January 2023, utilizing Unity for the VR platform and Blender for butterfly modeling, with my primary role being scene creation. Our goal was to build a realistic virtual environment depicting the spectacular migration of monarch butterflies, exploring the educational and documentary potential of immersive VR experiences. Users can interact with and explore the scene through VR headsets.",
+        "Synopsis: Completed with classmates during Oberlin College’s Winter Term, January 2023 — Unity for the VR platform, Blender for the butterfly models; my primary role was scene creation. Explored through a headset, the piece tests how much documentary and educational weight a realistic VR environment can carry.",
         "Looking forward, we plan to further enhance the project by integrating additional visual art elements, such as transitioning butterflies into particle effects synchronized with music, evolving the experience from a purely realistic representation into a visually compelling artistic work.",
       ],
       gallery: [
@@ -803,7 +942,7 @@ export const projects: Project[] = [
         `/media/work/vr/gallery-4.png`,
       ],
     },
-    order: 6,
+    order: 7,
   },
 ];
 
