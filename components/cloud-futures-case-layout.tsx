@@ -172,19 +172,19 @@ const LOW_FI_EVIDENCE = [
 const AFFINITY_CLUSTERS = [
   {
     theme: "Role boundaries",
-    notes: ["Who is answering?", "Who is accountable?"],
+    line: "Who is answering — and who is accountable for the answer?",
   },
   {
     theme: "Unsolicited AI",
-    notes: ["Helpful when invited", "Unsettling when proactive"],
+    line: "Helpful when invited; unsettling when it arrives on its own.",
   },
   {
     theme: "Escalation paths",
-    notes: ["Visible handoff", "No penalty for asking a person"],
+    line: "The handoff must be visible, and asking for a person can’t cost anything.",
   },
   {
     theme: "Emotional safety",
-    notes: ["Do not reward distress", "Do not mimic empathy"],
+    line: "Never reward distress, never imitate empathy.",
   },
 ];
 
@@ -570,18 +570,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             <span className="cf-finding-source">Lo-fi probe participant</span>
           </p>
           <div className="cf-affinity">
-            <p className="cf-affinity-title">Affinity clusters that carried forward</p>
+            <p className="cf-affinity-title">Round 1 clustered into four questions.</p>
             <div className="cf-affinity-board">
               {AFFINITY_CLUSTERS.map((cluster, i) => (
                 <section className="cf-affinity-cluster" key={cluster.theme} style={{ ["--i" as string]: i }}>
                   <h3>{cluster.theme}</h3>
-                  <div className="cf-stickies">
-                    {cluster.notes.map((note, noteIndex) => (
-                      <span className="cf-sticky" key={note} style={{ ["--j" as string]: noteIndex }}>
-                        {note}
-                      </span>
-                    ))}
-                  </div>
+                  <p>{cluster.line}</p>
                 </section>
               ))}
             </div>
@@ -608,6 +602,23 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           </div>
         </div>
         <div className="cf-artifact" data-fade>
+          <figure className="cf-board-fig" data-fade>
+            <div className="cf-board-media">
+              <Image
+                src="/media/work/cloud-futures/affinity-board.png"
+                alt="Affinity map of raw insights from the nine mid-fi research sessions, color-coded by participant"
+                width={2000}
+                height={1405}
+                sizes="(max-width: 900px) 100vw, 1120px"
+              />
+            </div>
+            <figcaption className="cf-cap">
+              <span className="cf-fig-index">Team Figma board</span>
+              Every reaction from the nine sessions, affinity-mapped by
+              participant before it was distilled — the verdicts below sit on
+              top of this wall.
+            </figcaption>
+          </figure>
           <div className="cf-evidence-set" data-fade>
             {MID_FI_EVIDENCE.map((item) => (
               <figure className="cf-evidence-card" key={item.src}>
@@ -1916,6 +1927,48 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           max-width: 26ch;
         }
 
+        .cf-board-fig {
+          margin: clamp(26px, 3.2vw, 48px) 0 0;
+        }
+        .cf-board-media {
+          border: 1px solid rgba(248, 250, 252, 0.16);
+          border-radius: 8px;
+          overflow: hidden;
+          background: #fff;
+        }
+        .cf-board-media img {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
+        .cf-board-fig .cf-cap {
+          margin-top: 12px;
+        }
+
+        .cf-futures-flow {
+          margin: clamp(20px, 2.4vw, 30px) 0 0;
+        }
+        .cf-futures-flow-media {
+          border: 1px solid rgba(248, 250, 252, 0.16);
+          border-left: 3px solid var(--cf-sc, var(--case-accent));
+          border-radius: 8px;
+          overflow: hidden;
+          background: #fff;
+        }
+        .cf-futures-flow-media img {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
+        .cf-futures-flow figcaption {
+          /* lives only in the dark four-futures section */
+          margin-top: 10px;
+          font-family: var(--font-mono);
+          font-size: var(--text-micro);
+          line-height: 1.5;
+          color: rgba(248, 250, 252, 0.6);
+        }
+
         .cf-chip {
           appearance: none;
           border: 1px solid var(--rule);
@@ -1994,19 +2047,13 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-affinity-board {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: clamp(12px, 1.5vw, 20px);
-          padding: clamp(16px, 2vw, 26px);
-          border: 1px solid var(--rule);
-          border-radius: 8px;
-          background:
-            linear-gradient(rgba(16,18,22,0.035) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(16,18,22,0.035) 1px, transparent 1px),
-            rgba(255, 255, 255, 0.48);
-          background-size: 28px 28px;
+          gap: clamp(18px, 2.2vw, 32px);
         }
         .cf-affinity-cluster {
           display: grid;
-          gap: 12px;
+          gap: 10px;
+          padding-top: 16px;
+          border-top: 1px solid var(--rule);
           align-content: start;
         }
         .cf-affinity-cluster h3 {
@@ -2017,22 +2064,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           text-transform: uppercase;
           letter-spacing: 0.08em;
         }
-        .cf-stickies {
-          display: grid;
-          gap: 10px;
-        }
-        .cf-sticky {
-          display: block;
-          min-height: 74px;
-          padding: 12px 13px;
-          border: 1px solid rgba(16, 18, 22, 0.12);
-          border-radius: 3px;
-          background: color-mix(in srgb, var(--case-accent) 9%, #fff);
-          box-shadow: 0 12px 28px rgba(16, 18, 22, 0.06);
-          font-size: var(--text-meta);
-          line-height: 1.35;
-          color: rgba(16, 18, 22, 0.82);
-          transform: rotate(calc((var(--j, 0) - 1) * 0.7deg));
+        .cf-affinity-cluster p {
+          margin: 0;
+          font-size: clamp(17px, 1.4vw, 20px);
+          font-weight: 500;
+          line-height: 1.4;
+          color: var(--cf-ink);
         }
 
         .cf-stage-tagline {
@@ -2400,9 +2437,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: rgba(248, 250, 252, 0.86);
         }
         .cf-motion-path {
+          /* signal seam between the two tile rows; it must stop short of the
+             full-height output tile in column 4 or it crosses its text */
           position: absolute;
-          left: 10%;
-          right: 12%;
+          left: 6%;
+          right: calc(25% + 6px);
           top: 50%;
           height: 1px;
           background: rgba(248, 250, 252, 0.22);
@@ -2820,10 +2859,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             to { opacity: 1; transform: none; }
           }
           @keyframes cfMotionTravel {
-            0% { transform: translateX(0) scale(0.86); opacity: 0.18; }
+            0% { left: 0; transform: scale(0.86); opacity: 0.18; }
             16% { opacity: 1; }
             82% { opacity: 1; }
-            100% { transform: translateX(min(58vw, 720px)) scale(1); opacity: 0.18; }
+            100% { left: calc(100% - 7px); transform: scale(1); opacity: 0.18; }
           }
           @keyframes cfSoftPulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(138, 180, 248, 0); }
@@ -2962,9 +3001,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             display: none;
           }
           .cf-motion-path {
-            left: 12%;
-            right: 12%;
-            top: 58%;
+            /* the output tile it points to is hidden at this width */
+            display: none;
           }
           .cf-flow-row {
             grid-template-columns: 1fr;

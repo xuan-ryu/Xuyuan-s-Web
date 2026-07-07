@@ -87,6 +87,8 @@ type Scenario = {
   laneB: Lane;
   authority: 0 | 1 | 2; // node index holding the final say
   verdict: { quote: string; source: string };
+  /** the team's full decision-flow diagram behind the film */
+  flow: { src: string; width: number; height: number; line: string };
 };
 
 const NODES = ["Customer", "AI", "Human agent"] as const;
@@ -105,6 +107,12 @@ const SCENARIOS: Scenario[] = [
         "When AI suggests rule-bending, it feels more like something that is not allowed.",
       source: "Mid-fi session, P1",
     },
+    flow: {
+      src: "/media/work/cloud-futures/flow-advocate.png",
+      width: 2400,
+      height: 656,
+      line: "how the AI decides when to bend toward the customer",
+    },
   },
   {
     key: "supervisor",
@@ -119,6 +127,12 @@ const SCENARIOS: Scenario[] = [
         "It undermines the integrity of human service and makes humans seem useless.",
       source: "Mid-fi session, P5",
     },
+    flow: {
+      src: "/media/work/cloud-futures/flow-supervisor.png",
+      width: 2400,
+      height: 601,
+      line: "the parallel track where AI scores the human’s performance",
+    },
   },
   {
     key: "badcop",
@@ -132,6 +146,12 @@ const SCENARIOS: Scenario[] = [
       quote: "A cold machine that rigidly enforces rules.",
       source: "Mid-fi session, P9 — the human’s override read as “noble”",
     },
+    flow: {
+      src: "/media/work/cloud-futures/flow-badcop.png",
+      width: 2400,
+      height: 525,
+      line: "rigid enforcement, with the human override as the only exit",
+    },
   },
   {
     key: "nurse",
@@ -144,6 +164,12 @@ const SCENARIOS: Scenario[] = [
     verdict: {
       quote: "Everyone gets an Oscar for acting frustrated.",
       source: "Mid-fi session, P9",
+    },
+    flow: {
+      src: "/media/work/cloud-futures/flow-nurse.png",
+      width: 2400,
+      height: 393,
+      line: "severity triage deciding whether a human ever enters",
     },
   },
 ];
@@ -193,6 +219,20 @@ export function CfFutures() {
             <span className="cf-lane-verb">{sc.laneB.verb}</span>
           </div>
         </div>
+        <figure className="cf-futures-flow">
+          <div className="cf-futures-flow-media">
+            <Image
+              src={sc.flow.src}
+              alt={`Decision-flow diagram for ${sc.name}`}
+              width={sc.flow.width}
+              height={sc.flow.height}
+              sizes="(max-width: 900px) 100vw, 1120px"
+            />
+          </div>
+          <figcaption>
+            Working flow from the team’s Figma — {sc.flow.line}
+          </figcaption>
+        </figure>
         <p className="cf-verdict">
           <span className="cf-verdict-quote">“{sc.verdict.quote}”</span>
           <span className="cf-verdict-source">{sc.verdict.source}</span>
