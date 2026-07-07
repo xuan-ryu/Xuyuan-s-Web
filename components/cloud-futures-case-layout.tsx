@@ -190,16 +190,20 @@ const AFFINITY_CLUSTERS = [
 
 const MID_FI_EVIDENCE = [
   {
-    src: "/media/work/cloud-futures/evidence-mid-fi-testing-01.png",
+    src: "/media/work/cloud-futures/evidence-mid-fi-quotes.png",
     label: "Slide 21",
     title: "Participants judged authority before accuracy.",
     line: "Accountability, emotion, and role clarity shaped trust more than raw automation speed.",
+    width: 582,
+    height: 520,
   },
   {
     src: "/media/work/cloud-futures/evidence-mid-fi-testing-02.png",
     label: "Slide 22",
     title: "Emotion-aware triage introduced fairness risk.",
     line: "Affective priority looked gameable and harder to justify.",
+    width: 1080,
+    height: 608,
   },
 ];
 
@@ -351,10 +355,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           </div>
           <div className="cf-hero-proof-media">
             <Image
-              src="/media/work/cloud-futures/evidence-title-slide.png"
+              src="/media/work/cloud-futures/evidence-title-banner.png"
               alt="Final presentation cover for the Cornell MPS project for Google Cloud."
-              width={1440}
-              height={810}
+              width={1080}
+              height={330}
               sizes="(max-width: 900px) 100vw, 760px"
               priority
             />
@@ -623,7 +627,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             {MID_FI_EVIDENCE.map((item) => (
               <figure className="cf-evidence-card" key={item.src}>
                 <div className="cf-evidence-media">
-                  <Image src={item.src} alt={item.title} width={1440} height={810} sizes="(max-width: 900px) 100vw, 640px" />
+                  <Image src={item.src} alt={item.title} width={item.width} height={item.height} sizes="(max-width: 900px) 100vw, 640px" />
                 </div>
                 <figcaption className="cf-evidence-caption">
                   <span>{item.label}</span>

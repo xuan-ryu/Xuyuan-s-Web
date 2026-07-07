@@ -110,7 +110,7 @@ const SCENARIOS: Scenario[] = [
     flow: {
       src: "/media/work/cloud-futures/flow-advocate.png",
       width: 2400,
-      height: 656,
+      height: 661,
       line: "how the AI decides when to bend toward the customer",
     },
   },
@@ -130,7 +130,7 @@ const SCENARIOS: Scenario[] = [
     flow: {
       src: "/media/work/cloud-futures/flow-supervisor.png",
       width: 2400,
-      height: 601,
+      height: 606,
       line: "the parallel track where AI scores the human’s performance",
     },
   },
@@ -149,7 +149,7 @@ const SCENARIOS: Scenario[] = [
     flow: {
       src: "/media/work/cloud-futures/flow-badcop.png",
       width: 2400,
-      height: 525,
+      height: 528,
       line: "rigid enforcement, with the human override as the only exit",
     },
   },
@@ -168,7 +168,7 @@ const SCENARIOS: Scenario[] = [
     flow: {
       src: "/media/work/cloud-futures/flow-nurse.png",
       width: 2400,
-      height: 393,
+      height: 394,
       line: "severity triage deciding whether a human ever enters",
     },
   },
