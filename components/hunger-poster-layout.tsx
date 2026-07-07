@@ -3,6 +3,7 @@ import Link from "next/link";
 import { adjacent, type Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { HungerLoupeFrame } from "@/components/hunger-loupe-frame";
+import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { stripCssComments } from "@/lib/css-sanitize";
 
@@ -10,22 +11,24 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // so the case page becomes the desk it lies on — an archival reading room.
 // Folio rules + dateline metadata run the sections; the broadsheet and the four
 // art boards are handled as documents (hairline frames, reading loupe, numbered
-// plates on a newsprint band). Seal red is rationed to the pull-quote rule and
-// the quiet-CTA contract; the case accent (--case-accent, Wan Shouren's
-// navy-indigo jacket) marks static plate numbers and the active loupe ring.
+// plates on a newsprint band). Seal red belongs to the dispatch chop alone —
+// the page's ONE red (the pull-quote rule is gold); the case accent
+// (--case-accent, Wan Shouren's navy-indigo jacket) marks static plate
+// numbers and the active loupe ring.
 // Plate titles and captions are hardcoded here (data/projects.ts additions are
 // deferred to the serialized data pass).
 
 const SHEET_ALT =
   "Back to History — an aged 1942-style broadsheet dated 2023-04-20, the game-design document appendix. Its columns carry the oral histories the levels are built from: the Henan disaster, the storylines of Wan Shouren, Xuchang, and Zhengzhou.";
 
-// Captions stay factual to each board's own printed text (transliterations:
-// Wan Shouren, Jiayan Wan). Order matches poster.gallery in data/projects.ts.
+// Captions add provenance (medium, source, role) rather than restating the
+// boards' own legible printed text (transliterations: Wan Shouren, Jiayan
+// Wan). Order matches poster.gallery in data/projects.ts.
 const PLATES = [
   {
     title: "Wan Shouren — the protagonist",
     caption:
-      "Moral value drives the mechanics: violating human ethics attacks the character's heart, while keeping morality high threatens his survival. Expression studies, turnarounds, and the pixel build sit beside the archival reference photographs.",
+      "Character board from the game-design document — digital concept art and pixel sprites drawn against archival famine photographs; the printed notes set out the moral-value system.",
     width: 1246,
     height: 1759,
     alt: "Character concept sheet for Wan Shouren: full-figure concept art, four expression studies, turnaround views, pixel-art sprites, and archival famine reference photographs.",
@@ -33,7 +36,7 @@ const PLATES = [
   {
     title: "Jiayan Wan — the younger sister",
     caption:
-      "Sold to Zhengzhou in 1938, she is the goal of the first act and its hardest choice: trade her away for survival supplies, or live together and consume twice as much.",
+      "Companion board in the same archival format — her biography and the first act's trade-off are typeset on the sheet itself.",
     width: 1243,
     height: 1764,
     alt: "Character concept sheet for Jiayan Wan with biography and gameplay notes, refugee reference photographs, pixel sprites, and famine-victim character studies.",
@@ -41,7 +44,7 @@ const PLATES = [
   {
     title: "Scenes & storyboards",
     caption:
-      "The interface takes its layout from The Oregon Trail; the storyboards restage the documented disasters — the blown dam, the flood, the bombing, the flight from famine, the train south.",
+      "Storyboard sheet — interface studies and scene blocking for the first act; each panel restages a documented event from the oral histories.",
     width: 1242,
     height: 1770,
     alt: "Storyboard and concept board: Oregon Trail interface references and staged scenes including the plane bombing, the dyke-break flood, fleeing famine, victims climbing onto a train, and a camping point.",
@@ -69,7 +72,11 @@ export function HungerPosterLayout({ project }: { project: Project }) {
 
   return (
     <article className="poster-page hunger-page">
-      <style dangerouslySetInnerHTML={{ __html: stripCssComments(hungerCss) }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: stripCssComments(hungerCss + ICUE_CSS),
+        }}
+      />
 
       {/* ── 1 · Dateline masthead ─────────────────────────────── */}
       <header className="hunger-hero" id="header">
@@ -116,6 +123,11 @@ export function HungerPosterLayout({ project }: { project: Project }) {
           Back to History — the game-design document appendix printed as a
           1942-style broadsheet; its columns carry the oral histories the
           levels are built from.
+        </p>
+        <p className="hunger-loupe-cue">
+          <InteractiveCue accent="var(--case-accent)">
+            Hover the broadsheet — the loupe magnifies
+          </InteractiveCue>
         </p>
         <Cta
           variant="quiet"
@@ -307,8 +319,9 @@ const hungerCss = `
   /* Case palette — drawn from the work: the broadsheet is ink-on-newsprint
      (already the family neutrals), so the one color the project owns is
      Wan Shouren's ragged navy-indigo jacket (character sheets + every pixel
-     sprite). Seal red stays the pull-quote/CTA invariant; the granary-fire
-     orange and level-sky teal remain inside the media where they belong. */
+     sprite). Seal red appears once — the dispatch chop; the pull-quote rule
+     is demoted to gold, and the granary-fire orange and level-sky teal
+     remain inside the media where they belong. */
   --case-accent: #3e4a61;
   --case-accent-soft: color-mix(in srgb, var(--case-accent) 14%, transparent);
   background: var(--paper);
@@ -487,6 +500,22 @@ const hungerCss = `
   margin-top: 4px;
 }
 
+/* loupe cue — names the gesture; only shown where the loupe exists
+   (hover-capable fine pointers, same gate as .hunger-loupe itself) */
+.hunger-loupe-cue {
+  display: none;
+  grid-column: 6 / 10;
+  grid-row: 2;
+  justify-self: end;
+  align-self: start;
+  margin: 7px 0 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hunger-loupe-cue {
+    display: block;
+  }
+}
+
 /* document frame + reading loupe */
 .hunger-loupe-frame {
   position: relative;
@@ -615,9 +644,10 @@ const hungerCss = `
   margin-top: 22px;
   padding-top: 20px;
 }
-/* seal-red accent as a drawable bar (was border-top:2px; a border can't
-   scaleX). Same 2px seal rule, same resting position — padding absorbs the
-   2px the border used to add. */
+/* gold accent as a drawable bar (was border-top:2px; a border can't
+   scaleX). Demoted from seal red so the dispatch chop stays the page's one
+   red. Same 2px rule, same resting position — padding absorbs the 2px the
+   border used to add. */
 .hunger-pull::before {
   content: "";
   position: absolute;
@@ -625,7 +655,7 @@ const hungerCss = `
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--seal-red);
+  background: var(--accent-gold);
   transform-origin: left;
 }
 .hunger-pull-quote {
@@ -743,6 +773,12 @@ const hungerCss = `
   .hunger-sheet-cta {
     grid-column: 6 / -1;
   }
+  .hunger-loupe-cue {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: start;
+    margin-top: 2px;
+  }
   .hunger-kicker {
     grid-column: 1 / 4;
   }
@@ -807,6 +843,7 @@ const hungerCss = `
   .hunger-meta,
   .hunger-sheet-media,
   .hunger-sheet-caption,
+  .hunger-loupe-cue,
   .hunger-sheet-cta,
   .hunger-rule,
   .hunger-kicker,
@@ -877,7 +914,7 @@ const hungerCss = `
 
 /* ── Set-in-print motion — the sheet assembles as it enters view ─────────
    Restrained and period-true: the section column rules strike in from the
-   left (letterpress), the seal presses down, and the pull-quote's seal-red
+   left (letterpress), the seal presses down, and the pull-quote's gold
    accent draws before its words set. Zero new JS: the global FadeReveal adds
    .is-visible on scroll-enter. Motion-only — every hidden initial state lives
    inside @media (prefers-reduced-motion: no-preference), so reduced motion and
@@ -923,7 +960,7 @@ const hungerCss = `
   }
 
   /* 3 · pull-quote — the aside is a silent host (no move of its own); its
-     seal-red accent draws, then the quote and source set in a two-beat rise */
+     gold accent draws, then the quote and source set in a two-beat rise */
   .hunger-page .hunger-pull[data-fade] {
     opacity: 1;
     transform: none;

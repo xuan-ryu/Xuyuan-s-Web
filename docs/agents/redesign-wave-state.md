@@ -1,5 +1,103 @@
 # Page art-direction wave — state ledger (2026-07-02)
 
+## Session 5 (2026-07-07, later) — full-site 4-dimension audit + fix wave
+
+**Audit:** all 8 case pages reviewed (UI / narrative / animation / code) by 4
+parallel agents. Hard checks passed site-wide (0 horizontal overflow at 1440
+& 390, 0 console errors, image dims correct). Full findings in that session's
+reports.
+
+**Fixes applied (all landed, tsc/eslint clean, all pages 200):**
+- PII: Roper ch1-3.png Drive grid REBUILT (names/recruitment sheets cropped
+  out) + BONUS leak fixed: ch1-1.png Gantt ASSIGNED-TO column had six real
+  teammate names, wiped per-scanline. FrogHire ch2-2/cover/ch2-1 PNGs: real
+  account email + resume filenames painted over. NOTE: froghire mp4s
+  (35MB) may still flash the email on-screen - check when compressing.
+- Facts: VR year corrected to Winter Term Jan 2023 (owner-confirmed; the
+  structured duration fields were wrong -> now 12/2022-1/2023). VR "Emperor"
+  poster captioned as working title.
+- No-JS: layout.tsx <noscript> forces [data-fade]/.text-reveal/.fx-rise
+  visible (site read blank without JS).
+- Narrative dedup: pulse (824 x2 -> console only; 10,180 3rd ref reworded),
+  nyma (30-40/17-page eyebrows retired, etym read-line cut, archhead
+  "only designer" cut, Turn inclusivity twin reworded), froghire (10 pairs:
+  quotes live ONLY in marginalia/interlude; ledger sole teller of trade-offs
+  + margin cross-ref artifact; Fig-09 re-plated natural ratio), roper
+  ("evidence-based process" x3 -> once in s08 h2; deliverables once),
+  vicino (flow-strip component DELETED, stage enumeration once), vr
+  (premise x4 -> distinct angles), cloud (film caption now adds scenario/
+  length/what-to-watch), hunger (captions -> provenance).
+- Accent law: hunger pull-quote red -> gold (chop = one red); vicino static
+  ambers -> gold (amber only on Run/generate/cues); nyma loop lit in trace
+  not blue.
+- InteractiveCue everywhere: roper guess module, cloud CfGate scrub, hunger
+  loupe, vicino canvas/model-board (replacing ad-hoc invites).
+- Final-state contract: vicino canvas idles COMPLETED (Run rewinds+replays);
+  vrmb flight line default-drawn (hidden state motion-gated).
+- CfFutures carousel reworked per owner: 4-equal-col tab grid, 4-segment
+  progress bar column-aligned under tabs, active segment fills in persona
+  color; head gap widened.
+- Perf/assets: vicino big PNGs downscaled (2.9MB->230KB etc.), 6 unused
+  vicino images+fields deleted, vr specimen 480->227KB, cloud carousel
+  panels lazy. SKIPPED (no ffmpeg): hunger 27MB / roper 17.9MB / froghire
+  35MB / vicino 21MB videos - install ffmpeg (winget install Gyan.FFmpeg).
+- Dev-server note: Roper image-optimizer cache may serve stale WebP of the
+  redacted PNGs until restart; disk files clean, prod unaffected.
+
+## Session 4 (2026-07-07) — NEW case: Nyma "The Archive Thread" (slug `nyma`)
+
+**New bespoke case page built end-to-end** from the owner's deck (slides
+22-27) + the Smarttwigs archive (`S:\Smarttwigsigma`). The page steps
+inside Nyma's own brand system (Pulse precedent): parchment stage #f2efea,
+Ceramic Black bands, the manual's archival page furniture (mono
+"Topic - / Page no. -" headers over drawn hairlines), Murecho as the page
+voice. Case accent = Nyma's own law: Activation Blue #0d5eaf interactive-only
+(--case-accent), Ceramic Yellow #cf882e static material trace (site gold
+role), ONE seal-red moment = the red stitch at the Turn. Narrative:
+inheritance -> thread (νήμα) -> rulebook -> pages -> codification -> handoff;
+the Turn carries the νήμα discovery + the honest reflections.
+
+**Files:** data/projects.ts (nyma entry, order 1, legacy orders bumped +1;
+featured:false so Home untouched), components/nyma-case-layout.tsx (scoped
+CSS, final-state markup), nyma-scroll.tsx (GSAP over lenis-bus: thread-fill
+scrub down the rail, IO center-band rail states, hairline draws, counters,
+moodboard strip scrub >=769px, wall column drift, page-walks-itself frames,
+manual fan-open, loop light-up), nyma-interactives.tsx (NymaDirections
+4-voice board, NymaColorRoles lot-card spotlight - both InteractiveCue'd),
+registered in bespokeLayouts + workGroups(uiux). Assets:
+public/media/work/nyma/ (39 PNGs from the archive - brandmanual pages, Fates
+crop, vase, 4 moodboard slices, competitive board, 8 wall mocks 900w,
+onboarding/design-system tall walks, mobile rows, 2 AI-draft section crops,
+cover) + fonts/ murecho 400/500/700 (page-scoped @font-face "Murecho Nyma" -
+the site murecho-latin.woff2 is a STATIC 300 declared 300-600; the hero
+wordmark deliberately stays the light 300, like the manual's).
+
+**Owner feedback applied same session:** AI-draft pair re-cropped to
+DISTINCT sections (colorful commerce rows vs mono Platform-Advantages),
+asymmetric 7/5 grid + per-draft argument notes (near-identical hero shots
+had "no contrast", blurred top of draft B was confusing); whole page scaled
+up (hero band 42vw / word 19vw, claims -> 60px, wall 3->2 cols of 8 plates,
+strip 46vw, pagescroll 68vh, phones full-row, etym νήμα 10vw).
+
+**Owner feedback round 2 (same session):** (a) INCLUSIVITY is the design
+thesis - many Nyma decisions existed to hold unrelated styles in one system.
+Copy updated (rulebook +hospitality para, pages +same-shell sentence, Turn
++inclusivity line) and a THIRD interactive added: NymaWardrobes ("three
+wardrobes, one shell" - Luxury/Designer/Vintage swap on an unmoving lot
+card, changes/never-changes ledger) as Pl. 11 in ch4; later plates
+renumbered 12-17. (b) TYPE = thin + regular, bold nearly absent from the
+brand: claims/turn/next/etym/ledger/tally demoted 500->300, working
+headings 400, ladder 64/48 at 300 (hover step 500), loop-node mono 400;
+Murecho Nyma family now 300/400/500 (700 file removed); mono 700 kept only
+for the manual's own bolded header slot + product-idiom prices.
+
+**Confidentiality:** Bidlab agency credit + mock PII (Raritan NJ address,
+bank last-4) cropped out of every shipped plate; empty source txts
+(NYMA BRANDING / OLD DESIGN EVALUATION) flagged to owner. QA: tsc clean,
+desktop section shots + /work row verified; Greek νήμα protected from
+text-transform uppercasing. Remaining nits: phone-viewport deep pass and
+reduced-motion/keyboard pass not yet run this session.
+
 ## Session 3 (2026-07-04) — Pulse "Studio Bloom" rework + Vicino viz pass
 
 **Pulse page fully rebuilt (owner-directed).** The ink/paper specimen document

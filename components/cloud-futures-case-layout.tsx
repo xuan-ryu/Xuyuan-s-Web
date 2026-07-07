@@ -175,6 +175,7 @@ const EMOTION_FLOW = [
 
 const LOW_FI_WIREFRAME = {
   src: "/media/work/cloud-futures/evidence-low-fi-wireframes.png",
+  alt: "Slide with two grayscale billing-console wireframes side by side: an AI-only world where an assistant popup interrupts the cost table offering unprompted help, and a human-agent-only world with a support chat window and a wait in the queue.",
   label: "Slide 17",
   title: "Two deliberately plain support worlds",
   line: "Plain screens kept the conversation on authority, escalation, and emotional safety.",
@@ -183,6 +184,7 @@ const LOW_FI_WIREFRAME = {
 const LOW_FI_EVIDENCE = [
   {
     src: "/media/work/cloud-futures/evidence-low-fi-probes.png",
+    alt: "Findings slide from interviews with four GCP free-trial users, four themes each with a quote: resistance to unsolicited AI intervention, need for clear role boundaries, need for predictable escalation pathways, and emotional safety concerns when money is involved.",
     label: "Slide 18",
     title: "Users wanted speed without invisible AI.",
     line: "Unsolicited AI, unclear handoff, and emotional safety became the risks to carry forward.",
@@ -211,6 +213,7 @@ const AFFINITY_CLUSTERS = [
 const MID_FI_EVIDENCE = [
   {
     src: "/media/work/cloud-futures/evidence-mid-fi-quotes.png",
+    alt: "Four participant quotes grouped under authority, accountability, emotional inference, and role clarity — P5 notes scenario 3 is the only one where human workers clearly decide over AI; P4 asks whether the AI is a tool or a monitor-manager.",
     label: "Slide 21",
     title: "Participants judged authority before accuracy.",
     line: "Accountability, emotion, and role clarity shaped trust more than raw automation speed.",
@@ -219,6 +222,7 @@ const MID_FI_EVIDENCE = [
   },
   {
     src: "/media/work/cloud-futures/evidence-mid-fi-testing-02.png",
+    alt: "Mid-fidelity billing console with a voice-assistant overlay reassuring a stressed customer, beside two session findings: P5 warns the emotion loophole invites exploitation at the company's cost, and P6 says visible human-AI conflict looks unprofessional.",
     label: "Slide 22",
     title: "Emotion-aware triage introduced fairness risk.",
     line: "Affective priority looked gameable and harder to justify.",
@@ -237,6 +241,7 @@ const EVALUATION_QUESTIONS = [
 const FRAMEWORK_EVIDENCE = [
   {
     src: "/media/work/cloud-futures/evidence-design-implications.png",
+    alt: "Design-implications table with four rows — human agency, emotional boundaries, procedural fairness, role clarity — each mapped to what it means, how the interface implements it (authority cues on handoff, no affect detection, no emotion-based prioritization, visual separation of roles), and the risk accepted.",
     label: "Slide 26",
     title: "Each value had to change the interface.",
     line: "The implications table linked research values to UI choices and risks.",
@@ -522,7 +527,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
               <div className="cf-wireframe-media">
                 <Image
                   src={LOW_FI_WIREFRAME.src}
-                  alt={LOW_FI_WIREFRAME.title}
+                  alt={LOW_FI_WIREFRAME.alt}
                   width={1440}
                   height={810}
                   sizes="(max-width: 900px) 100vw, 900px"
@@ -538,7 +543,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             {LOW_FI_EVIDENCE.map((item) => (
               <figure className="cf-evidence-card" key={item.src}>
                 <div className="cf-evidence-media">
-                  <Image src={item.src} alt={item.title} width={1440} height={810} sizes="(max-width: 900px) 100vw, 1120px" />
+                  <Image src={item.src} alt={item.alt} width={1440} height={810} sizes="(max-width: 900px) 100vw, 1120px" />
                 </div>
                 <figcaption className="cf-evidence-caption">
                   <span>{item.label}</span>
@@ -650,7 +655,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             {MID_FI_EVIDENCE.map((item) => (
               <figure className="cf-evidence-card" key={item.src}>
                 <div className="cf-evidence-media">
-                  <Image src={item.src} alt={item.title} width={item.width} height={item.height} sizes="(max-width: 900px) 100vw, 640px" />
+                  <Image src={item.src} alt={item.alt} width={item.width} height={item.height} sizes="(max-width: 900px) 100vw, 640px" />
                 </div>
                 <figcaption className="cf-evidence-caption">
                   <span>{item.label}</span>
@@ -733,7 +738,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           {FRAMEWORK_EVIDENCE.map((item) => (
             <figure className="cf-evidence-card" key={item.src}>
               <div className="cf-evidence-media">
-                <Image src={item.src} alt={item.title} width={1080} height={608} sizes="(max-width: 900px) 100vw, 1120px" />
+                <Image src={item.src} alt={item.alt} width={1080} height={608} sizes="(max-width: 900px) 100vw, 1120px" />
               </div>
               <figcaption className="cf-evidence-caption">
                 <span>{item.label}</span>
@@ -894,6 +899,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             ))}
           </div>
         </div>
+        <InteractiveCue className="cf-cue">
+          Keep scrolling — authority shifts hand to hand until a person
+          releases the refund.
+        </InteractiveCue>
         <CfGate />
         <figure className="cf-film" data-fade>
           <div className="cf-film-frame">
@@ -905,8 +914,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           </div>
           <figcaption className="cf-cap">
             <span className="cf-fig-index">Fig. 01</span>
-            The final film is presented as synthesis: AI listens, organizes,
-            and prepares; the human agent verifies and owns the outcome.
+            The hi-fi film — a little over a minute — plays the duplicate-charge
+            case end to end: two $89.99 charges land two seconds apart, the AI
+            assistant flags the pattern and assembles the case packet, and a
+            billing specialist verifies before the refund is released. Watch for
+            the limitation card — the AI naming its own boundary before the
+            human takes over.
           </figcaption>
         </figure>
         <div className="cf-artifact" data-fade>
@@ -2008,17 +2021,23 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           object-fit: contain;
           background: #fff;
         }
+        /* owner note: the tabs and the colored bar below correspond — so both
+           rows ride the SAME four equal columns (tab i sits directly over bar
+           segment i), spread across the full stage width, with clear air
+           between the tab row and the bar. */
         .cf-fu-head {
           display: grid;
-          gap: 12px;
+          gap: clamp(18px, 2.4vw, 30px);
           margin-bottom: clamp(18px, 2.2vw, 28px);
         }
         .cf-fu-labels {
-          display: flex;
-          flex-wrap: wrap;
-          gap: clamp(14px, 2.4vw, 36px);
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: var(--fu-col-gap, clamp(14px, 2.4vw, 32px));
         }
         .cf-fu-labels button {
+          justify-self: start;
+          text-align: left;
           appearance: none;
           border: 0;
           background: transparent;
@@ -2049,23 +2068,30 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           transition: opacity var(--dur-fast) ease;
         }
         .cf-fu-labels button.is-on .cf-fu-dot { opacity: 1; }
+        /* the bar, split into four segments on the same columns as the tabs;
+           the active persona's segment fills in that persona's color */
         .cf-fu-progress {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: var(--fu-col-gap, clamp(14px, 2.4vw, 32px));
+          height: 3px;
+        }
+        .cf-fu-seg {
           position: relative;
-          height: 2px;
+          overflow: hidden;
           background: rgba(248, 250, 252, 0.14);
         }
-        .cf-fu-thumb {
+        .cf-fu-seg::before {
+          content: "";
           position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 25%;
-          background: var(--fu-wash);
-          transform: translateX(calc(var(--fu-t, var(--fu-a, 0)) * 100%));
-          transition: background 0.5s var(--ease-silk);
+          inset: 0;
+          background: var(--cf-dot);
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.45s var(--ease-silk);
         }
-        .cf-futures:not(.is-live) .cf-fu-thumb {
-          transition: background 0.5s var(--ease-silk), transform 0.4s var(--ease-silk);
+        .cf-fu-seg.is-on::before {
+          transform: scaleX(1);
         }
         .cf-fu-hint {
           display: none;
@@ -2963,7 +2989,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             transition: opacity 0.6s var(--ease-silk), transform 0.6s var(--ease-silk);
             transition-delay: calc(var(--i, 0) * 110ms);
           }
-          .cf-worlds-panel, .cf-stage, .cf-seats-panel {
+          .cf-worlds-panel, .cf-seats-panel {
             animation: cfStageIn 0.45s var(--ease-silk) both;
           }
           .cf-motion-path::before {
@@ -3002,6 +3028,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         @media (max-width: 900px) {
           .cf-grid { display: block; }
           .cf-fu-hint { display: block; }
+          /* narrow: tab names need two columns; the bar keeps its four
+             segments as a swipe-progress readout */
+          .cf-fu-labels {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            row-gap: 10px;
+          }
           .cf-fu-panel {
             flex-basis: 88%;
             padding-right: 16px;
@@ -3037,7 +3069,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-method::before { display: none; }
           .cf-method-step { padding-left: 18px; }
           .cf-method-dot { top: 6px; }
-          .cf-protocol, .cf-affinity-board { grid-template-columns: 1fr; }
+          .cf-affinity-board { grid-template-columns: 1fr; }
           .cf-design-beat-copy h3 {
             max-width: none;
           }
@@ -3072,10 +3104,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-film-media { aspect-ratio: 1870 / 960; }
           .cf-process-frame {
             padding: clamp(14px, 4vw, 18px);
-          }
-          .cf-process-route {
-            grid-template-columns: 1fr;
-            gap: 10px;
           }
           .cf-process-phases {
             grid-template-columns: 1fr;

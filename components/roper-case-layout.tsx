@@ -5,6 +5,7 @@ import { OffscreenVideo } from "./ui/offscreen-video";
 import { RoperGuessVsAmerica } from "./roper-guess-vs-america";
 import { RoperCheckpointDiagram } from "./roper-checkpoint-diagram";
 import { roperSamplePoll } from "./roper-poll-data";
+import { ICUE_CSS } from "./ui/interactive-cue";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The Ledger and the Weathervane" — Roper Center's bespoke case layout
@@ -248,6 +249,7 @@ const roperCriticalCss = `
 .roper-guess-head .roper-h2 { max-width: 15em; }
 .roper-guess-head .roper-copy p { font-size: var(--text-meta); line-height: 1.65; }
 .roper-guess { display: grid; gap: clamp(24px, 3vw, 36px); }
+.roper-guess > .icue { margin: calc(-1 * clamp(12px, 1.6vw, 20px)) 0 0; }
 .roper-guess-q {
   margin: 0;
   max-width: 36em;
@@ -504,6 +506,20 @@ const roperCriticalCss = `
   padding-top: 12px;
   border-top: 1px solid var(--rule);
 }
+/* zoom inset — a legible detail floated over an evidence plate */
+.roper-fig-frame { position: relative; }
+.roper-fig-zoom .roper-fig-frame > img:first-child { max-height: none; }
+.roper-fig img.roper-fig-inset {
+  position: absolute;
+  right: 2%;
+  bottom: 3.5%;
+  width: min(46%, 640px);
+  max-height: none;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgba(5, 5, 5, 0.16);
+}
 
 /* ── 04 · principles table ─────────────────────────────────────── */
 .roper-principles-table {
@@ -586,7 +602,8 @@ const roperCriticalCss = `
   right: 0;
   top: calc(50% - 0.5px);
   height: 1px;
-  background: var(--rule);
+  /* darker than --rule so the empty lanes read at a glance */
+  background: color-mix(in srgb, var(--ink-950) 28%, transparent);
 }
 .roper-lane-fill {
   position: absolute;
@@ -793,6 +810,7 @@ const roperCriticalCss = `
   .roper-principle p { max-width: none; }
   .roper-fig { padding: 12px; }
   .roper-fig figcaption { margin-top: 12px; }
+  .roper-fig img.roper-fig-inset { display: none; }
   .roper-deliverable {
     grid-template-columns: 40px minmax(0, 1fr);
     row-gap: 6px;
@@ -906,8 +924,8 @@ const evidenceFigs = [
     caption: "Fig. 01 — Research plan, fall 2024",
     alt: "Project Gantt chart for the Cornell Roper Center engagement: UX research, heuristic evaluation, usability testing, and UX design tracks from September to December 2024.",
     width: 3056,
-    height: 1476,
-    full: false,
+    height: 1280,
+    full: true,
   },
   {
     caption: "Fig. 02 — Annotated heuristic board · Campaign Stop",
@@ -917,10 +935,10 @@ const evidenceFigs = [
     full: true,
   },
   {
-    caption: "Fig. 03 — Recruitment, protocols and post-surveys",
-    alt: "Research drive of user-testing artifacts: participant protocols, recruitment emails and contact sheets, session recordings, and post-test surveys.",
-    width: 3345,
-    height: 1236,
+    caption: "Fig. 03 — Testing protocols, sessions and post-surveys",
+    alt: "Research drive of user-testing artifacts: participant protocols, session recordings, post-test surveys, and a UX-and-perceptions question guide.",
+    width: 1487,
+    height: 758,
     full: false,
   },
 ];
@@ -976,7 +994,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
     <article className="roper-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(roperCriticalCss),
+          __html: stripCssComments(roperCriticalCss + ICUE_CSS),
         }}
       />
 
@@ -1188,16 +1206,27 @@ export function RoperCaseLayout({ project }: { project: Project }) {
             </div>
             <RoperCheckpointDiagram />
             {checkpointSection?.image && (
-              <figure className="roper-fig is-full" data-fade>
-                <Image
-                  src={checkpointSection.image}
-                  alt="Nine wireframe screens of Campaign Weathervane: year selection, campaign stop, question and answer flows, customization, and results — with the checkpoint progress bar called out."
-                  width={5918}
-                  height={4248}
-                  sizes="(max-width: 809px) 100vw, 1392px"
-                />
+              <figure className="roper-fig is-full roper-fig-zoom" data-fade>
+                <div className="roper-fig-frame">
+                  <Image
+                    src={checkpointSection.image}
+                    alt="Nine wireframe screens of Campaign Weathervane: year selection, campaign stop, question and answer flows, customization, and results — with the checkpoint progress bar called out."
+                    width={5918}
+                    height={4248}
+                    sizes="(max-width: 809px) 100vw, 1392px"
+                  />
+                  <Image
+                    className="roper-fig-inset"
+                    src="/media/work/roper/ch2-1-detail.png"
+                    alt="Detail, enlarged: the question screen’s checkpoint progress bar between the back button and the favorability checker."
+                    width={1500}
+                    height={228}
+                    sizes="(max-width: 1079px) 46vw, 640px"
+                  />
+                </div>
                 <figcaption className="roper-mono-caption">
-                  Fig. 05 — Checkpoint wireframes
+                  Fig. 05 — Checkpoint wireframes · inset: the progress bar,
+                  enlarged
                 </figcaption>
               </figure>
             )}

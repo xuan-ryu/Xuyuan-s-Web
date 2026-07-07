@@ -64,7 +64,7 @@ export function RoperCheckpointDiagram() {
                   d="M1.5 5.5 4 8l4.5-6"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.4"
+                  strokeWidth="1.8"
                 />
               </svg>
             </span>

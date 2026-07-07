@@ -436,26 +436,22 @@ body.hero-night .nav-links a.active {
   .content-nav {
     height: var(--nav-h);
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: flex-start;
   }
   .content-nav-inner {
     align-items: center;
-    justify-content: space-between;
-    width: 200px;
+    justify-content: center;
+    width: 48px;
     height: 48px;
-    margin: 0 auto;
-    padding: 0 16px;
+    margin: 8px 12px 0 auto;
+    padding: 0;
     background: var(--ink-900);
     border-radius: 2px;
     pointer-events: auto;
   }
   .nav-logo {
-    width: auto;
-    height: auto;
-    min-height: 0;
-    padding: 0;
-    background: transparent;
+    display: none;
   }
   .nav-logo-en {
     font-family: var(--font-serif);

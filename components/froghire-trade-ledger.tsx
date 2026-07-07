@@ -3,12 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 
-// The Trade Ledger closes Chapter 2: the four real trade-offs, each row
-// reading proposed → pushback → what shipped, closed by a stamped verdict.
-// Facts are verbatim from data/projects.ts chapters[1].sections[0–1].
-// Stamps settle in once on first scroll into view (IO fires once, then
-// disconnects); prefers-reduced-motion renders them static. HELD THE LINE is
-// the page's single seal-red moment.
+// The Trade Ledger closes Chapter 2 and is the SOLE teller of the four
+// trade-offs (dedup contract 2026-07-07): each row reads proposed →
+// pushback → what shipped, closed by a stamped verdict; the chapter prose
+// keeps only the onboarding narrative and one framing sentence, and the
+// ch2s2 margin carries a cross-ref pointing here. Rows are static exhibits
+// (hover underline is decorative — no tabIndex, no action). Stamps settle
+// in once on first scroll into view (IO fires once, then disconnects);
+// prefers-reduced-motion renders them static. HELD THE LINE is the page's
+// single seal-red moment.
 
 type Trade = {
   name: string;
@@ -114,7 +117,6 @@ export function FroghireTradeLedger() {
           <div
             key={t.name}
             className="froghire-grid froghire-ledger-row"
-            tabIndex={0}
             data-fade
           >
             <div className="froghire-ledger-col-case">

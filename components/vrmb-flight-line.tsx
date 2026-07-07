@@ -2,12 +2,14 @@
 
 import { useEffect, useRef } from "react";
 
-// The measured "flight line" for the VR Monarch Butterfly folio: a 1px gold
+// The measured "flight line" for the VR Monarch Butterfly folio: a 1px accent
 // rule across the full grid with three mono waypoints tracing the migration
 // the VR piece documents (Oberlin OH -> Texas flyway -> El Rosario MX).
-// The rule wipes in once via stroke-dashoffset on first intersection, then the
-// observer disconnects. Under prefers-reduced-motion the CSS in
-// vrmb-poster-layout renders it fully drawn and this effect is skipped.
+// Final-state contract: the markup ships fully drawn (no-JS, reduced motion,
+// and print all read the finished line — CSS in vrmb-poster-layout hides
+// nothing at rest). This effect REWINDS the line (.is-rewound) only when
+// motion is allowed, then replays the stroke-dashoffset wipe (.is-drawn) on
+// first intersection and disconnects.
 export function VrmbFlightLine() {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -15,9 +17,11 @@ export function VrmbFlightLine() {
     const el = ref.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.classList.add("is-drawn");
-      return;
+      return; // already drawn — never rewind
     }
+    el.classList.add("is-rewound");
+    // flush the rewound frame so the draw transition has a start state
+    void el.getBoundingClientRect();
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

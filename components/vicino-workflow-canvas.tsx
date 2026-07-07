@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
+import { InteractiveCue } from "./ui/interactive-cue";
 
 export type HandleType = "text" | "storyboard" | "image" | "video";
 export type NodeKind = "script" | "storyboard" | "shoot" | "video";
@@ -474,7 +475,9 @@ export function VicinoWorkflowCanvas({
   const [offsets, setOffsets] = useState<OffsetMap>({});
   const [isPaused, setIsPaused] = useState(false);
   // Click-to-run generation flow: runIndex is -1 idle, 0..n-1 the node currently
-  // "generating", n once the whole flow has played through.
+  // "generating", n once the whole flow has played through. Final-state
+  // contract: idle (-1, the server-rendered rest state) shows the COMPLETED
+  // run — pressing Run rewinds to placeholders and replays the generation.
   const [runIndex, setRunIndex] = useState(-1);
   const runTimers = useRef<number[]>([]);
   const nodeCount = canvasNodes.length;
@@ -654,7 +657,10 @@ export function VicinoWorkflowCanvas({
               ) : null}
               <div className={`vicino-product-node-shell ${productShellClassName[node.kind]}`}>
                 <ProductHeader node={node} />
-                <NodeContent node={node} revealed={!runnable || runIndex > nodeIndex} />
+                <NodeContent
+                  node={node}
+                  revealed={!runnable || !runActive || runIndex > nodeIndex}
+                />
               </div>
             </div>
           );
@@ -668,12 +674,12 @@ export function VicinoWorkflowCanvas({
             type="button"
             className={`vicino-live-run${runIndex < 0 ? " is-primary" : ""}`}
             onClick={playFlow}
-            aria-label="Play the generation flow — script to storyboard to shot to video"
+            aria-label="Rewind the finished flow and replay its generation stage by stage"
           >
             {runLabel}
           </button>
         ) : (
-          <span>Drag nodes</span>
+          <InteractiveCue>Drag the nodes — connections follow</InteractiveCue>
         )}
       </div>
     </div>

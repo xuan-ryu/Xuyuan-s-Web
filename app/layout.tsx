@@ -53,6 +53,19 @@ export default function RootLayout({
           before React hydrates — that's an extension artifact, not a real
           server/client mismatch. Only suppresses these elements' own attributes. */}
       <body suppressHydrationWarning>
+        {/* no-JS fallback (2026-07-07 audit): every reveal on the site hides
+            behind [data-fade]/.text-reveal initial states that only client
+            observers release — without JS the pages read blank. Force the
+            final state; with JS this tag never renders. */}
+        <noscript>
+          <style>{`
+            [data-fade], .text-reveal, .fx-rise {
+              opacity: 1 !important;
+              transform: none !important;
+              clip-path: none !important;
+            }
+          `}</style>
+        </noscript>
         <div id="page-root">
           <SmoothScroll />
           <FadeReveal />

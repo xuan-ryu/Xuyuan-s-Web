@@ -150,8 +150,9 @@ export function VicinoPipelineViz() {
   line-height: 1.15;
   color: rgba(244, 241, 234, 0.92);
 }
+/* static heading — gold, not amber (amber is reserved for interactives) */
 .vz-pipe-col.is-vicino .vz-pipe-sublabel {
-  color: var(--accent-amber, #e0902f);
+  color: var(--accent-gold, #d9a441);
 }
 .vz-pipe-faint {
   margin: 0;
@@ -289,7 +290,7 @@ export function VicinoPipelineViz() {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 14px;
   line-height: 1;
-  color: color-mix(in srgb, var(--accent-amber, #e0902f) 80%, transparent);
+  color: color-mix(in srgb, var(--accent-gold, #d9a441) 80%, transparent);
 }
 .vz-pipe-revisit-text {
   writing-mode: vertical-rl;

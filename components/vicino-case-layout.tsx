@@ -3,9 +3,9 @@ import Link from "next/link";
 import type { Project } from "@/data/projects";
 import { CaseNext } from "@/components/case-next";
 import { OffscreenVideo } from "./ui/offscreen-video";
+import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
 import { VicinoAudienceViz } from "./vicino-audience-viz";
 import { VicinoCheckpointViz } from "./vicino-checkpoint-viz";
-import { VicinoFlowStrip } from "./vicino-flow-strip";
 import { VicinoInterventionViz } from "./vicino-intervention-viz";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoPipelineViz } from "./vicino-pipeline-viz";
@@ -103,10 +103,15 @@ const vicinoCriticalCss = `
   --v-card-surface: #1d1d1f;
   --v-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.38), 0 22px 50px rgba(0, 0, 0, 0.5);
   --v-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  /* shared interactive cue: amber dot (the page's interactive accent), light
+     text — cues appear only inside the dark canvas/flow zones */
+  --icue-accent: var(--accent-amber, #e0902f);
+  --icue-text: rgba(255, 255, 255, 0.64);
   background: var(--ink-950);
   color: var(--paper);
   overflow: hidden;
 }
+${ICUE_CSS}
 .vicino-case-page p {
   text-wrap: pretty;
 }
@@ -1365,7 +1370,7 @@ const vicinoCriticalCss = `
   margin: var(--v-head-gap) 0 0;
   min-width: 0;
 }
-.vicino-flow-viz .vicino-model-invite {
+.vicino-flow-viz > .icue {
   margin: 0 0 16px;
 }
 
@@ -1376,82 +1381,6 @@ const vicinoCriticalCss = `
 .vicino-flow h2 {
   grid-column: 1 / span 6;
 }
-.vicino-flow-strip-wrap {
-  grid-column: 1 / -1;
-  margin-top: var(--v-head-gap);
-  min-width: 0;
-}
-/* Alignment contract (owner note: the four entries must sit level at 1536
-   and below): the strip is one grid, each stop spans four shared row tracks
-   via subgrid, so name/claim/copy/connection rows line up even when a step
-   name wraps to two lines. */
-.v-fs-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(3, auto);
-  column-gap: var(--v-gutter);
-  border-top: 1px solid var(--v-line-soft);
-}
-.v-fs-stop {
-  display: grid;
-  grid-row: span 3;
-  grid-template-rows: subgrid;
-  min-width: 0;
-  padding-top: 22px;
-}
-@supports not (grid-template-rows: subgrid) {
-  .v-fs-stop {
-    grid-template-rows: repeat(3, auto);
-    align-content: start;
-  }
-  /* fallback: reserve two title lines so single-line names stay level */
-  .v-fs-name {
-    min-height: 2.4em;
-  }
-}
-.v-fs-name {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin: 0 0 12px;
-  font-family: var(--font-sans);
-  font-size: var(--text-title);
-  font-weight: 400;
-  line-height: 1.2;
-  color: var(--paper);
-}
-.v-fs-chip {
-  flex: 0 0 auto;
-  width: 6px;
-  height: 26px;
-  margin-top: 1px;
-  border-radius: 2px 4px 4px 2px;
-}
-.v-fs-index {
-  flex: 0 0 auto;
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  line-height: 2;
-  letter-spacing: var(--track-label);
-  color: var(--accent-gold);
-}
-.v-fs-claim {
-  margin: 0 0 8px;
-  font-family: var(--font-sans);
-  font-size: var(--text-body);
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--paper);
-}
-.v-fs-copy {
-  margin: 0;
-  max-width: 40ch;
-  font-family: var(--font-sans);
-  font-size: var(--text-meta);
-  font-weight: 300;
-  line-height: 1.55;
-  color: var(--v-meta-ink);
-}
 
 /* ---- station 04 — Block B: the interface, one interactive board ---- */
 .vicino-model {
@@ -1459,16 +1388,6 @@ const vicinoCriticalCss = `
 }
 .vicino-model h2 {
   grid-column: 1 / span 6;
-}
-/* interactive lead-ins are read, not scanned — sentence case, no caps
-   (owner critique: instruction sentences in mono caps are unreadable) */
-.vicino-model-invite {
-  margin: 4px 0 0;
-  font-family: var(--font-text);
-  font-size: var(--text-meta);
-  font-weight: 300;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.72);
 }
 .vicino-model-board-wrap {
   grid-column: 1 / -1;
@@ -3207,14 +3126,6 @@ h2.vicino-closing-title {
   .v-mb-stack {
     display: block;
   }
-  /* flow strip: two level pairs (each stop still spans the shared rows) */
-  .v-fs-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(6, auto);
-  }
-  .v-fs-stop {
-    padding-bottom: 30px;
-  }
   .vicino-decision {
     grid-template-columns: 1fr;
     row-gap: 14px;
@@ -3263,16 +3174,6 @@ h2.vicino-closing-title {
   .vicino-hero-meta div:last-child {
     border-bottom: 0;
   }
-  /* flow strip: one column, natural stacking */
-  .v-fs-strip {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-  }
-  .v-fs-stop {
-    grid-row: auto;
-    grid-template-rows: none;
-    padding-bottom: 26px;
-  }
   .vicino-reel-grid {
     grid-template-columns: 1fr;
   }
@@ -3299,8 +3200,8 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
   //   blurb ¶1        -> station 02 copy (expansion/problem framing)
   //   blurb ¶2        -> station 01 copy (role growth), "sidebars" refreshed
   //   sections[0]     -> station 02 copy + figure (structural ambiguity)
-  //   sections[2]     -> its per-step argument lives in station 03's flow
-  //                      strip; its deck image is that station's artifact
+  //   sections[2]     -> its argument is compressed into station 03's prose;
+  //                      its deck image is that station's artifact
   //   sections[5]     -> its zoning argument is retold in the designer's own
   //                      words by station 04's interactive board; the internal
   //                      "Detail PDR" board image is intentionally NOT featured
@@ -3439,28 +3340,25 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         <h2 data-fade>The Main Path, Built to Keep Intent Legible</h2>
         <div className="vicino-model-copy" data-fade>
           <p className="vicino-body-copy">
-            I rebuilt the main path around four checkpoints — script, storyboard,
-            shot, video — each a place to inspect and redirect before the next,
-            costlier step. Each also asks the person to state their intent plainly, and
-            that stated intent is the clearest prompt any model can act on: the
-            flow does prompt-engineering by design, and teaches it as people work.
+            I rebuilt the main path around four checkpoints, each a place to
+            inspect and redirect before the next, costlier step. Each also asks
+            the person to state their intent plainly, and that stated intent is
+            the clearest prompt any model can act on: the flow does
+            prompt-engineering by design, and teaches it as people work.
           </p>
           <p className="vicino-body-copy">
-            The path splits in two: the front — Script and Storyboard — converges
-            intent into language any model can read; the back — Shot and Video —
-            turns it into generation people can steer and refine. It&rsquo;s also
-            the step-control a future full-workflow agent would need.
+            The path splits in two: the front half converges intent into
+            language any model can read; the back half turns it into generation
+            people can steer and refine. It&rsquo;s also the step-control a
+            future full-workflow agent would need.
           </p>
         </div>
-        <div className="vicino-flow-strip-wrap" data-fade>
-          <VicinoFlowStrip />
-        </div>
         {mainPathFigure && (
-          <figure className="vicino-wide-figure" data-fade>
+          <figure className="vicino-wide-figure is-tight" data-fade>
             <div className="vicino-decision-media">
               <Image
                 src={mainPathFigure}
-                alt="The main path as a node flow: Script Node refines or writes the script, Storyboard turns it into six sketch scenes, Shot Node generates detailed keyframes, a lighter Image Editor preview lets you refine frames before the costly step, and Video Generation produces the clips — script, storyboard, shot, and video each a checkpoint to inspect and redirect before the next, costlier one."
+                alt="Flow overview from the product: five connected nodes on the dark canvas, the writing and storyboarding nodes feeding a keyframe node, a lighter image-editor preview, and the final video-generation node"
                 width={1851}
                 height={854}
                 sizes="(max-width: 1080px) 100vw, 1280px"
@@ -3468,18 +3366,18 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
               />
             </div>
             <figcaption>
-              The path as nodes on the canvas — script, storyboard, shot, and
-              video, with a lighter image-refine preview between shot and video —
-              each checkpoint a place to inspect and redirect before the next,
-              more expensive one.
+              The path as it ships on the canvas. The one addition worth
+              reading closely: a lighter image-refine preview sits just before
+              the video step, so frames get corrected while correction is
+              still cheap.
             </figcaption>
           </figure>
         )}
         <div className="vicino-flow-viz" data-fade>
-          <p className="vicino-model-invite">
-            The same path, live — press Run and watch it generate from empty:
-            script, storyboard, shot, video
-          </p>
+          <InteractiveCue>
+            Press Run — the canvas rewinds and regenerates the finished path,
+            stage by stage
+          </InteractiveCue>
           <VicinoWorkflowCanvas
             project={project}
             runnable
@@ -3517,9 +3415,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             and a list of what never goes there — so future features arrive
             with a place to live instead of a new structural debate.
           </p>
-          <p className="vicino-model-invite">
-            One Image node, every zone in place — click it to open its panel and bar
-          </p>
+          <InteractiveCue>
+            Click the Image node — its sliding panel and floating bar open
+            around it
+          </InteractiveCue>
         </div>
         <div className="vicino-model-board-wrap" data-fade>
           <VicinoModelBoard />

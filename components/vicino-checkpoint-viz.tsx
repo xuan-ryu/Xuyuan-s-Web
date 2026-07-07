@@ -150,7 +150,8 @@ export function VicinoCheckpointViz() {
 .vz-chk-conn.is-red { background: rgba(224, 122, 90, 0.7); }
 .vz-chk-conn.is-teal { background: rgba(139, 214, 217, 0.85); }
 .vz-chk-conn.is-amber { background: rgba(255, 179, 71, 0.85); }
-/* one over-track label — the confident run into Video */
+/* one over-track label — the confident run into Video. Static text, so it
+   reads gold (the page's annotation voice), not the amber of interactives. */
 .vz-chk-over {
   grid-row: 1;
   grid-column: 4;
@@ -161,7 +162,7 @@ export function VicinoCheckpointViz() {
   font-weight: 400;
   line-height: 1.4;
   text-align: center;
-  color: rgba(255, 179, 71, 0.92);
+  color: var(--accent-gold, #d9a441);
 }
 /* the LARGE redo loop — Video all the way back to Prompt. Its vertical edges
    rise to the node bottoms (node centers = half a node-width inset). */

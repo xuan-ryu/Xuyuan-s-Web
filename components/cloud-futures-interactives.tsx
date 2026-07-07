@@ -116,7 +116,7 @@ type Scenario = {
   authority: 0 | 1 | 2; // node index holding the final say
   verdict: { quote: string; source: string };
   /** the team's full decision-flow diagram behind the film */
-  flow: { src: string; width: number; height: number; line: string };
+  flow: { src: string; width: number; height: number; alt: string; line: string };
 };
 
 const NODES = ["Customer", "AI", "Human agent"] as const;
@@ -139,6 +139,7 @@ const SCENARIOS: Scenario[] = [
       src: "/media/work/cloud-futures/flow-advocate.png",
       width: 2400,
       height: 661,
+      alt: "Flowchart: the AI reads the user's stress level, weighs company policy against user benefit, proactively offers refunds or workarounds, and if policy blocks it, briefs a human that the user deserves an exception — ending at 'user got what they wanted'.",
       line: "how the AI decides when to bend toward the customer",
     },
   },
@@ -159,6 +160,7 @@ const SCENARIOS: Scenario[] = [
       src: "/media/work/cloud-futures/flow-supervisor.png",
       width: 2400,
       height: 606,
+      alt: "Flowchart: while a human agent helps the user, a parallel AI track monitors the conversation in real time, scores response time, empathy, and policy compliance, offers to intervene on poor service, can flag the human's manager, and ends by handing the user a performance report.",
       line: "the parallel track where AI scores the human’s performance",
     },
   },
@@ -178,6 +180,7 @@ const SCENARIOS: Scenario[] = [
       src: "/media/work/cloud-futures/flow-badcop.png",
       width: 2400,
       height: 528,
+      alt: "Flowchart: the AI enforces policy strictly — 'I'm sorry, you don't qualify' — and only when the user is distressed does a compassionate human enter, review the emotional context the AI gathered, and decide whether to grant the exception or apologize that it can't be overridden.",
       line: "rigid enforcement, with the human override as the only exit",
     },
   },
@@ -197,6 +200,7 @@ const SCENARIOS: Scenario[] = [
       src: "/media/work/cloud-futures/flow-nurse.png",
       width: 2400,
       height: 394,
+      alt: "Flowchart: the AI intake assessment scores each case's severity 1–5; low scores it resolves alone, medium it attempts with a specialist on standby, and high scores get a detailed case file — problem summary, steps tried, emotional state — prepared before transfer to a human specialist who validates the diagnosis.",
       line: "severity triage deciding whether a human ever enters",
     },
   },
@@ -324,8 +328,16 @@ export function CfFutures() {
               </button>
             ))}
           </div>
+          {/* four segments on the same columns as the four tabs above; the
+              active persona's segment fills in that persona's color */}
           <div className="cf-fu-progress" aria-hidden="true">
-            <span className="cf-fu-thumb" />
+            {SCENARIOS.map((s, i) => (
+              <span
+                key={s.key}
+                className={`cf-fu-seg${i === active ? " is-on" : ""}`}
+                style={{ "--cf-dot": s.color } as CSSProperties}
+              />
+            ))}
           </div>
           <p className="cf-fu-hint" aria-hidden="true">
             swipe →
@@ -334,7 +346,7 @@ export function CfFutures() {
 
         <div className="cf-fu-viewport" ref={viewportRef}>
           <div className="cf-fu-track" ref={trackRef}>
-            {SCENARIOS.map((s) => (
+            {SCENARIOS.map((s, si) => (
               <section
                 className="cf-fu-panel"
                 key={s.key}
@@ -369,11 +381,13 @@ export function CfFutures() {
                   <div className="cf-futures-flow-media">
                     <Image
                       src={s.flow.src}
-                      alt={`Decision-flow diagram for ${s.name}`}
+                      alt={s.flow.alt}
                       width={s.flow.width}
                       height={s.flow.height}
                       sizes="(max-width: 900px) 100vw, 1120px"
-                      loading="eager"
+                      // only the first panel is on screen at rest; the other
+                      // three load as the carousel brings them in
+                      loading={si === 0 ? "eager" : "lazy"}
                     />
                   </div>
                   <figcaption>

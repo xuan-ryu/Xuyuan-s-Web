@@ -33,7 +33,11 @@ const chapterIndex = (n: string) => {
   return `Ch. ${(m ? m[0] : "0").padStart(2, "0")}`;
 };
 
-/* ── marginalia: the real review/stakeholder quotes already in the data ── */
+/* ── marginalia: the review/stakeholder quotes, each living ONLY here ──
+   Dedup contract (2026-07-07): every quote below is the sole teller of its
+   line — the matching body sentences in data/projects.ts are trimmed to
+   paraphrase (batched owner sign-off). Section 1-1 carries a cross-reference
+   instead of a quote: its three trade-offs are told once, by the ledger. */
 
 const MARGINALIA: Record<string, { quote: string; source: string }> = {
   "0-0": {
@@ -60,6 +64,14 @@ const MARGINALIA: Record<string, { quote: string; source: string }> = {
   "1-3": {
     quote: "“We’re still firefighting. Eventually we need standards.”",
     source: "My mentor",
+  },
+};
+
+/* margin cross-references — working-document pointers, not quotes */
+const XREF: Record<string, { label: string; note: string }> = {
+  "1-1": {
+    label: "Cross-ref · trade ledger",
+    note: "Proposed → pushback → verdict, four times over. The full record closes this chapter.",
   },
 };
 
@@ -125,6 +137,7 @@ function Sec({
   children?: ReactNode;
 }) {
   const note = MARGINALIA[`${chapter}-${index}`];
+  const xref = XREF[`${chapter}-${index}`];
   return (
     <div className="froghire-grid froghire-sec">
       <div className="froghire-sec-margin" data-fade>
@@ -134,6 +147,12 @@ function Sec({
             <p>{note.quote}</p>
             <cite>{note.source}</cite>
           </blockquote>
+        )}
+        {xref && (
+          <aside className="froghire-xref">
+            <p className="froghire-xref-label">{xref.label}</p>
+            <p className="froghire-xref-note">{xref.note}</p>
+          </aside>
         )}
       </div>
       <div className="froghire-sec-copy" data-fade>
@@ -613,6 +632,27 @@ const froghireCss = `
   text-transform: uppercase;
   color: var(--froghire-ink-label);
 }
+/* margin cross-reference — same rail as marginalia, docket voice not quote */
+.froghire-xref {
+  max-width: 30ch;
+  margin: clamp(20px, 2.2vw, 32px) 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--work-rule);
+}
+.froghire-xref-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--case-detail);
+}
+.froghire-xref-note {
+  margin: 8px 0 0;
+  font-size: var(--text-meta);
+  line-height: 1.55;
+  color: var(--froghire-ink-mute);
+}
 .froghire-sec-copy {
   grid-column: 5 / 11;
 }
@@ -784,10 +824,6 @@ const froghireCss = `
   padding: clamp(24px, 3vw, 40px) 0;
   border-bottom: 1px solid var(--work-rule);
 }
-.froghire-ledger-row:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset);
-}
 .froghire-ledger-case {
   position: relative;
   display: inline-block;
@@ -809,9 +845,7 @@ const froghireCss = `
   transform-origin: left center;
   transition: transform var(--dur-gesture) var(--ease-silk);
 }
-.froghire-ledger-row:hover .froghire-ledger-case::after,
-.froghire-ledger-row:focus-visible .froghire-ledger-case::after,
-.froghire-ledger-row:focus-within .froghire-ledger-case::after {
+.froghire-ledger-row:hover .froghire-ledger-case::after {
   transform: scaleX(1);
 }
 .froghire-ledger-shipped {
@@ -1575,19 +1609,20 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
           {ch2.sections[1] && (
             <Sec chapter={1} section={ch2.sections[1]} index={1}>
               <figure className="froghire-figrow" data-fade>
-                <div className="froghire-fig froghire-fig--1610 froghire-f-a">
+                <div className="froghire-fig froghire-fig--auto froghire-f-a">
                   {ch2.sections[1].image && (
                     <Image
                       src={ch2.sections[1].image}
-                      alt="The redesigned subscription, resume and filter screens"
-                      fill
+                      alt="Montage of the shipped dashboard: the subscription page pared to its price, and the resume manager with one active resume"
+                      width={6860}
+                      height={5063}
                       sizes="(max-width: 1079px) 100vw, 72vw"
-                      style={{ objectFit: "cover", objectPosition: "50% 45%" }}
                     />
                   )}
                 </div>
                 <FigCaption index="09" className="froghire-c-right">
-                  The subscription page — price shipped, timeframes cut
+                  What the half-wins look like shipped — subscription pared
+                  to its price, resume manager cut to one active resume
                 </FigCaption>
               </figure>
             </Sec>

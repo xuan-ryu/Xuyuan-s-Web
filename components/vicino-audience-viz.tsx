@@ -2,8 +2,9 @@ import { stripCssComments } from "@/lib/css-sanitize";
 
 // Station-02 visualization: who actually uses the product, and why the real gap
 // is methodology — not the interface. Redesigned from a stacked card grid ("too
-// AI") into a SPECTRUM: two profile-bust medallions face each other across an
-// amber connector, joined by a faint dashed axis. The busts are editorial line
+// AI") into a SPECTRUM: two profile-bust medallions face each other across a
+// static gold-text connector note, joined by a faint dashed axis (accent law:
+// amber stays reserved for genuinely interactive affordances). The busts are editorial line
 // art (profiles only, no frontal faces) so the point reads at a glance instead of
 // leaning on text alone. Static, decorative content is aria-hidden; the root
 // aria-label carries the meaning for assistive tech.
@@ -131,7 +132,9 @@ export function VicinoAudienceViz() {
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.72);
 }
-/* the amber connector — the one highlight moment */
+/* the connector — a static annotation, NOT a control (accent law: amber is
+   reserved for genuinely interactive affordances). Hairline stems + gold
+   text, no pill fill, no border. */
 .vz-aud-connector {
   position: relative;
   z-index: 1;
@@ -143,22 +146,12 @@ export function VicinoAudienceViz() {
 .vz-aud-pill {
   position: relative;
   max-width: 24ch;
-  padding: 14px 22px;
-  border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 50%, transparent);
-  border-radius: 999px;
-  /* amber-tinted frosted glass — the product's panel material, one hairline
-     catch-light, no gradient washes */
-  background: color-mix(in srgb, var(--accent-amber, #e0902f) 9%, rgba(20, 20, 23, 0.55));
-  -webkit-backdrop-filter: blur(10px) saturate(130%);
-  backdrop-filter: blur(10px) saturate(130%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 12px 30px -18px rgba(0, 0, 0, 0.7);
+  padding: 0 18px;
   font-family: var(--font-text, var(--font-sans, system-ui));
   font-size: var(--text-meta, 16px);
   line-height: 1.5;
   text-align: center;
-  color: color-mix(in srgb, var(--accent-amber, #e0902f) 82%, white);
+  color: var(--accent-gold, #d9a441);
 }
 .vz-aud-pill::before,
 .vz-aud-pill::after {
@@ -172,11 +165,11 @@ export function VicinoAudienceViz() {
 }
 .vz-aud-pill::before {
   right: 100%;
-  background: linear-gradient(to left, var(--accent-amber, #e0902f), transparent);
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.45), transparent);
 }
 .vz-aud-pill::after {
   left: 100%;
-  background: linear-gradient(to right, var(--accent-amber, #e0902f), transparent);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.45), transparent);
 }
 .vz-aud-gap {
   margin: 0;
@@ -190,16 +183,6 @@ export function VicinoAudienceViz() {
 .vz-aud-gap b {
   font-weight: 500;
   color: var(--paper, #f4f1ea);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .vz-aud-pill::before,
-  .vz-aud-pill::after {
-    animation: vz-aud-pulse 4.6s ease-in-out infinite;
-  }
-  @keyframes vz-aud-pulse {
-    0%, 100% { opacity: 0.32; }
-    50% { opacity: 0.85; }
-  }
 }
 @media (max-width: 980px) {
   .vz-aud-band {
@@ -250,11 +233,11 @@ export function VicinoAudienceViz() {
   }
   .vz-aud-pill::before {
     bottom: 100%;
-    background: linear-gradient(to top, var(--accent-amber, #e0902f), transparent);
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.45), transparent);
   }
   .vz-aud-pill::after {
     top: 100%;
-    background: linear-gradient(to bottom, var(--accent-amber, #e0902f), transparent);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.45), transparent);
   }
 }
 `),

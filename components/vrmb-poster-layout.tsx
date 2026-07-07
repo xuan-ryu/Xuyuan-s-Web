@@ -201,37 +201,53 @@ const css = `
   overflow: visible;
 }
 
+/* Final-state contract: the markup below renders fully drawn — no-JS,
+   reduced motion, and print all read the finished line. JS rewinds it by
+   adding .is-rewound before observing, then .is-drawn replays the wipe, so
+   the hidden state only ever exists under no-preference AND live JS. */
 .vrmb-flight text {
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   letter-spacing: 0.12em;
   fill: var(--stone);
-  opacity: 0;
-  transition: opacity 0.6s var(--ease-standard) 0.8s;
 }
 
 .vrmb-flight-rule {
   stroke: var(--case-accent);
   stroke-width: 1;
   stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.2s var(--ease-reveal);
+  stroke-dashoffset: 0;
 }
 
 .vrmb-flight-tick {
   stroke: var(--case-accent);
   stroke-width: 1;
-  opacity: 0;
-  transition: opacity 0.6s var(--ease-standard) 0.7s;
 }
 
-.vrmb-flight.is-drawn .vrmb-flight-rule {
-  stroke-dashoffset: 0;
-}
+@media (prefers-reduced-motion: no-preference) {
+  .vrmb-flight.is-rewound .vrmb-flight-rule {
+    stroke-dashoffset: 1;
+  }
 
-.vrmb-flight.is-drawn text,
-.vrmb-flight.is-drawn .vrmb-flight-tick {
-  opacity: 1;
+  .vrmb-flight.is-rewound text,
+  .vrmb-flight.is-rewound .vrmb-flight-tick {
+    opacity: 0;
+  }
+
+  .vrmb-flight.is-rewound.is-drawn .vrmb-flight-rule {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.2s var(--ease-reveal);
+  }
+
+  .vrmb-flight.is-rewound.is-drawn text {
+    opacity: 1;
+    transition: opacity 0.6s var(--ease-standard) 0.8s;
+  }
+
+  .vrmb-flight.is-rewound.is-drawn .vrmb-flight-tick {
+    opacity: 1;
+    transition: opacity 0.6s var(--ease-standard) 0.7s;
+  }
 }
 
 /* ---- shared chapter anatomy ---- */
@@ -567,20 +583,6 @@ const css = `
   }
 }
 
-/* ---- reduced motion ---- */
-@media (prefers-reduced-motion: reduce) {
-  .vrmb-flight-rule {
-    stroke-dashoffset: 0;
-    transition: none;
-  }
-
-  .vrmb-flight text,
-  .vrmb-flight-tick {
-    opacity: 1;
-    transition: none;
-  }
-}
-
 /* ---- tablet (8 col) ---- */
 @media (max-width: 1079px) {
   .vrmb-grid {
@@ -760,7 +762,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
           </div>
           <div>
             <dt>Term</dt>
-            <dd>Winter Term, 12/2023 – 1/2024</dd>
+            <dd>Winter Term, 12/2022 – 1/2023</dd>
           </div>
           <div>
             <dt>Team</dt>
@@ -1057,15 +1059,16 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
           <div className="vrmb-plate2-frame">
             <Image
               src={poster.image}
-              alt="The original credits poster: the specimen butterfly above the title 'VR Emperor Butterfly' and the team credits"
+              alt="The original term-show credits poster, made under the project's working title: the specimen butterfly above the printed title 'VR Emperor Butterfly' and the team credits"
               width={1192}
               height={1507}
               sizes="(max-width: 809px) 100vw, 420px"
             />
           </div>
           <figcaption>
-            <span className="vrmb-index">Plate II</span> — original credits
-            poster, Winter Term 2023
+            <span className="vrmb-index">Plate II</span> — the term-show
+            poster (under its working title, &ldquo;VR Emperor
+            Butterfly&rdquo;), Winter Term, January 2023
           </figcaption>
         </figure>
       </section>

@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent } from "react";
 import { Cta } from "./ui/cta";
+import { InteractiveCue } from "./ui/interactive-cue";
 import { roperSamplePoll } from "./roper-poll-data";
 
 // The product's predict-then-reveal loop rebuilt in portfolio ink
@@ -35,6 +36,10 @@ export function RoperGuessVsAmerica() {
   return (
     <div className={`roper-guess${revealed ? " is-revealed" : ""}`}>
       <p className="roper-guess-q">“{poll.question}”</p>
+
+      <InteractiveCue accent="var(--case-accent)">
+        drag the marker to guess — then see what America said
+      </InteractiveCue>
 
       <div className="roper-guess-controls">
         <div className="roper-guess-sliderbox">

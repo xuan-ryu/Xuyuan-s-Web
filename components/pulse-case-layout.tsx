@@ -276,7 +276,7 @@ const milestones = [
   {
     date: "Late May",
     title: "The file that forced the question",
-    note: "the shared home prototype peaks at 10,180 lines in one file",
+    note: "the shared home prototype swells into one monolithic file",
     mine: true,
   },
   {
@@ -3215,14 +3215,13 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </figcaption>
                 </figure>
                 <figure className="pulse-section-full" data-fade>
+                  {/* 824/five-weeks live in the hero console only (audit:
+                      the stat was stated twice) — this row keeps the two
+                      numbers the commit stream itself is about */}
                   <div className="pulse-ticker-stats">
                     <div>
-                      <strong data-count="824">824</strong>
-                      <span>commits, five weeks</span>
-                    </div>
-                    <div>
                       <strong data-count="308">308</strong>
-                      <span>of them structural</span>
+                      <span>structural commits</span>
                     </div>
                     <div>
                       <strong data-count="1905" data-count-format="comma">
