@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { adjacent, type Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
+import { CaseNext } from "@/components/case-next";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { VicinoAudienceViz } from "./vicino-audience-viz";
 import { VicinoCheckpointViz } from "./vicino-checkpoint-viz";
@@ -198,18 +199,6 @@ const vicinoCriticalCss = `
 .vicino-band[data-zone="reflect"] .vicino-closing-copy,
 .vicino-band[data-zone="reflect"] .vicino-closing-copy p {
   color: #333333;
-}
-.vicino-band[data-zone="frame"] .vicino-station-index,
-.vicino-band[data-zone="reflect"] .vicino-next-label {
-  color: #666666;
-}
-.vicino-band[data-zone="reflect"] .vicino-next-title {
-  color: #000000;
-}
-/* the next-case rides the light zone too (it had its own ink bg → black-on-black
-   once the title flipped; drop the bg so it reads black-on-white) */
-.vicino-band[data-zone="reflect"] .vicino-next {
-  background: transparent;
 }
 .vicino-band[data-zone="frame"] .vicino-station-rule,
 .vicino-band[data-zone="reflect"] .vicino-closing-rule {
@@ -2655,46 +2644,6 @@ h2.vicino-closing-title {
   margin-top: clamp(64px, 8vw, 120px);
 }
 
-/* ---- adjacent case — quiet close ---- */
-.vicino-next {
-  box-sizing: border-box;
-  width: min(100%, var(--vicino-section-max));
-  margin-inline: auto;
-  padding: clamp(48px, 6vw, 84px) var(--v-margin);
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--v-gutter);
-  align-items: baseline;
-  background: var(--ink-950);
-}
-.vicino-next-label {
-  grid-column: 1 / span 3;
-  margin: 0;
-  padding-left: 18px;
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  letter-spacing: 0.04em;
-  color: var(--accent-gold);
-}
-.vicino-next-link {
-  grid-column: 4 / span 8;
-  justify-self: start;
-  text-decoration: none;
-}
-.vicino-next-link:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset);
-}
-.vicino-next-title {
-  font-family: var(--font-condensed);
-  font-size: var(--text-heading);
-  font-weight: 300;
-  line-height: 1.05;
-  letter-spacing: -0.05em;
-  text-transform: uppercase;
-  color: var(--paper);
-  white-space: normal;
-}
 
 /* ---- station 04 — the one Image node (recreation of Vicino's ImageNode) ---- */
 /* Card: teal border rgba(139,214,217,.5); #8BD6D9 on hover /
@@ -3290,14 +3239,6 @@ h2.vicino-closing-title {
     grid-column: 1 / -1;
     margin-top: 28px;
   }
-  .vicino-next-label {
-    grid-column: 1 / -1;
-    margin-bottom: 14px;
-    padding-left: 0;
-  }
-  .vicino-next-link {
-    grid-column: 1 / -1;
-  }
 }
 
 /* ---- phone ---- */
@@ -3344,7 +3285,6 @@ h2.vicino-closing-title {
 export function VicinoCaseLayout({ project }: { project: Project }) {
   const sections = project.chapters?.flatMap((chapter) => chapter.sections) ?? [];
   const videos = project.moment?.videos ?? [];
-  const { next } = adjacent(project.slug);
   const meta = [
     ["Role", project.role],
     ["Duration", project.duration],
@@ -3609,16 +3549,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {next && (
-        <aside className="vicino-next">
-          <p className="vicino-next-label" data-fade>
-            Next case
-          </p>
-          <Link className="vicino-next-link" href={`/work/${next.slug}`} data-fade>
-            <span className="cta cta--quiet vicino-next-title">{next.title}</span>
-          </Link>
-        </aside>
-      )}
+      <CaseNext slug={project.slug} />
       </div>
     </article>
   );

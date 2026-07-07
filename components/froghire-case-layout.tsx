@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Project, CaseSection } from "@/data/projects";
+import { CaseNext } from "@/components/case-next";
 import type { CSSProperties, ReactNode } from "react";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { FroghireAffinityMap } from "@/components/froghire-affinity-map";
@@ -1667,6 +1668,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
           </p>
         </div>
       </section>
+      <CaseNext slug={project.slug} />
     </article>
   );
 }

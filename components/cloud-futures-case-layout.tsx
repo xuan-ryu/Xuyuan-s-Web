@@ -9,6 +9,7 @@ import {
   CfSeats,
 } from "@/components/cloud-futures-interactives";
 import { CfCaseRail, CfGate } from "@/components/cloud-futures-scroll";
+import { CaseNext } from "@/components/case-next";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Cloud Support Futures — a Cornell × Google Cloud sponsored studio.
@@ -967,6 +968,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         </p>
       </section>
 
+      <CaseNext slug={project.slug} />
+
       <style
         dangerouslySetInnerHTML={{
           __html: stripCssComments(`
@@ -990,7 +993,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           overflow-x: clip;
         }
         .cf-shell {
-          width: min(1408px, 100% - 2 * clamp(24px, 5vw, 120px));
+          width: min(var(--work-shell-max, 1440px), 100% - 2 * var(--work-gutter, clamp(24px, 5vw, 72px)));
           margin-inline: auto;
         }
         .cf-grid {
@@ -1259,13 +1262,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           margin: 0;
           display: grid;
           grid-template-columns: minmax(220px, 0.36fr) minmax(0, 0.64fr);
-          gap: clamp(20px, 2.4vw, 36px);
-          align-items: stretch;
-          padding: clamp(16px, 2vw, 26px);
-          border: 1px solid var(--rule);
-          border-radius: 8px;
-          background: rgba(255, 255, 255, 0.78);
-          box-shadow: 0 28px 70px rgba(66, 133, 244, 0.08);
+          gap: clamp(24px, 3vw, 48px);
+          align-items: center;
+          padding-top: clamp(20px, 2.4vw, 32px);
+          border-top: 1px solid var(--rule);
         }
         .cf-hero-proof-copy {
           display: grid;
@@ -1419,7 +1419,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           display: grid;
           gap: 12px;
           align-content: start;
-          min-height: 280px;
+          min-height: 240px;
           padding: clamp(16px, 2vw, 24px);
           border: 1px solid var(--rule);
           border-radius: 8px;
@@ -1854,7 +1854,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border-radius: 8px;
           overflow: hidden;
           background: #f8f9fa;
-          box-shadow: 0 24px 60px rgba(16, 18, 22, 0.07);
+          box-shadow: 0 12px 32px rgba(16, 18, 22, 0.05);
         }
         .cf-wireframe-media img {
           display: block;
@@ -1884,7 +1884,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border-radius: 8px;
           overflow: hidden;
           background: rgba(255, 255, 255, 0.86);
-          box-shadow: 0 24px 60px rgba(16, 18, 22, 0.07);
+          box-shadow: 0 12px 32px rgba(16, 18, 22, 0.05);
         }
         .cf-evidence-media {
           background:

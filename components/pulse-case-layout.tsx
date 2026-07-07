@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { adjacent, type CaseSection, type Project } from "@/data/projects";
+import type { CaseSection, Project } from "@/data/projects";
+import { CaseNext } from "@/components/case-next";
 import { PulseScroll } from "./pulse-scroll";
 import { PulseComponentBrowser } from "./pulse-component-browser";
 import { PulseCreativeBrief } from "./pulse-creative-brief";
@@ -375,7 +376,7 @@ const pulseCss = `
   --pp-line-strong: rgba(29, 29, 31, 0.16);
   --pp-glass: rgba(255, 255, 255, 0.38);
   --pp-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 10px rgba(15, 23, 42, 0.04);
-  --pp-shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.05), 0 14px 30px rgba(15, 23, 42, 0.07);
+  --pp-shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.04), 0 10px 22px rgba(15, 23, 42, 0.05);
 
   /* Pulse semantics */
   --pp-cyan: #49e0f5;
@@ -2050,51 +2051,6 @@ const pulseCss = `
   margin-left: 14px;
 }
 
-/* ── Adjacent case — quiet close ────────────────────────────────────────── */
-.pulse-next {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: var(--work-shell-max);
-  margin: 0 auto;
-  padding: clamp(56px, 6vw, 84px) var(--work-gutter);
-  border-top: 1px solid var(--pp-line-strong);
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--work-grid-gap);
-  align-items: baseline;
-}
-.pulse-next-label {
-  grid-column: 1 / 4;
-  margin: 0;
-  font-size: var(--text-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--pp-text-4);
-}
-.pulse-next-link {
-  grid-column: 4 / 10;
-  justify-self: start;
-  text-decoration: none;
-  color: var(--pp-ink);
-}
-.pulse-next-link:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset);
-}
-.pulse-next-title {
-  font-family: var(--font-text);
-  font-size: var(--text-heading);
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.12;
-  text-transform: none;
-  padding-bottom: 0.14em;
-  white-space: normal;
-}
-.pulse-next-link:hover .pulse-next-title::after,
-.pulse-next-link:focus-visible .pulse-next-title::after {
-  transform: scaleX(1);
-}
 
 /* ── Tablet (Framer breakpoint) ─────────────────────────────────────────── */
 @media (max-width: 1079px) {
@@ -2165,12 +2121,6 @@ const pulseCss = `
   .pulse-inv-cell:nth-child(4n) { border-right: 0; }
   .pulse-inv-cell:nth-last-child(-n + 5) { border-bottom: 1px solid var(--pp-line); }
   .pulse-inv-cell:nth-last-child(-n + 4) { border-bottom: 0; }
-  .pulse-next-label {
-    grid-column: 1 / 3;
-  }
-  .pulse-next-link {
-    grid-column: 3 / -1;
-  }
 }
 
 /* ── Phone ──────────────────────────────────────────────────────────────── */
@@ -2280,14 +2230,6 @@ const pulseCss = `
   }
   .pulse-spine-step:last-child::after {
     display: none;
-  }
-  .pulse-next {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 18px;
-  }
-  .pulse-next-label,
-  .pulse-next-link {
-    grid-column: 1;
   }
 }
 
@@ -2498,11 +2440,6 @@ const pulseCss = `
 .pulse-kv-row span,
 .pulse-ticker-stats span,
 .pulse-spine-legend,
-.pulse-next-label,
-.pulse-section-tags,
-.pulse-spec-ruler-label {
-  font-weight: 500;
-}
 .pulse-rail li i,
 .pulse-console-ledger strong,
 .pulse-ticker-stats strong,
@@ -2752,8 +2689,6 @@ export function PulseCaseLayout({ project }: { project: Project }) {
   const [melee, bet, look, wakeup, rescue, base, skills, iface, product] =
     project.chapters ?? [];
   const moment = project.moment;
-  const neighbors = adjacent(project.slug);
-  const next = neighbors.next ?? neighbors.prev;
 
   return (
     <article className="case-study-page pulse-case-page" data-has-cover="false">
@@ -4092,16 +4027,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
       </div>
 
       {/* ── Adjacent case — quiet close ── */}
-      {next && (
-        <aside className="pulse-next">
-          <p className="pulse-next-label" data-fade>
-            Next case
-          </p>
-          <Link className="pulse-next-link" href={`/work/${next.slug}`} data-fade>
-            <span className="cta cta--quiet pulse-next-title">{next.title}</span>
-          </Link>
-        </aside>
-      )}
+      <CaseNext slug={project.slug} />
     </article>
   );
 }

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Project } from "@/data/projects";
+import { CaseNext } from "@/components/case-next";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { RoperGuessVsAmerica } from "./roper-guess-vs-america";
 import { RoperCheckpointDiagram } from "./roper-checkpoint-diagram";
@@ -1335,6 +1336,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
           )}
         </div>
       </section>
+      <CaseNext slug={project.slug} />
     </article>
   );
 }
