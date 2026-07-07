@@ -2,251 +2,355 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { stripCssComments } from "@/lib/css-sanitize";
+import type { CSSProperties } from "react";
 
-type FrameTarget = {
-  frameX: number;
-  frameY: number;
-  frameRot: number;
-  frameScale: number;
+// ONE lotus arrangement, shared by the moon-gate crossing and the koi pond's
+// static frame, so the handoff is seamless (no split): the crossing fills the
+// whole viewport with a canopy (COVER), then parts center -> both sides back to
+// the FRAME positions, dissolves, and the identical KoiLotusFrame fades in at
+// those same FRAME positions. Same assets, same geometry, same coordinates.
+export type LotusPad = {
+  asset: number;
+  side: "left" | "right" | "top";
+  // frame: the koi-pond edge arrangement — the parted end state AND the static
+  // KoiLotusFrame. Pads live on the left + right columns, center stays open.
+  fx: number;
+  fy: number;
+  fsize: number;
+  frot: number;
+  fopacity: number;
+  // cover: where the pad sits when the canopy fills the screen (pre-part). The
+  // union of all cover boxes blankets the viewport; left-side pads reach in
+  // from the left, right-side pads from the right, overlapping in the middle so
+  // the part reads as the canopy opening from the center outward.
+  cx: number;
+  cy: number;
+  csize: number;
+  crot: number;
+  // arrival order 0..1, scattered — pads pop in like raindrops across the
+  // pond (owner preferred this over any linear sweep)
+  rain: number;
+  // mirror the artwork — combined with full-turn rotations it breaks the
+  // "same leaf stamped everywhere" uniformity
+  flip?: boolean;
+  depth?: "back" | "front";
 };
 
-export type FgLeafCfg = FrameTarget & {
-  x: number;
-  y: number;
-  size: number;
-  rot: number;
-  order: number;
-  inOrder: number;
-  variant: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+const LOTUS_ASSETS = [
+  "/media/home/lotus/generated/single-transparent/01-large-leaf-flower-left-alpha.png",
+  "/media/home/lotus/generated/single-transparent/02-medium-leaf-top-alpha.png",
+  "/media/home/lotus/generated/single-transparent/03-medium-light-leaf-top-right-alpha.png",
+  "/media/home/lotus/generated/single-transparent/04-medium-leaf-center-alpha.png",
+  "/media/home/lotus/generated/single-transparent/05-small-leaf-right-alpha.png",
+  "/media/home/lotus/generated/single-transparent/06-medium-light-leaf-bottom-left-alpha.png",
+  "/media/home/lotus/generated/single-transparent/07-rolled-young-leaf-alpha.png",
+  "/media/home/lotus/generated/single-transparent/08-large-leaf-flower-bottom-center-alpha.png",
+  "/media/home/lotus/generated/single-transparent/09-medium-leaf-bottom-right-alpha.png",
+] as const;
+
+// ---- deterministic bank generator ------------------------------------------
+// The reference photo's banks are CONTINUOUS masses — pads overlapping 40-60%
+// down each column, four shingled columns per bank. That's ~29 pads per bank,
+// beyond sensible hand-tuning, so the banks are generated from a per-column
+// recipe. A fixed jitter table (no Math.random) keeps SSR and client output
+// identical while breaking the grid's regularity.
+// 23 entries (prime) so the different phase-offsets below never line up —
+// consecutive pads draw unrelated jitter and the banks read hand-scattered
+const J = [
+  0.31, -0.42, 0.18, -0.11, 0.44, -0.29, 0.07, -0.38, 0.23, -0.17, 0.39,
+  -0.05, 0.47, -0.33, 0.12, -0.46, 0.28, -0.08, 0.41, -0.22, 0.03, -0.49,
+  0.35,
+];
+const jit = (i: number, amp: number) => J[i % J.length] * amp;
+
+// plain-leaf assets only; the flowers + rolled leaves are nested by the
+// overrides below, like the reference (2 flowers per bank)
+const LEAF_SEQ = [2, 1, 5, 8, 3, 4, 8, 2, 5, 1, 3, 8, 4, 2, 1, 5];
+
+type BankCol = {
+  x: number; // column centre (left-bank %; the right bank mirrors it)
+  count: number; // pads down the column
+  size: number; // base size (vmin)
+  depth?: "back" | "front";
+  opacity: number;
+  shift: number; // cover state: how far the column slides toward the channel
+  grow: number; // cover state: size multiplier
 };
 
-export type FgFlowerCfg = FrameTarget & {
-  x: number;
-  y: number;
-  size: number;
-  rot: number;
-  order: number;
-  inOrder: number;
-  bloomAt?: number;
-  variant: 1 | 2 | 3;
-};
-
-export const FG_LEAVES: FgLeafCfg[] = [
-  { x: 6, y: 8, size: 26, rot: -24, order: 0.92, inOrder: 0.04, variant: 1, frameX: -5, frameY: 11, frameRot: -30, frameScale: 0.72 },
-  { x: 21, y: 8, size: 24, rot: 48, order: 0.62, inOrder: 0.34, variant: 2, frameX: 8, frameY: 18, frameRot: 42, frameScale: 0.72 },
-  { x: 37, y: 9, size: 25, rot: -112, order: 0.28, inOrder: 0.18, variant: 3, frameX: 15, frameY: 30, frameRot: -118, frameScale: 0.64 },
-  { x: 54, y: 9, size: 26, rot: 16, order: 0.08, inOrder: 0.62, variant: 4, frameX: 85, frameY: 18, frameRot: 20, frameScale: 0.64 },
-  { x: 70, y: 8, size: 24, rot: 126, order: 0.42, inOrder: 0.25, variant: 5, frameX: 96, frameY: 14, frameRot: 120, frameScale: 0.72 },
-  { x: 88, y: 10, size: 27, rot: -52, order: 0.8, inOrder: 0.5, variant: 6, frameX: 108, frameY: 10, frameRot: -58, frameScale: 0.74 },
-
-  { x: 12, y: 25, size: 25, rot: 74, order: 0.78, inOrder: 0.72, variant: 7, frameX: -3, frameY: 27, frameRot: 80, frameScale: 0.82 },
-  { x: 27, y: 25, size: 27, rot: -36, order: 0.5, inOrder: 0.12, variant: 8, frameX: 9, frameY: 38, frameRot: -40, frameScale: 0.8 },
-  { x: 44, y: 26, size: 28, rot: 108, order: 0.14, inOrder: 0.44, variant: 5, frameX: 17, frameY: 49, frameRot: 104, frameScale: 0.68 },
-  { x: 60, y: 25, size: 26, rot: -86, order: 0.2, inOrder: 0.84, variant: 6, frameX: 84, frameY: 36, frameRot: -82, frameScale: 0.68 },
-  { x: 76, y: 26, size: 28, rot: 26, order: 0.54, inOrder: 0.28, variant: 7, frameX: 96, frameY: 28, frameRot: 22, frameScale: 0.84 },
-  { x: 92, y: 28, size: 25, rot: 158, order: 0.88, inOrder: 0.66, variant: 8, frameX: 108, frameY: 28, frameRot: 152, frameScale: 0.82 },
-
-  { x: 4, y: 44, size: 27, rot: -66, order: 0.96, inOrder: 0.56, variant: 4, frameX: -7, frameY: 43, frameRot: -72, frameScale: 0.95 },
-  { x: 19, y: 43, size: 25, rot: 10, order: 0.64, inOrder: 0.24, variant: 3, frameX: 6, frameY: 52, frameRot: 6, frameScale: 0.9 },
-  { x: 35, y: 43, size: 29, rot: -148, order: 0.3, inOrder: 0.76, variant: 8, frameX: 15, frameY: 65, frameRot: -154, frameScale: 0.78 },
-  { x: 51, y: 45, size: 30, rot: 42, order: 0.02, inOrder: 0.2, variant: 7, frameX: 85, frameY: 55, frameRot: 46, frameScale: 0.78 },
-  { x: 67, y: 44, size: 29, rot: 114, order: 0.34, inOrder: 0.8, variant: 6, frameX: 96, frameY: 45, frameRot: 110, frameScale: 0.9 },
-  { x: 83, y: 43, size: 26, rot: -20, order: 0.68, inOrder: 0.08, variant: 5, frameX: 108, frameY: 42, frameRot: -26, frameScale: 0.95 },
-
-  { x: 10, y: 62, size: 26, rot: 142, order: 0.8, inOrder: 0.9, variant: 1, frameX: -5, frameY: 61, frameRot: 148, frameScale: 0.92 },
-  { x: 26, y: 62, size: 28, rot: -104, order: 0.5, inOrder: 0.4, variant: 2, frameX: 7, frameY: 72, frameRot: -110, frameScale: 0.9 },
-  { x: 42, y: 63, size: 26, rot: 64, order: 0.16, inOrder: 0.04, variant: 3, frameX: 17, frameY: 84, frameRot: 60, frameScale: 0.72 },
-  { x: 58, y: 63, size: 27, rot: -8, order: 0.16, inOrder: 0.7, variant: 4, frameX: 83, frameY: 74, frameRot: -4, frameScale: 0.72 },
-  { x: 74, y: 62, size: 28, rot: 78, order: 0.48, inOrder: 0.16, variant: 5, frameX: 96, frameY: 63, frameRot: 74, frameScale: 0.9 },
-  { x: 90, y: 62, size: 25, rot: -136, order: 0.84, inOrder: 0.52, variant: 6, frameX: 108, frameY: 60, frameRot: -142, frameScale: 0.92 },
-
-  { x: 7, y: 82, size: 25, rot: -18, order: 0.9, inOrder: 0.14, variant: 7, frameX: -6, frameY: 82, frameRot: -24, frameScale: 0.82 },
-  { x: 22, y: 82, size: 27, rot: 92, order: 0.56, inOrder: 0.58, variant: 8, frameX: 7, frameY: 92, frameRot: 98, frameScale: 0.78 },
-  { x: 38, y: 83, size: 25, rot: -166, order: 0.24, inOrder: 0.36, variant: 1, frameX: 17, frameY: 96, frameRot: -172, frameScale: 0.62 },
-  { x: 54, y: 82, size: 28, rot: 20, order: 0.08, inOrder: 0.88, variant: 2, frameX: 84, frameY: 94, frameRot: 24, frameScale: 0.62 },
-  { x: 70, y: 83, size: 26, rot: -74, order: 0.4, inOrder: 0.3, variant: 5, frameX: 96, frameY: 84, frameRot: -70, frameScale: 0.78 },
-  { x: 86, y: 82, size: 27, rot: 132, order: 0.76, inOrder: 0.68, variant: 6, frameX: 108, frameY: 82, frameRot: 126, frameScale: 0.82 },
-
-  { x: 18, y: 96, size: 22, rot: 34, order: 0.64, inOrder: 0.98, variant: 8, frameX: 3, frameY: 97, frameRot: 28, frameScale: 0.62 },
-  { x: 50, y: 96, size: 23, rot: -48, order: 0.04, inOrder: 0.46, variant: 6, frameX: 94, frameY: 97, frameRot: -44, frameScale: 0.58 },
-  { x: 82, y: 96, size: 22, rot: 172, order: 0.64, inOrder: 0.82, variant: 7, frameX: 108, frameY: 95, frameRot: 166, frameScale: 0.64 },
-  { x: 50, y: 7, size: 22, rot: -12, order: 0.04, inOrder: 0.1, variant: 5, frameX: 94, frameY: 7, frameRot: -8, frameScale: 0.58 },
+// four shingled columns per bank: large outer edge -> small channel edge.
+// Inner columns slide well past the centre line in cover, so the two banks
+// interleave and the canopy closes over the middle of the pond. Sizes and
+// column positions are tuned SMALL and NARROW (owner: the first cut read too
+// big and too wide) — the dense mass ends ~30%, leaving a ~35%-wide channel.
+const BANK_COLS: BankCol[] = [
+  { x: 0,  count: 8, size: 28, depth: "front", opacity: 0.95, shift: 7,  grow: 1.12 },
+  { x: 11, count: 8, size: 21,                 opacity: 0.90, shift: 17, grow: 1.3 },
+  { x: 21, count: 7, size: 15, depth: "back",  opacity: 0.86, shift: 26, grow: 1.5 },
+  { x: 29, count: 6, size: 11, depth: "back",  opacity: 0.80, shift: 33, grow: 1.8 },
 ];
 
-const leafSrc = (variant: FgLeafCfg["variant"]) =>
-  `/media/home/lotus/individual/lotus-leaf-${String(variant).padStart(2, "0")}.png`;
+function buildBank(side: "left" | "right"): LotusPad[] {
+  const pads: LotusPad[] = [];
+  const mirror = side === "right";
+  let i = mirror ? 7 : 0; // phase-offset the jitter so the banks differ
+  for (const col of BANK_COLS) {
+    const step = 108 / col.count;
+    for (let r = 0; r < col.count; r += 1, i += 1) {
+      // generous jitter on every dimension — real pads don't grow in rows.
+      // Position scatters up to a third of the row spacing / half the column
+      // gap; size swings ±30% so big and small pads mingle within a column.
+      const fy = -4 + step * (r + 0.5) + jit(i, step * 0.32);
+      const fxRaw = col.x + jit(i + 4, 4.5);
+      const fx = mirror ? 100 - fxRaw : fxRaw;
+      const fsize = col.size * (1 + jit(i + 2, 0.6));
+      // FULL-turn orientation (±~176°): the pads are round radial leaves, so
+      // small angles read identical — only a full spin (plus the mirror
+      // below) makes each stamp of the same asset look like its own leaf
+      const frot = jit(i + 1, 360);
+      const shift = (mirror ? -1 : 1) * (col.shift + jit(i + 5, 5));
+      pads.push({
+        asset: LEAF_SEQ[i % LEAF_SEQ.length],
+        side,
+        fx,
+        fy,
+        fsize,
+        frot,
+        fopacity: Math.min(1, col.opacity + jit(i + 8, 0.05)),
+        cx: fx + shift,
+        cy: fy + jit(i + 3, 6),
+        csize: fsize * (col.grow + jit(i + 7, 0.12)),
+        crot: frot + jit(i + 6, 40),
+        rain: Math.min(0.98, Math.max(0.02, 0.5 + jit(i + 9, 1))),
+        flip: J[(i + 11) % J.length] > 0,
+        depth: col.depth,
+      });
+    }
+  }
+  return pads;
+}
 
-export const FG_FLOWERS: FgFlowerCfg[] = [
-  { x: 49, y: 45, size: 15, rot: -6, order: 0.02, inOrder: 0.2, variant: 2, frameX: 34, frameY: 8, frameRot: -8, frameScale: 0.6 },
-  { x: 51, y: 45, size: 15, rot: 6, order: 0.05, inOrder: 0.35, variant: 3, frameX: 66, frameY: 8, frameRot: 10, frameScale: 0.6 },
-  { x: 45, y: 47, size: 16, rot: -14, order: 0.1, inOrder: 0.55, variant: 1, frameX: 9, frameY: 18, frameRot: -18, frameScale: 0.7 },
-  { x: 55, y: 47, size: 16, rot: 14, order: 0.13, inOrder: 0.7, variant: 2, frameX: 91, frameY: 18, frameRot: 18, frameScale: 0.7 },
-  { x: 46, y: 52, size: 15, rot: 18, order: 0.2, inOrder: 0.85, variant: 3, frameX: 6, frameY: 28, frameRot: 22, frameScale: 0.66 },
-  { x: 54, y: 52, size: 15, rot: -18, order: 0.24, inOrder: 0.45, variant: 1, frameX: 94, frameY: 28, frameRot: -22, frameScale: 0.66 },
+const LEFT_BANK = buildBank("left");
+const RIGHT_BANK = buildBank("right");
+// nest the flowers (assets 0/7) and one rolled young leaf (asset 6) into each
+// bank — outer/middle columns, staggered heights, exactly like the reference
+LEFT_BANK[1] = { ...LEFT_BANK[1], asset: 0 }; // outer column, upper
+LEFT_BANK[12] = { ...LEFT_BANK[12], asset: 7 }; // middle column, lower
+LEFT_BANK[17] = { ...LEFT_BANK[17], asset: 6 }; // channel edge, rolled leaf
+RIGHT_BANK[3] = { ...RIGHT_BANK[3], asset: 7 }; // outer column, lower-mid
+RIGHT_BANK[10] = { ...RIGHT_BANK[10], asset: 0 }; // middle column, upper
+RIGHT_BANK[25] = { ...RIGHT_BANK[25], asset: 6 }; // channel edge, rolled leaf
+
+// canopy-only fillers: the jittered bank layout leaves a few black seams at
+// full cover — these plug them. Their frame home is the SAME spot at
+// fopacity 0, so during the part they sink away in place (shrinking as they
+// fade) and never appear in the koi frame. Positions verified against the
+// full-canopy screenshot at 1536×960.
+// prettier-ignore
+const CANOPY_FILLERS: LotusPad[] = [
+  { asset: 3, side: "top", fx: 17, fy: 22, fsize: 19, frot: -142, fopacity: 0, cx: 17, cy: 22, csize: 26, crot: -128, rain: 0.14, flip: true,  depth: "back" },
+  { asset: 1, side: "top", fx: 37, fy: 20, fsize: 19, frot: 118,  fopacity: 0, cx: 37, cy: 20, csize: 26, crot: 132,  rain: 0.55, depth: "back" },
+  { asset: 8, side: "top", fx: 36, fy: 47, fsize: 16, frot: 37,   fopacity: 0, cx: 36, cy: 47, csize: 22, crot: 51,   rain: 0.32, flip: true,  depth: "back" },
+  { asset: 5, side: "top", fx: 38, fy: 74, fsize: 19, frot: -64,  fopacity: 0, cx: 38, cy: 74, csize: 26, crot: -48,  rain: 0.78, depth: "back" },
+  { asset: 4, side: "top", fx: 44, fy: 5,  fsize: 15, frot: 155,  fopacity: 0, cx: 44, cy: 5,  csize: 20, crot: 141,  rain: 0.42, flip: true,  depth: "back" },
+  { asset: 2, side: "top", fx: 65, fy: 4,  fsize: 15, frot: -23,  fopacity: 0, cx: 65, cy: 4,  csize: 20, crot: -37,  rain: 0.88, depth: "back" },
+  { asset: 8, side: "top", fx: 60, fy: 70, fsize: 19, frot: 96,   fopacity: 0, cx: 60, cy: 70, csize: 26, crot: 82,   rain: 0.22, depth: "back" },
+  { asset: 3, side: "top", fx: 60, fy: 93, fsize: 15, frot: -108, fopacity: 0, cx: 60, cy: 93, csize: 20, crot: -92,  rain: 0.62, flip: true,  depth: "back" },
+  { asset: 1, side: "top", fx: 81, fy: 40, fsize: 18, frot: 71,   fopacity: 0, cx: 81, cy: 40, csize: 24, crot: 85,   rain: 0.48, depth: "back" },
+  { asset: 5, side: "top", fx: 97, fy: 45, fsize: 19, frot: -177, fopacity: 0, cx: 97, cy: 45, csize: 26, crot: -161, rain: 0.05, flip: true,  depth: "back" },
+  { asset: 2, side: "top", fx: 18, fy: 92, fsize: 16, frot: 12,   fopacity: 0, cx: 18, cy: 92, csize: 22, crot: 26,   rain: 0.95, depth: "back" },
+  { asset: 8, side: "top", fx: 17, fy: 55, fsize: 18, frot: 84,   fopacity: 0, cx: 17, cy: 55, csize: 24, crot: 98,   rain: 0.38, flip: true,  depth: "back" },
+  { asset: 4, side: "top", fx: 41, fy: 40, fsize: 14, frot: -49,  fopacity: 0, cx: 41, cy: 40, csize: 18, crot: -63,  rain: 0.68, depth: "back" },
+  { asset: 1, side: "top", fx: 41, fy: 94, fsize: 14, frot: 133,  fopacity: 0, cx: 41, cy: 94, csize: 18, crot: 119,  rain: 0.12, flip: true,  depth: "back" },
+  { asset: 3, side: "top", fx: 83, fy: 82, fsize: 15, frot: -91,  fopacity: 0, cx: 83, cy: 82, csize: 20, crot: -105, rain: 0.85, depth: "back" },
 ];
 
-const flowerSrc = (
-  variant: FgFlowerCfg["variant"],
-  state: "bud" | "half" | "full",
-) =>
-  `/media/home/lotus/individual/lotus-flower-${String(variant).padStart(2, "0")}-${state}.png`;
+export const LOTUS_PADS: LotusPad[] = [
+  ...LEFT_BANK,
+  ...RIGHT_BANK,
+  // strays closing the bottom of the channel
+  { asset: 6, side: "top", fx: 46, fy: 100, fsize: 12, frot: 137, fopacity: 0.78, cx: 43, cy: 97, csize: 17, crot: 121, rain: 0.72, flip: true, depth: "back" },
+  { asset: 4, side: "top", fx: 55, fy: 102, fsize: 14, frot: -59, fopacity: 0.80, cx: 57, cy: 99, csize: 19, crot: -43, rain: 0.28, depth: "back" },
+  ...CANOPY_FILLERS,
+];
 
-export function FgLotusLayer() {
-  return <LotusField className="fgl-layer" fixed={false} />;
-}
-
-export function KoiLotusFrame() {
-  return <LotusField className="koi-lotus-frame" fixed />;
-}
-
-function LotusField({
+function LotusPadSpan({
+  pad,
+  index,
   className,
-  fixed,
 }: {
+  pad: LotusPad;
+  index: number;
   className: string;
-  fixed: boolean;
 }) {
   return (
-    <div className={className} aria-hidden="true">
-      {FG_LEAVES.map((c, i) => (
-        <div
-          key={`leaf-${i}`}
-          className="fgl-item fgl-leaf"
-          style={{
-            left: `${fixed ? c.frameX : c.x}%`,
-            top: `${fixed ? c.frameY : c.y}%`,
-            width: `${c.size}vmin`,
-            height: `${c.size}vmin`,
-            transform: fixed
-              ? `translate(-50%, -50%) rotate(${c.frameRot}deg) scale(${c.frameScale})`
-              : undefined,
-          }}
-        >
-          <img
-            className="fgl-asset"
-            src={leafSrc(c.variant)}
-            alt=""
-            draggable={false}
-            decoding="async"
-            loading={fixed ? "lazy" : undefined}
-            fetchPriority={fixed ? "low" : undefined}
-          />
-        </div>
-      ))}
+    <span
+      className={className}
+      style={
+        {
+          "--fx": `${pad.fx}%`,
+          "--fy": `${pad.fy}%`,
+          "--fsize": `${pad.fsize}vmin`,
+          "--frot": `${pad.frot}deg`,
+          "--fop": pad.fopacity,
+          "--i": index,
+        } as CSSProperties
+      }
+    >
+      <img
+        src={LOTUS_ASSETS[pad.asset]}
+        alt=""
+        draggable={false}
+        // mirror on the img, NOT the wrapper — GSAP owns the wrapper's
+        // transform during the crossing and would overwrite a flip there
+        style={pad.flip ? { transform: "scaleX(-1)" } : undefined}
+      />
+    </span>
+  );
+}
 
-      {FG_FLOWERS.map((c, i) => (
-        <div
-          key={`flower-${i}`}
-          className="fgl-item fgl-flower"
-          style={{
-            left: `${fixed ? c.frameX : c.x}%`,
-            top: `${fixed ? c.frameY : c.y}%`,
-            width: `${c.size}vmin`,
-            height: `${c.size}vmin`,
-            transform: fixed
-              ? `translate(-50%, -50%) rotate(${c.frameRot}deg) scale(${c.frameScale})`
-              : undefined,
-          }}
-        >
-          {fixed ? (
-            <img
-              className="fgl-asset fgl-f-full"
-              src={flowerSrc(c.variant, "full")}
-              alt=""
-              draggable={false}
-              decoding="async"
-              loading="lazy"
-              fetchPriority="low"
-            />
-          ) : (
-            <>
-              <img
-                className="fgl-asset fgl-f-bud"
-                src={flowerSrc(c.variant, "bud")}
-                alt=""
-                draggable={false}
-                decoding="async"
-              />
-              <img
-                className="fgl-asset fgl-f-half"
-                src={flowerSrc(c.variant, "half")}
-                alt=""
-                draggable={false}
-                decoding="async"
-              />
-              <img
-                className="fgl-asset fgl-f-full"
-                src={flowerSrc(c.variant, "full")}
-                alt=""
-                draggable={false}
-                decoding="async"
-              />
-            </>
-          )}
-        </div>
+export function FgLotusLayer() {
+  return (
+    <div className="fgl-layer" aria-hidden="true">
+      {/* the pond water the pads rest on — same recipe as the koi pond it
+          hands off to (base #041114 + a soft radial teal lift), faded in by
+          the crossing timeline so the pads never float on flat black */}
+      <span className="fgl-water" aria-hidden="true" />
+      {LOTUS_PADS.map((pad, index) => (
+        <LotusPadSpan
+          key={`${pad.asset}-${index}`}
+          pad={pad}
+          index={index}
+          className={`fgl-cluster is-${pad.depth ?? "mid"}`}
+        />
       ))}
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: stripCssComments(`
-        .fgl-layer,
-        .koi-lotus-frame {
+      <style>{`
+        .fgl-layer {
           position: absolute;
+          /* SAME box as .koi-lotus-frame (inset 0) so a pad at its frame
+             coordinates renders pixel-identically in both — the crossing
+             dissolves onto the koi frame with no jump */
           inset: 0;
+          z-index: 3;
           pointer-events: none;
           overflow: hidden;
+          opacity: 1;
+          contain: layout paint;
         }
-        .fgl-layer {
-          z-index: 3;
-          /* nudged toward the static frame's tone (0.72 alpha / more blur)
-             so the crossing canopy doesn't read markedly brighter/crisper
-             than what it dissolves into at the handoff */
-          --leaf-alpha: 0.78;
-          --leaf-filter: saturate(0.7) brightness(0.6) contrast(0.85) blur(0.34px);
-        }
-        .koi-lotus-frame {
-          z-index: 2;
-          --leaf-alpha: 0.72;
-          --leaf-filter: saturate(0.66) brightness(0.6) contrast(0.82) blur(0.46px);
-        }
-        .fgl-item {
-          position: absolute;
+        .fgl-water {
+          position: absolute; inset: -12vh -6vw; z-index: 0;
           opacity: 0;
-          transform-origin: 50% 50%;
+          /* BLACK water (owner decision), same ink as the koi section's own
+             background (#020305) — only a whisper of teal lifts the centre so
+             the pads still read as floating rather than pasted on a void */
+          background:
+            radial-gradient(ellipse 70% 62% at 50% 44%,
+              rgba(8, 32, 38, 0.34) 0%,
+              rgba(4, 16, 20, 0.16) 48%,
+              rgba(2, 5, 8, 0) 100%),
+            #020305;
         }
-        .fgl-layer .fgl-item {
-          will-change: transform, opacity;
-        }
-        .koi-lotus-frame .fgl-item {
-          opacity: 0.78;
-        }
-        .fgl-flower {
-          z-index: 1;
-        }
-        .fgl-asset {
+        /* pads rest at their FRAME home; the timeline pushes them out to the
+           canopy on arrival and pulls them back here on the part */
+        .fgl-cluster {
           position: absolute;
-          inset: 0;
-          display: block;
+          left: var(--fx);
+          top: var(--fy);
+          width: min(var(--fsize), 420px);
+          aspect-ratio: 1 / 1;
+          opacity: 0;
+          z-index: 2;
+          transform: translate3d(-50%, -50%, 0) rotate(var(--frot));
+          transform-origin: 50% 50%;
+          will-change: transform, opacity;
+          /* seat pads in the water with brightness depth grading (cheap) —
+             front pads catch light, back pads recede. No per-pad blur filter:
+             it re-rasterizes every scrubbed frame and stalls the scroll. */
+          filter: saturate(1.03) brightness(1.0);
+        }
+        .fgl-cluster.is-front { z-index: 3; filter: saturate(1.05) brightness(1.09); }
+        .fgl-cluster.is-back  { z-index: 1; filter: saturate(1.0) brightness(0.88); }
+        .fgl-cluster img {
           width: 100%;
           height: 100%;
           object-fit: contain;
+          display: block;
           user-select: none;
-          opacity: var(--leaf-alpha);
-          filter: var(--leaf-filter);
+          -webkit-user-drag: none;
         }
-        .fgl-layer .fgl-f-half,
-        .fgl-layer .fgl-f-full {
+        /* match KoiLotusFrame's wide-screen sizing so the handoff stays exact */
+        @media (min-width: 1900px) {
+          .fgl-cluster { width: min(calc(var(--fsize) * 1.08), 520px); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export function KoiLotusFrame() {
+  return (
+    <div className="koi-lotus-frame" aria-hidden="true">
+      {LOTUS_PADS.map((pad, index) => (
+        <LotusPadSpan
+          key={`${pad.side}-${pad.asset}-${index}`}
+          pad={pad}
+          index={index}
+          className={`koi-lotus-cluster is-${pad.side} is-${pad.depth ?? "mid"}`}
+        />
+      ))}
+      <style>{`
+        .koi-lotus-frame {
+          position: absolute;
+          inset: 0;
+          z-index: 6;
+          pointer-events: none;
+          overflow: hidden;
           opacity: 0;
+          transition: opacity 520ms ease;
+          contain: layout paint;
+        }
+        .home-koi-section.koi-lotus-visible .koi-lotus-frame {
+          opacity: 1;
+        }
+        /* identical geometry to .fgl-cluster's frame home — the crossing pads
+           dissolve exactly onto these, so revealing the frame is a pure
+           crossfade (no drift, no offset, no size jump) */
+        .koi-lotus-cluster {
+          position: absolute;
+          left: var(--fx);
+          top: var(--fy);
+          width: min(var(--fsize), 420px);
+          aspect-ratio: 1 / 1;
+          opacity: 0;
+          transform: translate3d(-50%, -50%, 0) rotate(var(--frot));
+          transform-origin: 50% 50%;
+          transition: opacity 620ms ease;
+          filter: saturate(1.03) brightness(1.0);
+        }
+        .koi-lotus-cluster.is-front { filter: saturate(1.05) brightness(1.09); }
+        .koi-lotus-cluster.is-back  { filter: saturate(1.0) brightness(0.88); }
+        .home-koi-section.koi-lotus-visible .koi-lotus-cluster {
+          opacity: var(--fop);
+        }
+        .koi-lotus-cluster img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
+          user-select: none;
+          -webkit-user-drag: none;
+        }
+        @media (min-width: 1900px) {
+          .koi-lotus-cluster { width: min(calc(var(--fsize) * 1.08), 520px); }
         }
         @media (max-width: 740px) {
-          .koi-lotus-frame {
-            display: none;
-          }
+          .koi-lotus-frame { opacity: 0.92; }
+          .koi-lotus-cluster { width: calc(var(--fsize) * 1.45); }
+          /* phones keep only the outer/middle banks — the small inner pads
+             and channel strays crowd a narrow pond */
+          .koi-lotus-cluster.is-top,
+          .koi-lotus-cluster.is-back { display: none; }
         }
-      `),
-        }}
-      />
+      `}</style>
     </div>
   );
 }

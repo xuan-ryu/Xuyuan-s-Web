@@ -1,6 +1,6 @@
 "use client";
 
-// Moon Gate (月洞门) — an editorial index whose preview fills a round opening
+// Moon Gate (闁哄牆鐗婄粈濠囨⒒? 闁?an editorial index whose preview fills a round opening
 // in the #fff plaster wall beneath the eaves.
 //
 // Left: a compact index of condensed-uppercase project names (skill's "work
@@ -9,10 +9,10 @@
 // Right: the moon gate holds a vertical film-strip of the covers; selecting
 // slides the strip up/down to the chosen frame, clipped inside the circular
 // opening. Media FILLS the circle (you look through a garden gate at the
-// scene, not at a mounted print) — a soft radial vignette keeps the rim round.
+// scene, not at a mounted print) 闁?a soft radial vignette keeps the rim round.
 //
 // Scroll choreography (desktop, motion-safe): browsing the index is HOVER
-// only (owner decision — scroll-driven index switching read as noise). The
+// only (owner decision 闁?scroll-driven index switching read as noise). The
 // section pins for ~2.7 viewports and scroll owns just the crossing: past a
 // short runway the gate scales until the round opening swallows the viewport
 // and sinks to ink; lotus leaves then condense over the ink (the ink is now
@@ -20,7 +20,7 @@
 // the pads outward from the center; at the very end the crossing layer and
 // last chrome dissolve and the
 // koi section (pulled up -100vh so it waits right behind) has risen into
-// place — one flick passes through the moon gate, through the lotus, onto
+// place 闁?one flick passes through the moon gate, through the lotus, onto
 // the pond; an up-flick folds the leaves shut and restores the wall (the
 // whole arrival is scrubbed, nothing is time-driven). Reduced-motion /
 // mobile keep the plain stacked layout, where an idle timer walks the index
@@ -32,11 +32,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
-import {
-  FgLotusLayer,
-  FG_FLOWERS,
-  FG_LEAVES,
-} from "@/components/fg-lotus-layer";
+import { FgLotusLayer, LOTUS_PADS } from "@/components/fg-lotus-layer";
 import { subscribeLenis } from "@/lib/lenis-bus";
 import { stripCssComments } from "@/lib/css-sanitize";
 
@@ -44,30 +40,35 @@ const FEATURED = 4;
 // the pin + lotus layer run only here; the same query gates the layer mount
 const CROSSING_MEDIA =
   "(min-width: 901px) and (prefers-reduced-motion: no-preference)";
-// ── crossing fraction map (of the 270% pin) ──
-// The pin grew 200% → 270% for the lotus arrival; runway/zoom/ink keep their
-// old ABSOLUTE scroll lengths (0.12 of 200% ≈ 0.09 of 270%, etc.) so the
-// approach feels identical — the added travel is all arrival.
+// 闁冲厜鍋撻柍鍏夊亾 crossing fraction map (of the 270% pin) 闁冲厜鍋撻柍鍏夊亾
+// The pin grew 200% 闁?270% for the lotus arrival; runway/zoom/ink keep their
+// old ABSOLUTE scroll lengths (0.12 of 200% 闁?0.09 of 270%, etc.) so the
+// approach feels identical 闁?the added travel is all arrival.
 const PIN_END = "+=270%";
 const ZOOM_START = 0.09; // short runway so the pin doesn't feel grabby
 const ZOOM_END = 0.37; // gate fully scaled by here (hidden under full ink)
-const INK_AT = 0.13; // veil starts…
-const INK_DUR = 0.18; // …and the gate is solid ink by 0.31
-const LEAF_IN = 0.33; // pads condense over the ink until the water is covered
-const LEAF_IN_SPREAD = 0.04; // per-pad start scatter
-const LEAF_IN_DUR = 0.1;
-const PART_AT = 0.5; // the canopy parts from the center…
-const PART_STAGGER = 0.07; // …center pads first, edges last
-const PART_DUR = 0.34;
-const BLOOM_AT = 0.46;
-const BLOOM_STAGGER = 0.02;
-const BLOOM_DUR = 0.16;
-// The reveal is sequenced AFTER the part finishes (~0.907) and AFTER the
-// crossing lotus layer has dissolved, so the koi + static KoiLotusFrame are
-// never shown while the transient crossing garland is still on screen (that
-// doubled/mis-registered ghost was the crossing's worst artifact).
+const INK_AT = 0.13;
+const INK_DUR = 0.18;
+// the canopy assembles over the water, holds, then parts to the koi frame.
+// A wide LEAF_IN_SPREAD gives the arrival an audible rhythm (diagonal sweep);
+// PART is center-out so the middle opens first.
+// the phases OVERLAP — water glow rises while the ink is still filling the
+// gate, and the first raindrop pads land before the ink is even complete, so
+// there is never a stretch of empty black between the gate and the pond
+const LEAF_IN = 0.22; // first raindrops, while the gate is still zooming
+const LEAF_IN_SPREAD = 0.13; // raindrop scatter window
+const LEAF_IN_DUR = 0.13;
+// canopy complete ~0.48; a long hold (0.48 → 0.58) lets the covered pond
+// register before the part opens it centre-out; the last pad lands by 0.90,
+// just before the crossing dissolves at 0.91
+const PART_AT = 0.58;
+const PART_STAGGER = 0.11;
+const PART_DUR = 0.21;
+// The koi frame crossfades in at 0.92 while the crossing dissolves at 0.91.
+// The two now share identical pad positions, so the overlap is a clean
+// crossfade (not the old doubled/offset ghost that forced a hard gap).
 const FADE_AT = 0.945; // ink + wall dissolve over the (by now) risen pond
-const SNAP_FREE = 0.13; // below this progress there is no snap — rest and read
+const SNAP_FREE = 0.13; // below this progress there is no snap 闁?rest and read
 
 export function FeaturedGate({ projects }: { projects: Project[] }) {
   // only the product / UI-UX / AI work (the first four); the game + VR pieces
@@ -80,10 +81,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
   const [tickY, setTickY] = useState<number | null>(null);
   // entrance is component-owned state (NOT the global FadeReveal classes):
   // is-visible painted onto re-rendered nodes gets wiped by React, and the
-  // global observer only arms once per route — state survives everything
+  // global observer only arms once per route 闁?state survives everything
   const [revealed, setRevealed] = useState(false);
   // the lotus layer exists only where the crossing pin runs (desktop,
-  // motion-safe) — reduced-motion / mobile / SSR never even mount it
+  // motion-safe) 闁?reduced-motion / mobile / SSR never even mount it
   const [lotusOn, setLotusOn] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -106,8 +107,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     setActive(i);
   };
 
-  // ── seal-red tick: slide to the active row's number (re-measure after the
-  //    accordion settles — collapsing rows above shift the target) ──
+  // 闁冲厜鍋撻柍鍏夊亾 seal-red tick: slide to the active row's number (re-measure after the
+  //    accordion settles 闁?collapsing rows above shift the target) 闁冲厜鍋撻柍鍏夊亾
   useEffect(() => {
     const measure = () => {
       const listEl = listRef.current;
@@ -129,7 +130,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     };
   }, [active]);
 
-  // ── mount/unmount the lotus layer with the same media boundary as the pin ──
+  // 闁冲厜鍋撻柍鍏夊亾 mount/unmount the lotus layer with the same media boundary as the pin 闁冲厜鍋撻柍鍏夊亾
   useEffect(() => {
     const mq = window.matchMedia(CROSSING_MEDIA);
     const update = () => setLotusOn(mq.matches);
@@ -138,9 +139,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // ── scroll choreography: pin + beats + through-the-gate zoom + lotus
+  // 闁冲厜鍋撻柍鍏夊亾 scroll choreography: pin + beats + through-the-gate zoom + lotus
   //    arrival. Re-runs when the lotus layer (un)mounts so the timeline is
-  //    always built against the DOM it will actually drive. ──
+  //    always built against the DOM it will actually drive. 闁冲厜鍋撻柍鍏夊亾
   useEffect(() => {
     let cancelled = false;
     let mm: ReturnType<typeof import("gsap").default.matchMedia> | null = null;
@@ -155,7 +156,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      // keep ScrollTrigger in sync with Lenis's own scroll emission — the DOM
+      // keep ScrollTrigger in sync with Lenis's own scroll emission 闁?the DOM
       // scroll event alone is one frame stale under smooth scroll. Also keep
       // a handle on the instance: the snap glides below are driven BY Lenis
       // (lenis.scrollTo), because a ScrollTrigger snap tween writing scrollTop
@@ -180,11 +181,14 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           const gate = gateRef.current;
           const veil = veilRef.current;
           const bg = bgRef.current;
+          const koiSection =
+            document.querySelector<HTMLElement>(".home-koi-section");
           if (!section || !gate || !veil || !bg) return;
           pinnedRef.current = true;
+          koiSection?.classList.remove("koi-lotus-visible");
 
           // pull the koi section up one viewport so it waits right behind the
-          // pinned gate — the final pin stretch is the pond rising into place
+          // pinned gate 闁?the final pin stretch is the pond rising into place
           // while the ink dissolves (gsap.matchMedia reverts this on cleanup).
           // The pinned section paints above it via .fg-section { z-index: 2 }.
           gsap.set(".home-koi-section", { marginTop: "-100vh" });
@@ -196,11 +200,11 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               (gate.offsetWidth / 2)) *
             1.05;
 
-          // ── the crossing snap, executed by Lenis ──
-          // Below SNAP_FREE there is no snap at all — the pinned section can
+          // 闁冲厜鍋撻柍鍏夊亾 the crossing snap, executed by Lenis 闁冲厜鍋撻柍鍏夊亾
+          // Below SNAP_FREE there is no snap at all 闁?the pinned section can
           // be rested on and browsed by hover. Once the zoom is visibly under
           // way, the crossing always completes in the direction of travel
-          // (down → the pond, up → back to the wall); executed via
+          // (down 闁?the pond, up 闁?back to the wall); executed via
           // lenis.scrollTo because a ScrollTrigger snap tween fights Lenis's
           // rAF and stalls on long glides.
           let snapGliding = false;
@@ -214,15 +218,28 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             if (!lenis || snapGliding) return;
             const p = self.progress;
             if (p <= SNAP_FREE || p >= 0.999) return;
-            const target = self.direction >= 0 ? 1 : 0;
-            const y = self.start + target * (self.end - self.start);
+            // hysteresis: scrolling down always completes to the pond, but
+            // scrolling up only rides back to the wall from a COMMITTED drag
+            // (p < 0.9). A casual up-flick right after landing re-settles
+            // onto the pond instead of yanking the visitor back through the
+            // whole crossing.
+            const target = self.direction >= 0 || p > 0.9 ? 1 : 0;
+            // land a beat PAST the pin end so the pond is fully seated and
+            // the resting position isn't flush against the crossing boundary
+            // (12vh — deep enough not to slide back, shallow enough that the
+            // pond's first-fold content, e.g. the How-I-Work title, stays in
+            // view)
+            const y =
+              target === 1
+                ? self.end + Math.round(window.innerHeight * 0.12)
+                : self.start;
             const dist = Math.abs(y - window.scrollY);
             if (dist < 2) return;
-            // cap raised 1.1 → 1.3 for the longer (270%) crossing distance
+            // cap raised 1.1 闁?1.3 for the longer (270%) crossing distance
             const duration = Math.min(1.3, Math.max(0.35, dist / 1600));
             snapGliding = true;
             // a user flick mid-glide retargets Lenis and onComplete never
-            // fires — the fallback timer re-arms snapping either way
+            // fires 闁?the fallback timer re-arms snapping either way
             window.clearTimeout(snapClear);
             snapClear = window.setTimeout(
               () => {
@@ -251,9 +268,15 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               invalidateOnRefresh: true,
               onUpdate(self) {
                 const p = self.progress;
+                bg.style.backgroundColor =
+                  p >= LEAF_IN - 0.02 ? "#020305" : "#ffffff";
                 // once the ink starts dissolving, the (transparent) fixed
                 // section must stop swallowing the pond's pointer events
                 section.style.pointerEvents = p > 0.85 ? "none" : "";
+                // The static koi-lotus frame crossfades in at 0.92 as the
+                // crossing dissolves (0.91). They share identical pad
+                // positions now, so this overlap is a seamless crossfade.
+                koiSection?.classList.toggle("koi-lotus-visible", p >= 0.92);
                 // idle-detect: when scroll emission stops for a beat and no
                 // glide is in flight, complete the crossing
                 if (!snapGliding) {
@@ -281,138 +304,112 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               ZOOM_START,
             )
             .to(veil, { opacity: 1, duration: INK_DUR }, INK_AT)
-            // the white wall goes to the pond-water color BEHIND the still-
+            // the white wall goes to the pond-ink color BEHIND the still-
             // opaque ink veil (invisible now) so that when the wall dissolves
             // the koi emerge from dark-over-dark, never through a fading white
             // sheet (that white sheet was washing the near-black koi to a
-            // milky gray). Reverts below 0.90 on up-scroll.
-            .set(bg, { backgroundColor: "#020305" }, 0.9)
+            // milky gray). Black #020305 matches the koi section's own ink so
+            // the handoff is seamless. Reverts below 0.90 on up-scroll.
+            .to(bg, { backgroundColor: "#020305", duration: 0.04 }, LEAF_IN - 0.02)
             // the handoff: ink (and the now-dark wall) dissolve at the very
             // end, after the crossing layer is gone and the koi section has
-            // risen behind — autoAlpha so the faded layers also stop
+            // risen behind 闁?autoAlpha so the faded layers also stop
             // hit-testing. Until then the ink veil IS the pond surface the
             // lotus pads sit on.
             .to([bg, gate], { autoAlpha: 0, duration: 0.05 }, FADE_AT);
 
-          // Lotus arrival: leaves condense over the ink, then part from the
-          // center. The crossing is leaf-only so it reads as a pond surface,
-          // not a flower-opening demo.
+          // Lotus arrival: clusters condense over the ink, the edge blossom
+          // opens, then the whole pond field parts from the center.
           const layer = section.querySelector<HTMLElement>(".fgl-layer");
           if (layer) {
-            const leaves = gsap.utils.toArray<HTMLElement>(".fgl-leaf", layer);
-            leaves.forEach((el, i) => {
-              const cfg = FG_LEAVES[i];
-              if (!cfg) return;
-              gsap.set(el, {
-                xPercent: -50,
-                yPercent: -50,
-                rotation: cfg.rot,
-                scale: 1.12,
-                transformOrigin: "50% 50%",
-              });
-              // condense onto the water (slight settle, scattered starts)
-              tl.to(
-                el,
-                { opacity: 1, scale: 1, duration: LEAF_IN_DUR },
-                LEAF_IN + cfg.inOrder * LEAF_IN_SPREAD,
-              );
-              // Part as a single horizontal pond curtain: center leaves give
-              // first, edge leaves follow. The y drift is intentionally small
-              // in FG_LEAVES so the scroll reads as left/right retreat, not
-              // independent objects scattering around the viewport.
-              tl.to(
-                el,
-                {
-                  x: () =>
-                    ((cfg.frameX - cfg.x) / 100) * window.innerWidth,
-                  y: () =>
-                    ((cfg.frameY - cfg.y) / 100) * window.innerHeight,
-                  rotation: cfg.frameRot,
-                  scale: cfg.frameScale,
-                  duration: PART_DUR,
-                  ease: "sine.inOut",
-                },
-                PART_AT + cfg.order * PART_STAGGER,
-              );
-            });
-            const flowers = gsap.utils.toArray<HTMLElement>(
-              ".fgl-flower",
+            // the pond water rises WITH the ink (not after it) — by the time
+            // the gate is fully swallowed the water glow is already there, so
+            // the crossing never sits on an empty black frame
+            const water = layer.querySelector<HTMLElement>(".fgl-water");
+            if (water) {
+              gsap.set(water, { opacity: 0 });
+              tl.to(water, { opacity: 1, duration: 0.16 }, INK_AT + 0.03);
+            }
+            const clusters = gsap.utils.toArray<HTMLElement>(
+              ".fgl-cluster",
               layer,
             );
-            flowers.forEach((el, i) => {
-              const cfg = FG_FLOWERS[i];
-              if (!cfg) return;
-              const bud = el.querySelector<HTMLElement>(".fgl-f-bud");
-              const half = el.querySelector<HTMLElement>(".fgl-f-half");
-              const full = el.querySelector<HTMLElement>(".fgl-f-full");
+            clusters.forEach((el, i) => {
+              const pad = LOTUS_PADS[i];
+              if (!pad) return;
+              // each pad's resting/home position IS its koi-frame slot; the
+              // canopy is one transform away. dx/dy = cover offset (px) from
+              // that home, coverScale = cover/frame size ratio.
+              const dx = () => ((pad.cx - pad.fx) / 100) * window.innerWidth;
+              const dy = () => ((pad.cy - pad.fy) / 100) * window.innerHeight;
+              // over-size the peak canopy so the seams between pads stay
+              // closed — the jittered layout leaves slivers at 1.0
+              const coverScale = (pad.csize * 1.16) / pad.fsize;
+              // arrival cadence: raindrop scatter — each pad pops in at its
+              // own random moment across the pond (pad.rain), like the first
+              // cut of this animation. Part cadence stays center-out (pads
+              // nearest the pool centre part first, so the middle opens).
+              const inOrder = pad.rain;
+              const partOrder = Math.hypot(pad.cx - 50, pad.cy - 42) / 72;
 
               gsap.set(el, {
                 xPercent: -50,
                 yPercent: -50,
-                rotation: cfg.rot,
-                // a fuller seed so the closed-bud cluster actually reads
-                // against the 26vmin leaves before it opens (was 0.45 — a
-                // speck); the bloom still swells to cfg.frameScale
-                scale: 0.6,
+                x: dx,
+                y: dy,
+                // lands with a slight settling twist (−14° -> crot), so the
+                // arrival reads organic rather than stamped in place
+                rotation: pad.crot - 14,
+                // a raindrop starts small — the pop from ~half size is what
+                // sells the landing (the first cut used 0.56)
+                scale: coverScale * 0.55,
+                opacity: 0,
                 transformOrigin: "50% 50%",
               });
-              gsap.set(bud, { opacity: 0.82 });
-              gsap.set(half, { opacity: 0 });
-              gsap.set(full, { opacity: 0 });
-
-              const bloomAt =
-                BLOOM_AT + cfg.order * BLOOM_STAGGER + (cfg.bloomAt ?? 0);
-
-              tl.to(
-                el,
-                { opacity: 1, duration: LEAF_IN_DUR },
-                LEAF_IN + cfg.inOrder * LEAF_IN_SPREAD,
-              );
-              tl.to(bud, { opacity: 0, duration: BLOOM_DUR * 0.5 }, bloomAt);
-              tl.to(
-                half,
-                { opacity: 0.82, duration: BLOOM_DUR * 0.5 },
-                bloomAt,
-              );
-              tl.to(
-                half,
-                { opacity: 0, duration: BLOOM_DUR * 0.5 },
-                bloomAt + BLOOM_DUR * 0.5,
-              );
-              tl.to(
-                full,
-                { opacity: 0.82, duration: BLOOM_DUR * 0.5 },
-                bloomAt + BLOOM_DUR * 0.5,
-              );
-              tl.to(
-                el,
-                { scale: cfg.frameScale, duration: BLOOM_DUR },
-                bloomAt,
-              );
+              // assemble the canopy: each pad lands like a raindrop — a quick
+              // grow-in with a slight overshoot settle, at scattered moments,
+              // until the pads blanket the whole viewport
               tl.to(
                 el,
                 {
-                  x: () =>
-                    ((cfg.frameX - cfg.x) / 100) * window.innerWidth,
-                  y: () =>
-                    ((cfg.frameY - cfg.y) / 100) * window.innerHeight,
-                  rotation: cfg.frameRot,
-                  duration: PART_DUR,
-                  ease: "sine.inOut",
+                  x: dx,
+                  y: dy,
+                  rotation: pad.crot,
+                  scale: coverScale,
+                  opacity: 1,
+                  duration: LEAF_IN_DUR,
+                  ease: "back.out(1.4)",
                 },
-                PART_AT + cfg.order * PART_STAGGER,
+                LEAF_IN + inOrder * LEAF_IN_SPREAD,
+              );
+              // part the canopy center -> both sides, back to the koi-frame
+              // home. Landing at scale 1 / rotation frot / opacity fop makes
+              // this pad identical to its KoiLotusFrame twin.
+              tl.to(
+                el,
+                {
+                  x: 0,
+                  y: 0,
+                  rotation: pad.frot,
+                  scale: 1,
+                  opacity: pad.fopacity,
+                  duration: PART_DUR,
+                  ease: "power2.inOut",
+                },
+                PART_AT + partOrder * PART_STAGGER,
               );
             });
-            // the transient crossing layer dissolves once the part has
-            // finished (~0.907) and BEFORE the wall/ink reveal (FADE_AT
-            // 0.945), so the crossing garland is fully gone before the koi +
-            // static KoiLotusFrame appear — no doubled/offset ghost.
-            tl.to(layer, { autoAlpha: 0, duration: 0.03 }, 0.91);
+            // the crossing layer dissolves as the identical KoiLotusFrame
+            // crossfades in (0.92) at the very same positions — a seamless
+            // handoff, since both are the same pads in the same coordinates.
+            tl.to(layer, { autoAlpha: 0, duration: 0.04 }, 0.91);
           }
 
           return () => {
             pinnedRef.current = false;
             section.style.pointerEvents = "";
+            bg.style.backgroundColor = "";
+            koiSection?.classList.remove("koi-lotus-visible");
             window.clearTimeout(idleTimer);
             window.clearTimeout(snapClear);
           };
@@ -429,8 +426,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     // lotusOn: rebuild once the lotus layer's DOM is mounted (or gone)
   }, [lotusOn]);
 
-  // ── entrance: arm once when the section approaches; state-driven so no
-  //    re-render or HMR can un-reveal the rows ──
+  // 闁冲厜鍋撻柍鍏夊亾 entrance: arm once when the section approaches; state-driven so no
+  //    re-render or HMR can un-reveal the rows 闁冲厜鍋撻柍鍏夊亾
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -447,8 +444,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     return () => io.disconnect();
   }, []);
 
-  // ── idle auto-advance — only where the pin doesn't run (mobile), so touch
-  //    users still see all four projects; pauses after any interaction ──
+  // 闁冲厜鍋撻柍鍏夊亾 idle auto-advance 闁?only where the pin doesn't run (mobile), so touch
+  //    users still see all four projects; pauses after any interaction 闁冲厜鍋撻柍鍏夊亾
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const section = sectionRef.current;
@@ -481,7 +478,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       aria-labelledby="fg-heading"
       ref={sectionRef}
     >
-      {/* the white plaster wall — a child (not the section bg) so the pond
+      {/* the white plaster wall 闁?a child (not the section bg) so the pond
           handoff can dissolve it while the section stays pinned */}
       <span className="fg-bg" ref={bgRef} aria-hidden="true" />
       <div className="fg-shell">
@@ -520,7 +517,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                     style={{ ["--row-i" as string]: i }}
                     onMouseEnter={() => pick(i)}
                     onFocus={() => pick(i)}
-                    aria-label={`${p.title} — ${p.tags.join(", ")}`}
+                    aria-label={`${p.title} 闁?${p.tags.join(", ")}`}
                   >
                     <span className="fg-row-head">
                       <span className="fg-row-num">{num(i)}</span>
@@ -530,7 +527,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                       <span className="fg-row-detail-in">
                         <span className="fg-row-desc">{p.oneliner}</span>
                         <span className="fg-row-meta">
-                          <span className="fg-row-tags">{p.tags.join(" · ")}</span>
+                          <span className="fg-row-tags">{p.tags.join(" 鐠?")}</span>
                           <span className="fg-row-cta cta cta--quiet">View Project</span>
                         </span>
                       </span>
@@ -542,7 +539,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           </ol>
           </div>
 
-          {/* right: the moon gate — a vertical film-strip that slides */}
+          {/* right: the moon gate 闁?a vertical film-strip that slides */}
           <div className="fg-right">
             <Link
               href={`/work/${ap.slug}`}
@@ -605,7 +602,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         </div>
       </div>
 
-      {/* the lotus arrival — scenery for the scrubbed crossing; mounts only
+      {/* the lotus arrival 闁?scenery for the scrubbed crossing; mounts only
           where the pin runs (desktop, motion-safe) */}
       {lotusOn ? <FgLotusLayer /> : null}
 
@@ -627,7 +624,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           z-index: 2;
           color: #141414;
           /* vh-elastic paddings: the whole composition must FIT one viewport
-             while pinned — content below the fold is unreachable during a pin
+             while pinned 闁?content below the fold is unreachable during a pin
              (the circle's bottom was getting cropped at short viewports) */
           padding-block: clamp(48px, 7vh, 172px);
           min-height: 100vh;
@@ -711,7 +708,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-row.is-active .fg-row-name { color: #111; }
         .fg-row-link:focus-visible .fg-row-name { color: #111; }
 
-        /* the story unfolds smoothly under the active title (grid 0fr → 1fr) */
+        /* the story unfolds smoothly under the active title (grid 0fr 闁?1fr) */
         .fg-row-detail {
           display: grid; grid-template-rows: 0fr;
           margin-left: calc(2.4em + 12px);
@@ -735,7 +732,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           color: rgba(20,20,22,0.5);
         }
         /* label chrome + seal-red rule come from .cta--quiet (globals.css);
-           only the row-level hover trigger is local — the wipe fires when the
+           only the row-level hover trigger is local 闁?the wipe fires when the
            whole row is hovered, not just the label */
         .fg-row-link:hover .fg-row-cta::after,
         .fg-row-link:focus-visible .fg-row-cta::after { transform: scaleX(1); }
@@ -749,7 +746,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-right { position: relative; display: flex; justify-content: flex-end; }
         .fg-gate {
           position: relative; display: block;
-          /* diameter is capped by the viewport HEIGHT too — while pinned the
+          /* diameter is capped by the viewport HEIGHT too 闁?while pinned the
              circle must never hang below the fold (it can't be scrolled to) */
           width: min(clamp(380px, 40vw, 720px), calc(100vh - 290px));
           aspect-ratio: 1 / 1;
@@ -763,7 +760,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-strip {
           position: absolute; inset: 0;
           display: flex; flex-direction: column;
-          /* selecting a lower item slides the strip up — follows the list */
+          /* selecting a lower item slides the strip up 闁?follows the list */
           transform: translateY(calc(var(--active, 0) * -100%));
           /* visible up/down slide (follows the list), combined with the dip:
              the strip slides across the whole transition while a brief black
@@ -775,7 +772,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           position: relative; flex: 0 0 100%; overflow: hidden;
           background: #0a0a0a;
         }
-        /* the scene FILLS the round opening — you look through the gate, not
+        /* the scene FILLS the round opening 闁?you look through the gate, not
            at a mounted print. Slow breathe-in on hover. */
         .fg-cover, .fg-video {
           position: absolute; inset: 0;
@@ -799,18 +796,20 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           animation: fgDip 0.7s ease-in-out;
         }
         @keyframes fgDip { 0% { opacity: 0; } 44% { opacity: 1; } 56% { opacity: 1; } 100% { opacity: 0; } }
-        /* the ink the gate fills with as you pass through it (scroll zoom) */
+        /* the pond ink the gate fills with as you pass through it (scroll
+           zoom) — the same black as the koi section (#020305), so crossing
+           the gate lands you in the pond's own night water */
         .fg-ink-veil {
           position: absolute; inset: 0; z-index: 4; pointer-events: none;
-          background: #050505; opacity: 0;
+          background: #020305; opacity: 0;
         }
         /* a clean opening: a soft top recess + a hairline edge. No inner glow. */
         .fg-gate-rim {
           position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 5;
           box-shadow:
-            0 0 0 2px #000,
-            inset 0 0 0 1px rgba(15,16,20,0.16),
-            0 18px 56px rgba(15,16,20,0.12);
+            0 0 0 1px rgba(15,16,20,0.68),
+            inset 0 0 0 1px rgba(15,16,20,0.08),
+            0 18px 48px rgba(15,16,20,0.055);
         }
         .fg-gate-plate {
           position: absolute; inset: 0;
