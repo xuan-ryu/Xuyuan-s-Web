@@ -216,12 +216,6 @@ const EVALUATION_QUESTIONS = [
 
 const FRAMEWORK_EVIDENCE = [
   {
-    src: "/media/work/cloud-futures/evidence-values.png",
-    label: "Slide 24",
-    title: "Test findings narrowed into value families.",
-    line: "The framework turned repeated discomfort into design commitments.",
-  },
-  {
     src: "/media/work/cloud-futures/evidence-design-implications.png",
     label: "Slide 26",
     title: "Each value had to change the interface.",
@@ -376,7 +370,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             <h2 className="cf-h2">
               Imagine support five years out, then argue backwards.
             </h2>
-            {project.summary?.slice(0, 1).map((p) => (
+            {project.summary?.map((p) => (
               <p className="cf-p" key={p.slice(0, 24)}>
                 {p}
               </p>
@@ -402,12 +396,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         </div>
         <figure className="cf-process-viz" data-fade>
           <div className="cf-process-frame">
-            <div className="cf-process-route" aria-hidden="true">
-              <span>Problem</span>
-              <span>Research frame</span>
-              <span>Speculative probes</span>
-              <span>Final world</span>
-            </div>
             <div className="cf-process-phases">
               {PROCESS_PHASES.map((phase, i) => (
                 <section className="cf-process-phase" key={phase.label} style={{ ["--i" as string]: i }}>
@@ -424,7 +412,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           </div>
           <figcaption className="cf-cap">
             <span className="cf-fig-index">Rebuilt from proposal slide</span>
-            Research spine: review, probes, testing, final world.
+            The plan we pitched in week one — both Deliver items, the
+            prototype and the client research report, shipped.
           </figcaption>
         </figure>
       </section>
@@ -566,6 +555,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
               intelligence become emotional surveillance?
             </figcaption>
           </figure>
+          <InteractiveCue className="cf-cue">
+            Switch worlds — the two deliberately extreme supports round 1
+            tested.
+          </InteractiveCue>
           <CfWorlds />
           <p className="cf-finding">
             <span className="cf-finding-quote">
@@ -637,6 +630,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
               </figure>
             ))}
           </div>
+          <InteractiveCue className="cf-cue">
+            Switch futures — the same billing case under four power
+            structures.
+          </InteractiveCue>
           <CfFutures />
         </div>
       </section>
@@ -702,11 +699,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             ))}
           </div>
         </div>
-        <div className="cf-evidence-set" data-fade>
+        <div className="cf-evidence-set cf-evidence-set--solo" data-fade>
           {FRAMEWORK_EVIDENCE.map((item) => (
             <figure className="cf-evidence-card" key={item.src}>
               <div className="cf-evidence-media">
-                <Image src={item.src} alt={item.title} width={1440} height={810} sizes="(max-width: 900px) 100vw, 640px" />
+                <Image src={item.src} alt={item.title} width={1080} height={608} sizes="(max-width: 900px) 100vw, 1120px" />
               </div>
               <figcaption className="cf-evidence-caption">
                 <span>{item.label}</span>
@@ -805,14 +802,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         </div>
         <div className="cf-ai-gallery" data-fade>
           {AI_PROTO_SHOTS.map((shot, i) => (
-            <figure className={`cf-ai-shot${i === 0 ? " is-wide" : ""}`} key={shot.src}>
+            <figure className={`cf-ai-shot${i === 0 || i === 3 ? " is-wide" : ""}`} key={shot.src}>
               <div className="cf-ai-media">
                 <Image
                   src={shot.src}
                   alt={shot.alt}
                   width={1440}
                   height={980}
-                  sizes={i === 0 ? "(max-width: 900px) 100vw, 920px" : "(max-width: 900px) 100vw, 450px"}
+                  sizes={i === 0 || i === 3 ? "(max-width: 900px) 100vw, 920px" : "(max-width: 900px) 100vw, 450px"}
                 />
               </div>
               <figcaption className="cf-cap">
@@ -1032,20 +1029,13 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           z-index: 1;
         }
         .cf-section--dark .cf-rail,
-        .cf-section--dark .cf-kicker,
         .cf-section--dark .cf-p,
         .cf-section--dark .cf-method-line,
-        .cf-section--dark .cf-domain-line,
         .cf-section--dark .cf-insight-line,
-        .cf-section--dark .cf-pattern-line,
         .cf-section--dark .cf-industry-case p,
-        .cf-section--dark .cf-protocol-line,
         .cf-section--dark .cf-worlds-reaction,
         .cf-section--dark .cf-lane-verb,
         .cf-section--dark .cf-verdict-source,
-        .cf-section--dark .cf-finding-card-line,
-        .cf-section--dark .cf-principle-line,
-        .cf-section--dark .cf-ai-point p,
         .cf-section--dark .cf-limit-line,
         .cf-section--dark .cf-cap,
         .cf-section--dark .cf-seat-cap,
@@ -1055,16 +1045,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-section--dark .cf-h2,
         .cf-section--dark .cf-panel-title,
         .cf-section--dark .cf-insight-lead,
-        .cf-section--dark .cf-domain-name,
-        .cf-section--dark .cf-pattern-name,
         .cf-section--dark .cf-industry-case h4,
         .cf-section--dark .cf-worlds-name,
         .cf-section--dark .cf-stage-tagline,
         .cf-section--dark .cf-node-name,
         .cf-section--dark .cf-verdict-quote,
-        .cf-section--dark .cf-finding-card-lead,
-        .cf-section--dark .cf-principle-name,
-        .cf-section--dark .cf-ai-point h3,
         .cf-section--dark .cf-limit-lead {
           color: #f8fafd;
         }
@@ -1082,8 +1067,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: #8ab4f8;
         }
         .cf-section--dark .cf-industry-case {
-          background: rgba(248, 250, 252, 0.055);
-          border-inline-color: rgba(248, 250, 252, 0.14);
+          /* opaque: the section's tinted wash must not bleed through cells */
+          background: #191c22;
         }
         .cf-section--dark .cf-industry-index {
           color: #8ab4f8;
@@ -1188,7 +1173,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           gap: 10px;
           align-content: center;
           padding: clamp(10px, 1.2vw, 18px);
-          border-left: 4px solid var(--g-blue);
         }
         .cf-hero-proof-copy span {
           font-family: var(--font-mono);
@@ -1303,32 +1287,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           gap: clamp(18px, 2vw, 28px);
           padding: clamp(18px, 2.4vw, 34px);
         }
-        .cf-process-route {
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: clamp(10px, 1.4vw, 18px);
-          align-items: center;
-          color: var(--case-accent);
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-        }
-        .cf-process-route span {
-          position: relative;
-          padding-top: 14px;
-          border-top: 1px solid var(--case-accent);
-        }
-        .cf-process-route span::before {
-          content: "";
-          position: absolute;
-          top: -4px;
-          left: 0;
-          width: 7px;
-          height: 7px;
-          border-radius: 999px;
-          background: var(--case-accent);
-        }
         .cf-process-phases {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1377,28 +1335,30 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           position: absolute;
           left: 0;
           top: 0.7em;
-          width: 7px;
+          width: 8px;
           height: 1px;
           background: var(--case-accent);
         }
 
         .cf-flow-frame {
+          /* warning semantics on purpose: this flow is the surveillance
+             scenario the probe was built to make uncomfortable */
           display: grid;
           gap: clamp(20px, 2.4vw, 34px);
           padding: clamp(18px, 2.4vw, 32px);
-          background: #f3fff6;
+          background: #fff9ee;
         }
         .cf-flow-warning {
           padding: 10px 14px;
-          border: 1px solid rgba(33, 122, 59, 0.34);
-          border-radius: 999px;
+          border: 1px solid rgba(176, 96, 0, 0.4);
+          border-radius: 4px;
           font-family: var(--font-mono);
           font-size: var(--text-micro);
           line-height: 1.4;
           text-align: center;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: #1e6d39;
+          color: #8f5700;
           background: rgba(255, 255, 255, 0.56);
         }
         .cf-flow-row {
@@ -1414,7 +1374,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           align-content: center;
           gap: 8px;
           padding: 14px;
-          border: 1px solid rgba(33, 122, 59, 0.24);
+          border: 1px solid rgba(176, 96, 0, 0.26);
           border-radius: 8px;
           background: rgba(255, 255, 255, 0.76);
         }
@@ -1425,16 +1385,16 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           top: 50%;
           width: clamp(10px, 1.1vw, 16px);
           height: 1px;
-          background: rgba(33, 122, 59, 0.42);
+          background: rgba(176, 96, 0, 0.45);
         }
         .cf-flow-step.is-critical {
-          border-color: rgba(33, 122, 59, 0.44);
-          background: #d5f7df;
+          border-color: rgba(176, 96, 0, 0.52);
+          background: #fbeccc;
         }
         .cf-flow-index {
           font-family: var(--font-mono);
           font-size: var(--text-micro);
-          color: #2b7c45;
+          color: #8f5700;
         }
         .cf-flow-label {
           font-size: var(--text-meta);
@@ -1445,13 +1405,13 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           display: grid;
           gap: 4px;
           padding-top: 16px;
-          border-top: 1px solid rgba(33, 122, 59, 0.34);
+          border-top: 1px solid rgba(176, 96, 0, 0.34);
           text-align: center;
         }
         .cf-flow-branch span {
           font-family: var(--font-mono);
           font-size: var(--text-micro);
-          color: #2b7c45;
+          color: #8f5700;
           text-transform: uppercase;
           letter-spacing: 0.08em;
         }
@@ -1465,14 +1425,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           grid-template-columns: minmax(130px, 0.22fr) minmax(0, 1fr);
           gap: clamp(18px, 2vw, 30px);
           padding-top: 18px;
-          border-top: 1px solid rgba(33, 122, 59, 0.24);
+          border-top: 1px solid rgba(176, 96, 0, 0.26);
         }
         .cf-flow-critique p {
           margin: 0;
           font-size: var(--text-label);
           text-transform: uppercase;
           letter-spacing: var(--track-label);
-          color: #2b7c45;
+          color: #8f5700;
         }
         .cf-flow-critique ul {
           margin: 0;
@@ -1630,58 +1590,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: var(--cf-stone);
         }
 
-        .cf-research-grid {
-          margin-top: var(--gap-block);
-          display: grid;
-          grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-          gap: clamp(24px, 3vw, 48px);
-          align-items: start;
-        }
-        .cf-research-panel {
-          display: grid;
-          gap: clamp(18px, 2.2vw, 28px);
-          align-content: start;
-        }
         .cf-panel-title {
           margin: 0;
           font-size: clamp(22px, 1.9vw, 28px);
           font-weight: 500;
           line-height: 1.3;
-        }
-        .cf-domain-list, .cf-pattern-list {
-          display: grid;
-          gap: 0;
-          border-top: 1px solid var(--rule);
-        }
-        .cf-domain, .cf-pattern {
-          display: grid;
-          gap: 8px;
-          padding: 16px 0;
-          border-bottom: 1px solid var(--rule);
-        }
-        .cf-domain-name {
-          margin: 0;
-          font-size: var(--text-body);
-          font-weight: 500;
-          line-height: 1.35;
-        }
-        .cf-domain-line, .cf-pattern-line {
-          margin: 0;
-          font-size: var(--text-label);
-          line-height: 1.45;
-          color: var(--cf-stone);
-        }
-        .cf-pattern {
-          grid-template-columns: minmax(104px, 0.7fr) minmax(0, 1fr);
-          gap: 18px;
-        }
-        .cf-pattern-name {
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          color: var(--case-accent);
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          line-height: 1.6;
         }
 
         .cf-industry {
@@ -1718,15 +1631,9 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           display: grid;
           gap: 8px;
           align-content: start;
-          padding: clamp(15px, 1.6vw, 20px);
-          border-top: 4px solid var(--case-accent);
-          background: rgba(255, 255, 255, 0.86);
+          padding: clamp(16px, 1.6vw, 20px);
+          background: #ffffff;
         }
-        .cf-industry-case:nth-child(1) { border-top-color: var(--g-blue); }
-        .cf-industry-case:nth-child(2) { border-top-color: var(--g-green); }
-        .cf-industry-case:nth-child(3) { border-top-color: var(--g-yellow); }
-        .cf-industry-case:nth-child(4) { border-top-color: var(--g-red); }
-        .cf-industry-case:nth-child(5) { border-top-color: #5f6368; }
         .cf-industry-index {
           font-family: var(--font-mono);
           font-size: var(--text-micro);
@@ -1763,7 +1670,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-method-step { position: relative; display: grid; gap: 6px; align-content: start; }
         .cf-method-dot {
           position: absolute; top: -18px; left: 0;
-          width: 7px; height: 7px; border-radius: 9999px;
+          width: 8px; height: 8px; border-radius: 9999px;
           background: var(--case-accent);
         }
         .cf-method-step:nth-child(1) .cf-method-dot { background: var(--g-blue); }
@@ -1779,32 +1686,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
 
         .cf-artifact { margin-top: var(--gap-block); }
         .cf-cue { display: inline-flex; margin-bottom: 18px; }
-
-        .cf-protocol {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: clamp(16px, 2vw, 32px);
-          margin-bottom: clamp(28px, 3vw, 40px);
-          padding-block: 16px;
-          border-block: 1px solid var(--rule);
-        }
-        .cf-protocol-item {
-          display: grid;
-          gap: 8px;
-          align-content: start;
-        }
-        .cf-protocol-label {
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          color: var(--case-accent);
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-        .cf-protocol-line {
-          font-size: var(--text-label);
-          line-height: 1.45;
-          color: rgba(16, 18, 22, 0.78);
-        }
 
         .cf-design-beat {
           margin: clamp(22px, 3vw, 42px) 0 var(--gap-block);
@@ -1822,15 +1703,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           padding-top: 4px;
         }
         .cf-design-beat-kicker {
-          width: max-content;
-          padding: 6px 10px;
-          border-left: 4px solid var(--g-red);
-          background: rgba(234, 67, 53, 0.08);
           font-family: var(--font-mono);
           font-size: var(--text-micro);
           letter-spacing: 0.08em;
           text-transform: uppercase;
-          color: var(--cf-ink);
+          color: var(--case-accent);
         }
         .cf-design-beat-copy h3 {
           margin: 0;
@@ -1882,13 +1759,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           display: grid;
           gap: 0;
           border: 1px solid rgba(16, 18, 22, 0.14);
-          border-top: 4px solid var(--g-blue);
           border-radius: 8px;
           overflow: hidden;
           background: rgba(255, 255, 255, 0.86);
           box-shadow: 0 24px 60px rgba(16, 18, 22, 0.07);
         }
-        .cf-evidence-card:nth-child(2) { border-top-color: var(--g-green); }
         .cf-evidence-media {
           background:
             linear-gradient(135deg, rgba(66, 133, 244, 0.08), transparent 34%),
@@ -1901,7 +1776,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-evidence-caption {
           display: grid;
-          gap: 7px;
+          gap: 8px;
           align-content: start;
           padding: clamp(14px, 1.5vw, 20px);
           border-top: 1px solid var(--rule);
@@ -1910,6 +1785,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-evidence-set--solo .cf-evidence-caption {
           border-top: 0;
           border-left: 1px solid var(--rule);
+          align-content: center;
         }
         .cf-evidence-caption span {
           font-family: var(--font-mono);
@@ -1978,7 +1854,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border: 1px solid var(--rule);
           background: transparent;
           border-radius: 8px;
-          padding: 9px 16px;
+          padding: 10px 16px;
           font: inherit;
           font-size: var(--text-meta);
           color: var(--cf-ink);
@@ -2030,6 +1906,27 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           line-height: 1.55;
           color: var(--cf-stone);
           max-width: 56ch;
+        }
+        .cf-worlds-board {
+          margin: 20px 0 0;
+        }
+        .cf-worlds-board-media {
+          border: 1px solid rgba(16, 18, 22, 0.14);
+          border-radius: 8px;
+          overflow: hidden;
+          background: #f8f9fa;
+        }
+        .cf-worlds-board-media img {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
+        .cf-worlds-board figcaption {
+          margin-top: 10px;
+          font-family: var(--font-mono);
+          font-size: var(--text-micro);
+          line-height: 1.5;
+          color: var(--cf-stone);
         }
         .cf-finding {
           display: grid; gap: 4px;
@@ -2129,7 +2026,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           content: "";
           position: absolute;
           top: 50%;
-          width: 7px; height: 7px;
+          width: 8px; height: 8px;
           border-top: 1px solid var(--cf-sc, var(--case-accent));
           border-right: 1px solid var(--cf-sc, var(--case-accent));
         }
@@ -2149,32 +2046,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-verdict-quote { font-size: clamp(18px, 1.5vw, 22px); line-height: 1.45; font-weight: 500; max-width: 34em; }
         .cf-verdict-source { font-size: var(--text-micro); font-family: var(--font-mono); color: var(--cf-stone); }
-        .cf-findings-grid {
-          margin-top: clamp(32px, 4vw, 56px);
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: clamp(18px, 2.2vw, 32px);
-        }
-        .cf-finding-card {
-          display: grid;
-          gap: 10px;
-          padding-top: 16px;
-          border-top: 1px solid var(--rule);
-          align-content: start;
-        }
-        .cf-finding-card-lead {
-          margin: 0;
-          font-size: clamp(20px, 1.7vw, 24px);
-          font-weight: 500;
-          line-height: 1.3;
-        }
-        .cf-finding-card-line {
-          margin: 0;
-          font-size: var(--text-meta);
-          line-height: 1.55;
-          color: var(--cf-stone);
-        }
-
         .cf-seats-panel { display: grid; gap: var(--gap-block); }
         .cf-seat-fig { margin: 0; }
         .cf-seat-media {
@@ -2192,32 +2063,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: var(--cf-stone);
           max-width: 62ch;
         }
-
-        .cf-principles {
-          margin-top: var(--gap-block);
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: clamp(28px, 3.4vw, 48px) clamp(24px, 3vw, 48px);
-        }
-        .cf-principle {
-          display: grid;
-          gap: 10px;
-          padding-top: 16px;
-          border-top: 1px solid var(--rule);
-          align-content: start;
-        }
-        .cf-principle-num {
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          color: var(--case-accent);
-        }
-        .cf-principle-name {
-          margin: 0;
-          font-size: clamp(20px, 1.7vw, 24px);
-          font-weight: 500;
-          line-height: 1.3;
-        }
-        .cf-principle-line { margin: 0; font-size: var(--text-meta); line-height: 1.55; color: var(--cf-stone); max-width: 44ch; }
 
         .cf-tensions { margin-top: calc(var(--gap-block) * 1.4); max-width: 880px; }
         .cf-tensions-anchor {
@@ -2274,103 +2119,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: rgba(16, 18, 22, 0.84);
         }
 
-        .cf-values-board {
-          margin-top: var(--gap-block);
-          display: grid;
-          grid-template-columns: minmax(220px, 0.32fr) minmax(0, 1fr);
-          gap: clamp(24px, 3vw, 48px);
-          padding: clamp(20px, 2.4vw, 32px);
-          border: 1px solid var(--rule);
-          border-radius: 8px;
-          background:
-            linear-gradient(rgba(66, 133, 244, 0.055) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(66, 133, 244, 0.055) 1px, transparent 1px),
-            rgba(255, 255, 255, 0.62);
-          background-size: 32px 32px;
-        }
-        .cf-values-head {
-          display: grid;
-          gap: 12px;
-          align-content: start;
-        }
-        .cf-values-eyebrow {
-          margin: 0;
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          color: var(--case-accent);
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-        .cf-values-title {
-          margin: 0;
-          font-size: clamp(24px, 2.1vw, 34px);
-          line-height: 1.16;
-          font-weight: 500;
-          max-width: 12em;
-        }
-        .cf-values-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 1px;
-          background: var(--rule);
-          border: 1px solid var(--rule);
-        }
-        .cf-value {
-          min-height: 126px;
-          display: grid;
-          gap: 8px;
-          align-content: start;
-          padding: clamp(16px, 1.8vw, 22px);
-          background: rgba(255, 255, 255, 0.86);
-        }
-        .cf-value-index {
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          color: var(--case-accent);
-        }
-        .cf-value h4 {
-          margin: 0;
-          font-size: clamp(18px, 1.4vw, 22px);
-          line-height: 1.25;
-          font-weight: 500;
-        }
-        .cf-value p {
-          margin: 0;
-          font-size: var(--text-label);
-          line-height: 1.42;
-          color: var(--cf-stone);
-        }
-
-        .cf-ai-points {
-          margin-top: var(--gap-block);
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: clamp(18px, 2.2vw, 32px);
-        }
-        .cf-ai-point {
-          display: grid;
-          gap: 10px;
-          align-content: start;
-          padding-top: 16px;
-          border-top: 1px solid var(--rule);
-        }
-        .cf-ai-point span {
-          font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          color: var(--case-accent);
-        }
-        .cf-ai-point h3 {
-          margin: 0;
-          font-size: clamp(20px, 1.7vw, 24px);
-          line-height: 1.3;
-          font-weight: 500;
-        }
-        .cf-ai-point p {
-          margin: 0;
-          font-size: var(--text-label);
-          line-height: 1.42;
-          color: var(--cf-stone);
-        }
         .cf-ai-motion-board {
           margin-top: var(--gap-block);
           display: grid;
@@ -2455,10 +2203,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-motion-path::before {
           content: "";
           position: absolute;
-          top: -3px;
+          top: -4px;
           left: 0;
-          width: 7px;
-          height: 7px;
+          width: 8px;
+          height: 8px;
           border-radius: 999px;
           background: #8ab4f8;
           box-shadow: 0 0 0 5px rgba(138, 180, 248, 0.14);
@@ -2522,8 +2270,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-gem-dot,
         .cf-packet-dot {
           display: inline-block;
-          width: 9px;
-          height: 9px;
+          width: 8px;
+          height: 8px;
           border-radius: 999px;
           flex: none;
         }
@@ -2654,7 +2402,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         }
         .cf-hifi-change {
           display: grid;
-          grid-template-columns: 44px minmax(180px, 0.52fr) minmax(0, 0.88fr);
+          grid-template-columns: 32px minmax(180px, 0.52fr) minmax(0, 0.88fr);
           gap: clamp(14px, 1.8vw, 24px);
           align-items: start;
           padding-bottom: clamp(14px, 1.6vw, 20px);
@@ -2665,16 +2413,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border-bottom: 0;
         }
         .cf-hifi-index {
-          width: 34px;
-          height: 34px;
-          display: inline-grid;
-          place-items: center;
-          border: 1px solid rgba(66, 133, 244, 0.34);
-          border-radius: 999px;
+          padding-top: 4px;
           font-family: var(--font-mono);
           font-size: var(--text-micro);
           color: var(--case-accent);
-          background: var(--case-accent-soft);
         }
         .cf-hifi-change h4 {
           margin: 0;
@@ -2691,7 +2433,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           margin: 0;
           display: grid;
           gap: 6px;
-          padding: 11px 12px;
+          padding: 12px;
           border: 1px solid rgba(16, 18, 22, 0.1);
           border-radius: 8px;
           background: rgba(255, 255, 255, 0.72);
@@ -2743,7 +2485,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: #ffffff;
         }
         .cf-close-rule {
-          width: 56px; height: 3px;
+          width: 56px; height: 4px;
           background: var(--seal-red);
           margin-bottom: clamp(24px, 3vw, 40px);
         }
@@ -2786,7 +2528,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             transition: opacity 0.7s var(--ease-silk), transform 0.7s var(--ease-silk);
           }
           .cf-section--dark [data-fade] {
-            transform: translateX(-28px);
+            transform: translateY(24px);
           }
           .cf-section--light [data-fade] {
             transform: translateY(24px) scale(0.992);
@@ -2800,13 +2542,15 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             transition-delay: 140ms;
           }
           .cf-page [data-fade].is-visible { opacity: 1; transform: none; }
-          .cf-section::after {
+          /* the four-color rule draws in once, on the first section only —
+             repeating the flourish per section dilutes it */
+          .cf-section:first-of-type::after {
             transform: translateX(-50%) scaleX(0);
             animation: cfSectionRule 1s var(--ease-silk) both;
             animation-timeline: view();
             animation-range: entry 0% entry 46%;
           }
-          .cf-method-step, .cf-insight, .cf-finding-card, .cf-principle, .cf-tension, .cf-limit {
+          .cf-method-step, .cf-insight, .cf-tension, .cf-limit {
             opacity: 0;
             transform: translateY(14px);
           }
@@ -2821,8 +2565,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-motion-tile--packet { --i: 4; }
           [data-fade].is-visible .cf-method-step,
           [data-fade].is-visible .cf-insight,
-          [data-fade].is-visible .cf-finding-card,
-          [data-fade].is-visible .cf-principle,
           [data-fade].is-visible .cf-tension,
           [data-fade].is-visible .cf-limit {
             opacity: 1;
@@ -2839,14 +2581,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-agent-pill {
             animation: cfSoftPulse 2.8s var(--ease-silk) infinite;
           }
-          .cf-prompt-lines span,
-          .cf-rule-stack li {
-            animation: cfRuleLift 3.4s var(--ease-silk) infinite;
-            animation-delay: calc(var(--i, 0) * 220ms);
-          }
-          .cf-rule-stack li:nth-child(1) { --i: 0; }
-          .cf-rule-stack li:nth-child(2) { --i: 1; }
-          .cf-rule-stack li:nth-child(3) { --i: 2; }
           .cf-output-status .cf-gem-dot {
             animation: cfGemFloat 2.8s var(--ease-silk) infinite;
           }
@@ -2866,19 +2600,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             0% { left: 0; transform: scale(0.86); opacity: 0.18; }
             16% { opacity: 1; }
             82% { opacity: 1; }
-            100% { left: calc(100% - 7px); transform: scale(1); opacity: 0.18; }
+            100% { left: calc(100% - 8px); transform: scale(1); opacity: 0.18; }
           }
           @keyframes cfSoftPulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(138, 180, 248, 0); }
             50% { transform: scale(1.035); box-shadow: 0 0 34px rgba(138, 180, 248, 0.22); }
-          }
-          @keyframes cfLineThink {
-            0%, 100% { transform: scaleX(0.62); opacity: 0.38; }
-            45% { transform: scaleX(1); opacity: 0.78; }
-          }
-          @keyframes cfRuleLift {
-            0%, 100% { transform: translateY(0); opacity: 0.7; }
-            50% { transform: translateY(-4px); opacity: 1; }
           }
           @keyframes cfGemFloat {
             0%, 100% { transform: translateY(-4px); }
@@ -2907,16 +2633,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             padding: 14px;
           }
           .cf-hero-proof-copy {
-            border-left: 0;
-            border-top: 4px solid var(--g-blue);
             padding-top: 16px;
           }
           .cf-rail { margin-bottom: 14px; }
           .cf-lede { max-width: none; margin-bottom: 24px; }
           .cf-meta { margin-top: 8px; }
           .cf-hero-row { display: block; }
-          .cf-rqs, .cf-insights, .cf-research-grid, .cf-industry, .cf-industry-list, .cf-design-beat, .cf-evidence-set, .cf-evidence-set--solo .cf-evidence-card, .cf-findings-grid, .cf-ai-points, .cf-ai-motion-board, .cf-ai-gallery, .cf-hifi-changes, .cf-limits { grid-template-columns: 1fr; }
-          .cf-pattern, .cf-eval-item { grid-template-columns: 1fr; gap: 8px; }
+          .cf-rqs, .cf-insights, .cf-industry, .cf-industry-list, .cf-design-beat, .cf-evidence-set, .cf-evidence-set--solo .cf-evidence-card, .cf-ai-motion-board, .cf-ai-gallery, .cf-hifi-changes, .cf-limits { grid-template-columns: 1fr; }
+          .cf-eval-item { grid-template-columns: 1fr; gap: 8px; }
           .cf-method { grid-template-columns: 1fr; gap: 20px; padding-top: 0; }
           .cf-method::before { display: none; }
           .cf-method-step { padding-left: 18px; }
@@ -2952,7 +2676,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-arrow { width: 1px; height: 36px; margin-inline: auto; }
           .cf-arrow.is-right::after { right: auto; left: 50%; top: auto; bottom: 0; transform: translateX(-50%) rotate(135deg); }
           .cf-arrow.is-left::after { left: 50%; top: 0; transform: translateX(-50%) rotate(-45deg); }
-          .cf-principles { grid-template-columns: 1fr; }
           .cf-tension { grid-template-columns: minmax(0, 1fr) 60px minmax(0, 1fr); gap: 10px; }
           .cf-film-media { aspect-ratio: 1870 / 960; }
           .cf-process-frame {
@@ -2981,9 +2704,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             align-content: start;
           }
           .cf-ai-motion-stage {
-            min-height: 620px;
+            /* auto rows: fixed heights clipped tile copy at this width */
+            min-height: 0;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            grid-template-rows: 150px 120px 150px 150px;
+            grid-template-rows: none;
+            grid-auto-rows: auto;
           }
           .cf-motion-tile--prompt {
             grid-column: 1 / 3;
@@ -2992,6 +2717,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-motion-tile--agent {
             grid-column: 1;
             grid-row: 2;
+            min-height: 120px;
           }
           .cf-motion-tile--rules {
             grid-column: 2;
@@ -3002,10 +2728,12 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             grid-row: 4;
           }
           .cf-motion-tile--test {
-            display: none;
+            grid-column: 1 / 3;
+            grid-row: 5;
+            align-content: start;
           }
           .cf-motion-path {
-            /* the output tile it points to is hidden at this width */
+            /* the horizontal signal seam has no meaning in the stacked layout */
             display: none;
           }
           .cf-flow-row {

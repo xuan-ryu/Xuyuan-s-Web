@@ -22,6 +22,13 @@ const WORLDS = [
     ],
     reaction:
       "Fast, but unsettling. Participants asked who is accountable when the machine misreads a financially sensitive case.",
+    board: {
+      src: "/media/work/cloud-futures/worlds-ai.png",
+      width: 2400,
+      height: 849,
+      alt: "Lo-fi storyboard of the all-AI support world: proactive help popups and recording badges over a billing console",
+      line: "Lo-fi storyboard — proactive popups, emotion tracking, no human anywhere",
+    },
   },
   {
     key: "human",
@@ -33,6 +40,13 @@ const WORLDS = [
     ],
     reaction:
       "Reassuring in the abstract — but participants immediately recalled hour-long waits and humans reading from scripts.",
+    board: {
+      src: "/media/work/cloud-futures/worlds-human.png",
+      width: 2400,
+      height: 1508,
+      alt: "Lo-fi storyboard of the human-only support world: contacting an agent and waiting in a chat queue",
+      line: "Lo-fi storyboard, first beats — a queue before every answer",
+    },
   },
 ] as const;
 
@@ -63,6 +77,18 @@ export function CfWorlds() {
           ))}
         </ul>
         <p className="cf-worlds-reaction">{world.reaction}</p>
+        <figure className="cf-worlds-board">
+          <div className="cf-worlds-board-media">
+            <Image
+              src={world.board.src}
+              alt={world.board.alt}
+              width={world.board.width}
+              height={world.board.height}
+              sizes="(max-width: 900px) 100vw, 720px"
+            />
+          </div>
+          <figcaption>{world.board.line}</figcaption>
+        </figure>
       </div>
     </div>
   );
@@ -200,7 +226,11 @@ export function CfFutures() {
 
       <div className="cf-stage" key={sc.key}>
         <p className="cf-stage-tagline">{sc.tagline}</p>
-        <div className="cf-diagram" aria-hidden="true">
+        <div
+          className="cf-diagram"
+          role="img"
+          aria-label={`Power diagram: ${NODES[sc.authority]} holds the final say`}
+        >
           {NODES.map((n, i) => (
             <div
               className={`cf-node${sc.authority === i ? " has-say" : ""}`}
