@@ -204,31 +204,61 @@ const SCENARIOS: Scenario[] = [
 
 export function CfFutures() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const [active, setActive] = useState(0);
   const [live, setLive] = useState(false);
   const sc = SCENARIOS[active];
 
-  // Desktop: the stage pins (position: sticky) and scroll scrubs through the
-  // four power structures — one quarter of the runway each. Mobile keeps the
-  // plain tab switcher; no-JS renders scenario one as a static block.
+  // Desktop: the stage pins and vertical scroll SLIDES the four power
+  // structures horizontally — dwell on each, visible travel between them,
+  // so the gesture and the motion agree. Mobile and no-JS keep the same
+  // track as a native horizontal swipe carousel.
   useEffect(() => {
     const unsub = subscribeLenis((l) => {
       lenisRef.current = l;
     });
     const narrow = window.matchMedia("(max-width: 900px)");
-    if (narrow.matches) return unsub;
+    if (narrow.matches) {
+      const vp = viewportRef.current;
+      if (!vp) return unsub;
+      const onSwipe = () => {
+        const w =
+          trackRef.current?.children[0]?.getBoundingClientRect().width ||
+          vp.clientWidth;
+        const idx = Math.min(3, Math.max(0, Math.round(vp.scrollLeft / w)));
+        setActive((cur) => (cur === idx ? cur : idx));
+      };
+      vp.addEventListener("scroll", onSwipe, { passive: true });
+      return () => {
+        unsub();
+        vp.removeEventListener("scroll", onSwipe);
+      };
+    }
     let raf = 0;
     const liveId = requestAnimationFrame(() => setLive(true));
+    const DWELL = 0.55;
     const update = () => {
       raf = 0;
       const el = wrapRef.current;
-      if (!el) return;
+      const track = trackRef.current;
+      if (!el || !track) return;
       const vh = window.innerHeight;
       const total = el.offsetHeight - vh;
       if (total <= 0) return;
       const p = Math.min(1, Math.max(0, -el.getBoundingClientRect().top / total));
-      const idx = Math.min(3, Math.floor(p * 4));
+      const rawT = Math.min(3, Math.max(0, p * 4 - 0.5));
+      const seg = Math.floor(rawT);
+      const u = rawT - seg;
+      const s = u <= DWELL ? 0 : (u - DWELL) / (1 - DWELL);
+      const eased = Math.min(3, seg + s * s * (3 - 2 * s));
+      // pixel-based: percentage would resolve against the flex track's own
+      // width, which stays at one viewport no matter how many panels it holds
+      const w = viewportRef.current ? viewportRef.current.clientWidth : 0;
+      track.style.transform = `translateX(${-eased * w}px)`;
+      el.style.setProperty("--fu-t", String(eased));
+      const idx = Math.round(eased);
       setActive((cur) => (cur === idx ? cur : idx));
     };
     const onScroll = () => {
@@ -247,85 +277,117 @@ export function CfFutures() {
   }, []);
 
   const goTo = (i: number) => {
-    setActive(i);
     const el = wrapRef.current;
-    if (!live || !el) return;
-    const vh = window.innerHeight;
-    const y =
-      el.getBoundingClientRect().top +
-      window.scrollY +
-      ((i + 0.5) / 4) * (el.offsetHeight - vh);
-    const lenis = lenisRef.current;
-    if (lenis) lenis.scrollTo(y, { duration: 0.9 });
-    else window.scrollTo({ top: y, behavior: "smooth" });
+    if (live && el) {
+      // the jump plays through the intermediate positions, so the slide
+      // itself stays visible even on click
+      const vh = window.innerHeight;
+      const y =
+        el.getBoundingClientRect().top +
+        window.scrollY +
+        ((i + 0.5) / 4) * (el.offsetHeight - vh);
+      const lenis = lenisRef.current;
+      if (lenis) lenis.scrollTo(y, { duration: 1.1 });
+      else window.scrollTo({ top: y, behavior: "smooth" });
+      return;
+    }
+    setActive(i);
+    const vp = viewportRef.current;
+    if (vp) {
+      const w =
+        trackRef.current?.children[0]?.getBoundingClientRect().width ||
+        vp.clientWidth;
+      vp.scrollTo({ left: i * w, behavior: "smooth" });
+    }
   };
 
   return (
     <div
       className={`cf-futures${live ? " is-live" : ""}`}
       ref={wrapRef}
-      style={{ "--cf-sc": sc.color } as CSSProperties}
+      style={{ "--fu-wash": sc.color, "--fu-a": active } as CSSProperties}
     >
       <div className="cf-futures-stage">
-      <div className="cf-futures-tabs" role="group" aria-label="Four speculative futures">
-        {SCENARIOS.map((s, i) => (
-          <button
-            key={s.key}
-            type="button"
-            className={`cf-chip cf-chip--dot${i === active ? " is-on" : ""}`}
-            style={{ "--cf-dot": s.color } as CSSProperties}
-            aria-pressed={i === active}
-            onClick={() => goTo(i)}
-          >
-            {s.name}
-          </button>
-        ))}
-      </div>
-
-      <div className="cf-stage" key={sc.key}>
-        <p className="cf-stage-tagline">{sc.tagline}</p>
-        <div
-          className="cf-diagram"
-          role="img"
-          aria-label={`Power diagram: ${NODES[sc.authority]} holds the final say`}
-        >
-          {NODES.map((n, i) => (
-            <div
-              className={`cf-node${sc.authority === i ? " has-say" : ""}`}
-              key={n}
-            >
-              <span className="cf-node-name">{n}</span>
-              <span className="cf-node-say">final say</span>
-            </div>
-          ))}
-          <div className="cf-lane cf-lane-a">
-            <span className={`cf-arrow is-${sc.laneA.dir}`} />
-            <span className="cf-lane-verb">{sc.laneA.verb}</span>
+        <div className="cf-fu-head">
+          <div className="cf-fu-labels" role="group" aria-label="Four speculative futures">
+            {SCENARIOS.map((s, i) => (
+              <button
+                key={s.key}
+                type="button"
+                className={i === active ? "is-on" : undefined}
+                style={{ "--cf-dot": s.color } as CSSProperties}
+                aria-current={i === active ? "true" : undefined}
+                onClick={() => goTo(i)}
+              >
+                <span className="cf-fu-dot" aria-hidden="true" />
+                {s.name}
+              </button>
+            ))}
           </div>
-          <div className="cf-lane cf-lane-b">
-            <span className={`cf-arrow is-${sc.laneB.dir}`} />
-            <span className="cf-lane-verb">{sc.laneB.verb}</span>
+          <div className="cf-fu-progress" aria-hidden="true">
+            <span className="cf-fu-thumb" />
+          </div>
+          <p className="cf-fu-hint" aria-hidden="true">
+            swipe →
+          </p>
+        </div>
+
+        <div className="cf-fu-viewport" ref={viewportRef}>
+          <div className="cf-fu-track" ref={trackRef}>
+            {SCENARIOS.map((s) => (
+              <section
+                className="cf-fu-panel"
+                key={s.key}
+                style={{ "--cf-sc": s.color } as CSSProperties}
+                aria-label={s.name}
+              >
+                <p className="cf-stage-tagline">{s.tagline}</p>
+                <div
+                  className="cf-diagram"
+                  role="img"
+                  aria-label={`Power diagram: ${NODES[s.authority]} holds the final say`}
+                >
+                  {NODES.map((n, i) => (
+                    <div
+                      className={`cf-node${s.authority === i ? " has-say" : ""}`}
+                      key={n}
+                    >
+                      <span className="cf-node-name">{n}</span>
+                      <span className="cf-node-say">final say</span>
+                    </div>
+                  ))}
+                  <div className="cf-lane cf-lane-a">
+                    <span className={`cf-arrow is-${s.laneA.dir}`} />
+                    <span className="cf-lane-verb">{s.laneA.verb}</span>
+                  </div>
+                  <div className="cf-lane cf-lane-b">
+                    <span className={`cf-arrow is-${s.laneB.dir}`} />
+                    <span className="cf-lane-verb">{s.laneB.verb}</span>
+                  </div>
+                </div>
+                <figure className="cf-futures-flow">
+                  <div className="cf-futures-flow-media">
+                    <Image
+                      src={s.flow.src}
+                      alt={`Decision-flow diagram for ${s.name}`}
+                      width={s.flow.width}
+                      height={s.flow.height}
+                      sizes="(max-width: 900px) 100vw, 1120px"
+                      loading="eager"
+                    />
+                  </div>
+                  <figcaption>
+                    Working flow from the team’s Figma — {s.flow.line}
+                  </figcaption>
+                </figure>
+                <p className="cf-verdict">
+                  <span className="cf-verdict-quote">“{s.verdict.quote}”</span>
+                  <span className="cf-verdict-source">{s.verdict.source}</span>
+                </p>
+              </section>
+            ))}
           </div>
         </div>
-        <figure className="cf-futures-flow">
-          <div className="cf-futures-flow-media">
-            <Image
-              src={sc.flow.src}
-              alt={`Decision-flow diagram for ${sc.name}`}
-              width={sc.flow.width}
-              height={sc.flow.height}
-              sizes="(max-width: 900px) 100vw, 1120px"
-            />
-          </div>
-          <figcaption>
-            Working flow from the team’s Figma — {sc.flow.line}
-          </figcaption>
-        </figure>
-        <p className="cf-verdict">
-          <span className="cf-verdict-quote">“{sc.verdict.quote}”</span>
-          <span className="cf-verdict-source">{sc.verdict.source}</span>
-        </p>
-      </div>
       </div>
     </div>
   );

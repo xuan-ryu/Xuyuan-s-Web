@@ -660,8 +660,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             ))}
           </div>
           <InteractiveCue className="cf-cue">
-            Switch futures — the same billing case under four power
-            structures.
+            Ride the scroll — the same billing case slides through four
+            power structures.
           </InteractiveCue>
           <CfFutures />
         </div>
@@ -1971,8 +1971,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: rgba(248, 250, 252, 0.6);
         }
 
-        /* pinned four-futures stage: one viewport, scroll scrubs the four
-           power structures; the wash under it takes each scenario's color */
+        /* pinned four-futures stage: vertical scroll SLIDES the four power
+           structures horizontally — dwell, then visible travel; the wash
+           takes the active scenario's color. Without JS (and on mobile) the
+           same track is a native horizontal swipe carousel. */
         .cf-futures.is-live {
           height: 380vh;
         }
@@ -1997,14 +1999,104 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           z-index: -1;
           pointer-events: none;
           background:
-            radial-gradient(88% 72% at 50% 10%, color-mix(in srgb, var(--cf-sc) 15%, transparent), transparent 72%);
+            radial-gradient(88% 72% at 50% 10%, color-mix(in srgb, var(--fu-wash) 15%, transparent), transparent 72%);
           transition: background 0.6s var(--ease-silk);
         }
         .cf-futures.is-live .cf-futures-flow-media img {
           width: 100%;
-          max-height: 34vh;
+          max-height: 32vh;
           object-fit: contain;
           background: #fff;
+        }
+        .cf-fu-head {
+          display: grid;
+          gap: 12px;
+          margin-bottom: clamp(18px, 2.2vw, 28px);
+        }
+        .cf-fu-labels {
+          display: flex;
+          flex-wrap: wrap;
+          gap: clamp(14px, 2.4vw, 36px);
+        }
+        .cf-fu-labels button {
+          appearance: none;
+          border: 0;
+          background: transparent;
+          padding: 2px 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+          font: inherit;
+          font-size: var(--text-meta);
+          font-weight: 500;
+          color: rgba(248, 250, 252, 0.5);
+          transition: color var(--dur-fast) ease;
+        }
+        .cf-fu-labels button:hover { color: rgba(248, 250, 252, 0.86); }
+        .cf-fu-labels button.is-on { color: #f8fafd; }
+        .cf-fu-labels button:focus-visible {
+          outline: var(--focus-ring);
+          outline-offset: var(--focus-offset);
+        }
+        .cf-fu-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 9999px;
+          background: var(--cf-dot);
+          flex: none;
+          opacity: 0.5;
+          transition: opacity var(--dur-fast) ease;
+        }
+        .cf-fu-labels button.is-on .cf-fu-dot { opacity: 1; }
+        .cf-fu-progress {
+          position: relative;
+          height: 2px;
+          background: rgba(248, 250, 252, 0.14);
+        }
+        .cf-fu-thumb {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 25%;
+          background: var(--fu-wash);
+          transform: translateX(calc(var(--fu-t, var(--fu-a, 0)) * 100%));
+          transition: background 0.5s var(--ease-silk);
+        }
+        .cf-futures:not(.is-live) .cf-fu-thumb {
+          transition: background 0.5s var(--ease-silk), transform 0.4s var(--ease-silk);
+        }
+        .cf-fu-hint {
+          display: none;
+          margin: 0;
+          font-family: var(--cf-mono);
+          font-size: var(--text-micro);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(248, 250, 252, 0.5);
+        }
+        .cf-fu-viewport {
+          overflow: hidden;
+        }
+        .cf-fu-track {
+          display: flex;
+          will-change: transform;
+        }
+        .cf-fu-panel {
+          flex: 0 0 100%;
+          min-width: 0;
+          box-sizing: border-box;
+          padding-right: clamp(32px, 4vw, 64px);
+        }
+        .cf-futures:not(.is-live) .cf-fu-viewport {
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scrollbar-width: thin;
+          overscroll-behavior-x: contain;
+        }
+        .cf-futures:not(.is-live) .cf-fu-panel {
+          scroll-snap-align: start;
         }
 
         /* the authority gate, enacted: sticky three-step scrub */
@@ -2144,7 +2236,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           flex: none;
         }
 
-        .cf-worlds-switch, .cf-futures-tabs, .cf-seats-switch {
+        .cf-worlds-switch, .cf-seats-switch {
           display: flex; flex-wrap: wrap; gap: 10px;
           margin-bottom: clamp(20px, 2.4vw, 32px);
         }
@@ -2909,6 +3001,11 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
 
         @media (max-width: 900px) {
           .cf-grid { display: block; }
+          .cf-fu-hint { display: block; }
+          .cf-fu-panel {
+            flex-basis: 88%;
+            padding-right: 16px;
+          }
           .cf-brandbar {
             align-items: flex-start;
             flex-direction: column;
