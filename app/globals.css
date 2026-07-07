@@ -481,8 +481,10 @@ body.hero-night .nav-links a.active {
 /* ============================================================
    Footer
    ============================================================ */
-/* Full-bleed ink band (owner: the inset rounded card read as a harsh floating
-   black box). Edge-to-edge like the koi band; content keeps the old rail. */
+/* Full-bleed ink colophon on the site grid (redesign 2026-07-07; the earlier
+   centered stack was Framer parity). The email is the condensed display
+   anchor, the seal is the closing stamp (the footer's one red), and a
+   hairline meta row carries pages / elsewhere / copyright. Amber = hover. */
 .site-footer {
   margin-top: -1px;
   position: relative;
@@ -492,58 +494,82 @@ body.hero-night .nav-links a.active {
   background-size: auto, 100px 100px;
   color: var(--paper);
 }
-.footer-inner {
-  min-height: 286px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 34px;
-  max-width: 1356px;
-  margin: 0 auto;
-  padding: 56px 28px 36px;
-  position: relative;
+.footer-shell {
+  width: min(1408px, 100% - 2 * clamp(24px, 5vw, 120px));
+  margin-inline: auto;
+  padding-block: clamp(56px, 7vw, 96px) clamp(28px, 3vw, 40px);
 }
-.footer-socials-row {
-  position: absolute;
-  top: 56px;
-  left: 70px;
-  right: 70px;
-  display: flex;
-  justify-content: space-between;
+.footer-main {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(18px, 2.3vw, 32px);
+  align-items: end;
+  padding-bottom: clamp(36px, 4.5vw, 64px);
 }
-.footer-socials-row a {
-  font-family: var(--font-text);
+.footer-cta {
+  grid-column: 1 / 10;
+  min-width: 0;
+}
+.footer-eyebrow {
+  font-family: var(--font-mono);
   font-size: var(--text-label);
-  font-weight: 500;
-  letter-spacing: var(--track-caps);
-  color: var(--paper);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.46);
+  margin-bottom: clamp(12px, 1.6vw, 20px);
+}
+.footer-email {
+  display: inline-block;
+  font-family: var(--font-condensed);
+  font-size: clamp(30px, 4.6vw, 72px);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  color: var(--paper);
+  overflow-wrap: anywhere;
   transition: color var(--dur-fast) ease;
 }
-.footer-socials-row a:hover {
+.footer-email:hover {
   color: var(--accent-amber);
 }
-.footer-socials-row a:focus-visible,
-.footer-nav a:focus-visible,
-.footer-email:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset);
-}
 .footer-mark {
+  grid-column: 11 / 13;
+  justify-self: end;
   width: 36px;
 }
 .footer-mark img {
   width: 100%;
   height: auto;
 }
-.footer-nav {
-  display: flex;
-  justify-content: center;
-  gap: 38px;
-  flex-wrap: wrap;
-  align-items: center;
+.footer-meta {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(18px, 2.3vw, 32px);
+  align-items: start;
+  padding-top: clamp(22px, 2.6vw, 32px);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
-.footer-nav a {
+.footer-col {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+.footer-col:first-child {
+  grid-column: 1 / 4;
+}
+.footer-col:nth-child(2) {
+  grid-column: 4 / 7;
+}
+.footer-col-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 2px;
+}
+.footer-col a {
   font-family: var(--font-text);
   font-size: var(--text-label);
   font-weight: 500;
@@ -552,41 +578,41 @@ body.hero-night .nav-links a.active {
   text-transform: uppercase;
   transition: color var(--dur-fast) ease;
 }
-.footer-nav a:hover {
+.footer-col a:hover {
   color: var(--accent-amber);
 }
-.footer-email {
-  font-family: var(--font-text);
-  font-size: var(--text-meta);
-  color: rgba(255, 255, 255, 0.72);
-  transition: color var(--dur-fast) ease;
-}
-.footer-email:hover {
-  color: var(--accent-amber);
+.footer-col a:focus-visible,
+.footer-email:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 .footer-copy {
-  font-family: var(--font-serif);
+  grid-column: 10 / 13;
+  justify-self: end;
+  align-self: end;
+  font-family: var(--font-text);
   font-size: var(--text-label);
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.62);
   letter-spacing: 0.04em;
 }
-@media (max-width: 600px) {
-  .footer-inner {
-    min-height: 261px;
-    gap: 18px;
-    padding: 64px 20px 26px;
-    text-align: center;
-  }
-  .footer-socials-row {
-    top: 26px;
-    left: 20px;
-    right: 20px;
+@media (max-width: 720px) {
+  .footer-main {
+    display: block;
+    padding-bottom: 32px;
   }
   .footer-mark {
-    width: 29px;
+    width: 30px;
+    margin-top: 24px;
   }
-  .footer-nav {
-    gap: 18px;
+  .footer-meta {
+    display: block;
+  }
+  .footer-col {
+    margin-bottom: 24px;
+  }
+  .footer-copy {
+    display: block;
+    margin-top: 8px;
   }
 }
 
