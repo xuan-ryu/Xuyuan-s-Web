@@ -126,7 +126,7 @@ const css = `
 }
 
 .vrmb-meta div {
-  padding: 13px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--work-rule);
 }
 
@@ -225,6 +225,13 @@ const css = `
   stroke-width: 1;
 }
 
+/* phone variants of the labels + distance note ship in the same SVG and are
+   toggled here — see the media block near the phone breakpoint below */
+.vrmb-flight-labels--narrow,
+.vrmb-flight-note--narrow {
+  display: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .vrmb-flight.is-rewound .vrmb-flight-rule {
     stroke-dashoffset: 1;
@@ -257,18 +264,6 @@ const css = `
   padding-top: clamp(76px, 8vw, 124px);
   padding-bottom: clamp(76px, 8vw, 124px);
   row-gap: clamp(28px, 3vw, 44px);
-}
-
-.vrmb-kicker {
-  grid-column: 1 / 2;
-  grid-row: 1;
-  margin: 0;
-  font-size: var(--text-label);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(5, 5, 5, 0.48);
 }
 
 .vrmb-h2 {
@@ -346,6 +341,12 @@ const css = `
 
 .vrmb-pair-cap {
   grid-column: 1 / 7;
+}
+
+/* the single meadow plate — wider than a half, short of full bleed
+   (source crop is 519px; see the figure's comment) */
+.vrmb-meadow {
+  grid-column: 1 / 9;
 }
 
 /* ---- 4 · workbench callouts ---- */
@@ -656,7 +657,6 @@ const css = `
   .vrmb-lede,
   .vrmb-meta,
   .vrmb-specimen,
-  .vrmb-kicker,
   .vrmb-h2,
   .vrmb-copy,
   .vrmb-about .vrmb-copy,
@@ -692,6 +692,23 @@ const css = `
 
   .vrmb-colony-media {
     height: clamp(300px, 52vh, 460px);
+  }
+
+  /* flight line — stacked two-line waypoint labels + a start-anchored,
+     two-line distance note (the wide one-liner collided mid-label and
+     overflowed the shell at 390px) */
+  .vrmb-flight {
+    height: 100px;
+  }
+
+  .vrmb-flight-labels--wide,
+  .vrmb-flight-note--wide {
+    display: none;
+  }
+
+  .vrmb-flight-labels--narrow,
+  .vrmb-flight-note--narrow {
+    display: inline;
   }
 
   .vrmb-chapter {
@@ -750,8 +767,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
     ["Year:", poster.details.year],
     ["Services:", poster.details.services],
   ];
-  // the essay's first paragraph, minus its literal "Synopsis:" prefix
-  const benchBody = poster.body[0]?.replace(/^Synopsis:\s*/, "");
+  const benchBody = poster.body[0];
   const codaBody = poster.body[1];
 
   return (
@@ -762,8 +778,11 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
 
       {/* 1 · Specimen plate */}
       <header className="vrmb-shell vrmb-grid vrmb-hero" id="header">
+        {/* no catalogue numeral here — the /work index numbers rows itself
+            (continuous counter in app/work/page.tsx); a hardcoded copy
+            drifted once already ("Work 05" vs index 08) */}
         <p className="vrmb-eyebrow" data-fade>
-          Work 05 — VR · Unity
+          VR · Unity
         </p>
         <h1 data-fade>{project.title}</h1>
         <p className="vrmb-plate" data-fade>
@@ -808,7 +827,9 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
       {/* 2 · The colony */}
       <section className="vrmb-colony" aria-label="The overwintering colony">
         <figure className="vrmb-colony-fig" data-fade>
-          <div className="vrmb-colony-media">
+          {/* data-nav-dark: full-bleed dark render scrolls under the nav —
+              the header sampler flips the links to paper ink over it */}
+          <div className="vrmb-colony-media" data-nav-dark>
             <Image
               src={`${MEDIA}/colony-sky.jpg`}
               alt="In-headset view of the VR scene: a colony of monarch butterflies lifting off conifer trees into a clouded blue sky"
@@ -833,9 +854,6 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
         className="vrmb-shell vrmb-grid vrmb-chapter vrmb-about"
         aria-labelledby="vrmb-about-title"
       >
-        <p className="vrmb-kicker" data-fade>
-          01
-        </p>
         <h2 id="vrmb-about-title" className="vrmb-h2" data-fade>
           Becoming the butterfly
         </h2>
@@ -868,17 +886,20 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
         </div>
 
         <figure className="vrmb-fig" data-fade>
-          <Image
-            src={`${MEDIA}/render-pov.jpg`}
-            alt="First-person render from the VR piece: monarch wings at the player's eye line, a forest meadow beyond"
-            width={910}
-            height={525}
-            sizes="(max-width: 809px) 100vw, 1296px"
-          />
+          {/* data-nav-dark wraps the image only (not the paper figcaption):
+              the dark forest render passes under the transparent nav */}
+          <div data-nav-dark>
+            <Image
+              src={`${MEDIA}/render-pov.jpg`}
+              alt="Render from the VR piece: a monarch's open wings foregrounded at eye level, a forest meadow beyond"
+              width={910}
+              height={525}
+              sizes="(max-width: 809px) 100vw, 1296px"
+            />
+          </div>
           <figcaption>
             <span className="vrmb-index">Fig. 02</span>
-            You fly as the monarch — wings rendered from the player&rsquo;s eye
-            line.
+            Eye level with the monarch — wings foregrounded, the grove beyond.
           </figcaption>
         </figure>
       </section>
@@ -896,13 +917,17 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
         </div>
 
         <figure className="vrmb-fig" data-fade>
-          <Image
-            src={`${MEDIA}/editor-scene.png`}
-            alt="The Unity editor scene view: the grove with audio-source gizmos, a camera preview inset, and the AI navigation panel open"
-            width={915}
-            height={603}
-            sizes="(max-width: 809px) 100vw, 1296px"
-          />
+          {/* data-nav-dark: the Unity editor chrome is near-black and spans
+              the full shell — nav links were unreadable scrolling over it */}
+          <div data-nav-dark>
+            <Image
+              src={`${MEDIA}/editor-scene.png`}
+              alt="The Unity editor scene view: the grove with audio-source gizmos, a camera preview inset, and the AI navigation panel open"
+              width={915}
+              height={603}
+              sizes="(max-width: 809px) 100vw, 1296px"
+            />
+          </div>
           <figcaption>
             <span className="vrmb-index">Fig. 03</span>
             The scene in the Unity editor, camera rig at the meadow&rsquo;s
@@ -931,29 +956,27 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
           </li>
         </ul>
 
-        <figure className="vrmb-fig vrmb-half-a" data-fade>
-          <Image
-            src={`${MEDIA}/meadow-a.jpg`}
-            alt="Ground-level render: a monarch resting in the meadow grass at the edge of the grove"
-            width={522}
-            height={295}
-            sizes="(max-width: 809px) 100vw, 640px"
-          />
+        {/* single meadow plate — the former diptych paired two crops taken
+            from adjacent positions in the same source render (near
+            duplicates); meadow-b keeps the fuller composition. Width is
+            capped at 8 columns (.vrmb-meadow): the crop is 519px at source,
+            so full-bleed would over-upscale it. */}
+        <figure className="vrmb-fig vrmb-meadow" data-fade>
+          <div data-nav-dark>
+            <Image
+              src={`${MEDIA}/meadow-b.jpg`}
+              alt="Ground-level render: a monarch among wildflowers, forest light falling across the clearing"
+              width={519}
+              height={294}
+              sizes="(max-width: 809px) 100vw, 880px"
+            />
+          </div>
+          <figcaption>
+            <span className="vrmb-index">Fig. 04</span>
+            Ground level in the grove — a monarch rests in the meadow between
+            flights.
+          </figcaption>
         </figure>
-        <figure className="vrmb-fig vrmb-half-b" data-fade>
-          <Image
-            src={`${MEDIA}/meadow-b.jpg`}
-            alt="Ground-level render: monarchs among wildflowers, forest light falling across the clearing"
-            width={519}
-            height={294}
-            sizes="(max-width: 809px) 100vw, 640px"
-          />
-        </figure>
-        <p className="vrmb-cap vrmb-pair-cap" data-fade>
-          <span className="vrmb-index">Fig. 04</span>
-          Ground level in the grove — monarchs rest in the meadow between
-          flights.
-        </p>
       </section>
 
       {/* 5 · Skyward */}
@@ -1035,9 +1058,6 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
         className="vrmb-shell vrmb-grid vrmb-chapter vrmb-coda"
         aria-labelledby="vrmb-coda-title"
       >
-        <p className="vrmb-kicker" data-fade>
-          02
-        </p>
         <h2 id="vrmb-coda-title" className="vrmb-h2" data-fade>
           From documentary to instrument
         </h2>
@@ -1137,7 +1157,8 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
 //                       x201-991 y82-627 + white margin; bg is pure #ffffff)
 //   editor-scene.png    915x603 <- eBiTIT…png  x48  y103
 //   render-pov.jpg      910x525 <- eBiTIT…png  x48  y777
-//   meadow-a.jpg        522x295 <- eBiTIT…png  x48  y1331
+//   meadow-a.jpg        522x295 <- eBiTIT…png  x48  y1331 (unreferenced since
+//                       2026-07-08 — near-duplicate of meadow-b; asset kept)
 //   meadow-b.jpg        519x294 <- eBiTIT…png  x605 y1332
 //   colony-sky.jpg      902x512 <- zybEC…png   x61  y65
 //   sky-sun.jpg         535x299 <- zybEC…png   x54  y600

@@ -43,16 +43,40 @@ export function VrmbFlightLine() {
       role="img"
       aria-label="Flight line from Oberlin, Ohio through the Texas flyway to El Rosario, Mexico — a migration of up to about 4,800 kilometres flown south by a single generation, with several generations returning"
     >
-      {/* waypoint labels */}
-      <text x="0" y="26" textAnchor="start">
-        OBERLIN OH
-      </text>
-      <text x="52%" y="26" textAnchor="middle">
-        TEXAS FLYWAY
-      </text>
-      <text x="100%" y="26" textAnchor="end">
-        EL ROSARIO MX
-      </text>
+      {/* waypoint labels — wide screens read one line per stop; on phones
+          (≤809.98px, toggled in vrmb-poster-layout CSS) each label stacks
+          into two short lines so the three anchors never collide at 390px */}
+      <g className="vrmb-flight-labels vrmb-flight-labels--wide">
+        <text x="0" y="26" textAnchor="start">
+          OBERLIN OH
+        </text>
+        <text x="52%" y="26" textAnchor="middle">
+          TEXAS FLYWAY
+        </text>
+        <text x="100%" y="26" textAnchor="end">
+          EL ROSARIO MX
+        </text>
+      </g>
+      <g className="vrmb-flight-labels vrmb-flight-labels--narrow">
+        <text x="0" y="10" textAnchor="start">
+          OBERLIN
+        </text>
+        <text x="0" y="26" textAnchor="start">
+          OH
+        </text>
+        <text x="52%" y="10" textAnchor="middle">
+          TEXAS
+        </text>
+        <text x="52%" y="26" textAnchor="middle">
+          FLYWAY
+        </text>
+        <text x="100%" y="10" textAnchor="end">
+          EL ROSARIO
+        </text>
+        <text x="100%" y="26" textAnchor="end">
+          MX
+        </text>
+      </g>
       {/* ticks */}
       <line className="vrmb-flight-tick" x1="0.5" y1="38" x2="0.5" y2="46" />
       <line className="vrmb-flight-tick" x1="52%" y1="38" x2="52%" y2="46" />
@@ -66,10 +90,25 @@ export function VrmbFlightLine() {
         y2="46.5"
         pathLength={1}
       />
-      {/* distance note */}
-      <text className="vrmb-flight-note" x="100%" y="72" textAnchor="end">
+      {/* distance note — end-anchored single line on wide screens; on phones
+          it starts at x=0 and wraps to two lines so the bbox never leaves
+          the shell (the one-liner overflowed left by ~83px at 390px) */}
+      <text
+        className="vrmb-flight-note vrmb-flight-note--wide"
+        x="100%"
+        y="72"
+        textAnchor="end"
+      >
         UP TO ≈4,800 KM — ONE GENERATION SOUTH, SEVERAL BACK
       </text>
+      <g className="vrmb-flight-note vrmb-flight-note--narrow">
+        <text x="0" y="72" textAnchor="start">
+          UP TO ≈4,800 KM
+        </text>
+        <text x="0" y="88" textAnchor="start">
+          ONE GENERATION SOUTH, SEVERAL BACK
+        </text>
+      </g>
     </svg>
   );
 }
