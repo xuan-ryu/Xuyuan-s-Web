@@ -1806,15 +1806,15 @@ const nymaCss = `
 }
 .ny-loop-row {
   display: grid;
-  grid-template-columns: 1fr 20px 1fr 20px 1fr 20px 1fr;
+  grid-template-columns: 1fr clamp(24px, 3vw, 48px) 1fr clamp(24px, 3vw, 48px) 1fr clamp(24px, 3vw, 48px) 1fr;
   align-items: stretch;
-  gap: 6px;
+  gap: 8px;
 }
 .ny-loop-node {
   border: 1px solid var(--ny-line-strong);
-  padding: 14px 12px;
+  padding: 18px 18px 16px;
   display: grid;
-  gap: 6px;
+  gap: 10px;
   align-content: start;
   transition: border-color 0.4s var(--ease-silk), background 0.4s var(--ease-silk);
 }
@@ -1828,10 +1828,11 @@ const nymaCss = `
 .ny-loop-node em {
   font-style: normal;
   font-family: var(--ny-mono);
-  font-size: 10px;
-  line-height: 1.5;
-  letter-spacing: 0.03em;
-  color: var(--ny-text-4);
+  font-size: 11px;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: var(--ny-text-3);
+  max-width: 24ch;
 }
 /* lit = trace yellow: the loop is a static diagram, and blue is reserved
    for genuinely interactive states (2026-07-07 audit — the page must obey
@@ -2746,7 +2747,9 @@ export function NymaCaseLayout({ project }: { project: Project }) {
               <TopicHead number={codify.number} page="06" title={codify.title} />
               <div className="ny-section">
                 {codify.sections[0] && <Prose section={codify.sections[0]} />}
-                <figure className="ny-aside" data-fade>
+                {/* full row: four columns in a 430px aside wrapped one word
+                    per line (owner bug report) — the loop needs air */}
+                <figure className="ny-full" data-fade>
                   <div
                     className="ny-loop"
                     role="img"

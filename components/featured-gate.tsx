@@ -517,7 +517,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                     style={{ ["--row-i" as string]: i }}
                     onMouseEnter={() => pick(i)}
                     onFocus={() => pick(i)}
-                    aria-label={`${p.title} 闁?${p.tags.join(", ")}`}
+                    aria-label={`${p.title} — ${p.tags.join(", ")}`}
                   >
                     <span className="fg-row-head">
                       <span className="fg-row-num">{num(i)}</span>
@@ -527,7 +527,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                       <span className="fg-row-detail-in">
                         <span className="fg-row-desc">{p.oneliner}</span>
                         <span className="fg-row-meta">
-                          <span className="fg-row-tags">{p.tags.join(" 鐠?")}</span>
+                          <span className="fg-row-tags">{p.tags.join(" · ")}</span>
                           <span className="fg-row-cta cta cta--quiet">View Project</span>
                         </span>
                       </span>

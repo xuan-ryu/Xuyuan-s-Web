@@ -455,7 +455,7 @@ export const projects: Project[] = [
       },
     ],
     order: 1,
-    featured: false,
+    featured: true,
   },
   {
     slug: "vicino-ai",
@@ -819,7 +819,7 @@ export const projects: Project[] = [
       },
     ],
     order: 5,
-    featured: true,
+    featured: false,
   },
   {
     slug: "cloud-support-futures",
