@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 
 type HungerLoupeFrameProps = {
   src: string;
+  /** pre-compressed background for the loupe (native-width JPEG, not the
+      full PNG) — the loupe must never re-download the original asset */
+  loupeSrc: string;
   alt: string;
   width: number;
   height: number;
@@ -21,6 +24,7 @@ type HungerLoupeFrameProps = {
 // quiet CTAs instead. React's synthetic handlers detach on unmount.
 export function HungerLoupeFrame({
   src,
+  loupeSrc,
   alt,
   width,
   height,
@@ -28,6 +32,30 @@ export function HungerLoupeFrame({
   priority,
 }: HungerLoupeFrameProps) {
   const frameRef = useRef<HTMLDivElement>(null);
+
+  // The loupe background mounts only once the frame nears the viewport (and
+  // only on hover-capable fine pointers — elsewhere the loupe never shows, so
+  // its image must never download). One-shot observer on the frame div itself:
+  // the frame is never transformed/scaled, so it always reports real area
+  // (the scaleX-collapse trap lives on the ::before rules, not here). Without
+  // JS the loupe is a hover enhancement and simply stays unarmed.
+  const [loupeArmed, setLoupeArmed] = useState(false);
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setLoupeArmed(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "25% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const track = (e: PointerEvent<HTMLDivElement>) => {
     const el = frameRef.current;
@@ -75,7 +103,7 @@ export function HungerLoupeFrame({
       <div
         className="hunger-loupe"
         aria-hidden="true"
-        style={{ backgroundImage: `url("${src}")` }}
+        style={loupeArmed ? { backgroundImage: `url("${loupeSrc}")` } : undefined}
       />
     </div>
   );
