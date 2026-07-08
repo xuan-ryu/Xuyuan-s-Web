@@ -48,3 +48,6 @@ dev-server.log
 
 # local working snapshots (not for the repo)
 backups/
+
+# local-only archives (moved out of the served tree + repo)
+/archive-local

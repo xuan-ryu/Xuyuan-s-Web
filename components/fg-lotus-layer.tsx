@@ -37,15 +37,15 @@ export type LotusPad = {
 };
 
 const LOTUS_ASSETS = [
-  "/media/home/lotus/generated/single-transparent/01-large-leaf-flower-left-alpha.png",
-  "/media/home/lotus/generated/single-transparent/02-medium-leaf-top-alpha.png",
-  "/media/home/lotus/generated/single-transparent/03-medium-light-leaf-top-right-alpha.png",
-  "/media/home/lotus/generated/single-transparent/04-medium-leaf-center-alpha.png",
-  "/media/home/lotus/generated/single-transparent/05-small-leaf-right-alpha.png",
-  "/media/home/lotus/generated/single-transparent/06-medium-light-leaf-bottom-left-alpha.png",
-  "/media/home/lotus/generated/single-transparent/07-rolled-young-leaf-alpha.png",
-  "/media/home/lotus/generated/single-transparent/08-large-leaf-flower-bottom-center-alpha.png",
-  "/media/home/lotus/generated/single-transparent/09-medium-leaf-bottom-right-alpha.png",
+  "/media/home/lotus/generated/single-transparent/01-large-leaf-flower-left-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/02-medium-leaf-top-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/03-medium-light-leaf-top-right-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/04-medium-leaf-center-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/05-small-leaf-right-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/06-medium-light-leaf-bottom-left-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/07-rolled-young-leaf-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/08-large-leaf-flower-bottom-center-alpha.webp",
+  "/media/home/lotus/generated/single-transparent/09-medium-leaf-bottom-right-alpha.webp",
 ] as const;
 
 // ---- deterministic bank generator ------------------------------------------
