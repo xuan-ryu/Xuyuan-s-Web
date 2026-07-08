@@ -994,7 +994,12 @@ const factsRef = useRef<HTMLParagraphElement>(null)
         let inView = true
         let started = false
         const updateRunState = () => {
-            if (document.hidden || !inView) {
+            // Phones render the plain photo (canvas is display:none there), so the
+            // particle sim would only burn battery drawing to a hidden canvas.
+            const phonePhoto =
+                typeof window.matchMedia === "function" &&
+                window.matchMedia("(max-width: 768px)").matches
+            if (phonePhoto || document.hidden || !inView) {
                 cancelAnimationFrame(rafId)
                 rafId = 0
             } else if (!rafId && started) {
@@ -1118,6 +1123,41 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     z-index: 0;
                     pointer-events: none;
                     display: block;
+                }
+
+                /* Phones get the source photo straight, not the particle field:
+                   sampled at phone density the night scene reads as faint noise
+                   on white (near-blank). Desktop/tablet keep the canvas; this
+                   image and its legibility scrim only switch on under 768. */
+                .hyf-photo-bg {
+                    display: none;
+                    position: absolute;
+                    inset: 0;
+                    z-index: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    object-position: 62% center;
+                    pointer-events: none;
+                    user-select: none;
+                }
+                .hyf-photo-scrim {
+                    display: none;
+                    position: absolute;
+                    inset: 0;
+                    z-index: 1;
+                    pointer-events: none;
+                    /* darken the lower half where the hero copy sits, keep the
+                       skyline breathing up top */
+                    background:
+                        linear-gradient(
+                            180deg,
+                            rgba(4, 6, 10, 0.34) 0%,
+                            rgba(4, 6, 10, 0.16) 26%,
+                            rgba(4, 6, 10, 0.60) 48%,
+                            rgba(4, 6, 10, 0.88) 70%,
+                            rgba(4, 6, 10, 0.95) 100%
+                        );
                 }
 
                 .hyf-glow {
@@ -1402,6 +1442,32 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                 }
 
                 @media (max-width: 768px) {
+                    /* swap the particle canvas for the actual photograph */
+                    .hyf-stage canvas { display: none; }
+                    .hyf-photo-bg,
+                    .hyf-photo-scrim { display: block; }
+                    .hyf-stage { background: #05070c; }
+
+                    /* copy now sits over a dark night photo — flip it to light,
+                       with a soft ink halo so thin weights hold over the lights */
+                    .hyf-top { color: rgba(255, 255, 255, 0.72); }
+                    .hyf-hero h1,
+                    .hyf-title {
+                        color: rgba(255, 255, 255, 0.98);
+                        text-shadow: 0 2px 26px rgba(2, 4, 8, 0.72);
+                    }
+                    .hyf-zh { color: rgba(255, 255, 255, 0.62); }
+                    .hyf-sub {
+                        color: rgba(255, 255, 255, 0.86);
+                        text-shadow: 0 1px 16px rgba(2, 4, 8, 0.78);
+                    }
+                    .hyf-facts {
+                        color: rgba(255, 255, 255, 0.58);
+                        text-shadow: 0 1px 14px rgba(2, 4, 8, 0.7);
+                    }
+                    .hyf-signature { color: rgba(255, 255, 255, 0.9); }
+                    .hyf-signature-note { color: rgba(255, 255, 255, 0.66); }
+
                     .hyf-ui {
                         padding:
                             calc(24px + env(safe-area-inset-top, 0px))
@@ -1573,6 +1639,12 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                 />
                 <canvas ref={canvasRef} />
                 <canvas ref={glowCanvasRef} className="hyf-glow" />
+                {/* phones show the photo itself (CSS switches these on under
+                    768; the particle canvas is hidden there). eslint: same
+                    source as the sampled image, intentionally a plain <img>. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="hyf-photo-bg" src={imageSrc} alt="" aria-hidden="true" />
+                <div className="hyf-photo-scrim" aria-hidden="true" />
 
                 <div className="hyf-ui">
                     <div ref={topRef} className="hyf-top">

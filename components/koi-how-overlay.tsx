@@ -31,6 +31,26 @@ const FEEDS_TO_REVEAL = 3;
 export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(forceReveal);
+  // "I just want to feed the fish" — retract the cards one by one and hand the
+  // whole pond back to feeding. retracting → the staggered exit is playing;
+  // dismissed → the overlay is gone and the water is fully feedable again.
+  const [retracting, setRetracting] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  const dismiss = () => {
+    if (retracting || dismissed) return;
+    setRetracting(true);
+    // let the staggered withdraw finish, then drop the overlay entirely so its
+    // cards stop catching pointer events over the water
+    window.setTimeout(() => {
+      setDismissed(true);
+      try {
+        window.dispatchEvent(new CustomEvent("koi:how-dismiss"));
+      } catch {
+        /* no-op */
+      }
+    }, 1150);
+  };
 
   useEffect(() => {
     if (forceReveal) return;
@@ -70,7 +90,9 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
   return (
     <div
       ref={rootRef}
-      className={`koi-how${revealed ? " is-revealed" : ""}`}
+      className={`koi-how${revealed ? " is-revealed" : ""}${
+        retracting ? " is-retracting" : ""
+      }${dismissed ? " is-dismissed" : ""}`}
     >
       <style>{stripCssComments(`
         .koi-how {
@@ -143,8 +165,55 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
         .koi-how.is-revealed .koi-how-card-2 { transition-delay: 0.30s; }
         .koi-how.is-revealed .koi-how-card-3 { transition-delay: 0.46s; }
 
+        /* "I just want to feed the fish" — a quiet line under the title, only
+           live once the cards are up (there's nothing to dismiss before that) */
+        .koi-how-feedcta {
+          position: absolute; left: 192px; top: calc(24vh + 128px);
+          display: inline-flex; align-items: center; gap: 9px;
+          padding: 4px 0;
+          background: none; border: 0; cursor: pointer;
+          pointer-events: none;
+          font-family: var(--font-newsreader);
+          font-size: var(--text-label);
+          font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
+          color: rgba(250, 250, 250, 0.82);
+          text-shadow: 0 1px 12px rgba(1, 2, 4, 0.85);
+          opacity: 0; transform: translateY(14px);
+          transition: opacity var(--dur-reveal) var(--ease-reveal),
+                      transform var(--dur-reveal) var(--ease-reveal),
+                      color 0.3s ease;
+        }
+        .koi-how-feedcta .koi-how-feedcta-line {
+          width: 26px; height: 1px; background: currentColor;
+          transform-origin: left; transition: width 0.3s var(--ease-silk);
+        }
+        .koi-how.is-revealed .koi-how-feedcta {
+          opacity: 1; transform: none; pointer-events: auto;
+          transition-delay: 0.62s;
+        }
+        .koi-how-feedcta:hover { color: rgba(255, 255, 255, 0.98); }
+        .koi-how-feedcta:hover .koi-how-feedcta-line { width: 40px; }
+
+        /* retract: reverse-staggered downward withdraw, then the CTA follows */
+        .koi-how.is-revealed.is-retracting .koi-how-title,
+        .koi-how.is-revealed.is-retracting .koi-how-card {
+          opacity: 0;
+          transform: translateY(46px) scale(0.965);
+        }
+        .koi-how.is-retracting .koi-how-card-3 { transition-delay: 0s; }
+        .koi-how.is-retracting .koi-how-card-2 { transition-delay: 0.12s; }
+        .koi-how.is-retracting .koi-how-card-1 { transition-delay: 0.24s; }
+        .koi-how.is-retracting .koi-how-title  { transition-delay: 0.36s; }
+        .koi-how.is-retracting .koi-how-feedcta {
+          opacity: 0; transform: translateY(20px);
+          pointer-events: none; transition-delay: 0s;
+        }
+        /* once retracted the overlay leaves entirely so the water underneath
+           is feedable again everywhere the cards used to sit */
+        .koi-how.is-dismissed { display: none; }
+
         @media (prefers-reduced-motion: reduce) {
-          .koi-how-title, .koi-how-card { transition: none; }
+          .koi-how-title, .koi-how-card, .koi-how-feedcta { transition: none; }
         }
         /* no JS: never hide the content behind the reveal */
         @media (scripting: none) {
@@ -157,6 +226,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
              the lower cards keep a real vertical gap instead of stacking into
              one dense block. */
           .koi-how-title { left: 48px; }
+          .koi-how-feedcta { left: 48px; }
           .koi-how-card { width: min(640px, calc(100vw - 96px)); }
           .koi-how-card-1 { left: auto; right: 48px; top: 400px; }
           .koi-how-card-2 { left: 48px; top: 768px; }
@@ -178,6 +248,10 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             padding: 460px 20px 96px;
           }
           .koi-how-title { position: static; }
+          .koi-how-feedcta {
+            position: static; left: auto; top: auto;
+            align-self: flex-start; margin-top: 4px;
+          }
           .koi-how-card,
           .koi-how-card-1, .koi-how-card-2, .koi-how-card-3 {
             position: static;
@@ -195,6 +269,17 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
       `)}</style>
       <div className="koi-how-canvas">
         <h2 className="koi-how-title">{title}</h2>
+        {!forceReveal && (
+          <button
+            type="button"
+            className="koi-how-feedcta"
+            onClick={dismiss}
+            aria-label="Hide How I Work and just feed the fish"
+          >
+            <span className="koi-how-feedcta-line" aria-hidden="true" />
+            I just want to feed the fish
+          </button>
+        )}
         {methods.map((method, i) => (
           <div
             key={method.title}
@@ -204,6 +289,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
               title={method.title}
               subtitle={method.heading}
               bodyText={method.body}
+              interactive={false}
             />
           </div>
         ))}

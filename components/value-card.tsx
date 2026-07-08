@@ -8,9 +8,18 @@ type Props = {
   title: string;
   subtitle: string;
   bodyText: string;
+  /** When false the card is purely informational: no pointer tilt/scale/press,
+      no glow-follow, no pointer cursor — hovering changes nothing. Used on the
+      koi pond, where the cards are read-only captions over feedable water. */
+  interactive?: boolean;
 };
 
-export function ValueCard({ title, subtitle, bodyText }: Props) {
+export function ValueCard({
+  title,
+  subtitle,
+  bodyText,
+  interactive = true,
+}: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,6 +31,9 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
         el.classList.add("card-revealed");
       });
     });
+
+    // Read-only variant: reveal only, no pointer-reactive motion at all.
+    if (!interactive) return;
 
     let raf = 0;
 
@@ -109,7 +121,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
       el.removeEventListener("touchend", onTouchEnd);
       el.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, []);
+  }, [interactive]);
 
   return (
     <div
@@ -134,7 +146,7 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
           borderRadius: "clamp(24px, 4vw, 32px)",
           padding: "clamp(32px, 6vw, 48px) clamp(28px, 5vw, 42px)",
           overflow: "hidden",
-          cursor: "pointer",
+          cursor: interactive ? "pointer" : "default",
           boxSizing: "border-box",
           background: "rgba(16, 16, 16, 0.5)",
           backdropFilter: "blur(28px) saturate(130%)",

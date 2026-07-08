@@ -338,6 +338,7 @@ export const projects: Project[] = [
     title: "Nyma",
     template: "case",
     cover: `/media/work/nyma/cover.png`,
+    previewVideo: `/media/work/nyma/preview.mp4`,
     coverClass: "cover-nyma",
     tags: ["Brand & Product", "Design System", "AI Workflow"],
     oneliner:
