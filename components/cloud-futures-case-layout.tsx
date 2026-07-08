@@ -61,12 +61,18 @@ const PRINCIPLES = [
   },
 ];
 
+// lean = where this study's final world settled on each axis (0 = fully the
+// left value, 100 = fully the right) — read off the framework decisions:
+// authority cues stay visible even when they add friction (transparency);
+// human verification is kept at the cost of speed (dignity); the human's
+// contextual override outranks rigid consistency; trust is earned by the
+// evidence packet, not a familiar face; and asking for a person costs nothing.
 const TENSIONS = [
-  ["Transparency", "Experience"],
-  ["Efficiency", "Dignity"],
-  ["Consistency", "Contextual judgment"],
-  ["Trust by familiarity", "Trust by competence"],
-  ["Open access", "Gatekeeping"],
+  { a: "Transparency", b: "Experience", lean: 32 },
+  { a: "Efficiency", b: "Dignity", lean: 66 },
+  { a: "Consistency", b: "Contextual judgment", lean: 62 },
+  { a: "Trust by familiarity", b: "Trust by competence", lean: 70 },
+  { a: "Open access", b: "Gatekeeping", lean: 34 },
 ];
 
 const RQS = [
@@ -249,26 +255,25 @@ const FRAMEWORK_EVIDENCE = [
   },
 ];
 
+// Process evidence only (the finished interfaces and the "human authorizes"
+// verdict live in 07 · Final synthesis — one home per fact): two shots of the
+// raw generated output, captioned for what the process produced.
 const AI_PROTO_SHOTS = [
   {
-    src: "/media/work/cloud-futures/ai-voice-prototype-packet.png",
-    alt: "AI-generated Google Cloud voice prototype showing duplicate charge detection, a visible AI limitation, and a case packet being assembled.",
-    caption: "AI detects the issue, but cannot authorize the refund.",
+    src: "/media/work/cloud-futures/ai-voice-prototype-packet-trim.png",
+    alt: "AI-generated Google Cloud voice prototype: the billing console with the voice assistant mid-conversation over the duplicate-charge case.",
+    caption:
+      "First generated pass — the customer voice surface, running in the browser minutes after the prompt.",
+    width: 2880,
+    height: 1520,
   },
   {
     src: "/media/work/cloud-futures/ai-agent-interface-mid.png",
-    alt: "AI-generated Google Cloud agent interface showing a case packet, customer messages, flagged duplicate transactions, and a refund ready for human action.",
-    caption: "The agent sees queue state, evidence, and the human-only action.",
-  },
-  {
-    src: "/media/work/cloud-futures/ai-voice-prototype-agent.png",
-    alt: "Voice prototype later in the flow, where the AI connects the customer to a billing specialist.",
-    caption: "Handoff is explicit: AI prepares, human owns the decision.",
-  },
-  {
-    src: "/media/work/cloud-futures/ai-agent-interface-final.png",
-    alt: "Agent interface final state after human verification, with refund processing available.",
-    caption: "Resolution unlocks only after human verification.",
+    alt: "AI-generated Google Cloud agent console draft showing queue state, customer messages, and flagged duplicate transactions.",
+    caption:
+      "The same run drafts the agent console — paused mid-flow and critiqued against the Material 3 guardrails.",
+    width: 2880,
+    height: 1960,
   },
 ];
 
@@ -670,8 +675,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             ))}
           </div>
           <InteractiveCue className="cf-cue">
-            Ride the scroll — the same billing case slides through four
-            power structures.
+            <span className="cf-cue-wide">
+              Ride the scroll — the same billing case slides through four
+              power structures.
+            </span>
+            <span className="cf-cue-narrow">
+              Swipe sideways — the same billing case moves through four
+              power structures.
+            </span>
           </InteractiveCue>
           <CfFutures />
         </div>
@@ -715,15 +726,20 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         </figure>
         <div className="cf-tensions" data-fade>
           <p className="cf-tensions-anchor">
-            Five tensions that stay open — managed, never resolved.
+            Five tensions that stay open — managed, never resolved. The dot
+            marks where the final world settled.
           </p>
-          {TENSIONS.map(([a, b], i) => (
-            <div className="cf-tension" key={a} style={{ ["--i" as string]: i }}>
-              <span className="cf-tension-side">{a}</span>
+          {TENSIONS.map((t, i) => (
+            <div
+              className="cf-tension"
+              key={t.a}
+              style={{ ["--i" as string]: i, ["--lean" as string]: `${t.lean}%` }}
+            >
+              <span className="cf-tension-side">{t.a}</span>
               <span className="cf-tension-bar">
                 <span className="cf-tension-mark" />
               </span>
-              <span className="cf-tension-side is-right">{b}</span>
+              <span className="cf-tension-side is-right">{t.b}</span>
             </div>
           ))}
         </div>
@@ -774,7 +790,9 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         </div>
         <div className="cf-ai-motion-board" data-fade>
           <div className="cf-ai-motion-stage" aria-label="Animated path from research prompt to testable prototype">
-            <div className="cf-motion-path" aria-hidden="true" />
+            <div className="cf-motion-path" aria-hidden="true">
+              <span />
+            </div>
             <section className="cf-motion-tile cf-motion-tile--prompt">
               <span className="cf-motion-label">Prompt · the brief</span>
               <p>Duplicate charge. High anxiety. Refund requires human authority.</p>
@@ -785,7 +803,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
               </ul>
             </section>
             <section className="cf-motion-tile cf-motion-tile--agent">
-              <span className="cf-agent-pill">
+              <span className="cf-agent-slab">
                 <span className="cf-gem-dot is-blue" />
                 AI agent
               </span>
@@ -841,14 +859,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         </div>
         <div className="cf-ai-gallery" data-fade>
           {AI_PROTO_SHOTS.map((shot, i) => (
-            <figure className={`cf-ai-shot${i === 0 || i === 3 ? " is-wide" : ""}`} key={shot.src}>
+            <figure className="cf-ai-shot" key={shot.src}>
               <div className="cf-ai-media">
                 <Image
                   src={shot.src}
                   alt={shot.alt}
-                  width={1440}
-                  height={980}
-                  sizes={i === 0 || i === 3 ? "(max-width: 900px) 100vw, 920px" : "(max-width: 900px) 100vw, 450px"}
+                  width={shot.width}
+                  height={shot.height}
+                  sizes="(max-width: 900px) 100vw, 640px"
                 />
               </div>
               <figcaption className="cf-cap">
@@ -903,7 +921,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             ))}
           </div>
         </div>
-        <InteractiveCue className="cf-cue">
+        <InteractiveCue className="cf-cue cf-cue--gate">
           Keep scrolling — authority shifts hand to hand until a person
           releases the refund.
         </InteractiveCue>
@@ -914,6 +932,8 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
               src="/media/work/cloud-futures/hifi-film.mp4"
               poster="/media/work/cloud-futures/hifi-poster.png"
               className="cf-film-media"
+              // ~24000px into the page: don't fetch 2.1MB of film at page top
+              preload="none"
             />
           </div>
           <figcaption className="cf-cap">
@@ -1083,9 +1103,9 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           border: 0;
           background: transparent;
           padding: 2px;
+          position: relative;
           display: flex;
           align-items: center;
-          gap: 10px;
           cursor: pointer;
           color: var(--cf-ink);
         }
@@ -1103,18 +1123,28 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
         }
         .cf-rail-label {
+          /* out of flow: the button hit area stays dot-sized, so the fixed
+             rail never reaches into the content column even invisibly */
+          position: absolute;
+          left: calc(100% + 8px);
+          top: 50%;
           font-family: var(--cf-mono);
           font-size: 10px;
           letter-spacing: 0.08em;
           text-transform: uppercase;
+          white-space: nowrap;
+          pointer-events: none;
           opacity: 0;
-          translate: -4px 0;
+          translate: -4px -50%;
           transition: opacity var(--dur-fast) ease, translate var(--dur-fast) ease;
         }
+        /* labels expand on hover/focus only — the active state keeps just the
+           lit dot, so the fixed rail never reaches into the content column
+           (at 1536 the shell gutter is 72px; a resting label would cross it) */
         .cf-rail-nav button:hover .cf-rail-label,
-        .cf-rail-nav button.is-on .cf-rail-label {
+        .cf-rail-nav button:focus-visible .cf-rail-label {
           opacity: 0.66;
-          translate: 0 0;
+          translate: 0 -50%;
         }
         .cf-rail-nav button.is-on .cf-rail-dot {
           background: var(--case-accent);
@@ -1838,6 +1868,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
 
         .cf-artifact { margin-top: var(--gap-block); }
         .cf-cue { display: inline-flex; margin-bottom: 18px; }
+        /* cue copy names the actual gesture per breakpoint: the futures stage
+           rides vertical scroll on desktop but is a native horizontal swipe
+           carousel under 900px; the gate is a static finished panel there */
+        .cf-cue-narrow { display: none; }
 
         .cf-design-beat {
           margin: clamp(22px, 3vw, 42px) 0 var(--gap-block);
@@ -1981,8 +2015,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           margin: clamp(20px, 2.4vw, 30px) 0 0;
         }
         .cf-futures-flow-media {
-          border: 1px solid rgba(248, 250, 252, 0.16);
-          border-left: 3px solid var(--cf-sc, var(--case-accent));
+          display: block;
+          /* wayfinding: the whole frame takes the scenario color (no
+             single-edge color bars on this site) */
+          border: 1px solid color-mix(in srgb, var(--cf-sc, var(--case-accent)) 72%, transparent);
           border-radius: 8px;
           overflow: hidden;
           background: #fff;
@@ -1999,6 +2035,89 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           font-size: var(--text-micro);
           line-height: 1.5;
           color: rgba(248, 250, 252, 0.6);
+        }
+        /* the 2400px flows are the studio's core artifacts, unreadable at
+           stage scale — click opens the page-level lightbox at 1:1 */
+        .cf-futures-flow-btn {
+          appearance: none;
+          display: block;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          text-align: inherit;
+          font: inherit;
+          color: inherit;
+          cursor: zoom-in;
+        }
+        .cf-futures-flow-btn:focus-visible {
+          outline: var(--focus-ring);
+          outline-offset: var(--focus-offset);
+        }
+        .cf-fu-zoom-cue {
+          display: inline-flex;
+          margin-left: 10px;
+        }
+        .cf-lightbox {
+          /* portaled to <body> (outside .cf-page): no --cf-* vars here, and
+             it must clear the site nav's z-index 1000 */
+          position: fixed;
+          inset: 0;
+          z-index: 1200;
+          display: grid;
+          grid-template-rows: auto minmax(0, 1fr);
+          background: rgba(8, 10, 14, 0.94);
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .cf-lightbox { animation: cfStageIn 0.3s var(--ease-silk) both; }
+        }
+        .cf-lightbox-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          padding: 14px clamp(16px, 3vw, 32px);
+          color: #f8fafd;
+        }
+        .cf-lightbox-title {
+          font-family: var(--cf-mono, var(--font-mono));
+          font-size: var(--text-micro);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(248, 250, 252, 0.78);
+        }
+        .cf-lightbox-close {
+          appearance: none;
+          border: 1px solid rgba(248, 250, 252, 0.4);
+          border-radius: 4px;
+          background: transparent;
+          padding: 8px 14px;
+          font-family: var(--cf-mono, var(--font-mono));
+          font-size: var(--text-micro);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #f8fafd;
+          cursor: pointer;
+          transition: border-color var(--dur-fast) ease;
+        }
+        .cf-lightbox-close:hover { border-color: #f8fafd; }
+        .cf-lightbox-close:focus-visible {
+          outline: var(--focus-ring);
+          outline-offset: var(--focus-offset);
+        }
+        .cf-lightbox-scroll {
+          overflow: auto;
+          padding: 0 clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px);
+        }
+        .cf-lightbox-scroll img {
+          display: block;
+          width: 2400px;
+          max-width: none;
+          height: auto;
+          margin-inline: auto;
+          border-radius: 8px;
+          background: #fff;
         }
 
         /* pinned four-futures stage: vertical scroll SLIDES the four power
@@ -2029,7 +2148,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           z-index: -1;
           pointer-events: none;
           background:
-            radial-gradient(88% 72% at 50% 10%, color-mix(in srgb, var(--fu-wash) 15%, transparent), transparent 72%);
+            linear-gradient(180deg, color-mix(in srgb, var(--fu-wash) 13%, transparent), transparent 70%);
           transition: background 0.6s var(--ease-silk);
         }
         .cf-futures.is-live .cf-futures-flow-media img {
@@ -2105,10 +2224,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           background: var(--cf-dot);
           transform: scaleX(0);
           transform-origin: left;
-          transition: transform 0.45s var(--ease-silk);
+          /* opacity rides along: scaleX(0) alone can leave a 1px
+             subpixel sliver at the segment's left edge */
+          opacity: 0;
+          transition: transform 0.45s var(--ease-silk), opacity 0.45s var(--ease-silk);
         }
         .cf-fu-seg.is-on::before {
           transform: scaleX(1);
+          opacity: 1;
         }
         .cf-fu-hint {
           display: none;
@@ -2484,7 +2607,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-tension-side.is-right { text-align: left; }
         .cf-tension-bar { position: relative; height: 1px; background: var(--rule); }
         .cf-tension-mark {
-          position: absolute; left: 50%; top: 50%;
+          position: absolute; left: var(--lean, 50%); top: 50%;
           width: 8px; height: 8px; border-radius: 9999px;
           transform: translate(-50%, -50%);
           background: var(--case-accent);
@@ -2560,8 +2683,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           grid-row: 1;
           place-items: center;
           background:
-            radial-gradient(circle at 50% 50%, rgba(138, 180, 248, 0.42), transparent 62%),
-            linear-gradient(135deg, rgba(138, 180, 248, 0.18), rgba(248, 250, 252, 0.035));
+            linear-gradient(135deg, rgba(138, 180, 248, 0.3), rgba(138, 180, 248, 0.08) 62%, rgba(248, 250, 252, 0.035));
         }
         .cf-motion-tile--rules {
           grid-column: 3;
@@ -2602,11 +2724,19 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           z-index: 2;
           pointer-events: none;
         }
-        .cf-motion-path::before {
+        /* the signal dot rides a full-width carrier span: translating the
+           carrier by its own width (-100% + dot) is the transform-only way
+           to travel a parent-relative distance (no animated 'left') */
+        .cf-motion-path span {
+          position: absolute;
+          inset: 0;
+          display: block;
+        }
+        .cf-motion-path span::before {
           content: "";
           position: absolute;
           top: -4px;
-          left: 0;
+          right: 0;
           width: 8px;
           height: 8px;
           border-radius: 999px;
@@ -2640,15 +2770,15 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           min-height: 32px;
           padding: 5px 12px;
           border-radius: 8px;
-          border-left: 3px solid #8ab4f8;
+          border: 1px solid color-mix(in srgb, #8ab4f8 62%, transparent);
           background: rgba(248, 250, 252, 0.06);
           font-size: var(--text-micro);
           line-height: 1.35;
           color: rgba(248, 250, 252, 0.82);
         }
-        .cf-rule-stack li:nth-child(2) { border-left-color: #fbbc04; }
-        .cf-rule-stack li:nth-child(3) { border-left-color: #34a853; }
-        .cf-agent-pill {
+        .cf-rule-stack li:nth-child(2) { border-color: color-mix(in srgb, #fbbc04 62%, transparent); }
+        .cf-rule-stack li:nth-child(3) { border-color: color-mix(in srgb, #34a853 62%, transparent); }
+        .cf-agent-slab {
           min-width: 142px;
           min-height: 42px;
           display: inline-flex;
@@ -2656,7 +2786,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           justify-content: center;
           gap: 9px;
           border: 1px solid rgba(248, 250, 252, 0.26);
-          border-radius: 999px;
+          border-radius: 4px;
           background: rgba(248, 250, 252, 0.08);
           color: rgba(248, 250, 252, 0.92);
           font-size: var(--text-label);
@@ -2712,7 +2842,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           font-size: clamp(22px, 1.9vw, 30px);
           font-weight: 500;
           color: #f8fafd;
-          margin-right: 4px;
         }
         .cf-output-status {
           margin: 12px 0 0;
@@ -2757,9 +2886,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: clamp(22px, 2.6vw, 42px);
           align-items: start;
-        }
-        .cf-ai-shot.is-wide {
-          grid-column: span 2;
         }
         .cf-ai-shot {
           margin: 0;
@@ -3009,10 +3135,10 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           .cf-worlds-panel, .cf-seats-panel {
             animation: cfStageIn 0.45s var(--ease-silk) both;
           }
-          .cf-motion-path::before {
+          .cf-motion-path span {
             animation: cfMotionTravel 3.8s var(--ease-silk) infinite;
           }
-          .cf-agent-pill {
+          .cf-agent-slab {
             animation: cfSoftPulse 2.8s var(--ease-silk) infinite;
           }
           .cf-output-status .cf-gem-dot {
@@ -3027,14 +3153,14 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             to { opacity: 1; transform: none; }
           }
           @keyframes cfMotionTravel {
-            0% { left: 0; transform: scale(0.86); opacity: 0.18; }
+            0% { transform: translateX(calc(-100% + 8px)); opacity: 0.18; }
             16% { opacity: 1; }
             82% { opacity: 1; }
-            100% { left: calc(100% - 8px); transform: scale(1); opacity: 0.18; }
+            100% { transform: translateX(0); opacity: 0.18; }
           }
           @keyframes cfSoftPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(138, 180, 248, 0); }
-            50% { transform: scale(1.035); box-shadow: 0 0 34px rgba(138, 180, 248, 0.22); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.035); }
           }
           @keyframes cfGemFloat {
             0%, 100% { transform: translateY(-4px); }
@@ -3045,6 +3171,9 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         @media (max-width: 900px) {
           .cf-grid { display: block; }
           .cf-fu-hint { display: block; }
+          .cf-cue-wide { display: none; }
+          .cf-cue-narrow { display: inline; }
+          .cf-cue--gate { display: none; }
           /* narrow: tab names need two columns; the bar keeps its four
              segments as a swipe-progress readout */
           .cf-fu-labels {
@@ -3200,9 +3329,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           }
           .cf-framework-core {
             min-height: 0;
-          }
-          .cf-ai-shot.is-wide {
-            grid-column: auto;
           }
           .cf-ai-media {
             overflow-x: auto;

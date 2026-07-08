@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { CSSProperties } from "react";
+import { InteractiveCue } from "@/components/ui/interactive-cue";
 import { subscribeLenis } from "@/lib/lenis-bus";
 import type Lenis from "lenis";
 
@@ -213,7 +215,34 @@ export function CfFutures() {
   const lenisRef = useRef<Lenis | null>(null);
   const [active, setActive] = useState(0);
   const [live, setLive] = useState(false);
+  // page-level lightbox: the 2400px decision flows are the studio's core
+  // artifacts and unreadable at stage scale — click inspects one at 1:1
+  const [zoom, setZoom] = useState<number | null>(null);
+  const zoomTriggerRef = useRef<HTMLElement | null>(null);
+  const zoomCloseRef = useRef<HTMLButtonElement>(null);
   const sc = SCENARIOS[active];
+
+  useEffect(() => {
+    if (zoom === null) return;
+    const html = document.documentElement;
+    const prevOverflow = html.style.overflow;
+    html.style.overflow = "hidden";
+    lenisRef.current?.stop();
+    zoomCloseRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        setZoom(null);
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => {
+      html.style.overflow = prevOverflow;
+      lenisRef.current?.start();
+      window.removeEventListener("keydown", onKey, true);
+      zoomTriggerRef.current?.focus();
+    };
+  }, [zoom]);
 
   // Desktop: the stage pins and vertical scroll SLIDES the four power
   // structures horizontally — dwell on each, visible travel between them,
@@ -340,7 +369,7 @@ export function CfFutures() {
             ))}
           </div>
           <p className="cf-fu-hint" aria-hidden="true">
-            swipe →
+            swipe sideways
           </p>
         </div>
 
@@ -378,20 +407,33 @@ export function CfFutures() {
                   </div>
                 </div>
                 <figure className="cf-futures-flow">
-                  <div className="cf-futures-flow-media">
-                    <Image
-                      src={s.flow.src}
-                      alt={s.flow.alt}
-                      width={s.flow.width}
-                      height={s.flow.height}
-                      sizes="(max-width: 900px) 100vw, 1120px"
-                      // only the first panel is on screen at rest; the other
-                      // three load as the carousel brings them in
-                      loading={si === 0 ? "eager" : "lazy"}
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    className="cf-futures-flow-btn"
+                    onClick={(e) => {
+                      zoomTriggerRef.current = e.currentTarget;
+                      setZoom(si);
+                    }}
+                    aria-label={`Inspect the full ${s.name} decision flow at full size`}
+                  >
+                    <span className="cf-futures-flow-media">
+                      <Image
+                        src={s.flow.src}
+                        alt={s.flow.alt}
+                        width={s.flow.width}
+                        height={s.flow.height}
+                        sizes="(max-width: 900px) 100vw, 1120px"
+                        // only the first panel is on screen at rest; the other
+                        // three load as the carousel brings them in
+                        loading={si === 0 ? "eager" : "lazy"}
+                      />
+                    </span>
+                  </button>
                   <figcaption>
-                    Working flow from the team’s Figma — {s.flow.line}
+                    Working flow from the team’s Figma — {s.flow.line}.
+                    <InteractiveCue className="cf-fu-zoom-cue">
+                      Click the flow to inspect it at full size.
+                    </InteractiveCue>
                   </figcaption>
                 </figure>
                 <p className="cf-verdict">
@@ -403,6 +445,48 @@ export function CfFutures() {
           </div>
         </div>
       </div>
+      {zoom !== null &&
+        // portal to body: the page sections isolate their stacking contexts
+        // and the site nav sits at z-index 1000 — the dialog must clear both
+        createPortal(
+        <div
+          className="cf-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${SCENARIOS[zoom].name} — full decision flow`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setZoom(null);
+          }}
+        >
+          <div className="cf-lightbox-bar">
+            <span className="cf-lightbox-title">
+              {SCENARIOS[zoom].name} · decision flow · 1:1
+            </span>
+            <button
+              type="button"
+              className="cf-lightbox-close"
+              ref={zoomCloseRef}
+              onClick={() => setZoom(null)}
+            >
+              Close · Esc
+            </button>
+          </div>
+          {/* data-lenis-prevent keeps Lenis's window smoothing from eating
+              the wheel; the flows pan natively inside the dialog */}
+          <div className="cf-lightbox-scroll" tabIndex={0} data-lenis-prevent>
+            {/* plain img on purpose: the artifact at its native 2400px, no
+                responsive resizing between the reader and the pixels */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={SCENARIOS[zoom].flow.src}
+              alt={SCENARIOS[zoom].flow.alt}
+              width={SCENARIOS[zoom].flow.width}
+              height={SCENARIOS[zoom].flow.height}
+            />
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }
@@ -415,13 +499,17 @@ const SEATS = [
     label: "Customer’s seat",
     figures: [
       {
-        src: "/media/work/cloud-futures/voice-boundary.png",
+        src: "/media/work/cloud-futures/voice-boundary-trim.png",
+        width: 2880,
+        height: 1520,
         alt: "Voice assistant showing its duplicate-charge evidence, then explaining refund authorization requires human verification",
         caption:
           "The AI names its own boundary — it can detect and analyze the duplicate charge, but refund authorization requires a human. It asks before preparing the handoff.",
       },
       {
-        src: "/media/work/cloud-futures/voice-packet.png",
+        src: "/media/work/cloud-futures/voice-packet-trim.png",
+        width: 2880,
+        height: 1520,
         alt: "Case packet assembling: transaction receipts, timestamp analysis, and a voice transcript shared with consent",
         caption:
           "With consent given, the AI assembles receipts, timeline analysis, and the voice transcript into a case packet — so nobody re-explains anything.",
@@ -434,12 +522,16 @@ const SEATS = [
     figures: [
       {
         src: "/media/work/cloud-futures/agent-locked.png",
+        width: 2880,
+        height: 1960,
         alt: "Agent console showing the AI case packet and a refund locked pending human verification",
         caption:
           "The same packet lands on the agent’s desk. The refund is prepared but locked — “verify to enable.”",
       },
       {
         src: "/media/work/cloud-futures/agent-live.png",
+        width: 2880,
+        height: 1960,
         alt: "Agent console after human verification, with the refund release now an enabled human action",
         caption:
           "Only after the human confirms does the refund action go live. The AI reads, summarizes, and prepares — it never touches the money.",
@@ -474,8 +566,8 @@ export function CfSeats() {
               <Image
                 src={f.src}
                 alt={f.alt}
-                width={2880}
-                height={1960}
+                width={f.width}
+                height={f.height}
                 sizes="(max-width: 900px) 100vw, 1080px"
                 priority={false}
               />

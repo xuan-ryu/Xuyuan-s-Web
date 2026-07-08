@@ -85,6 +85,12 @@ export function CfCaseRail() {
   const go = (key: string) => {
     const el = document.querySelector<HTMLElement>(`[data-cf-stage="${key}"]`);
     if (!el) return;
+    // pre-reveal the destination: a long jump can land before FadeReveal's
+    // observer fires, leaving the whole screen in its ghost (pre-fade) state
+    if (el.hasAttribute("data-fade")) el.classList.add("is-visible");
+    el.querySelectorAll<HTMLElement>("[data-fade]").forEach((n) => {
+      n.classList.add("is-visible");
+    });
     const y = el.getBoundingClientRect().top + window.scrollY - 72;
     const lenis = lenisRef.current;
     if (lenis) lenis.scrollTo(y, { duration: 1.1 });
