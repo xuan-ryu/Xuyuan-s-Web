@@ -2157,7 +2157,10 @@ const nymaCss = `
 
 /* ── Pl.16 · the phone prototype (markup in nyma-phone.tsx; the styles sit
    here because client modules can't export strings across the server
-   boundary). Screen colors are the shipped mock's own pixels. ── */
+   boundary). In-screen color is strict monochrome — ink / grey / panel
+   only; interaction states speak in black-and-white (solid ink tag, ink
+   underline, weight shift). Layout runs on one grid: 24px screen inset,
+   an 88px 4:5 image column, gap 16, even-px spacing throughout. ── */
 .nyp {
   display: grid;
   gap: 16px;
@@ -2188,17 +2191,15 @@ const nymaCss = `
   box-shadow: var(--ny-shadow-lift);
 }
 .nyp-screen {
-  --nyp-ink: #020817;
-  --nyp-grey: #a7a6a1;
-  --nyp-line: #e5e2db;
-  --nyp-gold: #cfb82e;
-  --nyp-paper: #f7f5f0;
-  --nyp-blue: var(--ny-blue);
+  --nyp-ink: #111111;
+  --nyp-grey: #8a8a8a;
+  --nyp-line: #e4e4e4;
+  --nyp-panel: #f4f4f4;
   position: relative;
   display: flex;
   flex-direction: column;
   aspect-ratio: 390 / 844;
-  border: 1px solid var(--ny-line);
+  border: 1px solid var(--nyp-line);
   border-radius: 38px;
   overflow: hidden;
   background: #ffffff;
@@ -2225,7 +2226,7 @@ const nymaCss = `
 .nyp-status {
   display: flex;
   justify-content: space-between;
-  padding: 16px 26px 4px;
+  padding: 16px 24px 4px;
   font-family: var(--ny-mono);
   font-size: 10px;
   letter-spacing: 0.06em;
@@ -2257,7 +2258,9 @@ const nymaCss = `
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* clip, not hidden: hidden boxes still scroll programmatically when a
+     clipped child button takes focus, shearing the whole screen upward */
+  overflow: clip;
   border-top: 1px solid var(--nyp-line);
 }
 .nyp-pagehead {
@@ -2307,7 +2310,7 @@ const nymaCss = `
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--nyp-gold);
+  background: var(--nyp-ink);
 }
 .nyp-sort {
   padding-bottom: 4px;
@@ -2329,9 +2332,13 @@ const nymaCss = `
   overflow: hidden;
 }
 .nyp-filters span {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-right: 1px solid var(--nyp-line);
   color: var(--nyp-ink);
+}
+/* the first cell's label sits on the shared 24px content inset */
+.nyp-filters span:first-child {
+  padding-left: 24px;
 }
 .nyp-filters span.is-on {
   background: var(--nyp-ink);
@@ -2340,29 +2347,30 @@ const nymaCss = `
 .nyp-filters b {
   font-weight: 700;
 }
-/* auction lot rows — tap to watch (added micro-interaction, blue by law) */
+/* auction lot rows — tap to watch (added micro-interaction, ink language) */
 .nyp-lots {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow: clip;
 }
 .nyp-lot {
   display: grid;
   grid-template-columns: 88px 1fr;
   gap: 16px;
   width: 100%;
-  padding: 14px 24px;
+  padding: 8px 24px;
   border-bottom: 1px solid var(--nyp-line);
 }
 .nyp-lot[aria-pressed="true"] {
-  box-shadow: inset 2px 0 0 var(--nyp-blue);
+  box-shadow: inset 2px 0 0 var(--nyp-ink);
 }
+/* shared image cell — 88 × 110 (4:5), same ratio as every product crop */
 .nyp-thumb {
   position: relative;
   width: 88px;
-  height: 88px;
+  height: 110px;
   overflow: hidden;
-  background: var(--ny-stage);
+  background: var(--nyp-panel);
 }
 .nyp-thumb img {
   position: absolute;
@@ -2371,10 +2379,32 @@ const nymaCss = `
   height: 100%;
   object-fit: cover;
 }
+/* designed no-image state — hairline frame, two-line mono note */
+.nyp-thumb.is-empty {
+  display: grid;
+  place-content: center;
+  background: #ffffff;
+  border: 1px solid var(--nyp-line);
+}
+.nyp-noimg {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  font-family: var(--ny-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--nyp-grey);
+}
+.nyp-noimg i {
+  font-style: normal;
+}
+.nyp-noimg i:first-child {
+  color: var(--nyp-ink);
+}
 .nyp-lot-info {
   min-width: 0;
   display: grid;
-  gap: 6px;
+  gap: 4px;
   align-content: start;
 }
 .nyp-lot-line {
@@ -2386,8 +2416,11 @@ const nymaCss = `
   letter-spacing: 0.14em;
   color: var(--nyp-grey);
 }
+/* watching = solid ink tag (interaction speaks black-and-white) */
 .nyp-watch-tag {
-  color: var(--nyp-blue);
+  padding: 2px 6px;
+  background: var(--nyp-ink);
+  color: #ffffff;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -2403,7 +2436,7 @@ const nymaCss = `
   justify-content: space-between;
   align-items: baseline;
   gap: 10px;
-  margin-top: 3px;
+  margin-top: 4px;
   font-family: var(--ny-mono);
   font-size: 13px;
   font-weight: 700;
@@ -2411,21 +2444,20 @@ const nymaCss = `
 .nyp-lot-row em {
   font-style: normal;
   font-size: 12px;
+  font-weight: 400;
 }
+/* closing-soon countdown: full ink weight (was the mock's gold) */
 .nyp-lot-row em.is-hot {
-  color: var(--nyp-gold);
+  font-weight: 700;
 }
-/* bag */
+/* bag — same 88px image column as the auction list, so the text column
+   and the right price edge land on the same grid lines across screens */
 .nyp-bagitem {
   display: grid;
-  grid-template-columns: 92px 1fr 24px;
+  grid-template-columns: 88px 1fr 24px;
   gap: 16px;
   padding: 16px 24px;
   border-bottom: 1px solid var(--nyp-line);
-}
-.nyp-bagitem .nyp-thumb {
-  width: 92px;
-  height: 114px;
 }
 .nyp-bag-x {
   align-self: start;
@@ -2435,7 +2467,7 @@ const nymaCss = `
   height: 24px;
   font-family: var(--ny-mono);
   font-size: 13px;
-  color: var(--nyp-grey);
+  color: var(--nyp-ink);
 }
 .nyp-bag-empty {
   margin: 0;
@@ -2447,15 +2479,16 @@ const nymaCss = `
 }
 .nyp-bag-restore {
   margin-left: 10px;
-  color: var(--nyp-blue);
+  color: var(--nyp-ink);
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
   letter-spacing: 0.1em;
 }
 .nyp-summary {
   margin-top: auto;
-  padding: 16px 24px 18px;
-  background: var(--nyp-paper);
+  padding: 16px 24px;
+  background: var(--nyp-panel);
   font-family: var(--ny-mono);
 }
 .nyp-summary-head {
@@ -2471,7 +2504,7 @@ const nymaCss = `
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  padding: 9px 0;
+  padding: 8px 0;
   font-size: 11px;
   letter-spacing: 0.04em;
 }
@@ -2481,11 +2514,17 @@ const nymaCss = `
 .nyp-summary-row em {
   font-style: normal;
 }
-/* the opt-in is live — so it wears Activation Blue */
+/* the opt-in is live — ink underline marks it, weight answers the state */
 button.nyp-summary-row span em {
-  color: var(--nyp-blue);
+  color: var(--nyp-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+button.nyp-summary-row > em {
+  font-weight: 400;
+}
+button.nyp-summary-row[aria-pressed="true"] > em {
+  font-weight: 700;
 }
 .nyp-total {
   display: flex;
@@ -2510,7 +2549,7 @@ button.nyp-summary-row span em {
   place-items: center;
   min-height: 54px;
   background: var(--nyp-ink);
-  color: #f2efea;
+  color: #ffffff;
   font-family: var(--ny-mono);
   font-size: 11px;
   letter-spacing: 0.18em;
@@ -2519,7 +2558,7 @@ button.nyp-summary-row span em {
 .nyp-grid {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow: clip;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-content: start;
@@ -2533,8 +2572,8 @@ button.nyp-summary-row span em {
 }
 .nyp-card-img {
   position: relative;
-  height: 170px;
-  background: var(--ny-stage);
+  aspect-ratio: 4 / 5;
+  background: var(--nyp-panel);
   overflow: hidden;
 }
 .nyp-card-img img {
@@ -2548,7 +2587,7 @@ button.nyp-summary-row span em {
   position: absolute;
   top: 10px;
   left: 10px;
-  padding: 4px 7px;
+  padding: 4px 8px;
   background: #ffffff;
   border: 1px solid var(--nyp-ink);
   font-family: var(--ny-mono);
@@ -2560,7 +2599,7 @@ button.nyp-summary-row span em {
   position: absolute;
   right: 0;
   bottom: 0;
-  padding: 5px 9px;
+  padding: 4px 8px;
   background: var(--nyp-ink);
   color: #ffffff;
   font-family: var(--ny-mono);
@@ -2570,7 +2609,7 @@ button.nyp-summary-row span em {
 .nyp-card-body {
   display: grid;
   gap: 4px;
-  padding: 12px 14px 16px;
+  padding: 12px 16px 16px;
 }
 .nyp-card-maison {
   font-family: var(--ny-mono);
@@ -2605,13 +2644,14 @@ button.nyp-summary-row span em {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   border-top: 1px solid var(--nyp-line);
-  padding: 10px 8px 12px;
+  /* zero side padding: five exact fifths, one shared center axis per cell */
+  padding: 10px 0 12px;
   background: #ffffff;
 }
 .nyp-nav > * {
   display: grid;
   justify-items: center;
-  gap: 5px;
+  gap: 4px;
   padding: 2px 0 0;
   font-family: var(--ny-mono);
   font-size: 8px;

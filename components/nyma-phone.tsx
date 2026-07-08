@@ -9,18 +9,20 @@ import Image from "next/image";
 // Bag / Saved — the "04 / 05 / 06" boards on the team's canvas), placed in
 // a neutral CSS phone shell. Every interface fact — copy, lots, prices,
 // countdowns, tabs, the bottom nav — is transcribed from the shipped mock;
-// the product photos are cropped straight out of it (proto/*.png). Nothing
-// the screenshots don't show has been invented; the only additions are the
-// live behaviors the brand manual promises: Activation Blue on genuinely
-// interactive things (watch a lot, opt authentication in or out, remove a
-// bag object) while Ceramic trace stays static.
+// the product photos are cropped straight out of it (proto/prod-*.png, all
+// 4:5 with the subject complete). Lots the mock leaves imageless (027, the
+// Tabi, one Saved card) get a designed no-image state instead of a colored
+// placeholder. Live behaviors: watch a lot, opt authentication in or out,
+// remove a bag object.
 //
 // Contract: server markup is the finished Auctions screen (no-JS reads one
 // complete in-phone UI); screen switches are instant DOM swaps, so reduced
 // motion needs no special path; every live control is a real <button> with
-// the site focus ring. Colors inside the screen are the mock's own pixels
-// (#020817 ink, #cfb82e gold trace, #a7a6a1 annotation grey) — the depicted
-// artifact keeps its exact values, like every other plate on this page.
+// the site focus ring. In-screen color is strict monochrome (owner
+// 2026-07-08: "设计中不要出现网页背景色那个黄的，就黑白") — #111 ink,
+// #8a8a8a annotation grey, #f4f4f4 panels; interaction states speak in
+// black-and-white (solid ink tags, ink underlines, weight shifts). Only the
+// product photographs keep their own color — they are the depicted objects.
 //
 // Styles: the `.nyp-*` rules live in nyma-case-layout.tsx's scoped <style>
 // (NOT here — a string exported from a "use client" module can't cross the
@@ -64,6 +66,13 @@ const IC = {
 };
 
 // ── facts, transcribed from the shipped screens ──────────────────────────
+//
+// Photo notes: lot 024's list thumb in the mock crops the bag at its own
+// frame edge and the Saved card buries it under badge + clock — the one
+// complete photograph of lot 024 in the source is the Bag screen's, so all
+// three screens use that crop. Lot 027 has no product photo anywhere in the
+// source (the mock ships a blank swatch), so it wears the designed no-image
+// state instead.
 
 const LOTS = [
   {
@@ -74,7 +83,8 @@ const LOTS = [
     bidline: "CURRENT BID · 12 BIDS",
     ends: "02:14:08",
     hot: true,
-    img: { src: "/media/work/nyma/proto/lot-birkin.png", w: 168, h: 138 },
+    img: { src: "/media/work/nyma/proto/prod-birkin.png", w: 88, h: 110 },
+    noimg: null,
   },
   {
     id: "025",
@@ -84,7 +94,8 @@ const LOTS = [
     bidline: "CURRENT BID · 5 BIDS",
     ends: "14:08:22",
     hot: false,
-    img: { src: "/media/work/nyma/proto/lot-backpack.png", w: 166, h: 184 },
+    img: { src: "/media/work/nyma/proto/prod-backpack.png", w: 156, h: 195 },
+    noimg: null,
   },
   {
     id: "026",
@@ -94,7 +105,8 @@ const LOTS = [
     bidline: "CURRENT BID · 18 BIDS",
     ends: "1d 04:11",
     hot: false,
-    img: { src: "/media/work/nyma/proto/lot-pouch.png", w: 110, h: 110 },
+    img: { src: "/media/work/nyma/proto/prod-pouch.png", w: 88, h: 110 },
+    noimg: null,
   },
   {
     id: "027",
@@ -105,6 +117,7 @@ const LOTS = [
     ends: "3d 09:42",
     hot: false,
     img: null,
+    noimg: "OPENING",
   },
 ] as const;
 
@@ -115,7 +128,8 @@ const BAG = [
     title: "Birkin 30 — Togo Noir",
     line: "BUY NOW · LOT 024",
     price: 14200,
-    img: { src: "/media/work/nyma/proto/bag-birkin-red.png", w: 88, h: 110 },
+    img: { src: "/media/work/nyma/proto/prod-birkin.png", w: 88, h: 110 },
+    noimg: null,
   },
   {
     key: "tabi",
@@ -124,6 +138,7 @@ const BAG = [
     line: "BUY NOW · EU 42",
     price: 285,
     img: null,
+    noimg: "EU 42",
   },
 ] as const;
 
@@ -135,7 +150,7 @@ const CARDS = [
     side: "12 bids",
     badge: "AUCTION · ENDS 2H",
     clock: "02:14:08",
-    img: { src: "/media/work/nyma/proto/lot-birkin.png", w: 168, h: 138 },
+    img: { src: "/media/work/nyma/proto/prod-birkin.png", w: 88, h: 110 },
   },
   {
     maison: "THE ROW",
@@ -144,7 +159,7 @@ const CARDS = [
     side: "2022",
     badge: null,
     clock: null,
-    img: { src: "/media/work/nyma/proto/lot-backpack.png", w: 166, h: 184 },
+    img: { src: "/media/work/nyma/proto/prod-backpack.png", w: 156, h: 195 },
   },
   {
     maison: null,
@@ -162,7 +177,7 @@ const CARDS = [
     side: null,
     badge: "AUCTION · 3 DAYS",
     clock: "3d 09:42",
-    img: { src: "/media/work/nyma/proto/lot-pouch.png", w: 110, h: 110 },
+    img: { src: "/media/work/nyma/proto/prod-pouch.png", w: 88, h: 110 },
   },
 ] as const;
 
@@ -175,6 +190,17 @@ const SCREENS = [
 type Screen = (typeof SCREENS)[number][0];
 
 const usd = (n: number) => `US $${n.toLocaleString("en-US")}`;
+
+// Designed no-image state — a hairline frame with a two-line mono note,
+// strictly black-and-white (replaces the mock's blank colored swatch).
+function NoImg({ note }: { note: string }) {
+  return (
+    <span className="nyp-noimg" aria-hidden="true">
+      <i>NO IMAGE</i>
+      <i>{note}</i>
+    </span>
+  );
+}
 
 // ── the prototype ────────────────────────────────────────────────────────
 
@@ -308,15 +334,19 @@ export function NymaPhone() {
                       setWatching((w) => ({ ...w, [lot.id]: !w[lot.id] }))
                     }
                   >
-                    <span className="nyp-thumb">
-                      {lot.img && (
+                    <span
+                      className={`nyp-thumb${lot.img ? "" : " is-empty"}`}
+                    >
+                      {lot.img ? (
                         <Image
                           src={lot.img.src}
                           width={lot.img.w}
                           height={lot.img.h}
                           alt=""
-                          sizes="84px"
+                          sizes="88px"
                         />
+                      ) : (
+                        <NoImg note={lot.noimg ?? ""} />
                       )}
                     </span>
                     <span className="nyp-lot-info">
@@ -360,15 +390,17 @@ export function NymaPhone() {
               </div>
               {bagItems.map((b) => (
                 <div className="nyp-bagitem" key={b.key}>
-                  <span className="nyp-thumb">
-                    {b.img && (
+                  <span className={`nyp-thumb${b.img ? "" : " is-empty"}`}>
+                    {b.img ? (
                       <Image
                         src={b.img.src}
                         width={b.img.w}
                         height={b.img.h}
                         alt=""
-                        sizes="92px"
+                        sizes="88px"
                       />
+                    ) : (
+                      <NoImg note={b.noimg ?? ""} />
                     )}
                   </span>
                   <span className="nyp-lot-info">
@@ -474,7 +506,7 @@ export function NymaPhone() {
                           width={c.img.w}
                           height={c.img.h}
                           alt=""
-                          sizes="170px"
+                          sizes="180px"
                         />
                       )}
                       {c.badge && <span className="nyp-badge">{c.badge}</span>}

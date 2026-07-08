@@ -179,6 +179,9 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
              centred at 26% of the band, ~48px tall → bottom at 26% + 24px). */
           position: absolute; left: 24px; top: calc(26% + 36px);
           display: inline-flex; align-items: center; gap: 12px;
+          /* fixed 252px = the docked feed chip's box (owner: equal length);
+             also keeps the box stable across the two toggle labels */
+          width: 252px; box-sizing: border-box; justify-content: flex-start;
           padding: 12px 18px;
           background: rgba(10, 10, 10, 0.58);
           backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);

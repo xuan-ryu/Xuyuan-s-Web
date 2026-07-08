@@ -2172,15 +2172,22 @@ drawBody() {
               box-shadow: var(--shadow-lift);
             }
             /* docked: compact to the SAME recipe as the How-I-Work toggle
-               (12/18 padding, 12 gap, 22px icon slot) — the two left-edge
-               ink-glass chips read as one control group */
-            #hero-ui.dismissed #feed-ui { padding: 12px 18px; gap: 12px; }
+               (12/18 padding, 12 gap, 22px icon slot) AND the same fixed
+               252px box (owner: the pair must match in length too) — the two
+               left-edge ink-glass chips read as one control group */
+            #hero-ui.dismissed #feed-ui {
+              padding: 12px 18px; gap: 12px;
+              width: 252px; box-sizing: border-box; justify-content: flex-start;
+            }
             #hero-ui.dismissed .feed-pellets { width: 22px; height: 22px; }
             /* measuring stub: the settled docked box, synchronously, no
                transitions — JS flips this on for one offsetWidth read */
             #hero-ui.dock-measure #feed-ui,
             #hero-ui.dock-measure .feed-pellets { transition: none !important; }
-            #hero-ui.dock-measure #feed-ui { padding: 12px 18px; gap: 12px; }
+            #hero-ui.dock-measure #feed-ui {
+              padding: 12px 18px; gap: 12px;
+              width: 252px; box-sizing: border-box;
+            }
             #hero-ui.dock-measure .feed-pellets { width: 22px; height: 22px; }
             #hero-ui.dock-measure .feed-sub { display: none; }
             #feed-ui:hover { background: rgba(20, 20, 20, 0.72); border-color: rgba(255,255,255,0.24); }
