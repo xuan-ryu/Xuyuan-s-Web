@@ -32,33 +32,30 @@ export const about = {
       "That is where design started to feel more serious to me. Not every decision should be remade from taste. Some things need principles: what can change, what should hold, where the machine can run, and where a person has to stop and judge.",
     ],
     closing: "Fast Is Useful. Structure Is What Lets It Last.",
-    // typographic capability index (replaced the 5x4 badge/logo wall; the
-    // image files stay on disk under /media/about/logos). Groups follow the
-    // resume's skill clusters.
-    skills: [
-      {
-        group: "Design & Prototyping",
-        items: [
-          "Figma",
-          "Framer",
-          "Interaction design",
-          "Motion",
-          "Design systems",
-          "Usability testing",
-        ],
-      },
-      {
-        group: "Front-End",
-        items: ["HTML / CSS / JS", "React", "Tailwind", "Design tokens", "D3", "Git"],
-      },
-      {
-        group: "AI Workflow",
-        items: ["Claude", "Cursor", "Codex", "v0", "LLM & agent workflows"],
-      },
-      {
-        group: "Languages",
-        items: ["zh · en · ja"],
-      },
+    // the tools wall, restored (owner 2026-07-07: the icons were good) —
+    // now each carries a name for the hover slide-reveal; render treatment
+    // (desaturated at rest, lit on hover) lives in the About page styles.
+    tools: [
+      { src: `/media/about/logos/logo-03.png`, name: "Figma" },
+      { src: `/media/about/logos/logo-09.svg`, name: "Claude" },
+      { src: `/media/about/logos/logo-11.png`, name: "Claude Code" },
+      { src: `/media/about/logos/logo-08.webp`, name: "ChatGPT" },
+      { src: `/media/about/logos/logo-10.png`, name: "n8n" },
+      { src: `/media/about/logos/logo-19.webp`, name: "React" },
+      { src: `/media/about/logos/logo-13.png`, name: "JavaScript" },
+      { src: `/media/about/logos/logo-12.png`, name: "HTML5" },
+      { src: `/media/about/logos/logo-14.png`, name: "CSS" },
+      { src: `/media/about/logos/logo-15.png`, name: "Node.js" },
+      { src: `/media/about/logos/logo-20.png`, name: "three.js" },
+      { src: `/media/about/logos/logo-16.png`, name: "Python" },
+      { src: `/media/about/logos/logo-17.svg`, name: "Java" },
+      { src: `/media/about/logos/logo-18.png`, name: "C" },
+      { src: `/media/about/logos/logo-07.png`, name: "Unity" },
+      { src: `/media/about/logos/logo-06.png`, name: "Blender" },
+      { src: `/media/about/logos/logo-02.png`, name: "Photoshop" },
+      { src: `/media/about/logos/logo-04.png`, name: "Illustrator" },
+      { src: `/media/about/logos/logo-05.png`, name: "Lightroom" },
+      { src: `/media/about/logos/logo-01.svg`, name: "Canva" },
     ],
   },
 

@@ -46,6 +46,9 @@ const FOCAL: Record<
   string,
   { scale: number; x: string; y: string; pos?: string }
 > = {
+  // light-themed home roam: zoom into the content-queue/signals cluster so
+  // the round opening fills with UI instead of the app's white margins
+  pulse: { scale: 1.55, x: "40%", y: "44%" },
   // canvas UI: zoom to the node-editor cluster at the frame's center
   "vicino-ai": { scale: 1.9, x: "50%", y: "58%" },
   // dashboard recording: anchor the crop on the LEFT half (pos) and zoom to
@@ -509,7 +512,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       <span className="fg-bg" ref={bgRef} aria-hidden="true" />
       <div className="fg-shell">
         <header className="fg-head" ref={headRef}>
-          <h2 id="fg-heading" className="fg-title">Selected Work</h2>
+          <h2 id="fg-heading" className="fg-title" data-fade>
+            Selected Work
+          </h2>
           <Cta href="/work" variant="quiet" large className="fg-allwork">
             All Work
           </Cta>
@@ -533,6 +538,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                 <li
                   key={p.slug}
                   className={`fg-row${isActive ? " is-active" : ""}`}
+                  data-fade
+                  style={{ ["--d" as string]: `${120 + i * 90}ms` } as CSSProperties}
                   ref={(el) => {
                     rowRefs.current[i] = el;
                   }}

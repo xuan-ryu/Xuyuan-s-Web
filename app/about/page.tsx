@@ -110,29 +110,25 @@ export default function About() {
             <div className="abf-toolbox">
               <div className="abf-tools-head">
                 <span>Capabilities</span>
-                <span>
-                  {about.whatChanged.skills.reduce(
-                    (n, g) => n + g.items.length,
-                    0,
-                  )}
-                </span>
+                <span>{about.whatChanged.tools.length}</span>
               </div>
-              {/* typographic capability index — grouped mono labels + plain
-                  items (replaced the badge/logo wall; files stay on disk) */}
-              <div className="abf-skills">
-                {about.whatChanged.skills.map((g, i) => (
-                  <div
-                    key={g.group}
-                    className="abf-skill-group"
+              {/* the tools wall, back by owner request — desaturated at rest;
+                  hover lifts the icon and slides its name in (touch devices
+                  show names statically per the snap-on-touch policy) */}
+              <div className="abf-tools-wall">
+                {about.whatChanged.tools.map((tool, i) => (
+                  <span
+                    key={tool.src}
+                    className="abf-tool"
+                    role="img"
+                    aria-label={tool.name}
                     style={{ "--tool-index": i } as CSSProperties}
                   >
-                    <h3>{g.group}</h3>
-                    <ul>
-                      {g.items.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    <span className="abf-tool-icon">
+                      <Image src={tool.src} alt="" fill sizes="72px" />
+                    </span>
+                    <i className="abf-tool-name">{tool.name}</i>
+                  </span>
                 ))}
               </div>
             </div>
@@ -215,24 +211,30 @@ export default function About() {
                 </div>
               </div>
 
+              {/* prints hung on a wire (owner redo 2026-07-07): one gold
+                  rail, uniform-height prints alternating above/below it,
+                  captions set under the print in mono — not baked over it */}
               <div className="about-dojo-wall" data-fade>
-                {about.dojoWall.map((photo) => (
+                <i className="about-dojo-rail" aria-hidden="true" />
+                {about.dojoWall.map((photo, i) => (
                   <figure
                     key={photo.src}
                     className="about-dojo-item"
-                    style={{
-                      left: `${(photo.x / 1420) * 100}%`,
-                      top: photo.y,
-                    }}
+                    style={{ "--i": i } as CSSProperties}
                   >
-                    <Image
-                      src={photo.src}
-                      alt=""
-                      width={154}
-                      height={photo.h}
-                      sizes="154px"
-                      style={{ height: photo.h }}
-                    />
+                    <span className="about-dojo-print">
+                      <Image
+                        src={photo.src}
+                        alt={
+                          "caption" in photo && photo.caption
+                            ? photo.caption
+                            : "Training photograph from the dojo years"
+                        }
+                        width={154}
+                        height={photo.h}
+                        sizes="220px"
+                      />
+                    </span>
                     {"caption" in photo && photo.caption ? (
                       <figcaption>{photo.caption}</figcaption>
                     ) : null}
@@ -569,45 +571,66 @@ h2.about-habits-title.abf-t,
 }
 /* ─ capability index: grouped mono labels, plain-text items — keeps the
    toolbox block's grid rhythm, no new colors ─ */
-.abf-skills {
+.abf-tools-wall {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(28px, 3.5vw, 48px) clamp(18px, 2.4vw, 36px);
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  justify-items: center;
+  gap: clamp(22px, 2.6vw, 40px) clamp(18px, 2.4vw, 36px);
   margin: clamp(28px, 4vw, 46px) 0 0;
 }
-.abf-skill-group {
-  min-width: 0;
+.abf-tool {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding-bottom: 18px;
   opacity: 0;
   transform: translateY(18px);
   will-change: transform, opacity;
 }
-.abf-tool-index.is-visible .abf-skill-group {
+.abf-tool-index.is-visible .abf-tool {
   animation: abfToolLogoIn 0.72s var(--ease-silk) forwards;
-  animation-delay: calc(0.14s + (var(--tool-index) * 90ms));
+  animation-delay: calc(0.1s + (var(--tool-index) * 45ms));
 }
-.abf-skill-group h3 {
-  margin: 0 0 var(--space-4);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--rule);
+.abf-tool-icon {
+  position: relative;
+  width: clamp(44px, 4.6vw, 64px);
+  aspect-ratio: 1;
+  filter: grayscale(0.9) opacity(0.62);
+  transform: translateY(6px);
+  transition: filter 0.35s var(--ease-silk), transform 0.35s var(--ease-silk);
+}
+.abf-tool-icon img {
+  object-fit: contain;
+}
+.abf-tool-name {
+  position: absolute;
+  bottom: -2px;
+  font-style: normal;
   font-family: var(--font-mono);
-  font-size: var(--text-micro);
-  font-weight: 400;
-  letter-spacing: var(--track-eyebrow);
-  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
   color: var(--stone);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s var(--ease-silk), transform 0.3s var(--ease-silk);
 }
-.abf-skill-group ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.abf-tool:hover .abf-tool-icon,
+.abf-tool:focus-visible .abf-tool-icon {
+  filter: none;
+  transform: translateY(-4px);
 }
-.abf-skill-group li {
-  font-size: var(--text-body);
-  line-height: 1.55;
-  color: rgba(10, 10, 10, 0.78);
+.abf-tool:hover .abf-tool-name,
+.abf-tool:focus-visible .abf-tool-name {
+  opacity: 1;
+  transform: translateY(0);
 }
-.abf-skill-group li + li {
-  margin-top: var(--space-1);
+/* touch: no hover — icons stay lit and names read statically */
+@media (hover: none) {
+  .abf-tool-icon { filter: none; transform: none; }
+  .abf-tool-name { opacity: 1; transform: none; }
+  .abf-tool { padding-bottom: 20px; }
 }
 
 /* ─ sealed poster line — belongs to the toolbox block ─ */
@@ -756,75 +779,88 @@ h2.about-habits-title.abf-t,
   margin: 0 0 clamp(28px, 3.2vw, 48px);
 }
 
-/* ─ dojo captions: wrap, max two lines ─ */
+/* ─ the dojo wire (owner redo): prints on one rail, captions beneath ─ */
 .abf-dark .about-dojo-wall {
+  position: relative;
   width: 100%;
   max-width: min(1360px, 100%);
-  height: clamp(560px, 38vw, 660px);
-  margin-left: auto;
-  margin-right: auto;
+  height: auto;
+  margin: clamp(40px, 5vw, 64px) auto 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(14px, 1.6vw, 26px);
+}
+.about-dojo-rail {
+  position: absolute;
+  top: 34px;
+  left: 2%;
+  right: 2%;
+  height: 1px;
+  background: rgba(212, 148, 30, 0.4);
 }
 .abf-dark .about-dojo-item {
-  width: clamp(112px, 9.2vw, 142px);
+  position: relative;
+  width: auto;
+  margin: 0;
+  padding-top: 44px;
+  opacity: 0;
+  transform: translateY(22px);
+}
+.abf-dark .about-dojo-item:nth-child(even) {
+  padding-top: 62px;
+}
+.about-dojo-wall.is-visible .about-dojo-item {
+  animation: abfToolLogoIn 0.8s var(--ease-silk) forwards;
+  animation-delay: calc(0.12s + (var(--i) * 110ms));
+}
+/* the print hangs from the rail: a short gold thread ties it up */
+.abf-dark .about-dojo-item::before {
+  content: "";
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  width: 1px;
+  height: 9px;
+  background: rgba(212, 148, 30, 0.5);
+}
+.abf-dark .about-dojo-item:nth-child(even)::before {
+  height: 27px;
+}
+.about-dojo-print {
+  display: block;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.035);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.4);
+  transition: transform 0.45s var(--ease-silk), box-shadow 0.45s var(--ease-silk);
 }
-.abf-dark .about-dojo-item:nth-child(1) {
-  left: 0% !important;
-  top: 88px !important;
-  z-index: 1;
+.about-dojo-print img {
+  display: block;
+  height: clamp(180px, 17vw, 250px);
+  width: auto;
 }
-.abf-dark .about-dojo-item:nth-child(2) {
-  left: 14% !important;
-  top: 0 !important;
-  z-index: 2;
-}
-.abf-dark .about-dojo-item:nth-child(3) {
-  left: 28% !important;
-  top: 270px !important;
-  z-index: 3;
-}
-.abf-dark .about-dojo-item:nth-child(4) {
-  left: 41.5% !important;
-  top: 138px !important;
-  z-index: 2;
-}
-.abf-dark .about-dojo-item:nth-child(5) {
-  left: 55% !important;
-  top: 44px !important;
-  z-index: 4;
-}
-.abf-dark .about-dojo-item:nth-child(6) {
-  left: 66.4% !important;
-  top: 330px !important;
-  z-index: 3;
-}
-.abf-dark .about-dojo-item:nth-child(7) {
-  left: 77.5% !important;
-  top: 0 !important;
-  z-index: 2;
-}
-.abf-dark .about-dojo-item:nth-child(8) {
-  left: 89.2% !important;
-  top: 264px !important;
-  z-index: 4;
+.abf-dark .about-dojo-item:hover .about-dojo-print {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.55);
 }
 .abf-dark .about-dojo-item figcaption {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  left: 10px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  margin-top: 10px;
+  max-width: 24ch;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
   white-space: normal;
-  margin: 0;
-  font-size: clamp(12px, 0.86vw, 16px);
-  line-height: 1.22;
-  color: rgba(255, 255, 255, 0.88);
-  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.72);
+  color: rgba(212, 148, 30, 0.85);
+  text-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .abf-dark .about-dojo-item {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
 }
 
 /* ─ vita timeline ─ */
@@ -958,20 +994,20 @@ h2.about-habits-title.abf-t,
     border-radius: clamp(24px, 7vw, 44px) clamp(24px, 7vw, 44px) 0 0;
   }
   .abf-dark .about-dojo-wall {
-    position: static;
-    height: auto;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-    max-width: none;
+    flex-wrap: wrap;
+    row-gap: 26px;
   }
+  .about-dojo-rail { display: none; }
+  .abf-dark .about-dojo-item,
+  .abf-dark .about-dojo-item:nth-child(even) { padding-top: 0; }
+  .abf-dark .about-dojo-item::before { display: none; }
   .abf-dark .about-dojo-item {
-    position: static;
-    width: 100%;
+    position: relative;
+    width: auto;
   }
-  .abf-dark .about-dojo-item img {
-    width: 100%;
-    height: auto !important;
+  .about-dojo-print img {
+    height: 168px;
+    width: auto;
   }
   .abf-tool-index {
     grid-column: 1 / -1;
@@ -1002,15 +1038,15 @@ h2.about-habits-title.abf-t,
     font-size: clamp(28px, 4vw, 40px);
     letter-spacing: 0.08em;
   }
-  .abf-skills {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .abf-tools-wall {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 }
 
 /* ─ phone (≤809.98): single reading column ─ */
 @media (max-width: 809.98px) {
-  .abf-dark .about-dojo-wall {
-    grid-template-columns: 1fr;
+  .about-dojo-print img {
+    height: 132px;
   }
   .abf-portrait {
     grid-column: 1 / -1;
@@ -1039,9 +1075,9 @@ h2.about-habits-title.abf-t,
     width: 22px;
     margin-left: var(--space-3);
   }
-  .abf-skills {
-    grid-template-columns: 1fr;
-    gap: 28px;
+  .abf-tools-wall {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px 14px;
   }
   .abf-scroll-gloss {
     max-width: none;
@@ -1057,7 +1093,7 @@ h2.about-habits-title.abf-t,
   }
   .abf-tool-index[data-fade].is-visible,
   .abf-tool-index.is-visible .abf-tools-head,
-  .abf-tool-index.is-visible .abf-skill-group,
+  .abf-tool-index.is-visible .abf-tool,
   .abf-tool-index.is-visible .abf-poster {
     opacity: 1;
     transform: none;
