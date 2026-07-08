@@ -959,9 +959,9 @@ export const projects: Project[] = [
     slug: "hunger1942",
     title: "Hunger 1942",
     template: "poster",
-    // cover-v2: masthead credit line redacted (teammate real-name policy);
-    // renamed to bust caches of the old file.
-    cover: `/media/work/hunger/cover-v2.png`,
+    // cover-v3: masthead credit line redacted (teammate real-name policy) and
+    // the baked XUYAUN typo glyph-swapped; renamed to bust caches.
+    cover: `/media/work/hunger/cover-v3.png`,
     previewVideo: `/media/work/hunger/preview.mp4`,
     coverClass: "cover-hunger",
     tags: ["Game Design", "History"],
@@ -989,7 +989,7 @@ export const projects: Project[] = [
     },
     poster: {
       lede: "Hunger 1942 is a 2D survival RPG set during the 1942 Henan Famine, blending real histories with gameplay to explore human struggle in disaster.",
-      image: `/media/work/hunger/cover-v2.png`,
+      image: `/media/work/hunger/cover-v3.png`,
       intro: [
         "Hunger 1942 is a game project that I initiated and developed with my team. It is a 2D pixel-style historical role-playing survival game inspired by The Oregon Trail, set against the backdrop of the 1942 Henan Famine. The project encompasses the game itself, artistic direction, and historical research.",
         "Launched in September 2022, the historical research and foundational game framework were completed by January 2023. The game was inspired by reflections on food shortages during COVID-19 and insights from my modern Chinese history class, prompting me to explore the struggles of ordinary people during times of catastrophe.",
