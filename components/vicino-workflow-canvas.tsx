@@ -474,6 +474,9 @@ export function VicinoWorkflowCanvas({
   } | null>(null);
   const [offsets, setOffsets] = useState<OffsetMap>({});
   const [isPaused, setIsPaused] = useState(false);
+  // Coarse pointers get an honest cue: with touch-action: pan-y on the frame,
+  // vertical swipes scroll the page and node drags only track sideways.
+  const [isCoarse, setIsCoarse] = useState(false);
   // Click-to-run generation flow: runIndex is -1 idle, 0..n-1 the node currently
   // "generating", n once the whole flow has played through. Final-state
   // contract: idle (-1, the server-rendered rest state) shows the COMPLETED
@@ -501,6 +504,14 @@ export function VicinoWorkflowCanvas({
   }, []);
 
   useEffect(() => () => runTimers.current.forEach((t) => clearTimeout(t)), []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: coarse)");
+    const onChange = () => setIsCoarse(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   // Play the pipeline: light each node in turn (script -> storyboard -> shot ->
   // video), its incoming edge carrying the output, so a click "runs" the flow.
@@ -542,10 +553,13 @@ export function VicinoWorkflowCanvas({
     const node = byId.get(drag.id);
     if (!node) return;
     const scale = drag.scale || 1;
+    // Touch drags stay horizontal: the frame's touch-action: pan-y hands the
+    // vertical axis to the page scroll, so the node must not track it either.
+    const isTouch = event.pointerType === "touch";
     const next = clampOffset(
       node,
       drag.baseX + (event.clientX - drag.startX) / scale,
-      drag.baseY + (event.clientY - drag.startY) / scale,
+      isTouch ? drag.baseY : drag.baseY + (event.clientY - drag.startY) / scale,
     );
     setOffsets((current) => ({ ...current, [drag.id]: next }));
   };
@@ -592,6 +606,7 @@ export function VicinoWorkflowCanvas({
         : "Generating…";
 
   return (
+    <div className="vicino-live-wrap">
     <div
       ref={rootRef}
       className={`vicino-live-canvas is-storyboard-animation${isPaused ? " is-paused" : ""}${runActive ? " is-flow-run" : ""}${runnable ? " is-runnable" : ""}`}
@@ -667,6 +682,9 @@ export function VicinoWorkflowCanvas({
         })}
       </div>
 
+      {/* the caption/Run row renders below the frame (see .vicino-live-wrap) */}
+      </div>
+
       <div className="vicino-live-caption">
         <span>{caption}</span>
         {runnable ? (
@@ -679,7 +697,11 @@ export function VicinoWorkflowCanvas({
             {runLabel}
           </button>
         ) : (
-          <InteractiveCue>Drag the nodes — connections follow</InteractiveCue>
+          <InteractiveCue>
+            {isCoarse
+              ? "Drag a node sideways — vertical swipes scroll the page"
+              : "Drag the nodes — connections follow"}
+          </InteractiveCue>
         )}
       </div>
     </div>

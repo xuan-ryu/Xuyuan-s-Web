@@ -381,6 +381,14 @@ ${ICUE_CSS}
   touch-action: none;
   container-type: inline-size;
 }
+/* Coarse pointers keep the page scrollable: vertical pans scroll, node drags
+   stay horizontal (the drag handler drops the y-delta for touch). */
+@media (pointer: coarse) {
+  .vicino-live-canvas,
+  .v-mb-stage .vicino-product-node {
+    touch-action: pan-y;
+  }
+}
 .vicino-live-canvas img {
   position: static !important;
   width: 100%;
@@ -490,13 +498,14 @@ ${ICUE_CSS}
 }
 /* ---- click-to-run generation flow (hero canvas Run button) ---- */
 /* quiet resting state (used for Generating… and Replay) — solid, never a
-   transparent wash */
+   transparent wash. Form: the site CTA's 4px slab (pill radius is banned on
+   the portfolio's own controls); the product amber stays the primary state. */
 .vicino-live-run {
   pointer-events: auto;
   margin: 0;
   padding: 8px 16px;
   border: 1px solid color-mix(in srgb, var(--accent-amber, #e0902f) 55%, transparent);
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--ink-900, #0a0a0a);
   font-family: var(--font-mono);
   font-size: var(--text-label);
@@ -652,18 +661,30 @@ ${ICUE_CSS}
     filter: brightness(1.35);
   }
 }
+/* frame + its caption/run row: the row lives BELOW the frame (its own line),
+   so the Run control and cue never sit over the stage's nodes */
+.vicino-live-wrap {
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+}
 .vicino-live-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-text);
+  font-size: var(--text-label);
+  color: var(--stone);
+}
+/* the model board's short recreation note stays inside its frame (nothing
+   underneath it to collide with) */
+.v-mb-frame .vicino-live-caption {
   position: absolute;
   left: 18px;
   right: 18px;
   bottom: 14px;
   z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-family: var(--font-text);
-  font-size: 13px;
-  color: var(--stone);
   pointer-events: none;
 }
 
@@ -1373,6 +1394,10 @@ ${ICUE_CSS}
   grid-column: 1 / -1;
   margin: var(--v-head-gap) 0 0;
   min-width: 0;
+}
+/* a viz that sits directly under its own anchor label keeps a tighter gap */
+.vicino-flow-viz.is-tight {
+  margin-top: clamp(20px, 2.4vw, 32px);
 }
 .vicino-flow-viz > .icue {
   margin: 0 0 16px;
@@ -2410,14 +2435,20 @@ ${ICUE_CSS}
 .vicino-evidence h2 {
   grid-column: 1 / span 6;
 }
+/* media-block anchor — the same sentence-case anchor size the coded viz
+   blocks use (22–28px, text face, 500), not a meta label */
 .vicino-sub-label {
   grid-column: 1 / -1;
   margin: var(--v-head-gap) 0 0;
   padding-left: 18px;
   font-family: var(--font-text);
-  font-size: var(--text-meta);
+  font-size: clamp(22px, 1.9vw, 28px);
   font-weight: 500;
-  color: rgba(244, 241, 234, 0.88);
+  line-height: 1.2;
+  color: rgba(244, 241, 234, 0.92);
+}
+.vicino-band[data-zone="frame"] .vicino-sub-label {
+  color: #000000;
 }
 .vicino-reel-grid {
   grid-column: 1 / -1;
@@ -2452,6 +2483,9 @@ ${ICUE_CSS}
   font-size: var(--text-micro);
   line-height: 1.5;
   color: var(--stone);
+}
+.vicino-band[data-zone="frame"] .vicino-reel figcaption {
+  color: #666666;
 }
 
 /* ---- station 04 — decision ledger ---- */
@@ -2526,7 +2560,9 @@ ${ICUE_CSS}
 /* ---- station 07 — closing moment (the page's one red moment) ---- */
 .vicino-closing {
   background: var(--ink-950);
-  padding-bottom: clamp(96px, 10vw, 160px);
+  /* the run-out below the closing rule, tightened ~35% (it read as a hole
+     between the seal station and Next Case) */
+  padding-bottom: clamp(60px, 6.5vw, 104px);
 }
 .vicino-seal {
   position: relative;
@@ -3026,7 +3062,7 @@ h2.vicino-closing-title {
 .v-mb-fnote-copy {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: var(--text-label);
   font-weight: 300;
   line-height: 1.45;
   color: var(--v-body-ink);
@@ -3173,11 +3209,6 @@ h2.vicino-closing-title {
     padding-top: 112px;
     row-gap: 36px;
   }
-  /* the long recreation-metadata caption wraps over the tiny node stage on
-     phones — keep only the "Drag nodes" affordance hint there */
-  .vicino-live-caption span:first-child {
-    display: none;
-  }
   .vicino-hero-meta {
     grid-template-columns: 1fr;
     gap: 0;
@@ -3315,7 +3346,8 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
                   key={video.src}
                   data-fade
                 >
-                  <OffscreenVideo src={video.src} />
+                  <OffscreenVideo src={video.src} poster={video.poster} />
+                  {video.caption ? <figcaption>{video.caption}</figcaption> : null}
                 </figure>
               ))}
             </div>
@@ -3404,7 +3436,10 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             </figcaption>
           </figure>
         )}
-        <div className="vicino-flow-viz" data-fade>
+        <p className="vicino-sub-label" data-fade>
+          The main path, run end to end
+        </p>
+        <div className="vicino-flow-viz is-tight" data-fade>
           <InteractiveCue>
             Press Run — the canvas rewinds and regenerates the finished path,
             stage by stage
@@ -3447,8 +3482,8 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             with a place to live instead of a new structural debate.
           </p>
           <InteractiveCue>
-            Click the Image node — its sliding panel and floating bar open
-            around it
+            Click the Image node — its sliding panel and floating bar collapse
+            into it; click again to reopen them
           </InteractiveCue>
         </div>
         <div className="vicino-model-board-wrap" data-fade>
@@ -3467,9 +3502,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
             {project.moment.title}
           </h2>
           <div className="vicino-closing-copy" data-fade>
-            {/* body[3] is the anonymous teammate credit — render-filtered into
-                the station-04 reel figcaption instead of a closing paragraph */}
-            {project.moment.body.slice(0, 3).map((p) => (
+            {/* the teammate credit lives in its reel's figcaption (station 01),
+                so the closing renders the full remaining body */}
+            {project.moment.body.map((p) => (
               <p className="vicino-body-copy" key={p}>
                 {p}
               </p>

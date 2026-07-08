@@ -201,7 +201,7 @@ export function VicinoAudienceViz() {
   }
   .vz-aud-pill {
     max-width: 19ch;
-    font-size: 14px;
+    font-size: var(--text-label, 14px);
   }
   .vz-aud-trait {
     max-width: 20ch;

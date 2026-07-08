@@ -8,8 +8,8 @@ import Image from "next/image";
 // left) and the inspector Sidebar docked to the RIGHT as its own column — the
 // separate global-settings surface it actually is. Corner frames annotate each
 // zone and tie to it with a thin connector. The four-step main path already
-// lives in Block A's flow strip — this block is only the zoning: a designated
-// home for every kind of function so the product can scale.
+// lives in station 03's runnable flow canvas — this block is only the zoning:
+// a designated home for every kind of function so the product can scale.
 //
 // CONFIDENTIALITY: this recreates the STRUCTURE of the owner's schematic only —
 // the zone text is paraphrased in the designer's own words (no verbatim internal
@@ -64,16 +64,16 @@ const SLOT_TOP = 56;
 const SLOT_STEP = 40;
 
 // Corner frames — the zoning in the designer's own words (paraphrase, sentence
-// case). `tick` is the zone's OWN product accent (sanctioned product-UI colour
-// inside the canvas): teal from the node/panel, amber from the video action,
-// violet from the text/model area. Frame chrome itself stays ink/hairline/gold.
-// `box` positions the frame (stage coords); `line` is the connector to the
-// element it describes.
+// case). `tick` is the zone's OWN product accent, drawn only from the page's
+// declared connection palette: teal from the node/panel, video amber from the
+// next-step actions, text pink from the prompt/model area. Frame chrome itself
+// stays ink/hairline/gold. `box` positions the frame (stage coords); `line` is
+// the connector to the element it describes.
 const frames = [
   {
     id: "floating",
     label: "Floating Bar",
-    tick: "#FFB366",
+    tick: "#FFB347",
     copy:
       "Actions on the selected node — duplicate, download, and the next steps (open the editor, multi-views, make a video). Never node settings.",
     box: { left: 18, top: 44, width: 250 },
@@ -100,7 +100,7 @@ const frames = [
   {
     id: "sidebar",
     label: "Sidebar",
-    tick: "#9B9CF1",
+    tick: "#F1A0FA",
     copy:
       "Whole-node settings — model selection, aspect ratio, Generate. If a control governs the node, it lives here.",
     box: { left: 1000, top: 18, width: 304 },
@@ -150,12 +150,14 @@ function FloatingBar({ open }: { open: boolean }) {
         ))}
       </span>
       <span className="v-mb-fb-divider" aria-hidden="true" />
+      {/* recreation only — the actions are not wired, so they stay out of the
+          tab order (a focusable control that does nothing is a broken promise) */}
       {barActions.map((action) => (
         <button
           className="v-mb-fb-action"
           type="button"
           key={action}
-          tabIndex={open ? 0 : -1}
+          tabIndex={-1}
           title="Recreation — this action is not wired"
           onKeyDown={(event) => event.stopPropagation()}
         >

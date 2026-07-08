@@ -79,14 +79,15 @@ const traditionalSteps = [
   },
 ];
 
+// Unnumbered short phrases by design: the numbered 01–04 enumeration of this
+// path belongs to station 03's intervention timeline (its AI/You argument);
+// here the point is only the six-to-one reorganization.
 const vicinoSteps = [
   { title: "Script", note: "Organize intent" },
   { title: "Storyboard", note: "Shape pacing" },
   { title: "Image", note: "Refine keyframes" },
   { title: "Video", note: "Final generation" },
 ] as const;
-
-const index2 = (i: number) => (i + 1).toString().padStart(2, "0");
 
 import { stripCssComments } from "@/lib/css-sanitize";
 
@@ -249,19 +250,9 @@ export function VicinoPipelineViz() {
 .vz-pipe-step + .vz-pipe-step {
   border-top: 1px solid var(--v-line, rgba(255, 255, 255, 0.1));
 }
-.vz-pipe-step .vz-pipe-cell-n {
-  /* numeral column mirrors the specialists' 28px chip column */
-  flex: 0 0 28px;
-}
 .vz-pipe-step-copy {
   display: grid;
   gap: 4px;
-}
-.vz-pipe-cell-n {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
-  letter-spacing: var(--track-label, 0.14em);
-  color: color-mix(in srgb, var(--v-body-ink, rgba(255, 255, 255, 0.62)) 62%, transparent);
 }
 .vz-pipe-cell-title {
   font-family: var(--font-text, var(--font-sans, system-ui));
@@ -364,9 +355,8 @@ export function VicinoPipelineViz() {
           </div>
           <div className="vz-pipe-body">
             <div className="vz-pipe-stack">
-              {vicinoSteps.map((step, i) => (
+              {vicinoSteps.map((step) => (
                 <div className="vz-pipe-step" key={step.title}>
-                  <span className="vz-pipe-cell-n">{index2(i)}</span>
                   <div className="vz-pipe-step-copy">
                     <span className="vz-pipe-cell-title">{step.title}</span>
                     <span className="vz-pipe-cell-note">{step.note}</span>
