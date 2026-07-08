@@ -67,7 +67,12 @@ const CHIP_CSS = `
 }
 .pulse-spec-chips--live .pulse-spec-chip:hover i {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(5, 5, 5, 0.16);
+  box-shadow: var(--shadow-lift);
+}
+/* universal depress */
+.pulse-spec-chips--live .pulse-spec-chip:active i {
+  transform: translateY(1px) scale(0.99);
+  transition-duration: 0.2s;
 }
 .pulse-spec-chips--live .pulse-spec-chip.is-copied span {
   color: var(--pp-cyan-dark, #0d7685);

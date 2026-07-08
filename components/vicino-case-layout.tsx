@@ -503,11 +503,14 @@ ${ICUE_CSS}
   text-transform: uppercase;
   color: color-mix(in srgb, var(--accent-amber, #e0902f) 92%, white);
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 .vicino-live-run:hover {
   background: var(--ink-800, #1c1c1c);
   border-color: var(--accent-amber, #e0902f);
+}
+.vicino-live-run:active {
+  transform: translateY(1px) scale(0.99);
 }
 /* the opening call to run — solid amber, ink label, unmissable */
 .vicino-live-run.is-primary {
@@ -878,8 +881,8 @@ ${ICUE_CSS}
   background: var(--node-header-play-btn-bg);
   box-shadow: var(--glass-btn-shadow);
   color: var(--node-header-play-btn-icon-color);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
 }
 .vicino-product-node-right button span {
   width: 0;
@@ -1513,7 +1516,7 @@ ${ICUE_CSS}
   background: rgba(48, 46, 48, 0.93);
   backdrop-filter: blur(4px) saturate(120%);
   -webkit-backdrop-filter: blur(4px) saturate(120%);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--node-shell-shadow);
   cursor: default;
   opacity: 0;
   visibility: hidden;
@@ -1723,8 +1726,8 @@ ${ICUE_CSS}
   border-radius: 8px;
   background: var(--node-header-play-btn-bg);
   box-shadow: var(--glass-btn-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   cursor: default;
   opacity: 0;
   visibility: hidden;
@@ -1835,8 +1838,8 @@ ${ICUE_CSS}
     rgba(252, 151, 153, 0.35) 100%
   );
   box-shadow: var(--glass-btn-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   color: var(--image-node-toolbar-btn-text);
   font-family: var(--font-sans);
   font-size: var(--vicino-node-small);
@@ -1899,8 +1902,8 @@ ${ICUE_CSS}
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   background: rgba(11, 11, 13, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   transform: translateY(-50%);
   pointer-events: none;
 }
@@ -1971,10 +1974,13 @@ ${ICUE_CSS}
   background: var(--play-btn-glass-bg);
   box-shadow: var(--glass-btn-shadow);
   cursor: pointer;
-  transition: background 0.25s var(--ease-standard);
+  transition: background 0.25s var(--ease-standard), transform 0.2s var(--ease-standard);
 }
 .v-mb-close:hover {
   background: var(--play-btn-glass-bg-hover);
+}
+.v-mb-close:active {
+  transform: translateY(1px) scale(0.99);
 }
 .v-mb-close:focus-visible {
   outline: var(--focus-ring);
@@ -2011,15 +2017,16 @@ ${ICUE_CSS}
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   background: rgba(11, 11, 13, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
   color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   transform: translateY(-50%);
   transition:
     border-color 0.25s var(--ease-standard),
     background 0.25s var(--ease-standard),
-    opacity 0.25s var(--ease-standard);
+    opacity 0.25s var(--ease-standard),
+    transform 0.2s var(--ease-standard);
 }
 .v-mb-rail-hint.is-right {
   right: 14px;
@@ -2027,6 +2034,10 @@ ${ICUE_CSS}
 .v-mb-rail-hint:hover {
   border-color: rgba(255, 255, 255, 0.36);
   background: rgba(20, 20, 24, 0.92);
+}
+/* depress composes with the rail hint's -50% centering transform */
+.v-mb-rail-hint:active {
+  transform: translateY(calc(-50% + 1px)) scale(0.99);
 }
 .v-mb-rail-hint:focus-visible {
   outline: var(--focus-ring);
@@ -2095,9 +2106,9 @@ ${ICUE_CSS}
   opacity: 0;
   visibility: hidden;
   transition:
-    transform 0.34s var(--ease-silk),
-    opacity 0.34s var(--ease-silk),
-    visibility 0s linear 0.34s;
+    transform var(--dur-base) var(--ease-silk),
+    opacity var(--dur-base) var(--ease-silk),
+    visibility 0s linear var(--dur-base);
 }
 .v-mb-rail.is-right {
   right: 12px;
@@ -2108,8 +2119,8 @@ ${ICUE_CSS}
   visibility: visible;
   transform: translateX(0);
   transition:
-    transform 0.34s var(--ease-silk),
-    opacity 0.34s var(--ease-silk),
+    transform var(--dur-base) var(--ease-silk),
+    opacity var(--dur-base) var(--ease-silk),
     visibility 0s;
 }
 .v-mb-rail > .v-mb-close {
@@ -2913,10 +2924,13 @@ h2.vicino-closing-title {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s var(--ease-standard);
+  transition: background 0.2s var(--ease-standard), transform 0.2s var(--ease-standard);
 }
 .v-mb-generate:hover {
   background: color-mix(in srgb, var(--accent-amber) 24%, transparent);
+}
+.v-mb-generate:active {
+  transform: translateY(1px) scale(0.99);
 }
 .v-mb-generate:focus-visible {
   outline: var(--focus-ring);

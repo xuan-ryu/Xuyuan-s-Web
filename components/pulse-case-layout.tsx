@@ -375,8 +375,11 @@ const pulseCss = `
   --pp-line: rgba(29, 29, 31, 0.08);
   --pp-line-strong: rgba(29, 29, 31, 0.16);
   --pp-glass: rgba(255, 255, 255, 0.38);
-  --pp-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.035), 0 4px 10px rgba(15, 23, 42, 0.04);
-  --pp-shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.04), 0 10px 22px rgba(15, 23, 42, 0.05);
+  /* global elevation triad geometry (globals.css --shadow-card/--shadow-lift),
+     kept in Pulse's cool slate tint with alphas a step calmer for the pale
+     stage — same physics, the page's own light */
+  --pp-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --pp-shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.05), 0 16px 32px rgba(15, 23, 42, 0.07);
 
   /* Pulse semantics */
   --pp-cyan: #49e0f5;
@@ -506,8 +509,8 @@ const pulseCss = `
   border: 1px solid var(--pp-line);
   border-radius: 16px;
   background: var(--pp-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(var(--blur-scrim));
+  -webkit-backdrop-filter: blur(var(--blur-scrim));
   box-shadow: var(--pp-shadow-lift);
 }
 .pulse-console-head {
@@ -1899,8 +1902,8 @@ const pulseCss = `
   border: 1px solid var(--pp-line);
   border-radius: 16px;
   background: var(--pp-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(var(--blur-scrim));
+  -webkit-backdrop-filter: blur(var(--blur-scrim));
   box-shadow: var(--pp-shadow-lift);
 }
 .pulse-turn-eyebrow {

@@ -894,11 +894,14 @@ const nymaCss = `
   align-items: center;
   gap: 8px;
   transition: color 0.2s var(--ease-silk), border-color 0.2s var(--ease-silk),
-    background 0.2s var(--ease-silk);
+    background 0.2s var(--ease-silk), transform 0.2s var(--ease-silk);
 }
 .ny-dir-tab:hover {
   border-color: var(--ny-blue);
   color: var(--ny-blue-dark);
+}
+.ny-dir-tab:active {
+  transform: translateY(1px) scale(0.99);
 }
 .ny-dir-tab.is-on {
   background: var(--ny-ink);
@@ -1265,10 +1268,13 @@ const nymaCss = `
   gap: 9px;
   cursor: pointer;
   font-family: var(--ny-mono);
-  transition: border-color 0.2s var(--ease-silk);
+  transition: border-color 0.2s var(--ease-silk), transform 0.2s var(--ease-silk);
 }
 .ny-roles-chip:hover {
   border-color: var(--ny-blue);
+}
+.ny-roles-chip:active {
+  transform: translateY(1px) scale(0.99);
 }
 .ny-roles-chip.is-on {
   border-color: var(--ny-ink);
@@ -1574,6 +1580,11 @@ const nymaCss = `
   transform: translateY(-4px);
   box-shadow: var(--ny-shadow-lift);
 }
+.ny-wall figure.ny-plate:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: var(--ny-shadow-rest);
+  transition-duration: 0.2s;
+}
 .ny-wall figcaption {
   padding: 10px 12px;
   border-top: 1px solid var(--ny-line);
@@ -1654,11 +1665,14 @@ const nymaCss = `
   padding: 8px 16px;
   cursor: pointer;
   transition: color 0.2s var(--ease-silk), border-color 0.2s var(--ease-silk),
-    background 0.2s var(--ease-silk);
+    background 0.2s var(--ease-silk), transform 0.2s var(--ease-silk);
 }
 .ny-ward-tab:hover {
   border-color: var(--ny-blue);
   color: var(--ny-blue-dark);
+}
+.ny-ward-tab:active {
+  transform: translateY(1px) scale(0.99);
 }
 .ny-ward-tab.is-on {
   background: var(--ny-ink);
@@ -1944,7 +1958,10 @@ const nymaCss = `
 }
 .ny-turn {
   box-sizing: border-box;
-  background: var(--ny-ink);
+  /* dark-ground light model: top rim catch-light + faint from-top glow
+     (shared treatment with the site footer) — base stays Ceramic Black */
+  background: radial-gradient(120% 80% at 50% 0%, #232019, #1c1a17);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   color: #f2efea;
   padding: clamp(48px, 6vw, 88px) clamp(28px, 4vw, 72px);
 }
@@ -2254,7 +2271,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
               <br />
               <em>Brand &amp; Design System</em>
             </span>
-            <span className="ny-archhead-right">2025 — 2026</span>
+            <span className="ny-archhead-right">2025 – 2026</span>
           </div>
           <i className="ny-hairline" data-hairline aria-hidden="true" />
         </div>

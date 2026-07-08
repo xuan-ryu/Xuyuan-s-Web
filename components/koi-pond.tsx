@@ -2100,7 +2100,7 @@ drawBody() {
               transition: background var(--dur-fast) ease,
                           border-color var(--dur-fast) ease,
                           transform var(--dur-fast) var(--ease-soft);
-              box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+              box-shadow: var(--shadow-lift);
             }
             #feed-ui:hover { background: rgba(20, 20, 20, 0.72); border-color: rgba(255,255,255,0.24); }
             #feed-ui:active { transform: scale(0.98); }

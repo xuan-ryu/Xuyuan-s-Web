@@ -389,7 +389,9 @@ export default function HongyadongFramer(props: Props) {
             setStyleIfChanged(
                 subRef.current,
                 "color",
-                mixColor([0, 0, 0, 0.5], [255, 255, 255, 0.8], textT)
+                // lifted from 0.5/0.8 — the subhead sits on the densest
+                // particle band and needed more base contrast in both phases
+                mixColor([0, 0, 0, 0.66], [255, 255, 255, 0.86], textT)
             )
             signatureRef.current?.classList.toggle("is-visible", signatureReady)
             signatureNoteRef.current?.classList.toggle("is-visible", signatureReady)
@@ -1327,13 +1329,22 @@ export default function HongyadongFramer(props: Props) {
 
                 .hyf-sub {
                     margin: 0;
+                    /* cap the measure — full-bleed this ran ~135ch with a
+                       one-word orphan across the densest particle band */
+                    max-width: 66ch;
                     font-family: var(--font-sans);
                     font-size: var(--text-body);
                     font-weight: 400;
                     line-height: 1.55;
                     letter-spacing: -0.01em;
-                    color: rgba(0, 0, 0, 0.50);
-                    text-shadow: 0 2px 12px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12);
+                    color: rgba(0, 0, 0, 0.66);
+                    /* soft paper glow = backplate against the particle noise
+                       (reads as a halo once the text flips white on dark);
+                       the faint dark drop keeps the transition phase legible */
+                    text-shadow:
+                        0 0 16px rgba(255, 255, 255, 0.6),
+                        0 0 4px rgba(255, 255, 255, 0.45),
+                        0 2px 12px rgba(0, 0, 0, 0.16);
                     white-space: pre-line;
                 }
 
@@ -1531,6 +1542,11 @@ export default function HongyadongFramer(props: Props) {
                     .hyf-signature-note {
                         font-size: var(--text-micro);
                         letter-spacing: 0.05em;
+                        /* nowrap made this ~415px wide — it stretched the
+                           whole grid column past a 390 viewport and dragged
+                           the subhead's lines off-screen with it */
+                        white-space: normal;
+                        max-width: 100%;
                     }
                 }
             `)}</style>

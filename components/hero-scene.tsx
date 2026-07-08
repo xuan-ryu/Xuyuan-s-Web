@@ -891,6 +891,13 @@ export default function DigitalLandscape(props: Props) {
         // + card top within the zone (2152px−136vh) — the vh terms cancel.
         const PAGE2_DOC_TOP = 1241
 
+        // Mobile bg-image fallback only: the fixed night overlay (z0) sits
+        // BEHIND the opaque hero image (wrapper z1), so it can never darken
+        // the scene — the white page-2 copy was rendering white-on-white at
+        // 390px. This in-mount veil (set up in the low-end branch below)
+        // mirrors the overlay's opacity so phones get the same night backdrop.
+        let mobileVeilEl: HTMLElement | null = null
+
         // All late-scroll timing (pin, fades, release) anchors to the roof
         // transition's actual doc position — pure viewport-height multiples
         // break on short (~750) and tall (1300+) windows.
@@ -1109,6 +1116,14 @@ export default function DigitalLandscape(props: Props) {
                     `invert(${nightT.toFixed(3)})`
                 )
             }
+            // mobile bg image: darken IN FRONT of the opaque photo (see the
+            // mobileVeilEl note above) — same curve as the night overlay
+            if (mobileVeilEl)
+                setInlineStyle(
+                    mobileVeilEl,
+                    "opacity",
+                    String(round3(nightT * nightRelease))
+                )
 
             const wasSceneVisible = isSceneVisible
             isSceneVisible = currentScrollY < roofTop + winHeight * 0.5
@@ -1247,7 +1262,7 @@ export default function DigitalLandscape(props: Props) {
                     : "transparent"
                 mountRef.current.style.filter = "invert(0)"
                 mountRef.current.innerHTML = !useLiteInkFallback && bg
-                    ? `<img src="${bg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;" />`
+                    ? `<img src="${bg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;" /><div data-hero-mobile-veil style="position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;"></div>`
                     : `<svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice"
                          style="position:absolute;inset:0;width:100%;height:100%">
                         <defs>
@@ -1268,6 +1283,11 @@ export default function DigitalLandscape(props: Props) {
                           fill="#0d0d0d" opacity="0.32"/>
                       </svg>`
                 mountRef.current.style.opacity = "1"
+                mobileVeilEl = mountRef.current.querySelector<HTMLElement>(
+                    "[data-hero-mobile-veil]"
+                )
+                // sync the veil to the current scroll position right away
+                if (mobileVeilEl) handleScroll()
             }
             sceneReadyRef.current = true
             tryReveal()

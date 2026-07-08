@@ -137,10 +137,9 @@ export function ValueCard({ title, subtitle, bodyText }: Props) {
           cursor: "pointer",
           boxSizing: "border-box",
           background: "rgba(16, 16, 16, 0.5)",
-          backdropFilter: "blur(28px) saturate(130%) contrast(1.1)",
-          WebkitBackdropFilter: "blur(28px) saturate(130%) contrast(1.1)",
-          boxShadow:
-            "0 24px 60px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.15)",
+          backdropFilter: "blur(28px) saturate(130%)",
+          WebkitBackdropFilter: "blur(28px) saturate(130%)",
+          boxShadow: "var(--shadow-overlay)",
           transformStyle: "preserve-3d",
           WebkitTransformStyle: "preserve-3d",
           transform:

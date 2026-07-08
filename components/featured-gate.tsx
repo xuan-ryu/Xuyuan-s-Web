@@ -93,6 +93,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
   const veilRef = useRef<HTMLSpanElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<HTMLElement>(null);
+  const hintRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
   const pinnedRef = useRef(false);
@@ -273,6 +274,14 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                 // once the ink starts dissolving, the (transparent) fixed
                 // section must stop swallowing the pond's pointer events
                 section.style.pointerEvents = p > 0.85 ? "none" : "";
+                // the continuation cue bows out with the index as the zoom
+                // starts. Class-driven (NOT a tween): GSAP would record the
+                // cue's pre-reveal opacity 0 as the tween start and pin it
+                // invisible forever.
+                hintRef.current?.classList.toggle(
+                  "is-hidden",
+                  p >= ZOOM_START,
+                );
                 // The static koi-lotus frame crossfades in at 0.92 as the
                 // crossing dissolves (0.91). They share identical pad
                 // positions now, so this overlap is a seamless crossfade.
@@ -409,6 +418,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             pinnedRef.current = false;
             section.style.pointerEvents = "";
             bg.style.backgroundColor = "";
+            hintRef.current?.classList.remove("is-hidden");
             koiSection?.classList.remove("koi-lotus-visible");
             window.clearTimeout(idleTimer);
             window.clearTimeout(snapClear);
@@ -600,6 +610,16 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* continuation cue — after the last featured row the section reads
+          like a page end; this quiet mono line + a slow ink-drip hairline
+          announce the pond below. One element, section voice (mono, one
+          seal-red accent), fades with the head/index when the crossing
+          zoom begins. */}
+      <div className="fg-continue" ref={hintRef} aria-hidden="true">
+        <span className="fg-continue-drop" />
+        <span className="fg-continue-text">The pond is below — keep going</span>
       </div>
 
       {/* the lotus arrival 闁?scenery for the scrubbed crossing; mounts only
@@ -828,6 +848,58 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           color: rgba(255,255,255,0.42);
         }
 
+        /* ---- continuation cue: mono micro-line + slow ink-drip hairline ---- */
+        .fg-continue {
+          position: absolute;
+          left: 50%;
+          bottom: clamp(14px, 2.6vh, 34px);
+          transform: translateX(-50%);
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-family: var(--font-mono);
+          font-size: var(--text-micro);
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          white-space: nowrap;
+          color: rgba(20, 20, 22, 0.46);
+          opacity: 0;
+          transition: opacity 0.9s var(--ease-silk) 0.55s;
+          pointer-events: none;
+        }
+        .fg-section.is-revealed .fg-continue { opacity: 1; }
+        /* crossing under way — get out of the way fast (no reveal delay) */
+        .fg-section .fg-continue.is-hidden {
+          opacity: 0;
+          transition-duration: 0.3s;
+          transition-delay: 0s;
+        }
+        /* the drip: a quiet hairline down which a seal-red bead slides */
+        .fg-continue-drop {
+          position: relative;
+          width: 1px;
+          height: 22px;
+          overflow: hidden;
+          background: rgba(20, 20, 22, 0.16);
+        }
+        .fg-continue-drop::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 45%;
+          background: var(--seal-red);
+          transform: translateY(-110%);
+          animation: fgContinueDrip 3.4s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+        }
+        @keyframes fgContinueDrip {
+          0% { transform: translateY(-110%); }
+          58% { transform: translateY(230%); }
+          100% { transform: translateY(230%); }
+        }
+
         @media (max-width: 900px) {
           .fg-main { grid-template-columns: 1fr; gap: clamp(30px, 6vh, 52px); padding-top: clamp(30px, 5vh, 52px); }
           .fg-right { order: -1; justify-content: center; }
@@ -841,6 +913,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           .fg-dip { animation: none; }
           .fg-gate:hover .fg-cover, .fg-gate:hover .fg-video { transform: none; }
           .fg-row-link { opacity: 1; transform: none; }
+          .fg-continue { opacity: 1; transition: none; }
+          .fg-continue-drop::after { animation: none; transform: translateY(0); }
         }
       `),
         }}

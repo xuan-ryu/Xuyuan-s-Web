@@ -81,7 +81,7 @@ export const projects: Project[] = [
     blurb:
       "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. I joined to design its homepage — and left owning the way the whole team ships: the unified pitch mockup merged from everyone’s prototypes, a token-driven design system of 40 components, the standards and automation that keep AI-generated UI on-system, and the campaign production flow with a person at every gate.\n\nTwo beliefs run through the work. Pages that look alike aren’t a product until they share one system. And AI should draft while humans decide — every generative step is wrapped in an editable brief, a review, or an approval gate.",
     role: "Product Designer · Design System · Front-end",
-    duration: "2025 - present",
+    duration: "2025 – present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team",
     // Overview = what Pulse is + the owner's scope, once. The belief lives in
@@ -323,7 +323,7 @@ export const projects: Project[] = [
     blurb:
       "Nyma is a 2C social resale platform for designer, luxury, and vintage fashion — closer to a community formed around garments than a listing-based marketplace. When I joined, the transaction and auction architecture were already in place and a website was live, but the visual foundation was weak, the UI logic needed cleanup, and the founders liked the name Nyma without a story behind it.\n\nMy work was the design layer, end to end: I traced the name to νήμα — Greek for thread — and rebuilt the brand around continuity, designed the key pages by hand, wrote the 17-page brand manual, and then codified the system into the front-end repo so a team of one front-end engineer, one back-end engineer, and no designer can keep shipping consistently after my contract ends.",
     role: "Brand & Product Designer — the only designer",
-    duration: "2025 - 2026",
+    duration: "2025 – 2026",
     type: "Intern",
     teams: "2 founders · 1 front-end · 1 back-end",
     summary: [
@@ -472,7 +472,7 @@ export const projects: Project[] = [
     blurb:
       "Vicino is a node-based generative video platform — a canvas where people build generation, composition, and editing as connected nodes rather than a linear timeline. The generation power was already there; the design challenge was what came after it. As the company moved toward B2B content production, the product had to grow from a capability-first tool into a guided, controllable video workflow — one that could carry both a creative-production veteran and a marketer who had never touched an AI video tool.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, the Sidebar and Floating Bar layers, sliding panels, and the design system behind them. The core lesson was simple: new technical range only matters when people still have clear places to inspect, redirect, and decide.",
     role: "Product Designer / PM",
-    duration: "2025 - present",
+    duration: "2025 – present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team, Mkt Team",
     summary: [
@@ -597,7 +597,7 @@ export const projects: Project[] = [
     blurb:
       "I redesigned FrogHire.ai, an early-stage AI job-matching platform, turning scattered bug fixes and negative reviews into a focused effort to rebuild user trust. Through usability testing, bug triage, and competitive analysis, I found the real issues weren’t missing features but missing guidance—users had no onboarding, unclear resume states, and opaque subscriptions. By reframing isolated complaints into systemic design problems, I delivered lightweight yet impactful fixes that restored signups, improved clarity, and helped the product survive its critical growth stage.",
     role: "UX Designer",
-    duration: "05/22/2025 - 08/22/2025",
+    duration: "05/2025 – 08/2025",
     type: "Intern",
     teams: "UX Designer, PM, Founder, Front End Engineers",
     summary: [
@@ -724,7 +724,7 @@ export const projects: Project[] = [
     blurb:
       "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
     role: "UX Designer, Project Manager",
-    duration: "09/01/2024 - 12/17/2024",
+    duration: "09/2024 – 12/2024",
     type: "Client-Based Project",
     teams: "UX Designers, UX Researchers, Project Manager, Software Engineers",
     summary: [
@@ -867,7 +867,7 @@ export const projects: Project[] = [
     blurb:
       "Hunger 1942 is a 2D survival RPG set during the 1942 Henan Famine, blending real histories with gameplay to explore human struggle in disaster.",
     role: "Game Designer, Producer",
-    duration: "09/2022-04/2024",
+    duration: "09/2022 – 04/2024",
     type: "Undergraduate",
     teams: "Game Design, History Research",
     poster: {
@@ -882,7 +882,7 @@ export const projects: Project[] = [
       details: {
         project: "Hunger 1942",
         client: "Undergraduate",
-        year: "09/2022-04/2024",
+        year: "09/2022 – 04/2024",
         services: "Game Design, History Research",
         livePreview: {
           label: "HUNGER 1942",
@@ -915,7 +915,7 @@ export const projects: Project[] = [
     blurb:
       "A winter-term VR documentary of the monarch migration, built in Unity and explored through a headset.",
     role: "Designer, Developer",
-    duration: "12/2022-1/2023",
+    duration: "12/2022 – 1/2023",
     type: "Undergraduate",
     teams: "Digital Art, Immersive Experience, Digital Education",
     poster: {
@@ -928,7 +928,7 @@ export const projects: Project[] = [
       details: {
         project: "VR Monarch Butterfly",
         client: "Undergraduate",
-        year: "12/2022-1/2023",
+        year: "12/2022 – 1/2023",
         services: "Digital Art, Immersive Experience, Digital Education",
       },
       body: [

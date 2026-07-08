@@ -69,7 +69,20 @@ export default function About() {
           <div className="about-divider" aria-hidden="true" />
 
           <div className="about-resume-note" data-fade>
-            <h2>{about.resumeNote}</h2>
+            {/* wrapper keeps the note's 2-col grid/flex intact: claim + the
+                education line stack in the first cell, the CTA keeps its own */}
+            <div className="about-resume-claim">
+              <h2>{about.resumeNote}</h2>
+              {/* de-risk line — education + base, facts already in the repo
+                  (data/about.ts bio: Cornell; data/projects.ts: Cornell MPS
+                  team; data/site.ts: New York, NY).
+                  TODO(owner): the graduation / availability date is NOT in the
+                  codebase — once confirmed, extend this line, e.g.
+                  "… · available from Summer 2026". */}
+              <p className="about-availability">
+                Cornell University · M.P.S. — based in {site.location}
+              </p>
+            </div>
             <Cta
               variant="solid"
               href={site.resumeUrl}
@@ -346,6 +359,19 @@ h2.about-habits-title.abf-t,
 }
 .abf-vhead h2.abf-t {
   color: var(--ink-950);
+}
+
+/* ─ frame 00: the education / base line under the resume claim ─ */
+.about-resume-claim {
+  min-width: 0;
+}
+.about-availability {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--stone);
 }
 
 /* ─ frame 00: portrait + rebate caption ─ */

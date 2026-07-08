@@ -272,6 +272,12 @@ export default function WorkIndex() {
           text-decoration: none;
           color: inherit;
           outline: none;
+          transition: transform var(--dur-base) var(--ease-silk);
+        }
+        /* universal press state (material-physics contract) */
+        .wki-row-link:active {
+          transform: translateY(1px) scale(0.99);
+          transition-duration: 0.2s;
         }
         /* the seal tick — the page's one red moment; wipes down like a
            brush pull, cap height to baseline, at the row's col-3 edge */
@@ -318,7 +324,7 @@ export default function WorkIndex() {
           letter-spacing: 0;
           text-transform: uppercase;
           color: var(--ink-950);
-          transition: transform 0.34s var(--ease-silk);
+          transition: transform var(--dur-base) var(--ease-silk);
         }
         .wki-row-link:hover .wki-row-title,
         .wki-row-link:focus-visible .wki-row-title {
@@ -367,12 +373,12 @@ export default function WorkIndex() {
           border-radius: var(--radius-thumb);
           overflow: hidden;
           background: var(--ink-950);
-          box-shadow: 0 10px 24px rgba(5, 5, 5, 0.08);
+          box-shadow: var(--shadow-lift);
           opacity: 0;
           transform: translate(40px, -50%) scale(0.97);
           transition:
-            opacity 0.34s var(--ease-silk),
-            transform 0.34s var(--ease-silk);
+            opacity var(--dur-base) var(--ease-silk),
+            transform var(--dur-base) var(--ease-silk);
           pointer-events: none;
         }
         .wki-row-link:hover .wki-plate,

@@ -157,6 +157,7 @@ a.ctc-ledger-value:focus-visible {
   .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(1) { animation-delay: 80ms; }
   .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(2) { animation-delay: 160ms; }
   .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(3) { animation-delay: 240ms; }
+  .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(4) { animation-delay: 320ms; }
   .ctc-portrait[data-fade] .ctc-portrait-chop {
     opacity: 0.001;
     transform: translate(-40%, 30%) rotate(-6deg) scale(1.18);
@@ -497,6 +498,22 @@ export default function Contact() {
                     href={`tel:${site.phone.replace(/\s+/g, "")}`}
                   >
                     {site.phone}
+                  </a>
+                </dd>
+              </div>
+              <div className="ctc-ledger-row">
+                {/* URL derived from this repo's own GitHub identity
+                    (xuan-ryu — CLAUDE.md issue tracker / git remote);
+                    owner to confirm it is the profile they want public. */}
+                <dt className="ctc-ledger-label">GitHub</dt>
+                <dd>
+                  <a
+                    className="ctc-ledger-value"
+                    href="https://github.com/xuan-ryu"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    github.com/xuan-ryu
                   </a>
                 </dd>
               </div>

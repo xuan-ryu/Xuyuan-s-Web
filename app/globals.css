@@ -152,9 +152,12 @@
   --rule: rgba(10, 10, 10, 0.14); /* hairline on paper */
   --rule-dark: rgba(255, 255, 255, 0.14); /* hairline on ink */
 
-  /* ── Elevation — light ink-tinted lifts only (design skill: no heavy glow). */
-  --shadow-card: 0 1px 4px rgba(5, 5, 5, 0.1);
-  --shadow-lift: 0 10px 24px rgba(5, 5, 5, 0.12);
+  /* ── Elevation — one light model, site-wide: every lift is a two-layer
+     contact + ambient pair in neutral ink (case pages may re-tint the same
+     structure — nyma warms it, pulse cools it — but never change the shape).
+     --shadow-overlay stays the third, bigger step for true overlays. */
+  --shadow-card: 0 1px 2px rgba(5, 5, 5, 0.05), 0 4px 12px rgba(5, 5, 5, 0.07);
+  --shadow-lift: 0 2px 6px rgba(5, 5, 5, 0.06), 0 16px 32px rgba(5, 5, 5, 0.09);
   --shadow-overlay: 0 24px 60px rgba(5, 5, 5, 0.16);
 
   /* ── Motion durations — pair with the easing tokens below. */
@@ -199,6 +202,12 @@
   --radius-major: 36px;
   --radius-media: 26px;
   --radius-glass: 18px;
+
+  /* ── Backdrop blur — two sanctioned strengths: glass chrome (buttons,
+     chips, small panels) and full scrims (bentos, sheets). Bespoke effects
+     (hero 28px, pond glass) stay hand-tuned. */
+  --blur-glass: 12px;
+  --blur-scrim: 24px;
 }
 
 @layer base {
@@ -293,6 +302,44 @@
 .content-nav.scrolled {
   border-bottom-color: transparent;
 }
+/* Top scrim — once the page is scrolled, a light frosted band sits behind
+   the nav links so body copy slides UNDER the transparent nav instead of
+   colliding with it. Luminance-neutral (blur + a whisper of white) so it
+   reads on paper, parchment and ink alike; alpha is deliberately very low
+   because case pages with their own opaque navscrim (nyma, pulse) sit
+   underneath and must not visibly double up. A pseudo-element never appears
+   in elementsFromPoint, so the header's live ink sampler is unaffected. */
+.content-nav::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 76px;
+  /* BEHIND the logo/links: a positioned pseudo otherwise paints AFTER the
+     nav's static content, so the blur + white wash landed on the logo
+     itself (the /about "white ghost"). The nav is its own stacking context
+     (fixed, z-index 1000), so -1 keeps the scrim inside it — above the
+     page, below every nav glyph. */
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.content-nav.scrolled::before {
+  opacity: 1;
+}
+@media (max-width: 640px) {
+  /* phone nav is the ink hamburger chip — no scrim band */
+  .content-nav::before {
+    display: none;
+  }
+}
 .content-nav-inner {
   display: flex;
   align-items: flex-start;
@@ -373,7 +420,7 @@ body.hero-night .nav-links a.active {
   transform: scaleX(0);
   transform-origin: center;
   opacity: 0.5;
-  transition: transform 0.34s var(--ease-standard);
+  transition: transform var(--dur-base) var(--ease-standard);
 }
 .nav-links a.active::after,
 .nav-links a:hover::after {
@@ -484,10 +531,13 @@ body.hero-night .nav-links a.active {
 .site-footer {
   margin-top: -1px;
   position: relative;
+  /* dark-ground light model: top rim catch-light + a faint from-top glow so
+     the ink stage reads lit, not flat (shared with .ny-turn on nyma) */
   background:
-    linear-gradient(rgba(10, 10, 10, 0.92), rgba(10, 10, 10, 0.92)),
+    radial-gradient(120% 80% at 50% 0%, rgba(23, 23, 23, 0.92), rgba(10, 10, 10, 0.92)),
     url("/media/shared/footer-texture.png");
   background-size: auto, 100px 100px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   color: var(--paper);
 }
 .footer-shell {
@@ -655,11 +705,17 @@ body.hero-night .nav-links a.active {
   transition:
     color var(--dur-base) var(--ease-silk),
     background var(--dur-base) var(--ease-silk),
-    border-color var(--dur-base) var(--ease-silk);
+    border-color var(--dur-base) var(--ease-silk),
+    transform var(--dur-fast) var(--ease-silk);
 }
 .cta:focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-offset);
+}
+/* universal depress — every press answers with the same 1px settle */
+.cta:active {
+  transform: translateY(1px) scale(0.99);
+  transition-duration: var(--dur-fast);
 }
 .cta--lg {
   font-size: var(--text-meta);
@@ -736,7 +792,7 @@ body.hero-night .nav-links a.active {
   background: var(--seal-red);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.42s var(--ease-silk);
+  transition: transform var(--dur-gesture) var(--ease-silk);
 }
 .cta--quiet:hover::after,
 .cta--quiet:focus-visible::after {
@@ -3728,10 +3784,10 @@ body.hero-night .nav-links a.active {
   min-height: 44px;
   text-transform: uppercase;
   transition:
-    background 0.34s var(--ease-silk),
-    border-color 0.34s var(--ease-silk),
-    color 0.34s var(--ease-silk),
-    transform 0.34s var(--ease-silk);
+    background var(--dur-base) var(--ease-silk),
+    border-color var(--dur-base) var(--ease-silk),
+    color var(--dur-base) var(--ease-silk),
+    transform var(--dur-base) var(--ease-silk);
 }
 
 .ds-pill-link,
@@ -4088,10 +4144,10 @@ body.hero-night .nav-links a.active {
   font-size: 15px;
   min-height: 42px;
   transition:
-    background 0.34s var(--ease-silk),
-    color 0.34s var(--ease-silk),
-    opacity 0.34s var(--ease-silk),
-    transform 0.34s var(--ease-silk);
+    background var(--dur-base) var(--ease-silk),
+    color var(--dur-base) var(--ease-silk),
+    opacity var(--dur-base) var(--ease-silk),
+    transform var(--dur-base) var(--ease-silk);
 }
 
 .ds-state-hover,
