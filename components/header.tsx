@@ -158,6 +158,12 @@ export function Header() {
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
     window.addEventListener("xuyuan:nav-resample", scheduleSettledSamples);
+    // First real visit shows the intro loader (dark) over the hero: the mount
+    // sample reads dark and paints the nav white. When the loader dismisses and
+    // the light hero is revealed no scroll/resize fires, so re-sample on the
+    // loader's completion signal — otherwise the nav stays white on white until
+    // the first scroll. (QA never hit this: skipLoader bypasses the loader.)
+    window.addEventListener("loaderFinished", scheduleSettledSamples);
     // The hero's night overlay fades via inline opacity while its scroll-spring
     // settles (no scroll/class event fires) — observe its style attribute
     // directly instead of polling, so non-hero pages pay nothing.
@@ -170,6 +176,7 @@ export function Header() {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.removeEventListener("xuyuan:nav-resample", scheduleSettledSamples);
+      window.removeEventListener("loaderFinished", scheduleSettledSamples);
       mo?.disconnect();
       if (raf) cancelAnimationFrame(raf);
       clearSettledSamples();
