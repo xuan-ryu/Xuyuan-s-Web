@@ -38,7 +38,7 @@ export function RoperGuessVsAmerica() {
       <p className="roper-guess-q">“{poll.question}”</p>
 
       <InteractiveCue accent="var(--case-accent)">
-        drag the marker to guess — then see what America said
+        drag the marker, release to lock your guess — then see what America said
       </InteractiveCue>
 
       <div className="roper-guess-controls">

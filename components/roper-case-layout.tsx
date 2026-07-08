@@ -191,7 +191,7 @@ const roperCriticalCss = `
 }
 .roper-meta dd.is-accent {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--text-label);
   color: var(--case-accent);
 }
 .roper-hero-frame {
@@ -204,7 +204,9 @@ const roperCriticalCss = `
   background: var(--paper-warm);
 }
 .roper-hero-frame img { object-fit: cover; }
-/* PollRule — the 1984 result as a typographic rule (shared constant) */
+/* PollRule — the 1984 split as an unlabeled typographic rule (shared
+   constant). No numerals here: the figures stay unspoiled until the reader
+   commits a guess in §02's GuessVsAmerica. */
 .roper-pollrule { margin-top: 18px; }
 .roper-pollrule-bar {
   display: flex;
@@ -812,6 +814,8 @@ const roperCriticalCss = `
   .roper-fig { padding: 12px; }
   .roper-fig figcaption { margin-top: 12px; }
   .roper-fig img.roper-fig-inset { display: none; }
+  /* the inset is hidden here — its caption clause goes with it */
+  .roper-fig-inset-note { display: none; }
   .roper-deliverable {
     grid-template-columns: 40px minmax(0, 1fr);
     row-gap: 6px;
@@ -1044,11 +1048,6 @@ export function RoperCaseLayout({ project }: { project: Project }) {
               </div>
               <div className="roper-pollrule-labels roper-mono-caption">
                 <span>The prototype’s sample poll · 1984</span>
-                <span>
-                  {poll.options
-                    .map((option) => `${option.label} ${option.pct}`)
-                    .join(" · ")}
-                </span>
               </div>
             </div>
           </div>
@@ -1241,8 +1240,11 @@ export function RoperCaseLayout({ project }: { project: Project }) {
                   />
                 </div>
                 <figcaption className="roper-mono-caption">
-                  Fig. 05 — Checkpoint wireframes · inset: the progress bar,
-                  enlarged
+                  Fig. 05 — Checkpoint wireframes
+                  <span className="roper-fig-inset-note">
+                    {" "}
+                    · inset: the progress bar, enlarged
+                  </span>
                 </figcaption>
               </figure>
             )}
@@ -1314,7 +1316,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
               <OffscreenVideo
                 className="roper-reel"
                 src={reel.src}
-                poster={project.cover}
+                poster="/media/work/roper/preview-poster.jpg"
                 aria-label="Campaign Weathervane hi-fi prototype walkthrough: year selection, poll questions, and the guess-then-reveal loop."
               />
               <p className="roper-reel-caption roper-mono-caption">
@@ -1353,7 +1355,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
               ],
               [
                 "Research report",
-                "Every choice traced to a pain point, every feature to a principle.",
+                "Twelve weeks of records — testing protocols, session recordings, and post-test surveys.",
               ],
             ].map(([item, note], index) => (
               <div className="roper-deliverable" key={item}>
