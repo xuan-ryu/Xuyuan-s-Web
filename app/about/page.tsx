@@ -799,20 +799,29 @@ h2.about-habits-title.abf-t,
   height: 1px;
   background: rgba(212, 148, 30, 0.4);
 }
+/* final-state contract: prints are VISIBLE by default (no-JS / missed IO
+   reads a finished wall); is-visible only rewinds-and-replays the entrance
+   via backwards fill. The wall itself must never sit in the global
+   [data-fade] hidden state — override it. */
+.abf-dark .about-dojo-wall,
+.abf-dark .about-dojo-wall[data-fade] {
+  opacity: 1;
+  transform: none;
+}
 .abf-dark .about-dojo-item {
   position: relative;
   width: auto;
   margin: 0;
   padding-top: 44px;
-  opacity: 0;
-  transform: translateY(22px);
 }
 .abf-dark .about-dojo-item:nth-child(even) {
   padding-top: 62px;
 }
-.about-dojo-wall.is-visible .about-dojo-item {
-  animation: abfToolLogoIn 0.8s var(--ease-silk) forwards;
-  animation-delay: calc(0.12s + (var(--i) * 110ms));
+@media (prefers-reduced-motion: no-preference) {
+  .about-dojo-wall.is-visible .about-dojo-item {
+    animation: abfToolLogoIn 0.8s var(--ease-silk) backwards;
+    animation-delay: calc(0.12s + (var(--i) * 110ms));
+  }
 }
 /* the print hangs from the rail: a short gold thread ties it up */
 .abf-dark .about-dojo-item::before {
@@ -855,14 +864,6 @@ h2.about-habits-title.abf-t,
   color: rgba(212, 148, 30, 0.85);
   text-shadow: none;
 }
-@media (prefers-reduced-motion: reduce) {
-  .abf-dark .about-dojo-item {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
-}
-
 /* ─ vita timeline ─ */
 .abf-vita {
   grid-column: 6 / span 6;

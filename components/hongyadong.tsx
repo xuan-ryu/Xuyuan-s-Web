@@ -188,6 +188,7 @@ export default function HongyadongFramer(props: Props) {
     const titleRef = useRef<HTMLHeadingElement>(null)
     const zhRef = useRef<HTMLDivElement>(null)
     const subRef = useRef<HTMLParagraphElement>(null)
+const factsRef = useRef<HTMLParagraphElement>(null)
     const heroRef = useRef<HTMLDivElement>(null)
     const scrollDemoRef = useRef(scrollDemo)
 
@@ -1035,6 +1036,7 @@ export default function HongyadongFramer(props: Props) {
                 eyebrowRef.current,
                 zhRef.current,
                 subRef.current,
+                factsRef.current,
             ].forEach((el) => {
                 el?.classList.add("is-visible")
             })
@@ -1348,6 +1350,15 @@ export default function HongyadongFramer(props: Props) {
                     white-space: pre-line;
                 }
 
+                .hyf-facts {
+                    margin: clamp(18px, 2.4vh, 28px) 0 0;
+                    font-family: var(--font-mono);
+                    font-size: 11px;
+                    letter-spacing: 0.14em;
+                    color: rgba(0, 0, 0, 0.44);
+                    text-shadow: 0 0 12px rgba(255, 255, 255, 0.55);
+                }
+
                 .hyf-bottom {
                     width: 100%;
                     display: flex;
@@ -1602,6 +1613,14 @@ export default function HongyadongFramer(props: Props) {
                             style={{ ["--reveal-delay" as any]: "120ms" }}
                         >
                             {renderRevealText(subtitle)}
+                        </p>
+                        <p
+                            ref={factsRef}
+                            className="hyf-facts hyf-reveal-copy"
+                            style={{ ["--reveal-delay" as any]: "200ms" }}
+                        >
+                            AI DESIGN ENGINEER&nbsp;&nbsp;·&nbsp;&nbsp;NEW YORK,
+                            NY&nbsp;&nbsp;·&nbsp;&nbsp;CORNELL M.S. &rsquo;25
                         </p>
                     </div>
 
