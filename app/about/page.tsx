@@ -4,6 +4,7 @@ import { Fragment, type CSSProperties } from "react";
 import { about } from "@/data/about";
 import { site } from "@/data/site";
 import { Cta } from "@/components/ui/cta";
+import { ICUE_CSS, InteractiveCue } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import HongyadongScene from "@/components/hongyadong";
 import { stripCssComments } from "@/lib/css-sanitize";
@@ -15,13 +16,18 @@ export const metadata: Metadata = {
 
 const SEAL = "/media/shared/seal.png";
 
-// 心・技・体 hanging-scroll column + gloss, derived from the existing
-// data/about.ts caption string ("心・技・体 / mind, skill, body / Aikido ·
-// Kendo · Iaido"). Copy edits to data/*.ts are deferred, so the page
-// render-filters the shipped string: the characters become the vertical
-// column, the rest becomes its gold gloss, and the old duplicate caption
-// paragraph is no longer rendered.
-const [dojoZh, ...dojoGlossParts] = about.howIWork.caption.split(" / ");
+// 心・技・体 hanging-scroll column + gloss, derived from the data/about.ts
+// caption string ("心・技・体 / mind, technique, body / Aikido · Kendo ·
+// Iaido"): the characters become the vertical column, the rest becomes its
+// gold gloss, and the old duplicate caption paragraph is no longer rendered.
+const [dojoZhRaw, ...dojoGlossParts] = about.howIWork.caption.split(" / ");
+// Font-coverage swap (audit 2026-07-08): the katakana middle dot ・ (U+30FB)
+// exists in NONE of the brush faces — it walked the whole
+// CloudXingCaoGBK → LiuJian subset → LiuJian regular stack, pulled the 2.2MB
+// full face for nothing, and still rendered from a system serif. The Latin
+// middle dot · (U+00B7) IS in CloudXingCaoGBK, so the scroll column renders
+// it in the brush hand with zero extra font traffic. Data stays verbatim.
+const dojoZh = dojoZhRaw.replaceAll("・", "·");
 
 export default function About() {
   return (
@@ -105,9 +111,11 @@ export default function About() {
               <Fragment key={i}>
                 <p data-fade>{p}</p>
                 {/* pull-line: the essay's thesis (verbatim from the final
-                    paragraph) lifted mid-column so the long read skims;
-                    aria-hidden because the sentence repeats in full below */}
-                {i === 3 ? (
+                    paragraph) lifted into an early gap so the long read skims;
+                    kept after ¶3 — any later and it shares a screen with the
+                    source sentence in ¶7. aria-hidden because the sentence
+                    repeats in full below */}
+                {i === 2 ? (
                   <span className="abf-pull" data-fade aria-hidden="true">
                     {about.whatChanged.pull}
                   </span>
@@ -141,6 +149,12 @@ export default function About() {
                   </span>
                 ))}
               </div>
+              {/* interaction label (site rule: every interactive element names
+                  its gesture) — hover-only devices; touch shows names statically
+                  so the cue would be noise there */}
+              <InteractiveCue className="abf-tools-cue" accent="var(--accent-gold)">
+                Hover an icon — its name slides in
+              </InteractiveCue>
             </div>
 
             <div className="abf-tool-story">
@@ -187,7 +201,10 @@ export default function About() {
                 </div>
               </div>
               <figure className="about-kyoto" data-fade>
-                <OffscreenVideo src={about.shutter.video} />
+                <OffscreenVideo
+                  src={about.shutter.video}
+                  poster={about.shutter.videoPoster}
+                />
                 <figcaption>{about.shutter.caption}</figcaption>
               </figure>
             </div>
@@ -572,6 +589,25 @@ h2.about-habits-title.abf-t,
   .about-activities.abf-vita-sec > .container {
     width: 100%;
   }
+  /* the cover holds 100svh (shrinking it un-completes the dark→activities
+     page-turn: the dark band can only stay pinned while this panel still has
+     height to travel over it) — so with only two vita entries the plate is
+     densified instead: the entries leave the narrow right column and sit
+     side by side across the full shell under the title, each on its own
+     timeline stub, so the centered composition fills the width */
+  .about-activities.abf-vita-sec .abf-vita {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(48px, 6vw, 96px);
+    border-left: 0;
+  }
+  .about-activities.abf-vita-sec .abf-vita-entry {
+    border-left: 1px solid var(--rule);
+  }
+  .about-activities.abf-vita-sec .abf-vita-entry + .abf-vita-entry {
+    margin-top: 0;
+  }
 }
 
 /* ─ toolbox index + poster line: one workbench block ─ */
@@ -671,6 +707,17 @@ h2.about-habits-title.abf-t,
   .abf-tool-icon { filter: none; transform: none; }
   .abf-tool-name { opacity: 1; transform: none; }
   .abf-tool { padding-bottom: 20px; }
+}
+
+/* ─ shared interactive-cue primitive + placement under the wall ─ */
+${ICUE_CSS}
+.abf-tools-cue {
+  margin-top: clamp(20px, 2.4vw, 30px);
+}
+/* touch shows the names statically, so the hover cue is noise there —
+   AFTER the .icue base rule (same specificity, order decides) */
+@media (hover: none) {
+  .abf-tools-cue { display: none; }
 }
 
 /* ─ sealed poster line — belongs to the toolbox block ─ */
@@ -863,10 +910,12 @@ h2.about-habits-title.abf-t,
   height: 1px;
   background: rgba(212, 148, 30, 0.4);
 }
-/* final-state contract: prints are VISIBLE by default (no-JS / missed IO
-   reads a finished wall); is-visible only rewinds-and-replays the entrance
-   via backwards fill. The wall itself must never sit in the global
-   [data-fade] hidden state — override it. */
+/* Dojo entrance lives in globals.css: the wall itself never hides (its
+   [data-fade] block state is neutralized there), the hidden state sits on
+   each .about-dojo-item inside prefers-reduced-motion: no-preference, and
+   .is-visible plays the per-print aboutDojoPin stagger. This page-side rule
+   is only a belt against the generic .about-*[data-fade] hidden state ever
+   re-catching the wall block. */
 .abf-dark .about-dojo-wall,
 .abf-dark .about-dojo-wall[data-fade] {
   opacity: 1;
@@ -880,12 +929,6 @@ h2.about-habits-title.abf-t,
 }
 .abf-dark .about-dojo-item:nth-child(even) {
   padding-top: 62px;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .about-dojo-wall.is-visible .about-dojo-item {
-    animation: abfToolLogoIn 0.8s var(--ease-silk) backwards;
-    animation-delay: calc(0.12s + (var(--i) * 110ms));
-  }
 }
 /* the print hangs from the rail: a short gold thread ties it up */
 .abf-dark .about-dojo-item::before {

@@ -7,7 +7,7 @@ export const about = {
   heading: "About Me.",
   heroIntro:
     "I'm an AI design engineer who likes making messy ideas behave: interfaces, prototypes, design systems, and the rules that help teams keep building after the first demo.",
-  hometown: "My Hometown, Chongqing, China, A City that Grounded With People.",
+  hometown: "My Hometown, Chongqing, China — A City Grounded in Its People.",
   koan: {
     zh: "好雪片々，不落别處",
     en: "Good snow, flake by flake, falls only here.",
@@ -72,6 +72,9 @@ export const about = {
       "A hundred prototypes before lunch can be useful. I care more about what happens after lunch: whether one of them can hold real data, real users, and real responsibility.",
     ],
     video: `/media/about/kyoto-reel.mp4`,
+    // first frame of the reel, extracted with ffmpeg — paints the figure
+    // before the mp4 arrives (and under reduced motion / save-data)
+    videoPoster: `/media/about/kyoto-reel-poster.jpg`,
     caption: "01/25/2023 Kinkakuji, Kyoto, Japan",
   },
 
@@ -86,7 +89,7 @@ export const about = {
       "That is why I like this direction. AI rewards people who can move between ambiguity and implementation: read the product, shape the interaction, write the front end, inspect the output, then turn the lesson into a system.",
       "I do not want AI to feel like a magic button pasted onto a page. I want it to feel like a good workspace: helpful, clear, and honest about where the human decision lives.",
     ],
-    caption: "心・技・体 / mind, skill, body / Aikido · Kendo · Iaido",
+    caption: "心・技・体 / mind, technique, body / Aikido · Kendo · Iaido",
   },
 
   // staggered photo wall; positions are live-measured offsets at 1440w
@@ -108,8 +111,8 @@ export const about = {
       role: "Publicity Department Chair",
       date: "Sep 2024 – Dec 2025",
       bullets: [
-        "Ran the WeChat public account; publications drew 300+ attendees per performance",
-        "Developed the marketing promotion materials including posters design and advertise the events",
+        "Ran the WeChat public account; its publications drew 300+ attendees per performance",
+        "Designed the posters and promotional materials that carried each show's publicity",
       ],
     },
     {
@@ -117,7 +120,7 @@ export const about = {
       role: "Chair",
       date: "Jan 2023 – May 2024",
       bullets: [
-        "Supervised the internal work of CSA and was responsible for new members recruitment",
+        "Oversaw CSA's internal operations and led the recruitment of new members",
         "Co-hosted events with the East Asian Studies department and maintained relations with the Chinese Consulate",
       ],
     },
@@ -161,12 +164,12 @@ export const about = {
     {
       photo: `/media/about/habit-martial-art.jpg`,
       label: "Martial Art",
-      sub: "Aikido & Iaido & Kendo",
+      sub: "Aikido & Kendo & Iaido",
     },
     {
       photo: `/media/about/habit-music.jpg`,
       label: "Music",
-      sub: "Jazz&Techno&City-pop",
+      sub: "Jazz & Techno & City-pop",
     },
   ],
 } as const;

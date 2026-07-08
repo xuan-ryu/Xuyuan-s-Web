@@ -236,6 +236,14 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             ? window.matchMedia("(prefers-reduced-motion: reduce)")
             : null
         const reducedMotion = !!(motionQuery && motionQuery.matches)
+        // ≤768 shows the night photograph instead of the particle canvas, so
+        // the copy sits on a dark ground from scroll 0 — the ink→white color
+        // mix must be pinned at its white end there, or the JS inline colors
+        // (specificity: style attr) overwrite the ≤768 white-text CSS rules
+        // and paint near-black text over the photo.
+        const phonePhotoQuery = window.matchMedia
+            ? window.matchMedia("(max-width: 768px)")
+            : null
         const connection =
             (navigator as any).connection ||
             (navigator as any).mozConnection ||
@@ -348,7 +356,8 @@ const factsRef = useRef<HTMLParagraphElement>(null)
         ]
 
         const syncUIText = (progress: number) => {
-            const textT = smoothstep(0.12, 0.48, progress)
+            const phonePhoto = !!(phonePhotoQuery && phonePhotoQuery.matches)
+            const textT = phonePhoto ? 1 : smoothstep(0.12, 0.48, progress)
             // live: signature reveal kicks in around scrollY≈480 (progress≈0.7)
             const signatureReady = progress >= 0.7
             stageRef.current?.toggleAttribute("data-nav-dark", textT > 0.62)
@@ -1230,7 +1239,6 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     display: block;
                     opacity: 0;
                     transform: translateY(38px);
-                    filter: blur(8px);
                 }
 
                 .hyf-title.is-ready .hyf-title-line {
@@ -1249,7 +1257,6 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     to {
                         opacity: 1;
                         transform: translateY(0);
-                        filter: blur(0);
                     }
                 }
 
@@ -1308,8 +1315,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     display: inline-block;
                     opacity: 0;
                     transform: translateY(18px);
-                    filter: blur(6px);
-                    will-change: transform, opacity, filter;
+                    will-change: transform, opacity;
                 }
 
                 .hyf-reveal-copy.is-visible .hyf-reveal-word {
@@ -1321,7 +1327,6 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     to {
                         opacity: 1;
                         transform: translateY(0);
-                        filter: blur(0);
                     }
                 }
 
@@ -1347,8 +1352,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     display: inline-block;
                     opacity: 0;
                     transform: translateY(118%);
-                    filter: blur(6px);
-                    will-change: transform, opacity, filter;
+                    will-change: transform, opacity;
                 }
 
                 .hyf-reveal-char-copy.is-visible .hyf-reveal-char {
@@ -1365,7 +1369,6 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                     to {
                         opacity: 1;
                         transform: translateY(0);
-                        filter: blur(0);
                     }
                 }
 
