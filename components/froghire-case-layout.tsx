@@ -963,8 +963,8 @@ const froghireCss = `
 }
 .froghire-map-path {
   fill: none;
-  stroke: rgba(5, 5, 5, 0.25);
-  stroke-width: 1;
+  stroke: rgba(5, 5, 5, 0.4);
+  stroke-width: 1.2;
   opacity: 0;
   transition: opacity 0.8s var(--ease-standard);
   transition-delay: var(--fro-d, 0ms);

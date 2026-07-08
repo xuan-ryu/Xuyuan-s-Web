@@ -27,7 +27,7 @@ export default function About() {
   return (
     <>
       <HongyadongScene
-        imageSrc="/media/about/hongyadong.png"
+        imageSrc="/media/about/hongyadong.jpg"
         profilePhoto=""
         eyebrow="Profile"
         titleLine1="About"

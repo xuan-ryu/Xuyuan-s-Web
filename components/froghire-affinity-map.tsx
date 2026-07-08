@@ -81,13 +81,16 @@ const matchesMedia = (query: string) =>
 
 function desktopGeo() {
   const note = (i: number) => ({ x: 16, y: 37 + i * 84, w: 372, h: 66 });
-  const slab = (j: number) => ({ x: 764, y: 82 + j * 146, w: 420, h: 104 });
+  // slabs span the full extent of the six-card stack: first/last slab
+  // centers align with the first/third complaint pair (owner: the right
+  // column ended early and left a dead band under the canvas)
+  const slab = (j: number) => ({ x: 764, y: 60 + j * 168, w: 420, h: 104 });
   const path = (i: number, j: number) => {
     const ya = 37 + i * 84 + 33;
-    const yb = 82 + j * 146 + 52;
+    const yb = 60 + j * 168 + 52;
     return `M 388 ${ya} C 560 ${ya}, 592 ${yb}, 764 ${yb}`;
   };
-  return { viewBox: "0 0 1200 560", note, slab, path };
+  return { viewBox: "0 0 1200 540", note, slab, path };
 }
 
 function stackedGeo() {
