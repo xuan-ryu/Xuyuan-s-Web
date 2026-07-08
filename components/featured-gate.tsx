@@ -512,9 +512,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       <span className="fg-bg" ref={bgRef} aria-hidden="true" />
       <div className="fg-shell">
         <header className="fg-head" ref={headRef}>
-          <h2 id="fg-heading" className="fg-title" data-fade>
-            Selected Work
-          </h2>
+          <h2 id="fg-heading" className="fg-title">Selected Work</h2>
           <Cta href="/work" variant="quiet" large className="fg-allwork">
             All Work
           </Cta>
@@ -538,8 +536,6 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                 <li
                   key={p.slug}
                   className={`fg-row${isActive ? " is-active" : ""}`}
-                  data-fade
-                  style={{ ["--d" as string]: `${120 + i * 90}ms` } as CSSProperties}
                   ref={(el) => {
                     rowRefs.current[i] = el;
                   }}
@@ -746,6 +742,17 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           transition-delay: calc(var(--row-i, 0) * 90ms);
         }
         .fg-section.is-revealed .fg-row-link {
+          opacity: 1;
+          transform: none;
+        }
+        .fg-title, .fg-allwork {
+          opacity: 0;
+          transform: translateY(26px);
+          transition: opacity 0.7s var(--ease-silk), transform 0.7s var(--ease-silk);
+        }
+        .fg-allwork { transition-delay: 120ms; }
+        .fg-section.is-revealed .fg-title,
+        .fg-section.is-revealed .fg-allwork {
           opacity: 1;
           transform: none;
         }
