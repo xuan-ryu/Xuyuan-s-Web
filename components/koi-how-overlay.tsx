@@ -170,7 +170,10 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
            them back ("How I Work"), so the dismiss is reversible. Lives once
            the cards are up, then stays put in both states. */
         .koi-how-toggle {
-          position: absolute; left: 192px; top: calc(24vh + 132px);
+          /* pairs with the pond's feed chip: same left edge (its dock inset),
+             stacked just under it (the chip docks centred on ~26% height, ~3%
+             tall) so the two ink-glass controls read as one left-edge group */
+          position: absolute; left: 63px; top: calc(26% + 42px);
           display: inline-flex; align-items: center; gap: 12px;
           padding: 12px 18px;
           background: rgba(10, 10, 10, 0.58);
@@ -245,7 +248,8 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
              the lower cards keep a real vertical gap instead of stacking into
              one dense block. */
           .koi-how-title { left: 48px; }
-          .koi-how-toggle { left: 48px; }
+          /* toggle stays paired with the feed chip's left-edge dock, not the
+             title rail */
           .koi-how-card { width: min(640px, calc(100vw - 96px)); }
           .koi-how-card-1 { left: auto; right: 48px; top: 400px; }
           .koi-how-card-2 { left: 48px; top: 768px; }
