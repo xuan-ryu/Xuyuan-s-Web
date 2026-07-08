@@ -597,7 +597,7 @@ export const projects: Project[] = [
     blurb:
       "I redesigned FrogHire.ai, an early-stage AI job-matching platform, turning scattered bug fixes and negative reviews into a focused effort to rebuild user trust. Through usability testing, bug triage, and competitive analysis, I found the real issues weren’t missing features but missing guidance—users had no onboarding, unclear resume states, and opaque subscriptions. By reframing isolated complaints into systemic design problems, I delivered lightweight yet impactful fixes that restored signups, improved clarity, and helped the product survive its critical growth stage.",
     role: "UX Designer",
-    duration: "05/2025 – 08/2025",
+    duration: "06/2025 – 08/2025",
     type: "Intern",
     teams: "UX Designer, PM, Founder, Front End Engineers",
     summary: [

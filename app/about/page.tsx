@@ -73,14 +73,12 @@ export default function About() {
                 education line stack in the first cell, the CTA keeps its own */}
             <div className="about-resume-claim">
               <h2>{about.resumeNote}</h2>
-              {/* de-risk line — education + base, facts already in the repo
-                  (data/about.ts bio: Cornell; data/projects.ts: Cornell MPS
-                  team; data/site.ts: New York, NY).
-                  TODO(owner): the graduation / availability date is NOT in the
-                  codebase — once confirmed, extend this line, e.g.
-                  "… · available from Summer 2026". */}
+              {/* facts from the owner's resume (0429): Cornell M.I.S.
+                  Dec 2025 — already graduated; Oberlin CS + East Asian
+                  Studies '24. */}
               <p className="about-availability">
-                Cornell University · M.P.S. — based in {site.location}
+                Cornell M.S. Information Science &rsquo;25 · based in{" "}
+                {site.location} · open to full-time
               </p>
             </div>
             <Cta
