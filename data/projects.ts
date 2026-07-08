@@ -1012,8 +1012,8 @@ export const projects: Project[] = [
         "Though there is no definitive \"correct\" way to narrate history, by examining ordinary lives in past disasters—as we now experience personally during this epidemic—we can develop deeper empathy and thoughtfully reconsider concepts such as \"righteousness,\" \"justice,\" and \"humanity.\" Our project focuses specifically on the 1942 Henan famine, collecting overlooked individual narratives and using the immersive quality of games to reconstruct a realistic historical environment. Through authentic stories and personal choices, we encourage players to reflect critically and independently, striving always to maintain historical objectivity and avoid ideological bias.",
       ],
       gallery: [
-        `/media/work/hunger/gallery-1.png`,
-        `/media/work/hunger/gallery-2.png`,
+        `/media/work/hunger/gallery-1-v2.png`,
+        `/media/work/hunger/gallery-2-v2.png`,
         `/media/work/hunger/gallery-3.png`,
         `/media/work/hunger/gallery-4.png`,
       ],

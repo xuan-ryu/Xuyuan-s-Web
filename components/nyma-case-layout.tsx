@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
-import { adjacent, type CaseSection, type Project } from "@/data/projects";
+import { type CaseSection, type Project } from "@/data/projects";
+import { CaseNext } from "./case-next";
 import { NymaScroll } from "./nyma-scroll";
 import {
   NymaDirections,
@@ -2064,34 +2064,6 @@ const nymaCss = `
   color: rgba(242, 239, 234, 0.5);
 }
 
-/* ── Next case ─────────────────────────────────────────────────────────── */
-.ny-next {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: var(--work-shell-max);
-  margin: 0 auto;
-  padding: 0 var(--work-gutter) calc(var(--gap-section) / 2);
-  text-align: left;
-}
-.ny-next-label {
-  margin: 0 0 10px;
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ny-text-4);
-}
-.ny-next-link {
-  text-decoration: none;
-}
-.ny-next-title {
-  font-family: var(--ny-display);
-  font-size: var(--text-display-3, clamp(48px, 5vw, 80px));
-  font-weight: 300;
-  letter-spacing: -0.005em;
-  color: var(--ny-ink);
-}
-
 /* ── Responsive ────────────────────────────────────────────────────────── */
 @media (max-width: 1080px) {
   .ny-rail {
@@ -2793,8 +2765,6 @@ export function NymaCaseLayout({ project }: { project: Project }) {
   const [inherit, thread, rulebook, pages, codify, handoff] =
     project.chapters ?? [];
   const moment = project.moment;
-  const neighbors = adjacent(project.slug);
-  const next = neighbors.next ?? neighbors.prev;
 
   return (
     <article className="case-study-page nyma-case-page" data-has-cover="false">
@@ -3583,17 +3553,10 @@ export function NymaCaseLayout({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* ── Adjacent case — quiet close ── */}
-      {next && (
-        <aside className="ny-next">
-          <p className="ny-next-label" data-fade>
-            Next case
-          </p>
-          <Link className="ny-next-link" href={`/work/${next.slug}`} data-fade>
-            <span className="cta cta--quiet ny-next-title">{next.title}</span>
-          </Link>
-        </aside>
-      )}
+      {/* ── Adjacent case — the shared cross-page contract (label, title,
+          cover preview); the earlier text-only quiet close shipped without a
+          preview (owner report 2026-07-08) ── */}
+      <CaseNext slug={project.slug} />
     </article>
   );
 }
