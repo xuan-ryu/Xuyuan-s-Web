@@ -31,25 +31,24 @@ const FEEDS_TO_REVEAL = 3;
 export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(forceReveal);
-  // "I just want to feed the fish" — retract the cards one by one and hand the
-  // whole pond back to feeding. retracting → the staggered exit is playing;
-  // dismissed → the overlay is gone and the water is fully feedable again.
-  const [retracting, setRetracting] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  // "Just feed the fish" tucks the cards away one by one and hands the water
+  // back; the same chip then reads "How I Work" to bring them back — so the
+  // dismiss is always reversible.
+  const [collapsed, setCollapsed] = useState(false);
 
-  const dismiss = () => {
-    if (retracting || dismissed) return;
-    setRetracting(true);
-    // let the staggered withdraw finish, then drop the overlay entirely so its
-    // cards stop catching pointer events over the water
-    window.setTimeout(() => {
-      setDismissed(true);
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
       try {
-        window.dispatchEvent(new CustomEvent("koi:how-dismiss"));
+        // let the pond re-dock / restore its feed tip to match
+        window.dispatchEvent(
+          new CustomEvent(next ? "koi:how-dismiss" : "koi:how-reveal")
+        );
       } catch {
         /* no-op */
       }
-    }, 1150);
+      return next;
+    });
   };
 
   useEffect(() => {
@@ -91,8 +90,8 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
     <div
       ref={rootRef}
       className={`koi-how${revealed ? " is-revealed" : ""}${
-        retracting ? " is-retracting" : ""
-      }${dismissed ? " is-dismissed" : ""}`}
+        collapsed ? " is-collapsed" : ""
+      }`}
     >
       <style>{stripCssComments(`
         .koi-how {
@@ -165,55 +164,75 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
         .koi-how.is-revealed .koi-how-card-2 { transition-delay: 0.30s; }
         .koi-how.is-revealed .koi-how-card-3 { transition-delay: 0.46s; }
 
-        /* "I just want to feed the fish" — a quiet line under the title, only
-           live once the cards are up (there's nothing to dismiss before that) */
-        .koi-how-feedcta {
-          position: absolute; left: 192px; top: calc(24vh + 128px);
-          display: inline-flex; align-items: center; gap: 9px;
-          padding: 4px 0;
-          background: none; border: 0; cursor: pointer;
+        /* Toggle chip — same ink-glass language as the pond's feed chip
+           (#feed-ui): hairline edge, --radius-control, uppercase label, lift
+           shadow. It tucks the cards away ("Just feed the fish") and brings
+           them back ("How I Work"), so the dismiss is reversible. Lives once
+           the cards are up, then stays put in both states. */
+        .koi-how-toggle {
+          position: absolute; left: 192px; top: calc(24vh + 132px);
+          display: inline-flex; align-items: center; gap: 12px;
+          padding: 12px 18px;
+          background: rgba(10, 10, 10, 0.58);
+          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          border-radius: var(--radius-control);
+          box-shadow: var(--shadow-lift);
+          cursor: pointer; user-select: none;
           pointer-events: none;
-          font-family: var(--font-newsreader);
-          font-size: var(--text-label);
-          font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
-          color: rgba(250, 250, 250, 0.82);
-          text-shadow: 0 1px 12px rgba(1, 2, 4, 0.85);
+          font-family: var(--font-sans);
+          font-size: var(--text-label); font-weight: 500;
+          letter-spacing: var(--track-label); text-transform: uppercase;
+          line-height: 1; white-space: nowrap;
+          color: rgba(255, 255, 255, 0.78);
           opacity: 0; transform: translateY(14px);
           transition: opacity var(--dur-reveal) var(--ease-reveal),
                       transform var(--dur-reveal) var(--ease-reveal),
-                      color 0.3s ease;
+                      background var(--dur-fast) ease,
+                      border-color var(--dur-fast) ease,
+                      color var(--dur-fast) ease;
         }
-        .koi-how-feedcta .koi-how-feedcta-line {
-          width: 26px; height: 1px; background: currentColor;
-          transform-origin: left; transition: width 0.3s var(--ease-silk);
-        }
-        .koi-how.is-revealed .koi-how-feedcta {
+        .koi-how.is-revealed .koi-how-toggle {
           opacity: 1; transform: none; pointer-events: auto;
           transition-delay: 0.62s;
         }
-        .koi-how-feedcta:hover { color: rgba(255, 255, 255, 0.98); }
-        .koi-how-feedcta:hover .koi-how-feedcta-line { width: 40px; }
+        .koi-how-toggle:hover {
+          background: rgba(20, 20, 20, 0.72);
+          border-color: rgba(255, 255, 255, 0.24);
+          color: #fff;
+        }
+        .koi-how-toggle:focus-visible {
+          outline: var(--focus-ring); outline-offset: var(--focus-offset);
+        }
+        /* chevron: points down (tuck away) when open, flips up when collapsed */
+        .koi-how-toggle-ico {
+          width: 8px; height: 8px; flex-shrink: 0;
+          border-right: 1.5px solid currentColor;
+          border-bottom: 1.5px solid currentColor;
+          transform: translateY(-2px) rotate(45deg);
+          transition: transform 0.42s var(--ease-silk);
+        }
+        .koi-how.is-collapsed .koi-how-toggle-ico {
+          transform: translateY(1px) rotate(-135deg);
+        }
 
-        /* retract: reverse-staggered downward withdraw, then the CTA follows */
-        .koi-how.is-revealed.is-retracting .koi-how-title,
-        .koi-how.is-revealed.is-retracting .koi-how-card {
+        /* collapse: reverse-staggered downward withdraw (card 3 leaves first).
+           Removing is-collapsed lets the reveal stagger bring them back. */
+        .koi-how.is-revealed.is-collapsed .koi-how-title,
+        .koi-how.is-revealed.is-collapsed .koi-how-card {
           opacity: 0;
           transform: translateY(46px) scale(0.965);
         }
-        .koi-how.is-retracting .koi-how-card-3 { transition-delay: 0s; }
-        .koi-how.is-retracting .koi-how-card-2 { transition-delay: 0.12s; }
-        .koi-how.is-retracting .koi-how-card-1 { transition-delay: 0.24s; }
-        .koi-how.is-retracting .koi-how-title  { transition-delay: 0.36s; }
-        .koi-how.is-retracting .koi-how-feedcta {
-          opacity: 0; transform: translateY(20px);
-          pointer-events: none; transition-delay: 0s;
-        }
-        /* once retracted the overlay leaves entirely so the water underneath
-           is feedable again everywhere the cards used to sit */
-        .koi-how.is-dismissed { display: none; }
+        .koi-how.is-collapsed .koi-how-card-3 { transition-delay: 0s; }
+        .koi-how.is-collapsed .koi-how-card-2 { transition-delay: 0.12s; }
+        .koi-how.is-collapsed .koi-how-card-1 { transition-delay: 0.24s; }
+        .koi-how.is-collapsed .koi-how-title  { transition-delay: 0.36s; }
+        /* tucked-away cards must hand their patch of water back to feeding */
+        .koi-how.is-collapsed .koi-how-card { pointer-events: none; }
 
         @media (prefers-reduced-motion: reduce) {
-          .koi-how-title, .koi-how-card, .koi-how-feedcta { transition: none; }
+          .koi-how-title, .koi-how-card, .koi-how-toggle,
+          .koi-how-toggle-ico { transition: none; }
         }
         /* no JS: never hide the content behind the reveal */
         @media (scripting: none) {
@@ -226,7 +245,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
              the lower cards keep a real vertical gap instead of stacking into
              one dense block. */
           .koi-how-title { left: 48px; }
-          .koi-how-feedcta { left: 48px; }
+          .koi-how-toggle { left: 48px; }
           .koi-how-card { width: min(640px, calc(100vw - 96px)); }
           .koi-how-card-1 { left: auto; right: 48px; top: 400px; }
           .koi-how-card-2 { left: 48px; top: 768px; }
@@ -248,7 +267,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             padding: 460px 20px 96px;
           }
           .koi-how-title { position: static; }
-          .koi-how-feedcta {
+          .koi-how-toggle {
             position: static; left: auto; top: auto;
             align-self: flex-start; margin-top: 4px;
           }
@@ -272,12 +291,17 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
         {!forceReveal && (
           <button
             type="button"
-            className="koi-how-feedcta"
-            onClick={dismiss}
-            aria-label="Hide How I Work and just feed the fish"
+            className="koi-how-toggle"
+            onClick={toggleCollapsed}
+            aria-expanded={!collapsed}
+            aria-label={
+              collapsed
+                ? "Bring How I Work back"
+                : "Hide How I Work and just feed the fish"
+            }
           >
-            <span className="koi-how-feedcta-line" aria-hidden="true" />
-            I just want to feed the fish
+            <span className="koi-how-toggle-ico" aria-hidden="true" />
+            {collapsed ? "How I Work" : "Just feed the fish"}
           </button>
         )}
         {methods.map((method, i) => (
