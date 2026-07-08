@@ -170,10 +170,14 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
            them back ("How I Work"), so the dismiss is reversible. Lives once
            the cards are up, then stays put in both states. */
         .koi-how-toggle {
-          /* pairs with the pond's feed chip: same left edge (its dock inset),
-             stacked just under it (the chip docks centred on ~26% height, ~3%
-             tall) so the two ink-glass controls read as one left-edge group */
-          position: absolute; left: 63px; top: calc(26% + 42px);
+          /* pairs with the pond's feed chip as ONE left-edge control group.
+             The button is a direct child of .koi-how (inset 0 = the section
+             box — the SAME coordinate system the chip docks in); it used to
+             live inside the centered 1440 canvas, which pushed it ~48px off
+             the chip's edge on wide screens (owner report 2026-07-08). Same
+             24px dock inset, stacked 12px under the docked chip (chip is
+             centred at 26% of the band, ~48px tall → bottom at 26% + 24px). */
+          position: absolute; left: 24px; top: calc(26% + 36px);
           display: inline-flex; align-items: center; gap: 12px;
           padding: 12px 18px;
           background: rgba(10, 10, 10, 0.58);
@@ -207,16 +211,24 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
         .koi-how-toggle:focus-visible {
           outline: var(--focus-ring); outline-offset: var(--focus-offset);
         }
-        /* chevron: points down (tuck away) when open, flips up when collapsed */
+        /* chevron in a 22px icon slot — the same slot the docked feed chip
+           gives its pellets, so the two chips share one icon rhythm. Points
+           down (tuck away) when open, flips up when collapsed. */
         .koi-how-toggle-ico {
-          width: 8px; height: 8px; flex-shrink: 0;
+          position: relative;
+          width: 22px; height: 22px; flex-shrink: 0;
+        }
+        .koi-how-toggle-ico::before {
+          content: "";
+          position: absolute; left: 50%; top: 50%;
+          width: 8px; height: 8px;
           border-right: 1.5px solid currentColor;
           border-bottom: 1.5px solid currentColor;
-          transform: translateY(-2px) rotate(45deg);
+          transform: translate(-50%, -62%) rotate(45deg);
           transition: transform 0.42s var(--ease-silk);
         }
-        .koi-how.is-collapsed .koi-how-toggle-ico {
-          transform: translateY(1px) rotate(-135deg);
+        .koi-how.is-collapsed .koi-how-toggle-ico::before {
+          transform: translate(-50%, -38%) rotate(-135deg);
         }
 
         /* collapse: reverse-staggered downward withdraw (card 3 leaves first).
@@ -235,7 +247,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
 
         @media (prefers-reduced-motion: reduce) {
           .koi-how-title, .koi-how-card, .koi-how-toggle,
-          .koi-how-toggle-ico { transition: none; }
+          .koi-how-toggle-ico::before { transition: none; }
         }
         /* no JS: never hide the content behind the reveal */
         @media (scripting: none) {
@@ -271,9 +283,11 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             padding: 460px 20px 96px;
           }
           .koi-how-title { position: static; }
+          /* phone: the chip x-docks at 24px and keeps its top anchor at
+             min(50%, 380px) — pair the toggle right under it in the top
+             water area (the card stack flows from 460px down) */
           .koi-how-toggle {
-            position: static; left: auto; top: auto;
-            align-self: flex-start; margin-top: 4px;
+            left: 24px; top: 416px;
           }
           .koi-how-card,
           .koi-how-card-1, .koi-how-card-2, .koi-how-card-3 {
@@ -290,24 +304,24 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           }
         }
       `)}</style>
+      {!forceReveal && (
+        <button
+          type="button"
+          className="koi-how-toggle"
+          onClick={toggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={
+            collapsed
+              ? "Bring How I Work back"
+              : "Hide How I Work and just feed the fish"
+          }
+        >
+          <span className="koi-how-toggle-ico" aria-hidden="true" />
+          {collapsed ? "How I Work" : "Just feed the fish"}
+        </button>
+      )}
       <div className="koi-how-canvas">
         <h2 className="koi-how-title">{title}</h2>
-        {!forceReveal && (
-          <button
-            type="button"
-            className="koi-how-toggle"
-            onClick={toggleCollapsed}
-            aria-expanded={!collapsed}
-            aria-label={
-              collapsed
-                ? "Bring How I Work back"
-                : "Hide How I Work and just feed the fish"
-            }
-          >
-            <span className="koi-how-toggle-ico" aria-hidden="true" />
-            {collapsed ? "How I Work" : "Just feed the fish"}
-          </button>
-        )}
         {methods.map((method, i) => (
           <div
             key={method.title}

@@ -181,11 +181,22 @@ export default function InkKoiEcosystem(props: Props) {
         // edge. Transform-only: JS measures the dock delta into CSS vars.
         let tipDocked = false
         const DOCK_INSET = 24
-        const DOCK_SCALE = 0.8
+        // 1 (no scale-down): the docked chip must match the How-I-Work toggle
+        // exactly — same 14px label, same box — so the left-edge pair reads
+        // as one control group; compaction happens in the .dismissed CSS
+        // instead (owner report 2026-07-08)
+        const DOCK_SCALE = 1
         const updateDockVars = () => {
             if (!tipDocked) return
             const rect = container.getBoundingClientRect()
+            // Measure the chip at its SETTLED docked size: the .dock-measure
+            // class applies the compact paddings and hides the sub line with
+            // transitions off, so the dock delta lands the compact chip's
+            // left edge exactly on DOCK_INSET (measuring the wide pre-dock
+            // box parked it ~58px off the toggle's edge).
+            uiBox.classList.add("dock-measure")
             const chipW = uiBox.offsetWidth // layout width, unaffected by transform
+            uiBox.classList.remove("dock-measure")
             const dockX = DOCK_INSET + (chipW * DOCK_SCALE) / 2 - rect.width / 2
             uiBox.style.setProperty("--dock-x", dockX.toFixed(1) + "px")
             // desktop: park at ~26% of the band's height — the left-column
@@ -209,6 +220,8 @@ export default function InkKoiEcosystem(props: Props) {
         const onHowReveal = () => {
             dockTip()
             container.classList.add("how-revealed")
+            // the sub line just left the layout — re-derive the dock delta
+            updateDockVars()
         }
         window.addEventListener("koi:how-reveal", onHowReveal)
         const syncFeedUi = () => {
@@ -2153,14 +2166,32 @@ drawBody() {
               cursor: pointer; user-select: none; pointer-events: auto;
               transition: background var(--dur-fast) ease,
                           border-color var(--dur-fast) ease,
+                          padding 0.8s var(--ease-silk),
+                          gap 0.8s var(--ease-silk),
                           transform var(--dur-fast) var(--ease-soft);
               box-shadow: var(--shadow-lift);
             }
+            /* docked: compact to the SAME recipe as the How-I-Work toggle
+               (12/18 padding, 12 gap, 22px icon slot) — the two left-edge
+               ink-glass chips read as one control group */
+            #hero-ui.dismissed #feed-ui { padding: 12px 18px; gap: 12px; }
+            #hero-ui.dismissed .feed-pellets { width: 22px; height: 22px; }
+            /* measuring stub: the settled docked box, synchronously, no
+               transitions — JS flips this on for one offsetWidth read */
+            #hero-ui.dock-measure #feed-ui,
+            #hero-ui.dock-measure .feed-pellets { transition: none !important; }
+            #hero-ui.dock-measure #feed-ui { padding: 12px 18px; gap: 12px; }
+            #hero-ui.dock-measure .feed-pellets { width: 22px; height: 22px; }
+            #hero-ui.dock-measure .feed-sub { display: none; }
             #feed-ui:hover { background: rgba(20, 20, 20, 0.72); border-color: rgba(255,255,255,0.24); }
             #feed-ui:active { transform: scale(0.98); }
             #feed-ui:focus-visible{outline: var(--focus-ring); outline-offset: var(--focus-offset)}
 
-            .feed-pellets { position:relative; width:34px; height:34px; flex-shrink:0; animation: pelletGlow 4.5s ease-in-out infinite; }
+            .feed-pellets {
+              position:relative; width:34px; height:34px; flex-shrink:0;
+              animation: pelletGlow 4.5s ease-in-out infinite;
+              transition: width 0.8s var(--ease-silk), height 0.8s var(--ease-silk);
+            }
             /* Pellets scale with container via em-like ratios: base container = 40px */
             .pellet { position:absolute; border-radius:50%; background: linear-gradient(135deg, #ffe07a 0%, #d38010 100%); transition: filter 0.3s ease; }
             .pellet:nth-child(1){ width:57%; height:28%; top:3%;  left:0;    transform: rotate(-20deg); }
