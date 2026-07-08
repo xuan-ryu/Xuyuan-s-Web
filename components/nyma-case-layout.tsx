@@ -8,6 +8,7 @@ import {
   NymaWardrobes,
 } from "./nyma-interactives";
 import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Nyma — "The Archive Thread". The one case page that steps inside Nyma's
@@ -2131,6 +2132,19 @@ const nymaCss = `
     margin-top: 12px;
   }
 }
+
+/* ── Outcome band — Nyma voice: archival mono labels in neutral ink (the
+   color law: Activation Blue stays interactive-only, so the band's eyebrow
+   and ticks read in the archive's own greys), Murecho display numeral ── */
+.nyma-case-page .ob-band {
+  --ob-mono: var(--ny-mono);
+  --ob-rule: var(--ny-line-strong);
+  --ob-detail: var(--ny-text-3);
+  --ob-body: var(--ny-text-2);
+  --ob-stat-ink: var(--ny-ink);
+  --ob-stat-font: var(--ny-display);
+  --ob-stat-weight: 500;
+}
 `;
 
 // ── helpers ─────────────────────────────────────────────────────────────
@@ -2142,7 +2156,10 @@ const railTopics = [
   "Pages",
   "Codification",
   "Handoff",
-  "The turn",
+  // de-templated 2026-07-07: Pulse ch.10 already closes on "The turn";
+  // Nyma's rail/TOC label varies (#ny-turn anchor + the Turn band's
+  // "Most memorable moment" eyebrow stay unchanged)
+  "The thread holds",
 ];
 
 function ThreadRail() {
@@ -2251,7 +2268,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
     <article className="case-study-page nyma-case-page" data-has-cover="false">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(nymaCss + ICUE_CSS),
+          __html: stripCssComments(nymaCss + ICUE_CSS + OUTCOME_BAND_CSS),
         }}
       />
       <NymaScroll />
@@ -2306,7 +2323,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 ["#ny-ch4", "The pages"],
                 ["#ny-ch5", "The codification"],
                 ["#ny-ch6", "The handoff"],
-                ["#ny-turn", "The turn"],
+                ["#ny-turn", "The thread holds"],
               ].map(([href, label], i) => (
                 <li key={href}>
                   <a href={href}>
@@ -2328,6 +2345,9 @@ export function NymaCaseLayout({ project }: { project: Project }) {
           </dl>
         </div>
       </section>
+
+      {/* ── At a glance: the recruiter's skim row (audit #1) ── */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* ── Overview ── */}
       <section className="proj-summary" aria-labelledby="project-summary">

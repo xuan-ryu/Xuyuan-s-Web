@@ -10,6 +10,7 @@ import {
 } from "@/components/cloud-futures-interactives";
 import { CfCaseRail, CfGate } from "@/components/cloud-futures-scroll";
 import { CaseNext } from "@/components/case-next";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Cloud Support Futures — a Cornell × Google Cloud sponsored studio.
@@ -394,6 +395,9 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           </div>
         </figure>
       </header>
+
+      {/* ── at a glance: the recruiter's skim row (audit #1) ── */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* ── 01 · brief ───────────────────────────────────────────────── */}
       <section className="cf-shell cf-section cf-section--light" aria-label="Brief">
@@ -1008,6 +1012,19 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
         .cf-shell {
           width: min(var(--work-shell-max, 1440px), 100% - 2 * var(--work-gutter, clamp(24px, 5vw, 72px)));
           margin-inline: auto;
+        }
+        /* outcome band — Google voice: cf-shell geometry, Roboto Mono
+           labels in the product blue, hairlines in the page's own rule */
+        .cf-page .ob-band {
+          --ob-max: none;
+          width: min(var(--work-shell-max, 1440px), 100% - 2 * var(--work-gutter, clamp(24px, 5vw, 72px)));
+          --ob-pad-x: 0px;
+          --ob-mono: var(--cf-mono);
+          --ob-rule: rgba(16, 18, 22, 0.14);
+          --ob-detail: var(--case-accent);
+          --ob-body: var(--cf-stone);
+          --ob-stat-ink: var(--cf-ink);
+          margin-top: calc(var(--gap-block, 48px) * 0.75);
         }
         .cf-grid {
           display: grid;
@@ -3202,7 +3219,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             grid-template-columns: 1fr;
           }
         }
-      `),
+      ` + OUTCOME_BAND_CSS),
         }}
       />
     </article>

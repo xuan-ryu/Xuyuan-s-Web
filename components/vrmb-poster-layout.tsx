@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { adjacent, type Project } from "@/data/projects";
 import { VrmbFlightLine } from "@/components/vrmb-flight-line";
 import { VrmbParticleStrip } from "@/components/vrmb-particle-strip";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // VR Monarch Butterfly — "a naturalist's field folio for a virtual migration"
@@ -722,6 +723,20 @@ const css = `
     height: clamp(180px, 42vw, 260px);
   }
 }
+
+/* ── Outcome band — field-folio voice: mono index labels in the AA wing
+   orange (--case-detail, same ink as the Plate/Fig. indices), condensed
+   numeral like the plate headline; a breath of margin before the
+   full-bleed colony sky ── */
+.vrmb-page .ob-band {
+  margin-bottom: clamp(40px, 5vw, 72px);
+  --ob-stat-font: var(--font-condensed);
+  --ob-stat-weight: 300;
+  --ob-body: rgba(5, 5, 5, 0.76);
+}
+.vrmb-page .ob-stat strong {
+  text-transform: uppercase;
+}
 `;
 
 export function VrmbPosterLayout({ project }: { project: Project }) {
@@ -741,7 +756,9 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
 
   return (
     <article className="poster-page vrmb-page">
-      <style dangerouslySetInnerHTML={{ __html: stripCssComments(css) }} />
+      <style
+        dangerouslySetInnerHTML={{ __html: stripCssComments(css + OUTCOME_BAND_CSS) }}
+      />
 
       {/* 1 · Specimen plate */}
       <header className="vrmb-shell vrmb-grid vrmb-hero" id="header">
@@ -784,6 +801,9 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
           />
         </figure>
       </header>
+
+      {/* at a glance — the recruiter's skim row (audit #1) */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* 2 · The colony */}
       <section className="vrmb-colony" aria-label="The overwintering colony">

@@ -9,6 +9,7 @@ import { PulseCreativeBrief } from "./pulse-creative-brief";
 import { PulsePlaygroundDemo } from "./pulse-playground-demo";
 import { PulseTokenChips } from "./pulse-token-chips";
 import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Pulse — "Studio Bloom" (owner direction, 2026-07-04): the one case page
@@ -2629,6 +2630,15 @@ const pulseCss = `
     transition: none;
   }
 }
+
+/* ── Outcome band — Pulse voice: one-typeface rule (mono → text face),
+   slate hairlines, ink numeral, cyan-700 eyebrow via --case-detail ── */
+.pulse-case-page .ob-band {
+  --ob-mono: var(--pulse-mono);
+  --ob-rule: var(--pp-line-strong);
+  --ob-body: var(--pp-text-2);
+  --ob-stat-ink: var(--pp-ink);
+}
 `;
 
 // Chapter head: mono index above the claim (title outweighs index).
@@ -2697,7 +2707,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
     <article className="case-study-page pulse-case-page" data-has-cover="false">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(pulseCss + ICUE_CSS),
+          __html: stripCssComments(pulseCss + ICUE_CSS + OUTCOME_BAND_CSS),
         }}
       />
       <PulseScroll />
@@ -2770,6 +2780,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           ))}
         </dl>
       </section>
+
+      {/* ── At a glance: the recruiter's skim row (audit #1) ── */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* ── Overview: what Pulse is + the scope, once + figures ledger ── */}
       <section className="proj-summary" aria-labelledby="project-summary">
@@ -3218,9 +3231,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </figcaption>
                 </figure>
                 <figure className="pulse-section-full" data-fade>
-                  {/* 824/five-weeks live in the hero console only (audit:
-                      the stat was stated twice) — this row keeps the two
-                      numbers the commit stream itself is about */}
+                  {/* 824/five-weeks live in the hero console and the
+                      at-a-glance band (recruiter skim row) only — this row
+                      keeps the two numbers the commit stream itself is
+                      about */}
                   <div className="pulse-ticker-stats">
                     <div>
                       <strong data-count="308">308</strong>

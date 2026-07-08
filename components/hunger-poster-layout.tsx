@@ -5,6 +5,7 @@ import { Cta } from "@/components/ui/cta";
 import { HungerLoupeFrame } from "@/components/hunger-loupe-frame";
 import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The 1942 Edition" (spec-hunger1942): the project printed its own broadsheet,
@@ -74,7 +75,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
     <article className="poster-page hunger-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(hungerCss + ICUE_CSS),
+          __html: stripCssComments(hungerCss + ICUE_CSS + OUTCOME_BAND_CSS),
         }}
       />
 
@@ -106,6 +107,9 @@ export function HungerPosterLayout({ project }: { project: Project }) {
           </div>
         </dl>
       </header>
+
+      {/* ── at a glance: the recruiter's skim row (audit #1) ── */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* ── 2 · The broadsheet ────────────────────────────────── */}
       <section className="hunger-sheet" aria-label="The printed broadsheet">
@@ -1004,5 +1008,18 @@ const hungerCss = `
   .hunger-loupe {
     transition: none;
   }
+}
+
+/* ── Outcome band — dateline voice: folio hairlines, the jacket navy on
+   labels (--case-accent, the page's static detail ink), condensed numeral
+   like the masthead ── */
+.hunger-page .ob-band {
+  --ob-stat-font: var(--font-condensed);
+  --ob-stat-weight: 300;
+  --ob-body: rgba(5, 5, 5, 0.76);
+}
+.hunger-page .ob-stat strong {
+  text-transform: uppercase;
+  letter-spacing: var(--track-display, 0.01em);
 }
 `;

@@ -6,6 +6,7 @@ import { RoperGuessVsAmerica } from "./roper-guess-vs-america";
 import { RoperCheckpointDiagram } from "./roper-checkpoint-diagram";
 import { roperSamplePoll } from "./roper-poll-data";
 import { ICUE_CSS } from "./ui/interactive-cue";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The Ledger and the Weathervane" — Roper Center's bespoke case layout
@@ -907,6 +908,18 @@ const roperCriticalCss = `
     transition: none;
   }
 }
+
+/* ── Outcome band — ledger voice: the roper shell's own margins, mono
+   archive-navy labels (--case-detail, the static detail color; royal blue
+   stays interactive), serif numeral like the ledger's counts ── */
+.roper-case-page .ob-band {
+  --ob-max: none;
+  width: min(1440px, 100% - 2 * var(--roper-margin));
+  --ob-pad-x: 0px;
+  --ob-gap: var(--roper-gutter);
+  --ob-stat-font: var(--font-serif);
+  --ob-stat-weight: 400;
+}
 `;
 
 const principles = [
@@ -994,7 +1007,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
     <article className="roper-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(roperCriticalCss + ICUE_CSS),
+          __html: stripCssComments(roperCriticalCss + ICUE_CSS + OUTCOME_BAND_CSS),
         }}
       />
 
@@ -1049,6 +1062,9 @@ export function RoperCaseLayout({ project }: { project: Project }) {
           </dl>
         </div>
       </header>
+
+      {/* at a glance — the recruiter's skim row (audit #1) */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* 01 · the brief */}
       <section className="roper-sec roper-brief" aria-labelledby="roper-brief-title">

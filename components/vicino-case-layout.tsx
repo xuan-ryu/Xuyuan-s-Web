@@ -10,6 +10,7 @@ import { VicinoInterventionViz } from "./vicino-intervention-viz";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoPipelineViz } from "./vicino-pipeline-viz";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 const SEAL_SRC = "/media/shared/seal.png";
@@ -3195,6 +3196,19 @@ h2.vicino-closing-title {
     aspect-ratio: 16 / 10;
   }
 }
+
+/* ── Outcome band — Vicino voice: sits at the foot of the night canvas,
+   white-ink on black, hairlines from the canvas's own line tokens; the
+   numeral stays paper-white (amber is the interactive cue, not a stat) ── */
+.vicino-case-page .ob-band {
+  --ob-max: var(--vicino-section-max);
+  --ob-pad-x: var(--v-margin);
+  --ob-gap: var(--v-gutter);
+  --ob-rule: var(--v-line-soft);
+  --ob-detail: var(--v-meta-ink);
+  --ob-body: var(--v-body-ink);
+  --ob-stat-ink: var(--paper);
+}
 `;
 
 export function VicinoCaseLayout({ project }: { project: Project }) {
@@ -3235,7 +3249,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
     <article className="vicino-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(vicinoCriticalCss),
+          __html: stripCssComments(vicinoCriticalCss + OUTCOME_BAND_CSS),
         }}
       />
 
@@ -3263,6 +3277,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
           <VicinoWorkflowCanvas project={project} />
         </div>
       </section>
+
+      {/* ── At a glance: the recruiter's skim row (audit #1) ── */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
       </div>
 
       <div className="vicino-band" data-zone="frame">

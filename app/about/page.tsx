@@ -109,18 +109,30 @@ export default function About() {
           <div className="abf-tool-index" data-fade>
             <div className="abf-toolbox">
               <div className="abf-tools-head">
-                <span>Tools in rotation</span>
-                <span>{about.whatChanged.logos.length}</span>
+                <span>Capabilities</span>
+                <span>
+                  {about.whatChanged.skills.reduce(
+                    (n, g) => n + g.items.length,
+                    0,
+                  )}
+                </span>
               </div>
-              <div className="about-logo-wall abf-tools">
-                {about.whatChanged.logos.map((src, i) => (
-                  <span
-                    key={src}
-                    className="about-logo-cell"
+              {/* typographic capability index — grouped mono labels + plain
+                  items (replaced the badge/logo wall; files stay on disk) */}
+              <div className="abf-skills">
+                {about.whatChanged.skills.map((g, i) => (
+                  <div
+                    key={g.group}
+                    className="abf-skill-group"
                     style={{ "--tool-index": i } as CSSProperties}
                   >
-                    <Image src={src} alt="" fill sizes="72px" />
-                  </span>
+                    <h3>{g.group}</h3>
+                    <ul>
+                      {g.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
               </div>
             </div>
@@ -363,6 +375,14 @@ h2.about-habits-title.abf-t,
 .about-resume-claim {
   min-width: 0;
 }
+/* the statement must break like a poster (~3 lines) at ANY viewport —
+   hard-cap the size and give it a ch-based measure so an ultrawide screen
+   can never stretch the line length or blow the type up to fill the wall */
+.about-resume-claim h2 {
+  font-size: clamp(28px, 2.4vw, 46px);
+  max-width: 24ch;
+  text-wrap: balance;
+}
 .about-availability {
   margin: var(--space-4) 0 0;
   font-family: var(--font-mono);
@@ -547,39 +567,47 @@ h2.about-habits-title.abf-t,
 .abf-tool-index.is-visible .abf-tools-head {
   animation: abfToolMetaIn 0.7s var(--ease-reveal) 0.08s forwards;
 }
-.about-logo-wall.abf-tools {
+/* ─ capability index: grouped mono labels, plain-text items — keeps the
+   toolbox block's grid rhythm, no new colors ─ */
+.abf-skills {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(28px, 3.5vw, 48px) clamp(18px, 2.4vw, 36px);
   margin: clamp(28px, 4vw, 46px) 0 0;
-  padding-top: 0;
-  border-top: 0;
-  max-width: none;
-  grid-template-columns: repeat(10, minmax(0, 1fr));
-  justify-content: stretch;
-  justify-items: center;
-  gap: clamp(18px, 2.2vw, 32px) clamp(18px, 2.4vw, 36px);
 }
-.abf-tools .about-logo-cell {
-  width: 100%;
-  max-width: 72px;
+.abf-skill-group {
+  min-width: 0;
   opacity: 0;
-  transform: translateY(18px) scale(0.96);
-  transform-origin: 50% 70%;
+  transform: translateY(18px);
   will-change: transform, opacity;
 }
-.abf-tool-index.is-visible .about-logo-cell {
+.abf-tool-index.is-visible .abf-skill-group {
   animation: abfToolLogoIn 0.72s var(--ease-silk) forwards;
-  animation-delay: calc(0.14s + (var(--tool-index) * 34ms));
+  animation-delay: calc(0.14s + (var(--tool-index) * 90ms));
 }
-.abf-tools .about-logo-cell img {
-  filter: grayscale(1);
-  opacity: 0.72;
-  transition:
-    filter var(--dur-base) var(--ease-silk),
-    opacity var(--dur-base) var(--ease-silk);
+.abf-skill-group h3 {
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 400;
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--stone);
 }
-.abf-tools .about-logo-cell:hover img,
-.abf-tools .about-logo-cell:focus-visible img {
-  filter: grayscale(0);
-  opacity: 1;
+.abf-skill-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.abf-skill-group li {
+  font-size: var(--text-body);
+  line-height: 1.55;
+  color: rgba(10, 10, 10, 0.78);
+}
+.abf-skill-group li + li {
+  margin-top: var(--space-1);
 }
 
 /* ─ sealed poster line — belongs to the toolbox block ─ */
@@ -974,8 +1002,8 @@ h2.about-habits-title.abf-t,
     font-size: clamp(28px, 4vw, 40px);
     letter-spacing: 0.08em;
   }
-  .about-logo-wall.abf-tools {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+  .abf-skills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1011,9 +1039,9 @@ h2.about-habits-title.abf-t,
     width: 22px;
     margin-left: var(--space-3);
   }
-  .about-logo-wall.abf-tools {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 18px 14px;
+  .abf-skills {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
   .abf-scroll-gloss {
     max-width: none;
@@ -1029,13 +1057,12 @@ h2.about-habits-title.abf-t,
   }
   .abf-tool-index[data-fade].is-visible,
   .abf-tool-index.is-visible .abf-tools-head,
-  .abf-tool-index.is-visible .about-logo-cell,
+  .abf-tool-index.is-visible .abf-skill-group,
   .abf-tool-index.is-visible .abf-poster {
     opacity: 1;
     transform: none;
     animation: none;
   }
-  .abf-tools .about-logo-cell img,
   .abf-habits .about-habit-photo img {
     transition: none;
   }

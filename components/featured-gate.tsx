@@ -29,7 +29,7 @@
 // English copy, Arabic numerals, one seal-red accent. Prefix fg-.
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { FgLotusLayer, LOTUS_PADS } from "@/components/fg-lotus-layer";
@@ -37,6 +37,22 @@ import { subscribeLenis } from "@/lib/lenis-bus";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 const FEATURED = 4;
+// Per-project focal override for the round opening: a full product screenshot
+// crammed into the circle reads at ~10% size, so these zoom the cover/preview
+// to a meaningful detail instead. scale = zoom factor, x/y = where that detail
+// sits in the frame (becomes transform-origin). Projects whose media already
+// reads in the circle (wordmark covers, text plates) simply aren't listed.
+const FOCAL: Record<
+  string,
+  { scale: number; x: string; y: string; pos?: string }
+> = {
+  // canvas UI: zoom to the node-editor cluster at the frame's center
+  "vicino-ai": { scale: 1.9, x: "50%", y: "58%" },
+  // dashboard recording: anchor the crop on the LEFT half (pos) and zoom to
+  // the job list — the only region that stays dense through the whole clip
+  // (the right pane goes blank mid-video)
+  "froghire-ai": { scale: 1.6, x: "45%", y: "62%", pos: "left center" },
+};
 // the pin + lotus layer run only here; the same query gates the layer mount
 const CROSSING_MEDIA =
   "(min-width: 901px) and (prefers-reduced-motion: no-preference)";
@@ -566,8 +582,23 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                   {list.map((p, i) => {
                     const isActive = i === active;
                     const hasMedia = Boolean(p.cover || p.previewVideo);
+                    const focal = FOCAL[p.slug];
                     return (
-                      <span className="fg-cell" key={p.slug}>
+                      <span
+                        className="fg-cell"
+                        key={p.slug}
+                        style={
+                          focal
+                            ? ({
+                                ["--fg-zoom" as string]: focal.scale,
+                                ["--fg-origin" as string]: `${focal.x} ${focal.y}`,
+                                ...(focal.pos
+                                  ? { ["--fg-pos" as string]: focal.pos }
+                                  : null),
+                              } as CSSProperties)
+                            : undefined
+                        }
+                      >
                         {hasMedia ? (
                           isActive && p.previewVideo ? (
                             <video
@@ -793,16 +824,20 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           background: #0a0a0a;
         }
         /* the scene FILLS the round opening 闁?you look through the gate, not
-           at a mounted print. Slow breathe-in on hover. */
+           at a mounted print. Slow breathe-in on hover.
+           --fg-zoom / --fg-origin (set per project on .fg-cell) crop the view
+           to a legible detail instead of a full unreadable screenshot. */
         .fg-cover, .fg-video {
           position: absolute; inset: 0;
           width: 100%; height: 100%;
-          object-fit: cover; object-position: center;
+          object-fit: cover; object-position: var(--fg-pos, center);
           display: block;
+          transform-origin: var(--fg-origin, 50% 50%);
+          transform: scale(var(--fg-zoom, 1));
           transition: transform 1.4s var(--ease-silk);
         }
         .fg-gate:hover .fg-cover,
-        .fg-gate:hover .fg-video { transform: scale(1.035); }
+        .fg-gate:hover .fg-video { transform: scale(calc(var(--fg-zoom, 1) * 1.035)); }
         /* soft radial falloff so the rim always reads as a round opening */
         .fg-vignette {
           position: absolute; inset: 0; z-index: 2; pointer-events: none;
@@ -911,7 +946,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           .fg-row-cta::after, .fg-tick, .fg-cover, .fg-video,
           .fg-row-link { transition: none; animation: none; }
           .fg-dip { animation: none; }
-          .fg-gate:hover .fg-cover, .fg-gate:hover .fg-video { transform: none; }
+          /* keep the per-project focal zoom; only the hover breathe stops */
+          .fg-gate:hover .fg-cover,
+          .fg-gate:hover .fg-video { transform: scale(var(--fg-zoom, 1)); }
           .fg-row-link { opacity: 1; transform: none; }
           .fg-continue { opacity: 1; transition: none; }
           .fg-continue-drop::after { animation: none; transform: translateY(0); }

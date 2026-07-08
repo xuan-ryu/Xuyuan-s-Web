@@ -44,6 +44,15 @@ export type PosterContent = {
   gallery: string[];
 };
 
+// The recruiter's at-a-glance row (audit #1): three outcome bullets and one
+// hard number, rendered by components/ui/outcome-band.tsx right under each
+// case hero. Every figure is derived from copy already on this page or in
+// the bespoke layouts — no new numbers.
+export type ProjectOutcomes = {
+  bullets: [string, string, string];
+  stat: { value: string; label: string };
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -61,6 +70,7 @@ export type Project = {
   type: string;
   teams: string;
   summary?: string[];
+  outcomes?: ProjectOutcomes;
   moment?: CaseMoment;
   chapters?: CaseChapter[];
   poster?: PosterContent;
@@ -90,6 +100,17 @@ export const projects: Project[] = [
       "Pulse takes a brand team from a strategic signal to a published social post — an AI marketing platform that never gives up human judgment. When I picked it up, the team was prototyping that one product in six different tools — pages that looked alike and shared nothing underneath — with about a week to fold them into a flow we could pitch.",
       "Over five intensive weeks I went from owning the homepage to owning how the team ships: the merged mockup itself, then the token-driven design system and component library, the automation that keeps AI-generated UI on-system, and the handoff surfaces that let design, engineering, ML, and product finally work from one base.",
     ],
+    // At-a-glance band — all figures from this page's own record (git-audited
+    // ledger + chapters above): 40-component token system, the six-tool melee
+    // folded into one app, the publish guardrail, 824 commits in five weeks.
+    outcomes: {
+      bullets: [
+        "Token-driven design system — 40 components, one source",
+        "Six prototype tools merged into one runnable app",
+        "AI drafts; a person releases at every gate",
+      ],
+      stat: { value: "824", label: "commits · 5 weeks" },
+    },
     moment: {
       title:
         "When Pulse turned me from someone who ships pages into someone who builds the system that ships them",
@@ -330,6 +351,17 @@ export const projects: Project[] = [
       "Nyma is a 2C social resale platform for designer, luxury, and vintage fashion. Users don’t just buy and sell — they comment, save, and follow around the pieces, so the product has to feel like a community formed around garments, not a transaction site. When I joined, the marketplace and auction architecture were built and a website was live; what was missing was the design layer. The visual foundation was weak, the UI logic needed cleanup, and the founders liked the name Nyma without being able to say what it meant.",
       "I traced the name to νήμα — Greek for thread — and everything hung from that: moodboards and AI-assisted direction studies, a 17-page brand manual with role-based color and an archival typographic voice, thirty-odd key pages designed by hand in Figma — and finally the whole system written into code, so the rules survive me and the team can build mobile without a designer in the room.",
     ],
+    // At-a-glance band — facts from the summary/chapters above: the νήμα
+    // discovery, 30–40 hand-designed pages, codification into the repo,
+    // and the manual's own pagination (17 pages).
+    outcomes: {
+      bullets: [
+        "Brand rebuilt from νήμα — Greek for thread",
+        "30–40 key pages designed by hand in Figma",
+        "Design rules codified into the front-end repo",
+      ],
+      stat: { value: "17", label: "brand-manual pages" },
+    },
     moment: {
       title:
         "When a name the founders just liked became the thread everything hangs from",
@@ -479,6 +511,17 @@ export const projects: Project[] = [
       "When I joined Vicino AI, the product already had a strong interactive promise: creation should feel like a canvas of connected stages and outputs, not a stack of isolated tools. The hard part was carrying that feeling into the real product as 3D, image, video, editing, reference, and workflow features expanded.",
       "I helped frame the product around responsibility, not feature count. Nodes should represent meaningful stages and outputs. The Sidebar should hold global settings and model selection; the Floating Bar should carry the next step forward. Sliding panels should carry node-specific input, references, and version context. Editors should handle deep revision work. That separation gave the team a clearer language for deciding where new functionality belonged.",
     ],
+    // At-a-glance band — facts from this page's own chapters: the main path
+    // rebuilt on model feasibility (Ch.1), checkpoints over collapsed nodes
+    // (Ch.1), and the four interaction layers (Ch.2).
+    outcomes: {
+      bullets: [
+        "Main path rebuilt around what models support",
+        "Checkpoints let people inspect, redirect, decide",
+        "One shared language for where features belong",
+      ],
+      stat: { value: "4", label: "interaction layers, one framework" },
+    },
     moment: {
       title:
         "When I realized the product did not need one more feature — it needed a clearer interaction model",
@@ -603,6 +646,17 @@ export const projects: Project[] = [
     summary: [
       "I redesigned FrogHire.ai, an early-stage AI job-matching platform, turning scattered bug fixes and negative reviews into a focused effort to rebuild user trust. Through usability testing, bug triage, and competitive analysis, I found the real issues weren’t missing features but missing guidance—users had no onboarding, unclear resume states, and opaque subscriptions. By reframing isolated complaints into systemic design problems, I delivered lightweight yet impactful fixes that restored signups, improved clarity, and helped the product survive its critical growth stage.",
     ],
+    // At-a-glance band — figures from this page's own triage record (the
+    // froghire layout's docket stats): three systemic flaws, recovered
+    // signups, ~100 issues logged as QA of record.
+    outcomes: {
+      bullets: [
+        "Three systemic flaws diagnosed under scattered bugs",
+        "Lightweight fixes shipped within startup constraints",
+        "Signup registrations recovered at a critical stage",
+      ],
+      stat: { value: "~100", label: "issues logged as QA of record" },
+    },
     moment: {
       title: "“When I Learned Survival Can Be The Most Important Design Goal”",
       body: [
@@ -730,6 +784,18 @@ export const projects: Project[] = [
     summary: [
       "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
     ],
+    // At-a-glance band — facts from the chapters above: heuristic audit +
+    // student testing, the checkpoint progress redesign, citations reframed
+    // as rewards, and the four principles (clarity, feedback, motivation,
+    // outcomes).
+    outcomes: {
+      bullets: [
+        "Heuristic audit and student testing exposed hollow progress",
+        "Progress bar rebuilt as comprehension checkpoints",
+        "Citations reframed as rewards students actually open",
+      ],
+      stat: { value: "4", label: "design principles, from testing" },
+    },
     moment: {
       title:
         "Most Memorable Moment： The Day I Realized That Progress Bars Can Mislead Learning",
@@ -845,6 +911,17 @@ export const projects: Project[] = [
       "Google Cloud’s support question is a scaling question: a growing customer base, increasingly complex needs, and human expertise that does not scale with either. The studio brief asked us not to optimize today’s ticket flow but to imagine support five years out, then work backwards through research, testing, and critique.",
       "So instead of leading with a feature, we led with evidence. Literature review and market analysis shaped the research questions; two extreme worlds probed where users draw the automation line; four short films tested different power structures. Only after that did we build the value-centered world: AI does the reading, a human does the deciding.",
     ],
+    // At-a-glance band — facts from the blurb/summary above and the layout's
+    // framework section: two extreme worlds, four films of power structures,
+    // the AI-prepares/humans-decide verdict, 4 principles + 5 open tensions.
+    outcomes: {
+      bullets: [
+        "Two extreme worlds probed the automation line",
+        "Four films tested four human–AI power structures",
+        "Verdict: AI prepares the case, a human decides",
+      ],
+      stat: { value: "4", label: "principles · five open tensions" },
+    },
     moment: {
       title:
         "When we split the labor of care, what exactly are we redesigning?",
@@ -870,6 +947,17 @@ export const projects: Project[] = [
     duration: "09/2022 – 04/2024",
     type: "Undergraduate",
     teams: "Game Design, History Research",
+    // At-a-glance band — facts from the poster intro below: project initiated
+    // and led by the owner (design, research, programming), levels built from
+    // collected oral histories, demo finalized August 2023.
+    outcomes: {
+      bullets: [
+        "Initiated and led design, history research, and code",
+        "Levels built from collected real oral histories",
+        "Playable demo finalized in August 2023",
+      ],
+      stat: { value: "1942", label: "Henan famine, made playable" },
+    },
     poster: {
       lede: "Hunger 1942 is a 2D survival RPG set during the 1942 Henan Famine, blending real histories with gameplay to explore human struggle in disaster.",
       image: `/media/work/hunger/cover.png`,
@@ -918,6 +1006,18 @@ export const projects: Project[] = [
     duration: "12/2022 – 1/2023",
     type: "Undergraduate",
     teams: "Digital Art, Immersive Experience, Digital Education",
+    // At-a-glance band — facts from the poster copy below: Unity environment
+    // built with two fellow students in one winter term, documentary
+    // narration with in-scene interactive triggers, owner's role = scene
+    // creation and development.
+    outcomes: {
+      bullets: [
+        "Monarch migration rebuilt as a Unity VR habitat",
+        "Documentary narration with in-scene interactive triggers",
+        "Scene creation and development, first interaction design",
+      ],
+      stat: { value: "3", label: "students · one winter term" },
+    },
     poster: {
       lede: "A winter-term VR documentary of the monarch migration, built in Unity and explored through a headset.",
       image: `/media/work/vr/cover.png`,

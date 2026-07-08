@@ -32,28 +32,33 @@ export const about = {
       "That is where design started to feel more serious to me. Not every decision should be remade from taste. Some things need principles: what can change, what should hold, where the machine can run, and where a person has to stop and judge.",
     ],
     closing: "Fast Is Useful. Structure Is What Lets It Last.",
-    // 5x4 logo wall, row-major, as rendered on the live site at 1440w
-    logos: [
-      `/media/about/logos/logo-01.svg`,
-      `/media/about/logos/logo-02.png`,
-      `/media/about/logos/logo-03.png`,
-      `/media/about/logos/logo-04.png`,
-      `/media/about/logos/logo-05.png`,
-      `/media/about/logos/logo-06.png`,
-      `/media/about/logos/logo-07.png`,
-      `/media/about/logos/logo-08.webp`,
-      `/media/about/logos/logo-09.svg`,
-      `/media/about/logos/logo-10.png`,
-      `/media/about/logos/logo-11.png`,
-      `/media/about/logos/logo-12.png`,
-      `/media/about/logos/logo-13.png`,
-      `/media/about/logos/logo-14.png`,
-      `/media/about/logos/logo-15.png`,
-      `/media/about/logos/logo-16.png`,
-      `/media/about/logos/logo-17.svg`,
-      `/media/about/logos/logo-18.png`,
-      `/media/about/logos/logo-19.webp`,
-      `/media/about/logos/logo-20.png`,
+    // typographic capability index (replaced the 5x4 badge/logo wall; the
+    // image files stay on disk under /media/about/logos). Groups follow the
+    // resume's skill clusters.
+    skills: [
+      {
+        group: "Design & Prototyping",
+        items: [
+          "Figma",
+          "Framer",
+          "Interaction design",
+          "Motion",
+          "Design systems",
+          "Usability testing",
+        ],
+      },
+      {
+        group: "Front-End",
+        items: ["HTML / CSS / JS", "React", "Tailwind", "Design tokens", "D3", "Git"],
+      },
+      {
+        group: "AI Workflow",
+        items: ["Claude", "Cursor", "Codex", "v0", "LLM & agent workflows"],
+      },
+      {
+        group: "Languages",
+        items: ["zh · en · ja"],
+      },
     ],
   },
 
@@ -101,7 +106,7 @@ export const about = {
     {
       org: "Cornell Chinese Drama Club",
       role: "Publicity Department Chair",
-      date: "September 2024 – Dec 2025",
+      date: "Sep 2024 – Dec 2025",
       bullets: [
         "Operate the WeChat public account and published the tweet to attract more 300+ users for performance",
         "Developed the marketing promotion materials including posters design and advertise the events",
@@ -110,7 +115,7 @@ export const about = {
     {
       org: "Oberlin Chinese Student Association",
       role: "Chair",
-      date: "January 2023- May 2024",
+      date: "Jan 2023 – May 2024",
       bullets: [
         "Supervised the internal work of CSA and was responsible for new members recruitment",
         "Co-hosted and organized activities with the East Asian Studies Department of the college and maintain relations with the Chinese Consulate",

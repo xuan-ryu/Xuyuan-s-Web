@@ -6,6 +6,7 @@ import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { FroghireAffinityMap } from "@/components/froghire-affinity-map";
 import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
 import { FroghireTradeLedger } from "@/components/froghire-trade-ledger";
+import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // FrogHire.ai — the triage ledger.
@@ -320,41 +321,8 @@ const froghireCss = `
   line-height: 1.45;
   color: rgba(5, 5, 5, 0.78);
 }
-.froghire-stats {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--work-grid-gap);
-  margin-top: clamp(56px, 6vw, 84px);
-  border-top: 1px solid var(--work-rule);
-}
-.froghire-stat {
-  grid-column: span 4;
-  display: grid;
-  gap: 12px;
-  align-content: start;
-  padding-top: clamp(20px, 2.4vw, 32px);
-}
-.froghire-stat-num {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: var(--text-heading);
-  font-weight: 400;
-  line-height: 1;
-}
-.froghire-stat-cap {
-  margin: 0;
-  font-size: var(--text-label);
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--froghire-ink-label);
-}
-.froghire-stat-cap .froghire-fig-index {
-  display: inline;
-  margin-right: 10px;
-}
+/* (the old hero stats row is retired — its figures now live in the shared
+   outcome band below the hero; one fact, one place) */
 
 /* ── evidence frames (figures) ── */
 .froghire-fig {
@@ -1026,9 +994,6 @@ const froghireCss = `
   .froghire-meta {
     order: 5;
   }
-  .froghire-stats {
-    order: 6;
-  }
   .froghire-hero h1,
   .froghire-lede,
   .froghire-hero-proof,
@@ -1109,18 +1074,6 @@ const froghireCss = `
   }
   .froghire-meta {
     grid-template-columns: 1fr;
-  }
-  .froghire-stats {
-    grid-template-columns: 1fr;
-    row-gap: 0;
-  }
-  .froghire-stat {
-    grid-column: 1 / -1;
-    padding: 18px 0;
-    border-bottom: 1px solid var(--work-rule);
-  }
-  .froghire-stat:last-child {
-    border-bottom: 0;
   }
   .froghire-brief-copy p,
   .froghire-sec-copy p:not(.froghire-sec-tags),
@@ -1203,8 +1156,8 @@ const froghireCss = `
 /* ── assembly on arrival ──────────────────────────────────────────────────
    Each container carries data-fade; FadeReveal adds .is-visible on enter, so
    the container rises as a frame (global fadeUp) and its parts settle a beat
-   later — the chapter rule draws, the claim rises behind it; the hero stats
-   stagger up in reading order; each figure caption follows its media. One
+   later — the chapter rule draws, the claim rises behind it; each figure
+   caption follows its media. One
    orchestrated reveal per element, then still. Motion-only: every hidden
    initial state lives inside prefers-reduced-motion: no-preference, so reduced
    motion — and the forced-visible/no-JS fallback — shows the finished layout. */
@@ -1244,24 +1197,6 @@ const froghireCss = `
     animation-delay: 320ms;
   }
 
-  /* 2 · hero stats — stagger-rise in reading order (+110ms), opacity-led */
-  .froghire-stats[data-fade] .froghire-stat {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  .froghire-stats[data-fade].is-visible .froghire-stat {
-    animation: frogAssembleRise 0.42s var(--ease-spring) forwards;
-  }
-  .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(1) {
-    animation-delay: 90ms;
-  }
-  .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(2) {
-    animation-delay: 200ms;
-  }
-  .froghire-stats[data-fade].is-visible .froghire-stat:nth-child(3) {
-    animation-delay: 310ms;
-  }
-
   /* 2b - triage spine: the rail draws, then the work steps settle */
   .froghire-triage-board[data-fade]::before {
     opacity: 0;
@@ -1295,6 +1230,12 @@ const froghireCss = `
     animation-delay: 150ms;
   }
 }
+
+/* ── Outcome band — docket voice: mono ledger labels in the AA green
+   (--case-detail, same ink as the chapter indices), work-rule hairlines ── */
+.froghire-case-page .ob-band {
+  --ob-body: var(--froghire-ink-soft);
+}
 `;
 
 /* ── layout ─────────────────────────────────────────────────────────────── */
@@ -1314,17 +1255,11 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
     ["Team", project.teams],
   ];
 
-  const stats = [
-    { num: "~100", idx: "01", cap: "Bugs logged as QA of record" },
-    { num: "3", idx: "02", cap: "Systemic flaws diagnosed" },
-    { num: "Recovered", idx: "03", cap: "Signup registrations" },
-  ];
-
   return (
     <article className="froghire-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(froghireCss + ICUE_CSS),
+          __html: stripCssComments(froghireCss + ICUE_CSS + OUTCOME_BAND_CSS),
         }}
       />
 
@@ -1347,18 +1282,12 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
           A summer of triage on an early-stage AI job-matching product —
           turning bug reports and one-star reviews back into user trust.
         </p>
-        <div className="froghire-stats" data-fade>
-          {stats.map((s) => (
-            <div className="froghire-stat" key={s.idx}>
-              <p className="froghire-stat-num">{s.num}</p>
-              <p className="froghire-stat-cap">
-                <span className="froghire-fig-index">{s.idx}</span>
-                {s.cap}
-              </p>
-            </div>
-          ))}
-        </div>
       </section>
+
+      {/* ── At a glance: the recruiter's skim row (audit #1). It carries the
+          docket's proof figures (~100 issues / 3 flaws / recovered signups),
+          replacing the old hero stats row — one fact, one place. ── */}
+      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
       {/* ── the operating model: overview + triage spine, one section ── */}
       <section
