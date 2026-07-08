@@ -21,6 +21,10 @@ export type CaseChapter = {
 export type CaseVideo = {
   src: string;
   wide?: boolean;
+  /** still frame shown before playback starts */
+  poster?: string;
+  /** reel figcaption — describes the footage (and carries any credit) */
+  caption?: string;
 };
 
 export type CaseMoment = {
@@ -102,15 +106,17 @@ export const projects: Project[] = [
       "Over five intensive weeks I went from owning the homepage to owning how the team ships: the merged mockup itself, then the token-driven design system and component library, the automation that keeps AI-generated UI on-system, and the handoff surfaces that let design, engineering, ML, and product finally work from one base.",
     ],
     // At-a-glance band — all figures from this page's own record (git-audited
-    // ledger + chapters above): 40-component token system, the six-tool melee
-    // folded into one app, the publish guardrail, 824 commits in five weeks.
+    // ledger + chapters above). The hero console owns the run stats verbatim
+    // (824 · five weeks, "40 components, one source"), so this band says the
+    // system without repeating the console's numbers; the stat is the
+    // structural-commit count the console doesn't show.
     outcomes: {
       bullets: [
-        "Token-driven design system — 40 components, one source",
+        "Token-driven design system every surface composes from",
         "Six prototype tools merged into one runnable app",
         "AI drafts; a person releases at every gate",
       ],
-      stat: { value: "824", label: "commits · 5 weeks" },
+      stat: { value: "308", label: "structural commits" },
     },
     moment: {
       title:
@@ -120,7 +126,7 @@ export const projects: Project[] = [
         "So the work became structure. Tokens instead of taste, components instead of copies, and written rules an AI loads instead of instructions repeated into a chat box. Design reads previews, engineering reads a typed package, ML reads data states, product reads one runnable flow. The melee ended when everyone stopped squeezing into the same files and started shipping from the same base.",
         "One rule survived every iteration untouched: AI can draft and schedule, but a person always releases to publish. Speed where it helps, a deliberate checkpoint where it matters. That balance, not the automation, was the design.",
       ],
-      // The gate-flow recording renders in the layout's Turn (Fig. 33).
+      // The gate-flow recording renders in the layout's Turn (Fig. 30).
     },
     // Arc (owner 2026-07 rework #2 — the full first-person causal chain):
     //   melee -> bet -> look -> wake-up -> rescue -> base -> skills ->
@@ -184,7 +190,7 @@ export const projects: Project[] = [
             heading:
               "The front door forces the map",
             body: [
-              "My page was Home, the product’s entry point, so designing it meant understanding every tab, every module, and everyone’s files. Extraction kept failing: styles were welded to pages, interactions died in transit, and much of the generated code was unreadable. The wake-up call was a single prototype file 10,180 lines long. Nothing that size stays maintainable, for a person or, affordably, for a model.",
+              "My page was Home, the product’s entry point, so designing it meant understanding every tab, every module, and everyone’s files. Extraction kept failing: styles were welded to pages, interactions died in transit, and much of the generated code was unreadable. The wake-up call was a single prototype file over ten thousand lines long. Nothing that size stays maintainable, for a person or, affordably, for a model.",
             ],
           },
           {
@@ -504,7 +510,7 @@ export const projects: Project[] = [
     cardBlurb:
       "The earlier Vicino homepage made the product feel alive: draggable creation nodes, connected outputs, and a dark workflow canvas where concept, image, video, and 3D could sit in one spatial chain. My work started from that promise and pushed it toward a clearer product system.",
     blurb:
-      "Vicino is a node-based generative video platform — a canvas where people build generation, composition, and editing as connected nodes rather than a linear timeline. The generation power was already there; the design challenge was what came after it. As the company moved toward B2B content production, the product had to grow from a capability-first tool into a guided, controllable video workflow — one that could carry both a creative-production veteran and a marketer who had never touched an AI video tool.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, the Sidebar and Floating Bar layers, sliding panels, and the design system behind them. The core lesson was simple: new technical range only matters when people still have clear places to inspect, redirect, and decide.",
+      "Vicino is a node-based generative video platform — a canvas where people build generation, composition, and editing as connected nodes rather than a linear timeline. The generation power was already there; the design challenge was what came after it. As the company moved toward B2B content production, the product had to grow from a capability-first tool into a guided, controllable video workflow — one that could carry both a creative-production veteran and a marketer who had never touched an AI video tool.\n\nMy role grew from screen-level design into product architecture. I worked with PMs, designers, engineers, the founding engineer, and ML engineers to clarify workflow stages, node responsibilities, editor logic, the Sidebar and Floating Bar layers, sliding panels, and the design system behind them. The core lesson was simple: new technical range only matters when people can still see what the system is doing and change its course.",
     role: "Product Designer / PM",
     duration: "2025 – present",
     type: "Intern",
@@ -515,28 +521,44 @@ export const projects: Project[] = [
     ],
     // At-a-glance band — facts from this page's own chapters: the main path
     // rebuilt on model feasibility (Ch.1), checkpoints over collapsed nodes
-    // (Ch.1), and the four interaction layers (Ch.2).
+    // (Ch.1), and the four zones annotated on the station-04 board (Ch.2).
     outcomes: {
       bullets: [
         "Main path rebuilt around what models support",
         "Checkpoints let people inspect, redirect, decide",
         "One shared language for where features belong",
       ],
-      stat: { value: "4", label: "interaction layers, one framework" },
+      stat: { value: "4", label: "zones, one shared framework" },
     },
     moment: {
       title:
         "When I realized the product did not need one more feature — it needed a clearer interaction model",
+      // The title already carries the "one more feature → clearer model"
+      // realization, so the body starts at the review-room scene (no repeat).
       body: [
-        "What stayed with me most from this project was the moment I realized the product did not need one more feature. It needed a clearer structure.",
         "During one review, we walked through a long creation chain: camera, 3D, image, prompt, and then video. On paper, each part was already becoming more capable. But when I tried to trace the flow from input to output, I realized the problem was no longer feature depth. The problem was that the system itself was becoming harder to explain. Even within the team, people were beginning to describe the same workflow in different ways. That was the moment I stopped treating the project as a series of screen problems and started treating it as a workflow problem.",
         "From then on the work was mostly about where complexity should live — and both halves of this project grew out of that one question. The flow gave people a path they could follow and correct; the zoning gave every kind of function a place to belong. What I keep from it is not any single screen but a way to grow a product: when the models cannot do everything in one shot, structure is what lets people — and the team — keep moving, and lets new features enter without reopening the same debate.",
-        "(note: the Video 2 Node prototype was made by a teammate)",
       ],
       videos: [
-        { src: `/media/work/vicino/preview.mp4` },
-        { src: `/media/work/vicino/moment-2.mp4` },
-        { src: `/media/work/vicino/moment-3.mp4`, wide: true },
+        {
+          src: `/media/work/vicino/preview.mp4`,
+          poster: `/media/work/vicino/preview-poster.jpg`,
+          caption:
+            "The canvas end to end: a text prompt is enhanced into refined script text, wired into an Image node, then on into video generation.",
+        },
+        {
+          src: `/media/work/vicino/moment-2.mp4`,
+          poster: `/media/work/vicino/moment-2-poster.jpg`,
+          caption:
+            "The zoning decision, prototyped: global settings stay in the Sidebar while node-level inputs move into a Sliding Panel on the node itself. This node prototype was built by a teammate.",
+        },
+        {
+          src: `/media/work/vicino/moment-3.mp4`,
+          wide: true,
+          poster: `/media/work/vicino/moment-3-poster.jpg`,
+          caption:
+            "The refine loop: a generated frame opens in the Image Editor, one region is redirected with a prompt, and the corrected image returns to the canvas for the next generation.",
+        },
       ],
     },
     chapters: [
@@ -676,10 +698,10 @@ export const projects: Project[] = [
       {
         number: "Chapter 1",
         title:
-          "“I refused to just patch Bugs without seeing the bigger problem.”",
+          "“I refused to just patch bugs without seeing the bigger problem.”",
         sections: [
           {
-            tags: "KICKOFF · PRD REVIEW · STAKEHOLDERS INTERVIEWS",
+            tags: "KICKOFF · PRD REVIEW · STAKEHOLDER INTERVIEWS",
             heading: "The First Time Startup Urgency Hit Me",
             body: [
               "At kickoff, the PM and mentor walked us through the product. It had many features, but they felt stitched together. The CEO pulled me aside and asked me to review every page, especially the negative reviews on the Chrome Web Store.",
@@ -722,7 +744,7 @@ export const projects: Project[] = [
         title: "When Ideal Designs Collapsed, I Learned to Deliver What Survives",
         sections: [
           {
-            tags: "ONBOARDING FLOWS · STAKEHOLDER FEEDBACK· DESIGN TRADE-OFFS",
+            tags: "ONBOARDING FLOWS · STAKEHOLDER FEEDBACK · DESIGN TRADE-OFFS",
             heading: "The First Lesson in Startup Compromise",
             body: [
               "I drafted three onboarding flows: pop-ups, a walkthrough, and an animated demo. The CEO immediately pushed for animation. Honestly, I felt a spark too—it looked more “designed.”",
@@ -730,16 +752,16 @@ export const projects: Project[] = [
               "Then my mentor cut in with the line that reframed the whole standoff: we’d been debating how, when the real problem was whether.",
               "And that was my first real startup lesson: elegant ideas rarely survive—the designs that ship are the ones that matter.",
             ],
-            image: `/media/work/froghire/ch2-1.png`,
+            image: `/media/work/froghire/ch2-1.webp`,
           },
           {
-            tags: "SUBSCRIPTION REDESIGN· RESUME MANAGEMENT · FILTERING EXPERIENCE",
+            tags: "SUBSCRIPTION REDESIGN · RESUME MANAGEMENT · FILTERING EXPERIENCE",
             heading: "Fighting for Clarity, Accepting Half-Wins",
             body: [
               "Subscription clarity, resume control, filters—every redesign that summer went to the same bargaining table, and each round closed differently.",
               "Each round felt like bargaining. Sometimes I won clarity, sometimes only half. But I learned to prioritize: if the perfect solution won’t ship, even a partial step forward is still progress.",
             ],
-            image: `/media/work/froghire/ch2-2.png`,
+            image: `/media/work/froghire/ch2-2.webp`,
           },
           {
             tags: "DESIGN SPECS · QA WALKTHROUGH · DEVELOPER HANDOFF",
@@ -778,13 +800,13 @@ export const projects: Project[] = [
     oneliner:
       "Redesigning public opinion data discovery for researchers and the general public.",
     blurb:
-      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
+      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues through heuristic evaluation, competitive analysis, and user testing: unclear navigation, misleading progress bars, and a lack of educational alignment. By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
     role: "UX Designer, Project Manager",
     duration: "09/2024 – 12/2024",
     type: "Client-Based Project",
     teams: "UX Designers, UX Researchers, Project Manager, Software Engineers",
     summary: [
-      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues: unclear navigation, misleading progress bars, and a lack of educational alignment through heuristic evaluation, competitive analysis, and user testing, By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
+      "I led the redesign of Roper Center’s educational simulation platform, reframing it from a confusing quiz-like tool into a structured learning experience. I uncovered systemic issues through heuristic evaluation, competitive analysis, and user testing: unclear navigation, misleading progress bars, and a lack of educational alignment. By translating pain points into design goals—clarity, feedback, motivation, and learning outcomes—I rebuilt the simulation so progress finally meant comprehension.",
     ],
     // At-a-glance band — facts from the chapters above: heuristic audit +
     // student testing, the checkpoint progress redesign, citations reframed
@@ -818,7 +840,7 @@ export const projects: Project[] = [
             body: [
               "The Roper Center came to us with an educational simulation tool that looked like a quiz game. Students could click through questions, earn points, and see progress bars fill up. On the surface, it felt like learning. But in kickoff discussions, faculty admitted: “Students play, but they don’t retain.” My first realization was that this wasn’t about polishing visuals—it was about uncovering why “fun” wasn’t translating into knowledge.",
             ],
-            image: `/media/work/roper/ch1-1.png`,
+            image: `/media/work/roper/ch1-1-r1.png`,
           },
           {
             tags: "Heuristic Evaluation · UX Audit",
@@ -834,7 +856,7 @@ export const projects: Project[] = [
             body: [
               "User testing with high school and university students reinforced this gap. Many completed tasks quickly, but when asked to recall citations or explain reasoning, they hesitated. One student put it bluntly: “It feels like a game, not like I’m learning.” That insight reframed our challenge: the design goal was not to keep students clicking, but to give them proof of progress they could believe in.",
             ],
-            image: `/media/work/roper/ch1-3.png`,
+            image: `/media/work/roper/ch1-3-r1.png`,
           },
           {
             tags: "Insight Synthesis · Design Principles · Evidence-Based Framing",
@@ -842,7 +864,7 @@ export const projects: Project[] = [
             body: [
               "From evaluation and testing, I distilled four design principles: clarity (navigation and progress must be unambiguous), feedback (immediate confirmation of understanding), motivation (gameplay should reinforce effort, not distract), and outcomes (design must point back to learning goals). This translation—from scattered complaints to structured principles—was the foundation for everything that followed.",
             ],
-            image: `/media/work/roper/ch1-4.png`,
+            image: `/media/work/roper/ch1-4-r1.png`,
           },
         ],
       },
@@ -937,7 +959,9 @@ export const projects: Project[] = [
     slug: "hunger1942",
     title: "Hunger 1942",
     template: "poster",
-    cover: `/media/work/hunger/cover.png`,
+    // cover-v2: masthead credit line redacted (teammate real-name policy);
+    // renamed to bust caches of the old file.
+    cover: `/media/work/hunger/cover-v2.png`,
     previewVideo: `/media/work/hunger/preview.mp4`,
     coverClass: "cover-hunger",
     tags: ["Game Design", "History"],
@@ -958,14 +982,17 @@ export const projects: Project[] = [
         "Levels built from collected real oral histories",
         "Playable demo finalized in August 2023",
       ],
-      stat: { value: "1942", label: "Henan famine, made playable" },
+      // "2" is the moral-value branch printed on the broadsheet itself: the
+      // first act ends on a low-moral or high-moral plot line. (The previous
+      // stat "1942" was the setting's year, not an outcome.)
+      stat: { value: "2", label: "endings to the first act, set by moral choices" },
     },
     poster: {
       lede: "Hunger 1942 is a 2D survival RPG set during the 1942 Henan Famine, blending real histories with gameplay to explore human struggle in disaster.",
-      image: `/media/work/hunger/cover.png`,
+      image: `/media/work/hunger/cover-v2.png`,
       intro: [
         "Hunger 1942 is a game project that I initiated and developed with my team. It is a 2D pixel-style historical role-playing survival game inspired by The Oregon Trail, set against the backdrop of the 1942 Henan Famine. The project encompasses the game itself, artistic direction, and historical research.",
-        "Launched in September 2022, the historical research and foundational game framework were completed by January 2023, with the initial demo finalized in August 2023. The game was inspired by reflections on food shortages during COVID-19 and insights from my modern Chinese history class, prompting me to explore the struggles of ordinary people during times of catastrophe.",
+        "Launched in September 2022, the historical research and foundational game framework were completed by January 2023. The game was inspired by reflections on food shortages during COVID-19 and insights from my modern Chinese history class, prompting me to explore the struggles of ordinary people during times of catastrophe.",
         "In designing the game, I combined survival mechanics with a narrative drawn from real oral histories to immerse players in the harsh realities of famine. Additionally, this project serves as a platform to examine how games can function as both educational tools and interactive art. I aim to explore how game mechanics and player interactions shape decision-making and emotional engagement.",
         "My role encompassed game design, historical research, and programming. Looking ahead, I hope to further develop this project within a studio setting.",
       ],
@@ -1025,7 +1052,7 @@ export const projects: Project[] = [
       image: `/media/work/vr/cover.png`,
       intro: [
         "VR Monarch Butterfly is an interactive VR documentary built during Winter Term, January 2023 — my first exploration into interaction design. With two fellow students I constructed the environment in Unity, recreating the monarchs’ annual migration: habitats, routes, and behaviors staged to be felt, not just watched.",
-        "A documentary-style narration carries the educational context, and interactive triggers placed through the scene let users explore, listen, and observe the butterflies up close — the documentary read from inside it.",
+        "A documentary-style narration carries the educational context, split into audio triggers placed through the grove — each passage set off by exploring, listening, and observing up close — while AI agents steer the butterflies’ flight paths.",
       ],
       details: {
         project: "VR Monarch Butterfly",
@@ -1034,8 +1061,12 @@ export const projects: Project[] = [
         services: "Digital Art, Immersive Experience, Digital Education",
       },
       body: [
-        "Synopsis: Completed with classmates during Oberlin College’s Winter Term, January 2023 — Unity for the VR platform, Blender for the butterfly models; my primary role was scene creation. Explored through a headset, the piece tests how much documentary and educational weight a realistic VR environment can carry.",
-        "Looking forward, we plan to further enhance the project by integrating additional visual art elements, such as transitioning butterflies into particle effects synchronized with music, evolving the experience from a purely realistic representation into a visually compelling artistic work.",
+        // bench: the one claim this chapter owns — term/team/tools already
+        // live in the intro, hero meta, and details rail
+        "Explored through a headset, the piece tests how much documentary and educational weight a realistic VR environment can carry.",
+        // coda: neutral statement of the planned next step (the 2023 source
+        // wrote it in future tense; the particle strip below sketches it)
+        "The planned coda: the realistic butterflies dissolving into particle effects synced to the music — documentary becoming instrument. The strip below sketches it.",
       ],
       gallery: [
         `/media/work/vr/gallery-1.png`,
