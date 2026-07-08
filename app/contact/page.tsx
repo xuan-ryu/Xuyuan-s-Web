@@ -502,22 +502,6 @@ export default function Contact() {
                 </dd>
               </div>
               <div className="ctc-ledger-row">
-                {/* URL derived from this repo's own GitHub identity
-                    (xuan-ryu — CLAUDE.md issue tracker / git remote);
-                    owner to confirm it is the profile they want public. */}
-                <dt className="ctc-ledger-label">GitHub</dt>
-                <dd>
-                  <a
-                    className="ctc-ledger-value"
-                    href="https://github.com/xuan-ryu"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    github.com/xuan-ryu
-                  </a>
-                </dd>
-              </div>
-              <div className="ctc-ledger-row">
                 <dt className="ctc-ledger-label">Based in</dt>
                 <dd className="ctc-ledger-value">{site.location}</dd>
               </div>

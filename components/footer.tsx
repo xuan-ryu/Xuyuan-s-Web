@@ -51,7 +51,10 @@ export function Footer() {
               instagram
             </a>
           </div>
-          <p className="footer-copy">&copy; 2026 Xuyuan Liu</p>
+          <p className="footer-copy">
+            &copy; 2026 Xuyuan Liu &middot; designed &amp; built by hand in
+            Next.js/React
+          </p>
         </div>
       </div>
     </footer>
