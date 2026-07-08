@@ -40,6 +40,11 @@ export function NymaScroll() {
     if (!root) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // motion is actually on: let the CSS clip the strip / pagescroll frames
+    // for the GSAP walks. Without this class (no-JS, reduced motion) those
+    // surfaces stay natively scrollable so their content is reachable.
+    root.classList.add("ny-motion");
+
     let cancelled = false;
     let ctx: { revert: () => void } | null = null;
     let unsubLenis: (() => void) | null = null;
@@ -340,6 +345,7 @@ export function NymaScroll() {
 
     return () => {
       cancelled = true;
+      root.classList.remove("ny-motion");
       timers.forEach((t) => window.clearTimeout(t));
       observers.forEach((io) => io.disconnect());
       lenisDetach?.();

@@ -65,13 +65,15 @@ export function NymaDirections() {
 
   return (
     <div className="ny-dir">
-      <div className="ny-dir-tabs" role="tablist" aria-label="Brand directions">
+      {/* plain button group, not tabs: there's no arrow-key management here,
+          so role="tab" semantics would promise more than they deliver
+          (2026-07-08 a11y audit) */}
+      <div className="ny-dir-tabs" role="group" aria-label="Brand directions">
         {DIRECTIONS.map((d) => (
           <button
             key={d.key}
             type="button"
-            role="tab"
-            aria-selected={d.key === active}
+            aria-pressed={d.key === active}
             className={`ny-dir-tab${d.key === active ? " is-on" : ""}`}
             onClick={() => setActive(d.key)}
           >
@@ -80,7 +82,7 @@ export function NymaDirections() {
           </button>
         ))}
       </div>
-      <div className="ny-dir-stage" role="tabpanel">
+      <div className="ny-dir-stage">
         {/* each direction renders as its OWN art direction — the point is
             that the four drafts LOOK like four different platforms */}
         <div className={`ny-dir-mock is-${dir.key}`} aria-hidden="true">
@@ -274,13 +276,12 @@ export function NymaWardrobes() {
 
   return (
     <div className="ny-ward">
-      <div className="ny-ward-tabs" role="tablist" aria-label="Wardrobes">
+      <div className="ny-ward-tabs" role="group" aria-label="Wardrobes">
         {WARDROBES.map((x) => (
           <button
             key={x.key}
             type="button"
-            role="tab"
-            aria-selected={x.key === active}
+            aria-pressed={x.key === active}
             className={`ny-ward-tab${x.key === active ? " is-on" : ""}`}
             onClick={() => setActive(x.key)}
           >
@@ -386,13 +387,12 @@ export function NymaColorRoles() {
 
   return (
     <div className="ny-roles" data-role={active}>
-      <div className="ny-roles-chips" role="tablist" aria-label="Color roles">
+      <div className="ny-roles-chips" role="group" aria-label="Color roles">
         {ROLES.map((r) => (
           <button
             key={r.key}
             type="button"
-            role="tab"
-            aria-selected={r.key === active}
+            aria-pressed={r.key === active}
             className={`ny-roles-chip${r.key === active ? " is-on" : ""}`}
             onClick={() => setActive(r.key)}
           >

@@ -7,6 +7,7 @@ import {
   NymaColorRoles,
   NymaWardrobes,
 } from "./nyma-interactives";
+import { NymaPhone } from "./nyma-phone";
 import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
 import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
@@ -44,8 +45,9 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // thread → rulebook → pages → codification → handoff; the Turn carries the
 // νήμα discovery and the honest reflections). Figures are numbered as
 // plates ("Pl. 01") in the trace color, the way an archive numbers its
-// objects. Confidentiality: agency credit and mock personal data are
-// cropped out of every plate on this page.
+// objects. Confidentiality: agency credit and mock personal data are cropped
+// or repainted out of every plate on this page (manual-cover-v2.png scrubs
+// the cover's bottom-right agency credit; the rename busts stale caches).
 //
 // Choreography lives in <NymaScroll /> (GSAP + ScrollTrigger over the
 // lenis-bus). Server markup is always the FINAL state — reduced motion and
@@ -87,7 +89,9 @@ const nymaCss = `
   --ny-ink: #1c1a17;        /* Ceramic Black */
   --ny-text-2: #45423d;
   --ny-text-3: #6d6960;
-  --ny-text-4: #9a948a;
+  /* faintest text stop that still clears 4.5:1 on the parchment (the old
+     #9a948a sat at ~2.7:1 under 11–12px mono — 2026-07-08 audit) */
+  --ny-text-4: #716c62;
   --ny-line: rgba(28, 26, 23, 0.11);
   --ny-line-strong: rgba(28, 26, 23, 0.22);
   --ny-shadow-rest: 0 1px 2px rgba(28, 26, 23, 0.04), 0 4px 12px rgba(28, 26, 23, 0.05);
@@ -388,6 +392,14 @@ const nymaCss = `
 .ny-toc li a:focus-visible i {
   color: #9cc4f0;
 }
+/* keyboard: every clickable specimen control takes the site focus ring */
+.ny-toc li a:focus-visible,
+.ny-dir-tab:focus-visible,
+.ny-ward-tab:focus-visible,
+.ny-roles-chip:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
 
 /* ── Overview + ledger ─────────────────────────────────────────────────── */
 .nyma-case-page .proj-summary {
@@ -557,8 +569,11 @@ const nymaCss = `
 }
 
 /* ── Chapter furniture ─────────────────────────────────────────────────── */
+/* 0.35 per side (0.7 gap at each seam): the old /2 stacked into 300–400px
+   of empty parchment at every chapter crossing — tightened half a step,
+   still low-density (2026-07-08 audit) */
 .ny-chapter {
-  padding: calc(var(--gap-section) / 2) 0;
+  padding: calc(var(--gap-section) * 0.35) 0;
   scroll-margin-top: 88px;
 }
 .nyma-case-page .case-chapter {
@@ -566,7 +581,12 @@ const nymaCss = `
   margin: 0;
 }
 .nyma-case-page .case-chapter:last-of-type {
-  padding-bottom: calc(var(--gap-section) / 2);
+  padding-bottom: calc(var(--gap-section) * 0.35);
+}
+/* ch1: the condition card runs taller than its copy — center the copy so
+   the left column doesn't read as a hole */
+#ny-ch1 .ny-section {
+  align-items: center;
 }
 /* ── the white stage (owner 2026-07-07): chapter 4 steps off the archive
    desk onto the product's own ground — Archival White, full-bleed. The
@@ -684,6 +704,12 @@ const nymaCss = `
   display: block;
   width: 100%;
   height: auto;
+  /* lazy-load placeholder: an on-system ground instead of a blank sheet
+     (phone audit: ch4's white plates left whole viewports pure white) */
+  background: var(--ny-chrome);
+}
+.ny-stage-white .ny-plate img {
+  background: var(--ny-stage);
 }
 
 /* ── Ch 1 · condition report card ──────────────────────────────────────── */
@@ -799,8 +825,7 @@ const nymaCss = `
   letter-spacing: 0.05em;
   line-height: 1;
 }
-.ny-etym-def,
-.ny-etym-read {
+.ny-etym-def {
   grid-column: 1 / -1;
   margin: 0;
   font-family: var(--ny-mono);
@@ -809,15 +834,21 @@ const nymaCss = `
   line-height: 1.6;
   color: var(--ny-text-3);
 }
-.ny-etym-read {
-  max-width: 58ch;
-}
 
-/* the moodboard table — a long desk the page scrolls sideways */
+/* the moodboard table — a long desk the page scrolls sideways.
+   Hand-scrollable by default so no-JS and reduced-motion still reach all
+   five boards; the GSAP walk clips it only once motion is actually running
+   (.ny-motion is set by NymaScroll after its reduced-motion gate). */
 .ny-strip {
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: var(--gap-block) 0;
+}
+@media (min-width: 769px) {
+  .ny-motion .ny-strip {
+    overflow: hidden;
+  }
 }
 .ny-strip-track {
   display: flex;
@@ -840,10 +871,34 @@ const nymaCss = `
   gap: 16px;
   margin-top: 14px;
 }
-@media (max-width: 768px) {
-  .ny-strip {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+/* cue wording tells the truth for the current mode: scrub phrasing shows
+   only while the GSAP walk is actually driving (.ny-motion + desktop for
+   the strip); hover phrasing only where hover exists */
+.ny-cue-scrub {
+  display: none;
+}
+.ny-motion .ny-pagescroll-foot .ny-cue-scrub {
+  display: inline;
+}
+.ny-motion .ny-pagescroll-foot .ny-cue-hand {
+  display: none;
+}
+@media (min-width: 769px) {
+  .ny-motion .ny-strip-foot .ny-cue-scrub {
+    display: inline;
+  }
+  .ny-motion .ny-strip-foot .ny-cue-hand {
+    display: none;
+  }
+}
+@media (hover: none) {
+  .ny-ladder-foot .ny-cue-hover {
+    display: none;
+  }
+}
+@media (hover: hover) {
+  .ny-ladder-foot .ny-cue-tap {
+    display: none;
   }
 }
 
@@ -1574,19 +1629,9 @@ const nymaCss = `
 .ny-wall-col:nth-child(2) {
   margin-top: clamp(48px, 6vw, 96px);
 }
-.ny-wall figure.ny-plate {
-  transition: transform 0.4s var(--ease-silk), box-shadow 0.4s var(--ease-silk);
-}
-.ny-wall figure.ny-plate:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--ny-shadow-lift);
-}
-.ny-wall figure.ny-plate:active {
-  transform: translateY(1px) scale(0.99);
-  box-shadow: var(--ny-shadow-rest);
-  transition-duration: 0.2s;
-}
-.ny-wall figcaption {
+/* (no hover/active on the wall plates — they aren't clickable, and a lift
+   that answers nothing is a false affordance; 2026-07-08 audit) */
+.ny-wall .ny-plate > figcaption {
   padding: 10px 12px;
   border-top: 1px solid var(--ny-line);
   font-family: var(--ny-mono);
@@ -1596,14 +1641,19 @@ const nymaCss = `
   color: var(--ny-text-3);
 }
 
-/* the frame a full-length mock walks through on scroll */
+/* the frame a full-length mock walks through on scroll; without motion
+   (reduced-motion, no-JS) the frame is simply scrollable, so the whole
+   length stays reachable */
 .ny-pagescroll-frame {
   position: relative;
   height: clamp(500px, 68vh, 780px);
-  overflow: hidden;
+  overflow-y: auto;
   background: var(--ny-canvas);
   border: 1px solid var(--ny-line);
   box-shadow: var(--ny-shadow-rest);
+}
+.ny-motion .ny-pagescroll-frame {
+  overflow: hidden;
 }
 .ny-pagescroll-frame img {
   display: block;
@@ -1954,7 +2004,7 @@ const nymaCss = `
 
 /* ── The Turn — ink band; the page's ONE seal-red stitch ───────────────── */
 .ny-turn-wrap {
-  padding: calc(var(--gap-section) / 2) 0;
+  padding: calc(var(--gap-section) * 0.35) 0;
   scroll-margin-top: 88px;
 }
 .ny-turn {
@@ -2133,6 +2183,487 @@ const nymaCss = `
   }
 }
 
+/* ── Pl.16 · the phone prototype (markup in nyma-phone.tsx; the styles sit
+   here because client modules can't export strings across the server
+   boundary). Screen colors are the shipped mock's own pixels. ── */
+.nyp {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+.nyp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+.nyp-tabs-note {
+  font-family: var(--ny-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ny-text-4);
+  margin-left: 8px;
+}
+/* neutral shell: even-px bezel, no notch theater */
+.nyp-shell {
+  box-sizing: border-box;
+  width: min(100%, 380px);
+  padding: 10px;
+  border: 2px solid var(--ny-ink);
+  border-radius: 48px;
+  background: var(--ny-canvas);
+  box-shadow: var(--ny-shadow-lift);
+}
+.nyp-screen {
+  --nyp-ink: #020817;
+  --nyp-grey: #a7a6a1;
+  --nyp-line: #e5e2db;
+  --nyp-gold: #cfb82e;
+  --nyp-paper: #f7f5f0;
+  --nyp-blue: var(--ny-blue);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 390 / 844;
+  border: 1px solid var(--ny-line);
+  border-radius: 38px;
+  overflow: hidden;
+  background: #ffffff;
+  color: var(--nyp-ink);
+  font-family: var(--ny-display);
+}
+/* :where() keeps the reset at zero specificity so the in-screen type rules
+   below (nav labels, summary rows) still win the cascade */
+:where(.nyp-screen) button {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.nyp button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+.nyp-status {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 26px 4px;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+.nyp-head {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: center;
+  padding: 8px 24px 14px;
+}
+.nyp-head svg {
+  display: block;
+}
+.nyp-brand {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.32em;
+  text-indent: 0.32em;
+}
+.nyp-head-btn {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+.nyp-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 1px solid var(--nyp-line);
+}
+.nyp-pagehead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px 24px 12px;
+}
+.nyp-title {
+  margin: 0;
+  font-family: var(--ny-mono);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.nyp-eyebrow {
+  margin: 0 0 6px;
+  font-family: var(--ny-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--nyp-grey);
+}
+.nyp-subline {
+  margin: 8px 0 0;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--nyp-grey);
+}
+.nyp-subline b {
+  font-weight: 700;
+  color: var(--nyp-ink);
+}
+.nyp-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 2px;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.nyp-live i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--nyp-gold);
+}
+.nyp-sort {
+  padding-bottom: 4px;
+  font-family: var(--ny-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--nyp-ink);
+  white-space: nowrap;
+}
+/* filter rows — depicted state (the mock shows one active cell) */
+.nyp-filters {
+  display: flex;
+  border-top: 1px solid var(--nyp-line);
+  border-bottom: 1px solid var(--nyp-line);
+  font-family: var(--ny-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.nyp-filters span {
+  padding: 12px 14px;
+  border-right: 1px solid var(--nyp-line);
+  color: var(--nyp-ink);
+}
+.nyp-filters span.is-on {
+  background: var(--nyp-ink);
+  color: #ffffff;
+}
+.nyp-filters b {
+  font-weight: 700;
+}
+/* auction lot rows — tap to watch (added micro-interaction, blue by law) */
+.nyp-lots {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.nyp-lot {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 16px;
+  width: 100%;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--nyp-line);
+}
+.nyp-lot[aria-pressed="true"] {
+  box-shadow: inset 2px 0 0 var(--nyp-blue);
+}
+.nyp-thumb {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  overflow: hidden;
+  background: var(--ny-stage);
+}
+.nyp-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.nyp-lot-info {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.nyp-lot-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--ny-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--nyp-grey);
+}
+.nyp-watch-tag {
+  color: var(--nyp-blue);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.nyp-lot-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--nyp-ink);
+}
+.nyp-lot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 3px;
+  font-family: var(--ny-mono);
+  font-size: 13px;
+  font-weight: 700;
+}
+.nyp-lot-row em {
+  font-style: normal;
+  font-size: 12px;
+}
+.nyp-lot-row em.is-hot {
+  color: var(--nyp-gold);
+}
+/* bag */
+.nyp-bagitem {
+  display: grid;
+  grid-template-columns: 92px 1fr 24px;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--nyp-line);
+}
+.nyp-bagitem .nyp-thumb {
+  width: 92px;
+  height: 114px;
+}
+.nyp-bag-x {
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-family: var(--ny-mono);
+  font-size: 13px;
+  color: var(--nyp-grey);
+}
+.nyp-bag-empty {
+  margin: 0;
+  padding: 28px 24px;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--nyp-grey);
+}
+.nyp-bag-restore {
+  margin-left: 10px;
+  color: var(--nyp-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  letter-spacing: 0.1em;
+}
+.nyp-summary {
+  margin-top: auto;
+  padding: 16px 24px 18px;
+  background: var(--nyp-paper);
+  font-family: var(--ny-mono);
+}
+.nyp-summary-head {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--nyp-ink);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+.nyp-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 0;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.nyp-summary-row.is-faint {
+  color: var(--nyp-grey);
+}
+.nyp-summary-row em {
+  font-style: normal;
+}
+/* the opt-in is live — so it wears Activation Blue */
+button.nyp-summary-row span em {
+  color: var(--nyp-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.nyp-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--nyp-ink);
+  margin-top: 6px;
+}
+.nyp-total span {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+.nyp-total strong {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.nyp-checkout {
+  display: grid;
+  place-items: center;
+  min-height: 54px;
+  background: var(--nyp-ink);
+  color: #f2efea;
+  font-family: var(--ny-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+/* saved grid */
+.nyp-grid {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: start;
+}
+.nyp-card {
+  min-width: 0;
+  border-bottom: 1px solid var(--nyp-line);
+}
+.nyp-card:nth-child(odd) {
+  border-right: 1px solid var(--nyp-line);
+}
+.nyp-card-img {
+  position: relative;
+  height: 170px;
+  background: var(--ny-stage);
+  overflow: hidden;
+}
+.nyp-card-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.nyp-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 7px;
+  background: #ffffff;
+  border: 1px solid var(--nyp-ink);
+  font-family: var(--ny-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.nyp-clock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 5px 9px;
+  background: var(--nyp-ink);
+  color: #ffffff;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.nyp-card-body {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px 16px;
+}
+.nyp-card-maison {
+  font-family: var(--ny-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--nyp-grey);
+}
+.nyp-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--nyp-ink);
+}
+.nyp-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--ny-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+.nyp-card-row em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 10px;
+  color: var(--nyp-grey);
+  white-space: nowrap;
+}
+/* bottom nav — AUCTIONS is the one live destination */
+.nyp-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--nyp-line);
+  padding: 10px 8px 12px;
+  background: #ffffff;
+}
+.nyp-nav > * {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 2px 0 0;
+  font-family: var(--ny-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--nyp-ink);
+}
+.nyp-nav i {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: transparent;
+}
+.nyp-nav .is-here i {
+  background: var(--nyp-ink);
+}
+.nyp-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
 /* ── Outcome band — Nyma voice: archival mono labels in neutral ink (the
    color law: Activation Blue stays interactive-only, so the band's eyebrow
    and ticks read in the archive's own greys), Murecho display numeral ── */
@@ -2143,7 +2674,8 @@ const nymaCss = `
   --ob-body: var(--ny-text-2);
   --ob-stat-ink: var(--ny-ink);
   --ob-stat-font: var(--ny-display);
-  --ob-stat-weight: 500;
+  /* 400, not 500 — the weight ladder keeps 500 as a hover step only */
+  --ob-stat-weight: 400;
 }
 `;
 
@@ -2312,6 +2844,8 @@ export function NymaCaseLayout({ project }: { project: Project }) {
           </p>
           <aside className="ny-toc" data-fade aria-label="Contents">
             <header>
+              {/* sic — verbatim from the manual's own contents page
+                  (brandmanual/3.png); do not "correct" to CONTENTS */}
               <span>TABLE OF CONTENT</span>
               <span>νήμα — THREAD</span>
             </header>
@@ -2361,26 +2895,29 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             </p>
           ))}
         </div>
+        {/* every displayed number keeps ONE home: 17 and 30–40 live in the
+            at-a-glance band above, ~50 in the ch.4 tally — the ledger holds
+            the rest (2026-07-08 audit: same-screen repeats) */}
         <aside className="ny-ledger" data-fade aria-label="Project figures">
           <div>
-            <strong data-count="17">17</strong>
-            <span>brand-manual pages</span>
-          </div>
-          <div>
-            <strong>30–40</strong>
-            <span>key pages, by hand</span>
+            <strong data-count="4">4</strong>
+            <span>directions, drafted as conversation</span>
           </div>
           <div>
             <strong data-count="3">3</strong>
             <span>accent roles, enforced</span>
           </div>
           <div>
+            <strong data-count="2">2</strong>
+            <span>engineers who build after me</span>
+          </div>
+          <div>
             <strong>1</strong>
             <span>designer — me</span>
           </div>
           <p className="ny-ledger-note">
-            counts come from the working archive: the manual’s own pagination,
-            the final Figma export, the manual’s color law
+            counts come from the working archive: the direction studies, the
+            manual’s color law, the team roster
           </p>
         </aside>
       </section>
@@ -2535,10 +3072,15 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </div>
                 <div className="ny-strip-foot">
                   <Caption pl="03">
-                    the moodboard table, end to end — 32,768&nbsp;px of it
+                    the moodboard table — cut from a 32,768-px board
                   </Caption>
                   <InteractiveCue>
-                    keep scrolling — the table slides past
+                    <span className="ny-cue-scrub">
+                      keep scrolling — the table slides past
+                    </span>
+                    <span className="ny-cue-hand">
+                      scroll the table sideways — it slides past
+                    </span>
                   </InteractiveCue>
                 </div>
               </figure>
@@ -2601,7 +3143,8 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                   {(
                     [
                       [
-                        "manual-cover",
+                        // -v2: agency credit repainted out (2026-07-08)
+                        "manual-cover-v2",
                         790,
                         "The manual cover: a white NYMA wordmark cropped by the edge of a black band, above the words Brand Guidance.",
                       ],
@@ -2673,7 +3216,12 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                     the type ladder — 64 / 48 / 36 / 24, the manual’s scale
                   </Caption>
                   <InteractiveCue>
-                    hover a line — it tries its heavier weight
+                    <span className="ny-cue-hover">
+                      hover a line — it tries its heavier weight
+                    </span>
+                    <span className="ny-cue-tap">
+                      tap a line — it tries its heavier weight
+                    </span>
                   </InteractiveCue>
                 </div>
               </figure>
@@ -2691,9 +3239,15 @@ export function NymaCaseLayout({ project }: { project: Project }) {
               <div className="ny-section">
                 {pages.sections[0] && <Prose section={pages.sections[0]} />}
                 <aside className="ny-aside" data-fade>
+                  {/* ~50 comes from the final Figma export (data note) — the
+                      hand-designed 30–40 keeps its one home in the
+                      at-a-glance band */}
                   <div className="ny-tally">
-                    <strong>30–40</strong>
-                    <span>key pages designed and iterated by hand in Figma</span>
+                    <strong>~50</strong>
+                    <span>
+                      mocks in the final Figma export — the key pages,
+                      designed and iterated by hand
+                    </span>
                     <em>
                       marketplace · auctions · sell · profile · onboarding ·
                       messaging · orders
@@ -2757,7 +3311,13 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                         onboarding, end to end — editorial pacing
                       </Caption>
                       <InteractiveCue>
-                        keep scrolling — the page walks its own length
+                        <span className="ny-cue-scrub">
+                          keep scrolling — the page walks its own length
+                        </span>
+                        <span className="ny-cue-hand">
+                          scroll inside the frame — the page walks its own
+                          length
+                        </span>
                       </InteractiveCue>
                     </div>
                   </div>
@@ -2899,7 +3459,13 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                         the system, codified — one artifact the whole team reads
                       </Caption>
                       <InteractiveCue>
-                        keep scrolling — the artifact walks its own length
+                        <span className="ny-cue-scrub">
+                          keep scrolling — the artifact walks its own length
+                        </span>
+                        <span className="ny-cue-hand">
+                          scroll inside the frame — the artifact walks its own
+                          length
+                        </span>
                       </InteractiveCue>
                     </div>
                   </div>
@@ -2957,19 +3523,22 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </figure>
               </div>
 
+              {/* the shipped commerce screens, shown once — as a working
+                  recreation instead of a static plate (owner 2026-07-08:
+                  "复现成可交互的 prototype，带手机 frame 的放在网页上") */}
               <figure className="ny-wide ny-full" data-fade>
-                <div className="ny-plate">
-                  <Image
-                    src="/media/work/nyma/mob-commerce.png"
-                    width={1400}
-                    height={910}
-                    alt="Three mobile screens in device frames: Auctions with live lots and countdowns, Bag with reserved objects and an authentication opt-in, and Saved with watched lots."
-                    sizes="(max-width: 1080px) 100vw, 72vw"
-                  />
+                <NymaPhone />
+                <div className="nyp-foot">
+                  <Caption pl="16">
+                    auctions · bag · saved — the commerce spine, rebuilt as a
+                    working prototype; every interface fact from the shipped
+                    mobile design
+                  </Caption>
+                  <InteractiveCue>
+                    click through the screens — the lots, bag, and totals
+                    respond
+                  </InteractiveCue>
                 </div>
-                <Caption pl="16">
-                  auctions · bag · saved — the commerce spine on mobile
-                </Caption>
               </figure>
 
               <figure className="ny-wide ny-full" data-fade>
