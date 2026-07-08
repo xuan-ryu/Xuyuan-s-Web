@@ -64,6 +64,12 @@ const CROSSING_MEDIA =
 // old ABSOLUTE scroll lengths (0.12 of 200% 闁?0.09 of 270%, etc.) so the
 // approach feels identical 闁?the added travel is all arrival.
 const PIN_END = "+=270%";
+// Net document height the crossing adds once GSAP builds it: the pin spacer
+// grows the section by PIN_END (% of viewport) while the same setup pulls the
+// koi section up 100vh. Reserved up front by the .fg-prepin placeholder so
+// slow machines don't shift deep-link / early-scroll visitors when the pin
+// lands (270vh − 100vh = 170vh ≈ a 1632px jump at a 960px viewport).
+const PIN_NET_VH = parseFloat(PIN_END.replace(/[^\d.]/g, "")) - 100;
 const ZOOM_START = 0.09; // short runway so the pin doesn't feel grabby
 const ZOOM_END = 0.37; // gate fully scaled by here (hidden under full ink)
 const INK_AT = 0.13;
@@ -107,6 +113,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
   const [lotusOn, setLotusOn] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
+  // pre-pin height placeholder (sibling AFTER the section, never re-rendered
+  // by React state, so the imperative class toggle below can't be wiped)
+  const prepinRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLSpanElement>(null);
   const gateRef = useRef<HTMLAnchorElement>(null);
   const veilRef = useRef<HTMLSpanElement>(null);
@@ -206,6 +215,11 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           if (!section || !gate || !veil || !bg) return;
           pinnedRef.current = true;
           koiSection?.classList.remove("koi-lotus-visible");
+
+          // hand the reserved height over to the real pin: the ScrollTrigger
+          // below creates its pin spacer in this same synchronous block, so
+          // consuming the placeholder here never paints a collapsed state
+          prepinRef.current?.classList.add("is-consumed");
 
           // pull the koi section up one viewport so it waits right behind the
           // pinned gate 闁?the final pin stretch is the pond rising into place
@@ -435,6 +449,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
 
           return () => {
             pinnedRef.current = false;
+            prepinRef.current?.classList.remove("is-consumed");
             section.style.pointerEvents = "";
             bg.style.backgroundColor = "";
             hintRef.current?.classList.remove("is-hidden");
@@ -502,6 +517,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
   }, []);
 
   return (
+    <>
     <section
       className={`fg-section${revealed ? " is-revealed" : ""}`}
       aria-labelledby="fg-heading"
@@ -955,6 +971,18 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           100% { transform: translateY(230%); }
         }
 
+        /* pre-pin height placeholder — display gated by the SAME boundary as
+           the crossing pin (CROSSING_MEDIA), height derived from PIN_END */
+        .fg-prepin { display: none; }
+        @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+          .fg-prepin { display: block; height: ${PIN_NET_VH}vh; background: #020305; }
+          .fg-prepin.is-consumed { display: none; }
+        }
+        /* no JS -> no pin will ever consume it: don't strand 170vh of black */
+        @media (scripting: none) {
+          .fg-prepin { display: none !important; }
+        }
+
         @media (max-width: 900px) {
           .fg-main { grid-template-columns: 1fr; gap: clamp(30px, 6vh, 52px); padding-top: clamp(30px, 5vh, 52px); }
           .fg-right { order: -1; justify-content: center; }
@@ -977,5 +1005,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         }}
       />
     </section>
+    {/* pre-pin placeholder: reserves the net scroll distance the crossing
+        will add, only where the pin actually runs (same media boundary);
+        consumed the moment the ScrollTrigger's own pin spacer exists */}
+    <div ref={prepinRef} className="fg-prepin" aria-hidden="true" />
+    </>
   );
 }

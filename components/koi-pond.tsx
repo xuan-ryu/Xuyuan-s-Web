@@ -157,7 +157,17 @@ export default function InkKoiEcosystem(props: Props) {
         }
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") forceSkipIntro()
+            if (e.key === "Escape") {
+                // feed mode first: Escape is the keyboard way OUT of feeding
+                // (Enter/Space on the focused chip drops pellets, see
+                // onFeedKeyDown), then falls through to the intro skip.
+                if (feedMode) {
+                    feedMode = false
+                    syncFeedUi()
+                    return
+                }
+                forceSkipIntro()
+            }
         }
         window.addEventListener("keydown", handleKeyDown)
 
@@ -225,11 +235,21 @@ export default function InkKoiEcosystem(props: Props) {
         const onFeedPointerDown = (e: PointerEvent) => {
             e.stopPropagation()
         }
-        // Keyboard access: Enter / Space fire the same toggle as a click.
+        // Keyboard feeding — pointer users get pointerdown-anywhere once feed
+        // mode is armed; the keyboard equivalent lives on the (focusable)
+        // chip: first Enter/Space arms feed mode, every further Enter/Space
+        // drops one pellet at the feed-cursor position (pond centre until a
+        // pointer has moved), through the SAME spawn + koi:feed count chain
+        // as a pointer drop. Escape (window handler above) disarms.
         const onFeedKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
                 e.preventDefault()
-                onFeedClick(e)
+                e.stopPropagation()
+                if (!feedMode) {
+                    onFeedClick(e)
+                } else {
+                    dropFeedAt(target.x, target.y)
+                }
             }
         }
         feedBtn.addEventListener("click", onFeedClick)
@@ -1658,6 +1678,26 @@ drawBody() {
                 foodParticles.splice(0, foodParticles.length - foodCap)
         }
 
+        // One feed drop — shared by pointerdown and the chip's keyboard path
+        // (onFeedKeyDown above): spawn the burst, bump the count, and emit the
+        // koi:feed CustomEvent the How-I-Work overlay listens for.
+        function dropFeedAt(x: number, y: number) {
+            spawnFoodBurst(x, y)
+            feedCount++
+            try {
+                window.dispatchEvent(
+                    new CustomEvent("koi:feed", {
+                        detail: { count: feedCount },
+                    })
+                )
+            } catch {
+                /* CustomEvent unavailable — signal is progressive */
+            }
+            // reduced-motion parks the render loop after one frame — poke it
+            // so the pellets from this drop still paint
+            refreshStaticFrame()
+        }
+
         function hatchEgg(egg: any) {
             const _types = ["kohaku", "yamabuki", "sanke", "showa"]
             const baby = new Koi(
@@ -1690,20 +1730,10 @@ drawBody() {
                 }
             }
             if (feedMode) {
-                spawnFoodBurst(pos.x, pos.y)
                 // Feed-count signal for the How-I-Work overlay (and anything
                 // else outside this island — it is loaded via next/dynamic,
                 // so a DOM event is cleaner than threading a callback prop).
-                feedCount++
-                try {
-                    window.dispatchEvent(
-                        new CustomEvent("koi:feed", {
-                            detail: { count: feedCount },
-                        })
-                    )
-                } catch {
-                    /* CustomEvent unavailable — signal is progressive */
-                }
+                dropFeedAt(pos.x, pos.y)
             } else {
                 for (const f of fishes) {
                     const dHead = dist(f.x, f.y, pos.x, pos.y),
@@ -1809,6 +1839,10 @@ drawBody() {
 
         const introDuration = Math.max(200, props.introDurationMs | 0)
         const introStart = performance.now()
+        // reduced-motion: the loop parks after ONE frame (see animate), so
+        // that frame must already be the finished state — no fade-in ramp,
+        // no scramble.
+        if (prefersReduce) forceSkipIntro()
         const padFrameInterval = prefersReduce
             ? 160
             : qualityTier >= 2
@@ -1884,6 +1918,26 @@ drawBody() {
                 drawLilyPads()
                 lastPadDrawAt = now
             }
+            if (prefersReduce) {
+                // reduced-motion static degrade: this frame is the pond —
+                // park the loop instead of animating at a lower fps. Feed
+                // drops repaint via refreshStaticFrame(); scroll/visibility
+                // events at most restart one more single frame.
+                isRunning = false
+                raf = 0
+                return
+            }
+            raf = requestAnimationFrame(animate)
+        }
+
+        // Single-frame repaint for the parked reduced-motion loop (no-op
+        // while the normal loop is running).
+        function refreshStaticFrame() {
+            if (!prefersReduce || isRunning || !isPageVisible || !isInViewport)
+                return
+            isRunning = true
+            // rewind the frame throttle so the very next rAF tick draws
+            lastFrameTime = performance.now() - msPerFrame - 1
             raf = requestAnimationFrame(animate)
         }
 

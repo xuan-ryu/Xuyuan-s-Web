@@ -177,10 +177,17 @@ function LotusPadSpan({
   pad,
   index,
   className,
+  // KoiLotusFrame passes "lazy": its pads sit far below the fold and phones
+  // display:none a whole depth class of them — lazy imgs inside display:none
+  // boxes never intersect, so the discarded layers cost zero bandwidth. The
+  // crossing layer keeps the eager default (its pads must be decoded before
+  // the scrub reaches them). Static per callsite — no hydration risk.
+  loading,
 }: {
   pad: LotusPad;
   index: number;
   className: string;
+  loading?: "lazy" | "eager";
 }) {
   return (
     <span
@@ -189,7 +196,7 @@ function LotusPadSpan({
         {
           "--fx": `${pad.fx}%`,
           "--fy": `${pad.fy}%`,
-          "--fsize": `${pad.fsize}vmin`,
+          "--fsn": `${pad.fsize}`,
           "--frot": `${pad.frot}deg`,
           "--fop": pad.fopacity,
           "--i": index,
@@ -200,6 +207,8 @@ function LotusPadSpan({
         src={LOTUS_ASSETS[pad.asset]}
         alt=""
         draggable={false}
+        loading={loading}
+        decoding="async"
         // mirror on the img, NOT the wrapper — GSAP owns the wrapper's
         // transform during the crossing and would overwrite a flip there
         style={pad.flip ? { transform: "scaleX(-1)" } : undefined}
@@ -255,7 +264,16 @@ export function FgLotusLayer() {
           position: absolute;
           left: var(--fx);
           top: var(--fy);
-          width: min(var(--fsize), 420px);
+          /* Pad sizes were tuned as vmin on a 960-tall viewport where the pond
+             band runs 180dvh. Below ~864px viewport height the band floors at
+             1555px (globals .home-koi-section) and STOPS shrinking while vmin
+             keeps shrinking — the banks pulled apart into scattered islands
+             (owner report 2026-07-08). The px floor is the vmin unit at the
+             point the band floor engages (1555px / 180), so the pad-to-pond
+             ratio holds once the pond stops scaling. Must stay IDENTICAL in
+             .koi-lotus-cluster or the crossing handoff jumps. */
+          --lotus-unit: max(1vmin, calc(1555px / 180));
+          width: min(calc(var(--fsn) * var(--lotus-unit)), 420px);
           aspect-ratio: 1 / 1;
           opacity: 0;
           z-index: 2;
@@ -279,7 +297,7 @@ export function FgLotusLayer() {
         }
         /* match KoiLotusFrame's wide-screen sizing so the handoff stays exact */
         @media (min-width: 1900px) {
-          .fgl-cluster { width: min(calc(var(--fsize) * 1.08), 520px); }
+          .fgl-cluster { width: min(calc(var(--fsn) * var(--lotus-unit) * 1.08), 520px); }
         }
       `}</style>
     </div>
@@ -295,6 +313,7 @@ export function KoiLotusFrame() {
           pad={pad}
           index={index}
           className={`koi-lotus-cluster is-${pad.side} is-${pad.depth ?? "mid"}`}
+          loading="lazy"
         />
       ))}
       <style>{`
@@ -318,7 +337,10 @@ export function KoiLotusFrame() {
           position: absolute;
           left: var(--fx);
           top: var(--fy);
-          width: min(var(--fsize), 420px);
+          /* sizing formula must stay IDENTICAL to .fgl-cluster — see the
+             --lotus-unit note there */
+          --lotus-unit: max(1vmin, calc(1555px / 180));
+          width: min(calc(var(--fsn) * var(--lotus-unit)), 420px);
           aspect-ratio: 1 / 1;
           opacity: 0;
           transform: translate3d(-50%, -50%, 0) rotate(var(--frot));
@@ -340,11 +362,25 @@ export function KoiLotusFrame() {
           -webkit-user-drag: none;
         }
         @media (min-width: 1900px) {
-          .koi-lotus-cluster { width: min(calc(var(--fsize) * 1.08), 520px); }
+          .koi-lotus-cluster { width: min(calc(var(--fsn) * var(--lotus-unit) * 1.08), 520px); }
+        }
+        /* Static release — wherever the desktop crossing timeline never runs
+           (the pin is gated to min-width 901px + motion-safe in
+           featured-gate.tsx), .koi-lotus-visible is never painted, so the
+           frame must show its finished composition on its own: phones/narrow
+           viewports and reduced-motion get the pads statically at their
+           frame opacity. Desktop no-preference matches neither branch and
+           keeps the crossing-driven crossfade untouched. */
+        @media (max-width: 900px), (prefers-reduced-motion: reduce) {
+          .koi-lotus-frame { opacity: 1; }
+          .koi-lotus-cluster { opacity: var(--fop); }
         }
         @media (max-width: 740px) {
           .koi-lotus-frame { opacity: 0.92; }
-          .koi-lotus-cluster { width: calc(var(--fsize) * 1.45); }
+          /* phone keeps its own vmin recipe — the 972px phone pond never hits
+             the desktop band floor, and the px floor would triple pad size on
+             a 390 viewport */
+          .koi-lotus-cluster { --lotus-unit: 1vmin; width: calc(var(--fsn) * var(--lotus-unit) * 1.45); }
           /* phones keep only the outer/middle banks — the small inner pads
              and channel strays crowd a narrow pond */
           .koi-lotus-cluster.is-top,

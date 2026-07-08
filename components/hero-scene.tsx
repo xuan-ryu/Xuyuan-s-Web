@@ -1243,9 +1243,16 @@ export default function DigitalLandscape(props: Props) {
         // ── Mobile / 低端设备: skip Three.js entirely, use CSS ink fallback ──
         // Software WebGL (HW-accel off / SwiftShader / llvmpipe) can't push the
         // point cloud — route it to the CSS ink fallback too.
+        // Reduced-motion also lands here: instead of a merely slowed-down
+        // point cloud it gets a genuinely static scene — desktop RM takes the
+        // SVG ink fallback, phone RM keeps the (already static) photo bg.
         const gpu = detectGPU()
+        const prefersReducedMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches
         const isLowEndDevice =
             liteMode ||
+            prefersReducedMotion ||
             window.innerWidth <= 768 ||
             (navigator.hardwareConcurrency || 4) <= 2 ||
             ((navigator as any).deviceMemory || 4) <= 2 ||
@@ -1253,7 +1260,10 @@ export default function DigitalLandscape(props: Props) {
         if (isLowEndDevice) {
             if (mountRef.current) {
                 const bg = mobileBgRef.current
-                const useLiteInkFallback = liteMode || !bg
+                const useLiteInkFallback =
+                    liteMode ||
+                    !bg ||
+                    (prefersReducedMotion && window.innerWidth > 768)
                 mountRef.current.dataset.liteFallback = useLiteInkFallback
                     ? "true"
                     : "false"
@@ -1262,7 +1272,14 @@ export default function DigitalLandscape(props: Props) {
                     : "transparent"
                 mountRef.current.style.filter = "invert(0)"
                 mountRef.current.innerHTML = !useLiteInkFallback && bg
-                    ? `<img src="${bg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;" /><div data-hero-mobile-veil style="position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;"></div>`
+                    ? // presentation contrast lift (CSS only, source PNG
+                      // untouched): the stippled mountains read as barely-there
+                      // dust on phone screens. brightness(b) followed by
+                      // contrast(0.5/(b-0.5)) darkens the light-gray stipple a
+                      // full step while mapping white back to white — a plain
+                      // contrast() boost pushes light grays LIGHTER and erases
+                      // the mountains instead.
+                      `<img src="${bg}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 60%;filter:brightness(0.75) contrast(2);" /><div data-hero-mobile-veil style="position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;"></div>`
                     : `<svg viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice"
                          style="position:absolute;inset:0;width:100%;height:100%">
                         <defs>
@@ -2633,9 +2650,15 @@ export default function DigitalLandscape(props: Props) {
                 animation: avatarRingPulse 2.8s ease-in-out infinite;
             }
 
-            /* Photo — lift & glow on hover */
+            /* Photo — lift & glow on hover.
+               Avatar and title must SHRINK TOGETHER: on short windows the old
+               30vh term dropped the avatar toward 160px while the 80px title
+               cap held and wrapped to two lines, so the text block outgrew the
+               photo (owner report 2026-07-08). 32vh here plus the vh term on
+               .page2-title keep the tuned ~3.5:1 photo-to-glyph ratio on small
+               windows; at 1536×960 both still resolve to 280px / 80px. */
             .page2-photo {
-                width: clamp(160px, min(28vw, 30vh), 280px); height: clamp(160px, min(28vw, 30vh), 280px);
+                width: clamp(160px, min(28vw, 32vh), 280px); height: clamp(160px, min(28vw, 32vh), 280px);
                 overflow: hidden; position: relative; border-radius: 50%;
                 box-shadow: 0 16px 50px rgba(0,0,0,0.65);
                 filter: grayscale(10%) contrast(1.06);
@@ -2659,7 +2682,11 @@ export default function DigitalLandscape(props: Props) {
             @keyframes titleBreath { 0%,100% { text-shadow: 0 2px 12px rgba(0,0,0,0.6); } 50% { text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 50px rgba(255,255,255,0.06); } }
             .page2-title {
                 font-family: var(--font-sans);
-                font-size: var(--text-display-3); letter-spacing: 0; line-height: 1.2;
+                /* display-3 with a vh brake (see .page2-photo note): 9.6vh
+                   only undercuts the 6.5vw/80px ladder once the window is
+                   shorter than ~834px, scaling the glyphs with the avatar */
+                font-size: clamp(36px, min(6.5vw, 9.6vh), 80px);
+                letter-spacing: 0; line-height: 1.2;
                 font-weight: 300; color: #FFFFFF; text-shadow: 0 2px 12px rgba(0,0,0,0.6);
                 margin-bottom: 12px;
             }
@@ -2758,6 +2785,31 @@ export default function DigitalLandscape(props: Props) {
             .ink-fg   { animation: inkRise 12s ease-in-out infinite alternate; }
 
             @media (max-width: 768px) {
+              /* Static star field for the phone night stretch: without WebGL
+                 stars the hero→profile crossing is a full viewport of flat
+                 black. Pure CSS (three tiled dot layers on the night overlay's
+                 own ::after — no JS, no extra element) and it inherits the
+                 overlay's scroll-driven fade, so the stars rise with the
+                 night and set behind the eaves like the moon does. Painted on
+                 BOTH night layers: the in-wrapper veil (z1) covers the page
+                 night overlay (z0) while the hero is on screen, then the
+                 wrapper hides past the scene and the overlay takes over —
+                 same geometry, so the field never jumps. */
+              [data-night-overlay]::after,
+              [data-hero-mobile-veil]::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image:
+                  radial-gradient(1.3px 1.3px at 22px 34px, rgba(255,255,255,0.7), transparent 100%),
+                  radial-gradient(1px 1px at 141px 189px, rgba(214,228,255,0.55), transparent 100%),
+                  radial-gradient(1.6px 1.6px at 87px 118px, rgba(255,255,255,0.4), transparent 100%),
+                  radial-gradient(1px 1px at 199px 66px, rgba(255,255,255,0.5), transparent 100%),
+                  radial-gradient(1.2px 1.2px at 55px 226px, rgba(214,228,255,0.45), transparent 100%),
+                  radial-gradient(1px 1px at 246px 152px, rgba(255,255,255,0.35), transparent 100%);
+                background-size: 273px 271px, 305px 299px, 337px 331px, 361px 353px, 397px 389px, 421px 409px;
+                opacity: 0.85;
+              }
               /* live mobile: greeting wraps inside the viewport (one phrase per
                  row-ish), container must not exceed the screen */
               .framer-xy-hero { max-width: 86vw !important; }
@@ -2785,11 +2837,14 @@ export default function DigitalLandscape(props: Props) {
               .page2-brand-line { width: 24px; }
               .page2-footer { line-height: 1.7; }
             }
-            /* 短屏幕（横屏手机 / 小笔记本）：压缩垂直间距 */
+            /* 短屏幕（横屏手机 / 小笔记本）：压缩垂直间距。头像和标题必须
+               一起缩 —— 此前头像压到 20vh 而标题仍是 80px 两行，文字块反而
+               比头像高（owner report 2026-07-08）。24vh/8vh ≈ 基准 280/80 的
+               3:1 比例。 */
             @media (max-height: 700px) {
               .profile-sticky { padding-top: 4vh; }
-              .page2-photo { width: clamp(100px, 20vh, 150px) !important; height: clamp(100px, 20vh, 150px) !important; }
-              .page2-title { margin-bottom: 8px; }
+              .page2-photo { width: clamp(100px, 24vh, 168px) !important; height: clamp(100px, 24vh, 168px) !important; }
+              .page2-title { font-size: clamp(32px, 8vh, 56px); margin-bottom: 8px; }
               .page2-name-rule { margin-bottom: 8px; }
               .page2-subtitle { line-height: 1.5; }
             }
@@ -2801,6 +2856,14 @@ export default function DigitalLandscape(props: Props) {
                 .framer-xy-hero .w, .framer-xy-sub, .hero-quote, .hero-scroll-hint, .p2-fade, .page2-char { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
                 .page2-title { animation: none !important; }
                 .page2-name-rule, .page2-brand-line { transition: none !important; }
+                /* the static ink fallback holds one frame — no breathe/rise */
+                .ink-layer { animation: none !important; }
+                /* RM hero sits on the gray ink hills, not on plain white —
+                   step the bottom-left column's grays down for contrast */
+                .framer-xy-sub { color: #3f3f3f; }
+                .hero-quote { color: #2e2e2e !important; }
+                .hero-scroll-hint { color: #2e2e2e !important; }
+                .hero-scroll-hint > div { background: #2e2e2e !important; }
             }
 
 `),
@@ -2917,9 +2980,30 @@ export default function DigitalLandscape(props: Props) {
                             pointerEvents: "none",
                         }}
                     >
-                        {/* 《潇湘八景图》 credit removed for restraint — the
-                            right-side inscription + seal already carries the
-                            literary signature. */}
+                        {/* Identity statement — the one first-screen line that
+                            says what Xuyuan does. Reuses the ported
+                            .framer-xy-sub reveal (blur-up after the loader;
+                            reduced-motion shows it immediately via the RM
+                            block below). */}
+                        <div className="framer-xy-sub">{heroSubtitle}</div>
+                        {/* 《潇湘八景图》 credit — the composition's source,
+                            re-seated under the identity line (it shipped as a
+                            dead prop after the earlier restraint pass). */}
+                        <div
+                            className="hero-quote"
+                            style={{
+                                fontFamily: "var(--font-sans)",
+                                fontSize: "var(--text-micro)",
+                                fontWeight: 300,
+                                lineHeight: 1.7,
+                                letterSpacing: "0.04em",
+                                color: "#9a9a9a",
+                                whiteSpace: "pre-line",
+                                maxWidth: "360px",
+                            }}
+                        >
+                            {quoteLine}
+                        </div>
                         <div
                             className="hero-scroll-hint"
                             style={{
