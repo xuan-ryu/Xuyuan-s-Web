@@ -83,7 +83,8 @@ export const projects: Project[] = [
     slug: "pulse",
     title: "Pulse",
     template: "case",
-    // TODO: drop in a cover image + a Featured hover preview clip when ready.
+    cover: `/media/work/pulse/pulse-app-home.png`,
+    previewVideo: `/media/work/pulse/preview.mp4`,
     coverClass: "cover-pulse",
     tags: ["Product Design", "Design System", "AI"],
     oneliner:
@@ -119,7 +120,7 @@ export const projects: Project[] = [
         "So the work became structure. Tokens instead of taste, components instead of copies, and written rules an AI loads instead of instructions repeated into a chat box. Design reads previews, engineering reads a typed package, ML reads data states, product reads one runnable flow. The melee ended when everyone stopped squeezing into the same files and started shipping from the same base.",
         "One rule survived every iteration untouched: AI can draft and schedule, but a person always releases to publish. Speed where it helps, a deliberate checkpoint where it matters. That balance, not the automation, was the design.",
       ],
-      // TODO: add a screen recording of New Post -> Create with AI -> editable brief -> approve.
+      // The gate-flow recording renders in the layout's Turn (Fig. 33).
     },
     // Arc (owner 2026-07 rework #2 — the full first-person causal chain):
     //   melee -> bet -> look -> wake-up -> rescue -> base -> skills ->

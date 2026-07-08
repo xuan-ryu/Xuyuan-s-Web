@@ -9,6 +9,7 @@ import { PulseCreativeBrief } from "./pulse-creative-brief";
 import { PulsePlaygroundDemo } from "./pulse-playground-demo";
 import { PulseTokenChips } from "./pulse-token-chips";
 import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
+import { OffscreenVideo } from "./ui/offscreen-video";
 import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
@@ -1926,6 +1927,20 @@ const pulseCss = `
   color: var(--pp-ink);
   text-wrap: balance;
 }
+.pulse-turn-film {
+  grid-column: 1 / -1;
+  margin-top: clamp(28px, 3.5vw, 48px);
+}
+.pulse-turn-film .pulse-card {
+  overflow: hidden;
+  padding: 0;
+}
+.pulse-turn-video,
+.pulse-shot-video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 .pulse-turn-copy {
   grid-column: 1 / 8;
 }
@@ -3760,13 +3775,12 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <figure className="pulse-section-inset" data-fade>
                   <div className="pulse-shot-pair">
                     <div className="pulse-shot">
-                      <Image
-                        src="/media/work/pulse/pulse-app-calendar.png"
-                        alt="Pulse Calendar in week view with scheduled posts and a schedule-health rail"
-                        width={SHOT_W}
-                        height={SHOT_H}
-                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 500px"
-                        style={{ width: "100%", height: "auto" }}
+                      {/* the calendar runs (owner recording, 2026-07-07):
+                          day/week/month/list views + the scheduling queue */}
+                      <OffscreenVideo
+                        src="/media/work/pulse/calendar-run.mp4"
+                        className="pulse-shot-video"
+                        aria-label="Pulse Calendar walkthrough: day, week, month and list views with the schedule-health rail and scheduling queue"
                       />
                     </div>
                     <div className="pulse-shot">
@@ -4035,6 +4049,22 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <i className="is-stamp" aria-hidden="true" /> human gate
               </span>
             </footer>
+            <figure className="pulse-turn-film" data-fade>
+              <div className="pulse-card">
+                <OffscreenVideo
+                  src="/media/work/pulse/gate-flow.mp4"
+                  className="pulse-turn-video"
+                  aria-label="Screen recording of the full gate flow: a campaign brief is reviewed and approved, content generates per platform, a person reviews each post, and only then does it publish — ending on live performance numbers"
+                />
+              </div>
+              <figcaption className="pulse-fig-caption">
+                <span>
+                  <em className="pulse-fig">Fig. 33</em>The gate, recorded
+                  &mdash; brief &rarr; approve &rarr; generate &rarr; review
+                  &rarr; publish, a person at every red step
+                </span>
+              </figcaption>
+            </figure>
           </section>
         </div>
       )}
