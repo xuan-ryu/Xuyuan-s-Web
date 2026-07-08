@@ -31,6 +31,9 @@ export const about = {
       "So the work became less about making one more page and more about building the order underneath: tokens, components, state rules, handoff surfaces, checks, and the rules AI should read before it makes anything new.",
       "That is where design started to feel more serious to me. Not every decision should be remade from taste. Some things need principles: what can change, what should hold, where the machine can run, and where a person has to stop and judge.",
     ],
+    // pull-line for the essay column: a verbatim sentence from the final
+    // paragraph, lifted mid-column so the seven-paragraph read skims
+    pull: "Not every decision should be remade from taste.",
     closing: "Fast Is Useful. Structure Is What Lets It Last.",
     // the tools wall, restored (owner 2026-07-07: the icons were good) —
     // now each carries a name for the hover slide-reveal; render treatment
@@ -105,7 +108,7 @@ export const about = {
       role: "Publicity Department Chair",
       date: "Sep 2024 – Dec 2025",
       bullets: [
-        "Operate the WeChat public account and published the tweet to attract more 300+ users for performance",
+        "Ran the WeChat public account; publications drew 300+ attendees per performance",
         "Developed the marketing promotion materials including posters design and advertise the events",
       ],
     },
@@ -115,7 +118,7 @@ export const about = {
       date: "Jan 2023 – May 2024",
       bullets: [
         "Supervised the internal work of CSA and was responsible for new members recruitment",
-        "Co-hosted and organized activities with the East Asian Studies Department of the college and maintain relations with the Chinese Consulate",
+        "Co-hosted events with the East Asian Studies department and maintained relations with the Chinese Consulate",
       ],
     },
   ],

@@ -102,7 +102,17 @@ export default function About() {
           </div>
           <div className="about-text about-essay-text">
             {about.whatChanged.body.map((p, i) => (
-              <p key={i} data-fade>{p}</p>
+              <Fragment key={i}>
+                <p data-fade>{p}</p>
+                {/* pull-line: the essay's thesis (verbatim from the final
+                    paragraph) lifted mid-column so the long read skims;
+                    aria-hidden because the sentence repeats in full below */}
+                {i === 3 ? (
+                  <span className="abf-pull" data-fade aria-hidden="true">
+                    {about.whatChanged.pull}
+                  </span>
+                ) : null}
+              </Fragment>
             ))}
           </div>
 
@@ -410,6 +420,21 @@ h2.about-habits-title.abf-t,
   aspect-ratio: 2075 / 3130;
   height: auto;
 }
+/* frame 00 rhythm: the koan floats mid-air at the top of its row while the
+   bio hugs the row below — center it in its cell so portrait and kōan read
+   as one paired composition instead of two strays */
+.about-header .about-quote-wrap {
+  align-items: center;
+  align-self: stretch;
+}
+/* the rule + resume claim close the intro across the FULL shell (they used
+   to start at column 5, leaving a dead rail under the portrait) */
+.about-header .about-divider {
+  grid-column: 1 / -1;
+}
+.about-header .about-resume-note {
+  grid-column: 1 / -1;
+}
 /* ─ pacing: standard paper padding; the post-poster void collapses ─ */
 .about-essay.abf-pad {
   padding: clamp(96px, 10vw, 144px) 0;
@@ -431,7 +456,9 @@ h2.about-habits-title.abf-t,
   position: relative;
   z-index: 1;
   background: var(--paper);
-  padding-top: clamp(96px, 10vw, 144px);
+  /* the centered ACTIVITIES cover already carries generous tail room —
+     a shallower head keeps the seam inside the page's 8px rhythm */
+  padding-top: clamp(72px, 8vw, 112px);
 }
 .about-habits.abf-habits {
   padding-top: clamp(96px, 10vw, 144px);
@@ -532,6 +559,19 @@ h2.about-habits-title.abf-t,
   transform: none;
   filter: none;
   animation: none;
+}
+/* the cover band must stand 100svh tall for the page-turn, but its content
+   is shorter — center it so the leftover height splits above/below instead
+   of pooling into a dead band before VOICES (desktop pin widths only) */
+@media (min-width: 1080px) {
+  .about-activities.abf-vita-sec {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .about-activities.abf-vita-sec > .container {
+    width: 100%;
+  }
 }
 
 /* ─ toolbox index + poster line: one workbench block ─ */
@@ -712,6 +752,30 @@ h2.about-habits-title.abf-t,
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ─ essay pull-line: one lifted sentence breaks the seven-paragraph read ─ */
+.abf-pull {
+  display: block;
+  margin: clamp(36px, 4vw, 56px) 0;
+  max-width: 26ch;
+  text-wrap: balance;
+  font-family: var(--font-condensed);
+  font-size: clamp(28px, 2.6vw, 40px);
+  font-weight: 300;
+  line-height: 1.12;
+  /* readable claim, not a poster — normal tracking (owner rule) */
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--ink-950);
+}
+.abf-pull::before {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 2px;
+  margin-bottom: var(--space-4);
+  background: var(--accent-gold);
 }
 
 /* ─ 恰好 brush moment inside essay 02 ─ */
@@ -900,8 +964,13 @@ h2.about-habits-title.abf-t,
   color: rgba(10, 10, 10, 0.62);
 }
 .abf-vita-date {
-  margin: var(--space-1) 0 var(--space-4);
-  font-size: var(--text-meta);
+  /* metadata takes the page's mono-label voice; gold stays the static
+     detail color, the role above keeps the reading voice */
+  margin: var(--space-2) 0 var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
   color: var(--accent-gold);
 }
 .abf-vita ul {
@@ -956,6 +1025,39 @@ h2.about-habits-title.abf-t,
   letter-spacing: var(--track-caps);
   text-transform: uppercase;
   color: var(--stone);
+}
+/* the three headshots arrive with three backdrops, crops and color
+   temperatures — print them all in the page's warm monochrome so the row
+   reads as one edition; a shared inner hairline frames every print */
+.abf-voices .about-testimonial-photo {
+  background: rgba(10, 10, 10, 0.04);
+}
+.abf-voices .about-testimonial-photo img {
+  filter: grayscale(1) sepia(0.1) saturate(0.9) contrast(1.04);
+}
+.abf-voices .about-testimonial-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(10, 10, 10, 0.08);
+  pointer-events: none;
+}
+/* quote rhythm: a gold opening mark keys each voice; the measure caps so
+   the shortest and longest quotes still read as the same column */
+.abf-voices .about-testimonial blockquote {
+  position: relative;
+  margin: 0;
+  max-width: 44ch;
+}
+.abf-voices .about-testimonial blockquote::before {
+  content: "\\201C";
+  display: block;
+  height: 0.44em;
+  font-family: var(--font-serif);
+  font-size: 2.1em;
+  line-height: 1;
+  color: var(--accent-gold);
 }
 
 /* ─ habits contact strip ─ */
