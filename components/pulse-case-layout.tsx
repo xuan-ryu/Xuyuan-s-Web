@@ -154,19 +154,20 @@ const gateSteps = [
   { label: "Publish", note: "a person releases — always", human: true },
 ];
 
-// The run-log rail — the page's agent spine. One entry per act; each
-// chapter renders the same list with its own position marked "running".
+// The run-log rail — the page's agent spine. One entry per act, each a real
+// anchor into its chapter (the rail was already tracking data-act; now it
+// navigates too). Ids land on the chapter sections below.
 const acts = [
-  "The melee",
-  "The bet",
-  "The look",
-  "The wake-up",
-  "The rescue",
-  "The base",
-  "The skills",
-  "The interface",
-  "The product",
-  "The turn",
+  { id: "act-melee", label: "The melee" },
+  { id: "act-bet", label: "The bet" },
+  { id: "act-look", label: "The look" },
+  { id: "act-wakeup", label: "The wake-up" },
+  { id: "act-rescue", label: "The rescue" },
+  { id: "act-base", label: "The base" },
+  { id: "act-skills", label: "The skills" },
+  { id: "act-interface", label: "The interface" },
+  { id: "act-product", label: "The product" },
+  { id: "act-turn", label: "The turn" },
 ];
 
 // Figures ledger — scope stats only (the hero console owns the run stats,
@@ -324,8 +325,10 @@ const milestones = [
     mine: false,
   },
   {
+    // the 1,905 figure keeps its precise home in the ch. 05 ticker stats —
+    // this milestone names the event, not the number
     date: "Early July",
-    title: "The payoff: 1,905 dead lines gone",
+    title: "The payoff: the dead lines go",
     note: "drifted style copies collapse back to one source",
     mine: true,
   },
@@ -373,7 +376,9 @@ const pulseCss = `
   --pp-ink: #1d1d1f;
   --pp-text-2: #44464a;
   --pp-text-3: #5f6369;
-  --pp-text-4: #8a8e95;
+  /* faintest label tier — deep enough for AA (≥4.5:1) on the #f4f7f7 stage;
+     the earlier #8a8e95 measured ~3.1:1 and failed on every 10-11px label */
+  --pp-text-4: #6b6f75;
   --pp-line: rgba(29, 29, 31, 0.08);
   --pp-line-strong: rgba(29, 29, 31, 0.16);
   --pp-glass: rgba(255, 255, 255, 0.38);
@@ -633,7 +638,7 @@ const pulseCss = `
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding: 13px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--pp-line-strong);
 }
 .pulse-ledger strong {
@@ -683,6 +688,11 @@ const pulseCss = `
   row-gap: clamp(32px, 3.6vw, 48px);
   padding: calc(var(--gap-section) / 2) 0;
 }
+/* rail anchor targets land below the fixed nav band (72px scrim + air) */
+.pulse-chapter[id],
+.pulse-turn-wrap[id] {
+  scroll-margin-top: 88px;
+}
 /* the rail's grid item stretches to the chapter's full height; the card
    inside it is the sticky element (sticky needs travel room) */
 .pulse-rail {
@@ -714,12 +724,32 @@ const pulseCss = `
 .pulse-rail li {
   display: flex;
   align-items: baseline;
-  gap: 8px;
   padding: 5px 0;
   font-family: var(--pulse-mono);
   font-size: var(--text-micro);
   letter-spacing: 0.04em;
-  color: #b1b5bb;
+  /* pending acts read at the AA label tier — the rail is real navigation
+     now, so even its quietest state stays legible */
+  color: var(--pp-text-4);
+}
+/* the rail is anchor navigation: each act links to its chapter */
+.pulse-rail li a {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: baseline;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: color 0.2s var(--ease-silk);
+}
+.pulse-rail li a:hover {
+  color: var(--pp-ink);
+}
+.pulse-rail li a:focus-visible {
+  outline: 2px solid var(--pp-cyan-600);
+  outline-offset: 2px;
 }
 .pulse-rail li i {
   font-style: normal;
@@ -880,6 +910,46 @@ const pulseCss = `
   display: grid;
   gap: 8px;
   align-content: start;
+}
+/* per-column build annotation under the takeover pair — the intake/base
+   facts live on the card itself (merged from the former flow figure) */
+.pulse-shot-note {
+  margin: 0;
+  font-family: var(--pulse-mono);
+  font-size: var(--text-micro);
+  line-height: 1.5;
+  color: var(--pp-text-3);
+}
+/* ── Ch. 09 — the product tour, one horizontal media band: three equal
+   cells (Home still · Calendar recording · onboarding still) sharing one
+   caption. Cells crop with object-fit: cover — the calendar recording is
+   1280×720 with ~34px pillarbox bars each side (measured 2026-07-08), so
+   the 4/3 center crop removes the bars entirely. ── */
+.pulse-band {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--work-grid-gap);
+}
+.pulse-band-cell {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+.pulse-band-cell img,
+.pulse-band-cell video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.pulse-band-cell video {
+  object-position: center;
+}
+@media (max-width: 809px) {
+  .pulse-band {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .pulse-shot-label {
   font-family: var(--pulse-mono);
@@ -1091,7 +1161,7 @@ const pulseCss = `
 }
 .pulse-melee-made {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-label);
   line-height: 1.4;
   color: rgba(29, 29, 31, 0.8);
 }
@@ -1303,7 +1373,7 @@ const pulseCss = `
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  padding: 9px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--pp-line);
 }
 .pulse-kv-row span {
@@ -1398,7 +1468,7 @@ const pulseCss = `
   display: flex;
   align-items: baseline;
   gap: 12px;
-  padding: 9px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--pp-line);
 }
 .pulse-spec-type-row strong {
@@ -1537,6 +1607,17 @@ const pulseCss = `
   height: 1px;
   background: var(--pp-line-strong);
 }
+/* unlabeled links (the CI chain) draw one continuous line — the labeled
+   two-dash form only exists to hold a word in its gap */
+.pulse-chain-link:empty {
+  gap: 0;
+}
+.pulse-chain-link:empty::before {
+  width: clamp(20px, 2.4vw, 40px);
+}
+.pulse-chain-link:empty::after {
+  display: none;
+}
 
 /* ── Quote artifacts — the rule is the case detail ──────────────────────── */
 .pulse-doc-quote {
@@ -1654,7 +1735,7 @@ const pulseCss = `
 .pulse-timeline-body span {
   display: block;
   margin-top: 2px;
-  font-size: 13px;
+  font-size: var(--text-label);
   line-height: 1.5;
   color: var(--pp-text-3);
 }
@@ -1935,8 +2016,7 @@ const pulseCss = `
   overflow: hidden;
   padding: 0;
 }
-.pulse-turn-video,
-.pulse-shot-video {
+.pulse-turn-video {
   display: block;
   width: 100%;
   height: auto;
@@ -1978,7 +2058,7 @@ const pulseCss = `
 .pulse-spine-step:last-child::after {
   content: "";
   position: absolute;
-  left: 21px;
+  left: 20px;
   right: 0;
   top: 10px;
   height: 1px;
@@ -1988,8 +2068,8 @@ const pulseCss = `
   position: relative;
   z-index: 1;
   display: block;
-  width: 21px;
-  height: 21px;
+  width: 20px;
+  height: 20px;
   margin-bottom: 16px;
   border: 1px solid var(--pp-line-strong);
   border-radius: 50%;
@@ -2095,7 +2175,7 @@ const pulseCss = `
   }
   .pulse-ledger > div {
     display: block;
-    padding: 13px 0 15px;
+    padding: 12px 0 16px;
   }
   .pulse-ledger span {
     display: block;
@@ -2234,7 +2314,7 @@ const pulseCss = `
   }
   .pulse-spine-step {
     display: grid;
-    grid-template-columns: 21px minmax(0, 1fr);
+    grid-template-columns: 20px minmax(0, 1fr);
     column-gap: 14px;
     align-items: start;
   }
@@ -2353,7 +2433,7 @@ const pulseCss = `
 }
 .pflow-note {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 500;
   line-height: 1.5;
   color: var(--pp-text-3);
@@ -2503,15 +2583,19 @@ const pulseCss = `
   to { opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  /* pflow flow diagrams — stagger children by column position (slowed ~1.4x
-     from the first pass; the assembly read too fast) */
-  .pulse-case-page .pflow-grid > :nth-child(2) { --pd: 130ms; }
-  .pulse-case-page .pflow-grid > :nth-child(3) { --pd: 260ms; }
-  .pulse-case-page .pflow-grid > :nth-child(4) { --pd: 390ms; }
-  .pulse-case-page .pflow-grid > :nth-child(5) { --pd: 520ms; }
-  .pulse-case-page .pflow-grid > :nth-child(6) { --pd: 650ms; }
-  .pulse-case-page .pflow-grid > :nth-child(7) { --pd: 780ms; }
-  .pulse-case-page .pflow-lane:nth-child(2) { --ld: 440ms; }
+  /* pflow flow diagrams — stagger children by column position. Tuning
+     (2026-07-08 review): at reading speed the anchor figures arrived as
+     blank cards, so base delays sit ≤120ms and the staggers are ~40%
+     tighter; per-element durations stay ≥0.45s (the earlier "too fast reads
+     cheap" owner note holds — the sequence compresses, the moves don't).
+     Budget: every diagram finishes ≤1.1s after .is-visible lands. */
+  .pulse-case-page .pflow-grid > :nth-child(2) { --pd: 70ms; }
+  .pulse-case-page .pflow-grid > :nth-child(3) { --pd: 140ms; }
+  .pulse-case-page .pflow-grid > :nth-child(4) { --pd: 210ms; }
+  .pulse-case-page .pflow-grid > :nth-child(5) { --pd: 280ms; }
+  .pulse-case-page .pflow-grid > :nth-child(6) { --pd: 350ms; }
+  .pulse-case-page .pflow-grid > :nth-child(7) { --pd: 420ms; }
+  .pulse-case-page .pflow-lane:nth-child(2) { --ld: 200ms; }
 
   .pulse-case-page figure[data-fade] .pflow-node,
   .pulse-case-page figure[data-fade] .pflow-line,
@@ -2530,30 +2614,30 @@ const pulseCss = `
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-node {
     animation: pAssembleDrop 0.58s var(--ease-spring) forwards;
-    animation-delay: calc(300ms + var(--ld, 0ms) + var(--pd, 0ms));
+    animation-delay: calc(100ms + var(--ld, 0ms) + var(--pd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-line {
     animation: pAssembleDraw 0.48s var(--ease-silk) forwards;
-    animation-delay: calc(340ms + var(--ld, 0ms) + var(--pd, 0ms));
+    animation-delay: calc(120ms + var(--ld, 0ms) + var(--pd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-loop {
     animation: pAssembleLoop 0.56s var(--ease-silk) forwards;
-    animation-delay: calc(760ms + var(--ld, 0ms));
+    animation-delay: calc(440ms + var(--ld, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-note {
-    animation: pAssembleDrop 0.58s var(--ease-silk) forwards;
-    animation-delay: calc(820ms + var(--ld, 0ms));
+    animation: pAssembleDrop 0.45s var(--ease-silk) forwards;
+    animation-delay: calc(440ms + var(--ld, 0ms));
   }
 
   /* melee — the four source scenes rise in sequence */
   .pulse-case-page figure[data-fade] .pulse-melee-cell { opacity: 0; }
   .pulse-case-page .pulse-melee-cell:nth-child(1) { --cd: 0ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(2) { --cd: 150ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(3) { --cd: 300ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(4) { --cd: 450ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(2) { --cd: 90ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(3) { --cd: 180ms; }
+  .pulse-case-page .pulse-melee-cell:nth-child(4) { --cd: 270ms; }
   .pulse-case-page figure[data-fade].is-visible .pulse-melee-cell {
     animation: pAssembleRise 0.68s var(--ease-spring) forwards;
-    animation-delay: calc(240ms + var(--cd, 0ms));
+    animation-delay: calc(100ms + var(--cd, 0ms));
   }
 
   /* build timeline — the commit spine grows as the rows stagger in */
@@ -2566,26 +2650,26 @@ const pulseCss = `
     opacity: 0;
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-timeline::before {
-    animation: pAssembleGrow 1s var(--ease-silk) forwards;
-    animation-delay: 260ms;
+    animation: pAssembleGrow 0.9s var(--ease-silk) forwards;
+    animation-delay: 100ms;
   }
   .pulse-case-page .pulse-timeline-row:nth-child(1) { --rd: 0ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(2) { --rd: 78ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(3) { --rd: 156ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(4) { --rd: 234ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(5) { --rd: 312ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(6) { --rd: 390ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(7) { --rd: 468ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(8) { --rd: 546ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(9) { --rd: 624ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(10) { --rd: 702ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(2) { --rd: 44ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(3) { --rd: 88ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(4) { --rd: 132ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(5) { --rd: 176ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(6) { --rd: 220ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(7) { --rd: 264ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(8) { --rd: 308ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(9) { --rd: 352ms; }
+  .pulse-case-page .pulse-timeline-row:nth-child(10) { --rd: 396ms; }
   .pulse-case-page figure[data-fade].is-visible .pulse-timeline-row {
-    animation: pAssembleRise 0.6s var(--ease-silk) forwards;
-    animation-delay: calc(400ms + var(--rd, 0ms));
+    animation: pAssembleRise 0.55s var(--ease-silk) forwards;
+    animation-delay: calc(140ms + var(--rd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-timeline-legend {
-    animation: pAssembleDrop 0.58s var(--ease-silk) forwards;
-    animation-delay: 1240ms;
+    animation: pAssembleDrop 0.45s var(--ease-silk) forwards;
+    animation-delay: 620ms;
   }
 
   /* roles hub — the base bar drops, stems extend down, chips rise */
@@ -2594,36 +2678,36 @@ const pulseCss = `
   .pulse-case-page figure[data-fade] .pflow-hub-chip { opacity: 0; transform: translateY(12px); }
   .pulse-case-page figure[data-fade].is-visible .pflow-hub-bar {
     animation: pAssembleDrop 0.58s var(--ease-spring) forwards;
-    animation-delay: 280ms;
+    animation-delay: 100ms;
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-hub-stem {
     animation: pAssembleGrow 0.48s var(--ease-silk) forwards;
-    animation-delay: 500ms;
+    animation-delay: 260ms;
   }
   .pulse-case-page figure[data-fade].is-visible .pflow-hub-chip {
     animation: pAssembleRise 0.6s var(--ease-spring) forwards;
-    animation-delay: 700ms;
+    animation-delay: 420ms;
   }
 
   /* approval + CI chains — cells and links rise left to right */
   .pulse-case-page figure[data-fade] .pulse-chain-cell,
   .pulse-case-page figure[data-fade] .pulse-chain-link { opacity: 0; }
   .pulse-case-page .pulse-chain-row > :nth-child(1) { --nd: 0ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(2) { --nd: 150ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(3) { --nd: 300ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(4) { --nd: 450ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(5) { --nd: 600ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(6) { --nd: 750ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(7) { --nd: 900ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(8) { --nd: 1050ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(9) { --nd: 1200ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(2) { --nd: 90ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(3) { --nd: 180ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(4) { --nd: 270ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(5) { --nd: 360ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(6) { --nd: 450ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(7) { --nd: 540ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(8) { --nd: 630ms; }
+  .pulse-case-page .pulse-chain-row > :nth-child(9) { --nd: 720ms; }
   .pulse-case-page figure[data-fade].is-visible .pulse-chain-cell {
     animation: pAssembleRise 0.6s var(--ease-spring) forwards;
-    animation-delay: calc(280ms + var(--nd, 0ms));
+    animation-delay: calc(100ms + var(--nd, 0ms));
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-chain-link {
     animation: pAssembleDrop 0.5s var(--ease-silk) forwards;
-    animation-delay: calc(280ms + var(--nd, 0ms));
+    animation-delay: calc(100ms + var(--nd, 0ms));
   }
 }
 
@@ -2671,22 +2755,29 @@ function ChapterHead({ number, title }: { number: string; title: string }) {
 // per-chapter copies read as nine duplicate cards). Server markup renders
 // the FINAL state (all acts done — the run finished); when motion is
 // allowed, PulseScroll rewinds it and drives done/running live from the
-// chapter positions. Decorative duplicate of the chapter headings, so it's
-// hidden from the tree.
+// chapter positions. Each entry is a real anchor link (keyboard-reachable;
+// Lenis takes over native hash clicks for the smooth ride), so the rail is
+// navigation now — no aria-hidden.
 function RunRail() {
   return (
-    <aside className="pulse-rail" aria-hidden="true">
-      <div className="pulse-rail-card" data-fade>
+    <aside className="pulse-rail">
+      <nav
+        className="pulse-rail-card"
+        aria-label="Run log — jump to a chapter"
+        data-fade
+      >
         <span className="pulse-rail-head">Run log</span>
         <ol data-rail>
-          {acts.map((label, i) => (
-            <li key={label} className="is-done">
-              <i>{String(i + 1).padStart(2, "0")}</i>
-              {label}
+          {acts.map((act, i) => (
+            <li key={act.id} className="is-done">
+              <a href={`#${act.id}`}>
+                <i aria-hidden="true">{String(i + 1).padStart(2, "0")}</i>
+                {act.label}
+              </a>
             </li>
           ))}
         </ol>
-      </div>
+      </nav>
     </aside>
   );
 }
@@ -2754,9 +2845,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
           </header>
           <p
             className="pulse-stream"
-            data-stream="six prototypes → one system, five weeks"
+            data-stream="six prototypes into one system, five weeks"
           >
-            six prototypes → one system, five weeks
+            six prototypes into one system, five weeks
           </p>
           <div className="pulse-console-ledger">
             <div>
@@ -2833,7 +2924,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 01 · The melee ── */}
       {melee && (
-        <section className="case-chapter pulse-chapter" data-act="0">
+        <section className="case-chapter pulse-chapter" id="act-melee" data-act="0">
             <ChapterHead number={melee.number} title={melee.title} />
             {melee.sections[0] && (
               <div className="pulse-section">
@@ -2906,7 +2997,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 02 · The bet ── */}
       {bet && (
-        <section className="case-chapter pulse-chapter" data-act="1">
+        <section className="case-chapter pulse-chapter" id="act-bet" data-act="1">
             <ChapterHead number={bet.number} title={bet.title} />
             {bet.sections[0] && (
               <div className="pulse-section">
@@ -2974,7 +3065,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 03 · The look ── */}
       {look && (
-        <section className="case-chapter pulse-chapter" data-act="2">
+        <section className="case-chapter pulse-chapter" id="act-look" data-act="2">
             <ChapterHead number={look.number} title={look.title} />
             {look.sections[0] && (
               <div className="pulse-section">
@@ -3080,7 +3171,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 04 · The wake-up ── */}
       {wakeup && (
-        <section className="case-chapter pulse-chapter" data-act="3">
+        <section className="case-chapter pulse-chapter" id="act-wakeup" data-act="3">
             <ChapterHead number={wakeup.number} title={wakeup.title} />
             {wakeup.sections[0] && (
               <div className="pulse-section">
@@ -3190,7 +3281,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 05 · The rescue ── */}
       {rescue && (
-        <section className="case-chapter pulse-chapter" data-act="4">
+        <section className="case-chapter pulse-chapter" id="act-rescue" data-act="4">
             <ChapterHead number={rescue.number} title={rescue.title} />
             {rescue.sections[0] && (
               <div className="pulse-section">
@@ -3246,10 +3337,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </figcaption>
                 </figure>
                 <figure className="pulse-section-full" data-fade>
-                  {/* 824/five-weeks live in the hero console and the
-                      at-a-glance band (recruiter skim row) only — this row
-                      keeps the two numbers the commit stream itself is
-                      about */}
+                  {/* 824/five-weeks live in the hero console only — this row
+                      keeps the two numbers the commit stream itself is about
+                      (308 also heads the at-a-glance band as the skim stat;
+                      here it sits in its native context) */}
                   <div className="pulse-ticker-stats">
                     <div>
                       <strong data-count="308">308</strong>
@@ -3293,7 +3384,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 06 · The base ── */}
       {base && (
-        <section className="case-chapter pulse-chapter" data-act="5">
+        <section className="case-chapter pulse-chapter" id="act-base" data-act="5">
             <ChapterHead number={base.number} title={base.title} />
             {base.sections[0] && (
               <div className="pulse-section">
@@ -3412,7 +3503,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 07 · The skills ── */}
       {skills && (
-        <section className="case-chapter pulse-chapter" data-act="6">
+        <section className="case-chapter pulse-chapter" id="act-skills" data-act="6">
             <ChapterHead number={skills.number} title={skills.title} />
             {skills.sections[0] && (
               <div className="pulse-section">
@@ -3545,8 +3636,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                         />
                       </div>
                       <p className="pflow-note is-green is-center" aria-hidden="true">
-                        <i>↺</i>drift found &rarr; edit the md &mdash; the
-                        floor rises for everything after
+                        <i>↺</i>drift found, edit the md &mdash; the floor
+                        rises for everything after
                       </p>
                     </div>
                   </div>
@@ -3597,7 +3688,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 08 · The interface ── */}
       {iface && (
-        <section className="case-chapter pulse-chapter" data-act="7">
+        <section className="case-chapter pulse-chapter" id="act-interface" data-act="7">
             <ChapterHead number={iface.number} title={iface.title} />
             {iface.sections[0] && (
               <div className="pulse-section">
@@ -3748,77 +3839,50 @@ export function PulseCaseLayout({ project }: { project: Project }) {
 
       {/* ── 09 · The product ── */}
       {product && (
-        <section className="case-chapter pulse-chapter" data-act="8">
+        <section className="case-chapter pulse-chapter" id="act-product" data-act="8">
             <ChapterHead number={product.number} title={product.title} />
             {product.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={product.sections[0]} />
+                {/* the product tour, one band (2026-07-08 review: the old
+                    three stacked cards read as an eight-screen showroom) —
+                    Home, the Calendar recording (owner recording,
+                    2026-07-07), and onboarding share one row and one
+                    caption; the Analytics still was cut, not compressed */}
                 <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-shot">
-                    <Image
-                      src="/media/work/pulse/pulse-app-home.png"
-                      alt="Pulse app Home page: workspace sidebar for the demo brand, action-item KPI tiles, content queue, and signals feed"
-                      width={SHOT_W}
-                      height={SHOT_H}
-                      sizes="(max-width: 1080px) 100vw, 1160px"
-                      style={{ width: "100%", height: "auto" }}
-                    />
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 24</em>The unified Pulse
-                      app, Home &mdash; the page that forced the map, now on
-                      the system
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-shot-pair">
-                    <div className="pulse-shot">
-                      {/* the calendar runs (owner recording, 2026-07-07):
-                          day/week/month/list views + the scheduling queue */}
+                  <div className="pulse-band">
+                    <div className="pulse-band-cell pulse-shot">
+                      <Image
+                        src="/media/work/pulse/pulse-app-home.png"
+                        alt="Pulse app Home page: workspace sidebar for the demo brand, action-item KPI tiles, content queue, and signals feed"
+                        width={SHOT_W}
+                        height={SHOT_H}
+                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 380px"
+                      />
+                    </div>
+                    <div className="pulse-band-cell pulse-shot">
                       <OffscreenVideo
                         src="/media/work/pulse/calendar-run.mp4"
-                        className="pulse-shot-video"
+                        poster="/media/work/pulse/calendar-run-poster.jpg"
                         aria-label="Pulse Calendar walkthrough: day, week, month and list views with the schedule-health rail and scheduling queue"
                       />
                     </div>
-                    <div className="pulse-shot">
+                    <div className="pulse-band-cell pulse-shot">
                       <Image
-                        src="/media/work/pulse/pulse-app-analytics.png"
-                        alt="Pulse Analytics weekly report with KPI tiles and key signals"
+                        src="/media/work/pulse/pulse-app-onboarding.png"
+                        alt="Pulse brand onboarding: an editorial hero reading 'Your brand, decoded. Your channels, run.' above brand-URL and brand-guide inputs"
                         width={SHOT_W}
-                        height={SHOT_H}
-                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 500px"
-                        style={{ width: "100%", height: "auto" }}
+                        height={916}
+                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 380px"
                       />
                     </div>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 25</em>Two more pages of
-                      the same static export &mdash; the scheduling Calendar
-                      and the weekly Analytics report, both from a file://
-                      address
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-shot">
-                    <Image
-                      src="/media/work/pulse/pulse-app-onboarding.png"
-                      alt="Pulse brand onboarding: an editorial hero reading 'Your brand, decoded. Your channels, run.' above brand-URL and brand-guide inputs"
-                      width={SHOT_W}
-                      height={916}
-                      sizes="(max-width: 1080px) 100vw, 1030px"
-                      style={{ width: "100%", height: "auto" }}
-                    />
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 26</em>Onboarding &mdash;
-                      a new brand becomes working material: starter assets and
-                      a vault that feeds every generative step after it
+                      <em className="pulse-fig">Fig. 24</em>One static export,
+                      toured &mdash; Home, the scheduling Calendar (recorded),
+                      and brand onboarding, every screen served from a
+                      file:// address
                     </span>
                   </figcaption>
                 </figure>
@@ -3834,7 +3898,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 27</em>The Creative
+                        <em className="pulse-fig">Fig. 25</em>The Creative
                         Brief &mdash; a person shapes the AI draft
                       </span>
                       <InteractiveCue>edit a field, then approve</InteractiveCue>
@@ -3877,7 +3941,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 28</em>Chat contract
+                        <em className="pulse-fig">Fig. 26</em>Chat contract
                         &mdash; the assistant follows the product component
                         contract
                       </span>
@@ -3908,8 +3972,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 29</em>Approval chain
-                      &mdash; SLA timers; escalation never auto-approves
+                      <em className="pulse-fig">Fig. 27</em>Approval chain
+                      &mdash; reviewer to brand admin to org owner, a 24-hour
+                      SLA at each handoff
                     </span>
                   </figcaption>
                 </figure>
@@ -3922,6 +3987,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {product.sections[3] && (
               <div className="pulse-section">
                 <SectionProse section={product.sections[3]} />
+                {/* before/after + the build annotation, one card (2026-07-08
+                    review: the separate intake/base flow figure re-told this
+                    pair) — each column carries its own build facts */}
                 <figure className="pulse-section-full" data-fade>
                   <div className="pulse-shot-pair">
                     <div className="pulse-shot-labeled">
@@ -3938,6 +4006,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           style={{ width: "100%", height: "auto" }}
                         />
                       </div>
+                      <p className="pulse-shot-note">
+                        one 4,000-line HTML file &middot; styles inline
+                        &middot; images as base64 &middot; no system
+                      </p>
                     </div>
                     <div className="pulse-shot-labeled">
                       <span className="pulse-shot-label is-after">
@@ -3953,55 +4025,17 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                           style={{ width: "100%", height: "auto" }}
                         />
                       </div>
-                    </div>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 30</em>Same brief, rebuilt
-                      &mdash; a browse-first Campaign Library became a
-                      decision-first Overview
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-inset-medium" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>the intake &middot; then the base</span>
-                    </header>
-                    <div
-                      className="pflow"
-                      role="img"
-                      aria-label="The campaign page went from a vibe-coded intake — one four-thousand-line HTML file with inline styles, base64 images and no system — to a rebuild on the base: shared tokens and components, ten CSS modules and fifteen JS component modules, consuming three design-system components directly."
-                    >
-                      <div
-                        className="pflow-grid"
-                        aria-hidden="true"
-                        style={{
-                          gridTemplateColumns:
-                            "minmax(0, 1fr) 32px minmax(0, 1fr)",
-                        }}
-                      >
-                        <span className="pflow-node is-amber">
-                          The intake
-                          <em>one 4,000-line file &middot; inline &middot; base64 &middot; no system</em>
-                        </span>
-                        <span className="pflow-line is-amber" />
-                        <span className="pflow-node is-green">
-                          On the base
-                          <em>shared tokens + 10 CSS &middot; 15 JS modules &middot; 3 DS components</em>
-                        </span>
-                      </div>
-                      <p className="pflow-note is-green is-center" aria-hidden="true">
-                        <i>✓</i>207 commits over ~2.5 weeks &mdash; a picture
-                        refined into a handoff-ready product
+                      <p className="pulse-shot-note">
+                        shared tokens &middot; 10 CSS + 15 JS modules &middot;
+                        3 DS components &middot; 207 commits, ~2.5 weeks
                       </p>
                     </div>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 31</em>The refinement, in
-                      the build &mdash; monolith to modular, on the design
-                      system
+                      <em className="pulse-fig">Fig. 28</em>Same brief, rebuilt
+                      &mdash; a browse-first Campaign Library became a
+                      decision-first Overview
                     </span>
                   </figcaption>
                 </figure>
@@ -4013,7 +4047,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
       {/* ── The Turn — reflective climax; the spine carries the page's one
           seal-red moment (the human-gate stamps) ── */}
       {moment && (
-        <div className="pulse-turn-wrap" data-act="9">
+        <div className="pulse-turn-wrap" id="act-turn" data-act="9">
           <section className="pulse-turn" aria-labelledby="pulse-turn-title">
             <p className="pulse-turn-eyebrow" data-fade>
               Most memorable moment
@@ -4041,7 +4075,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             </div>
             <footer className="pulse-spine-caption" data-fade>
               <span>
-                <em className="pulse-fig">Fig. 32</em>Create-with-AI &mdash;
+                <em className="pulse-fig">Fig. 29</em>Create-with-AI &mdash;
                 where a person stays in the loop
               </span>
               <span className="pulse-spine-legend">
@@ -4053,15 +4087,16 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               <div className="pulse-card">
                 <OffscreenVideo
                   src="/media/work/pulse/gate-flow.mp4"
+                  poster="/media/work/pulse/gate-flow-poster.jpg"
                   className="pulse-turn-video"
                   aria-label="Screen recording of the full gate flow: a campaign brief is reviewed and approved, content generates per platform, a person reviews each post, and only then does it publish — ending on live performance numbers"
                 />
               </div>
               <figcaption className="pulse-fig-caption">
                 <span>
-                  <em className="pulse-fig">Fig. 33</em>The gate, recorded
-                  &mdash; brief &rarr; approve &rarr; generate &rarr; review
-                  &rarr; publish, a person at every red step
+                  <em className="pulse-fig">Fig. 30</em>The gate, recorded
+                  &mdash; brief &middot; approve &middot; generate &middot;
+                  review &middot; publish, a person at every red step
                 </span>
               </figcaption>
             </figure>
