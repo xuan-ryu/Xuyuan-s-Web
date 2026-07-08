@@ -73,10 +73,17 @@ export default function RootLayout({
             final state; with JS this tag never renders. */}
         <noscript>
           <style>{`
-            [data-fade], .text-reveal, .fx-rise {
+            [data-fade], .text-reveal, .text-reveal-item, .fx-rise {
               opacity: 1 !important;
               transform: none !important;
               clip-path: none !important;
+              filter: none !important;
+              animation: none !important;
+            }
+            [data-fade] * {
+              opacity: 1 !important;
+              filter: none !important;
+              animation: none !important;
             }
           `}</style>
         </noscript>

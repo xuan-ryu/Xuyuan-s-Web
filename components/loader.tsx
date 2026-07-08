@@ -51,6 +51,18 @@ body:has([data-app-loader]) {
 body:has([data-app-loader]) {
   touch-action: none !important;
 }
+
+@media (max-width: 480px) {
+  [data-app-loader] .ldr-name {
+    font-size: clamp(22px, 7vw, 48px) !important;
+    letter-spacing: 0.3em !important;
+    gap: 0.6rem !important;
+  }
+  [data-app-loader] .ldr-hint {
+    font-size: 10px !important;
+    letter-spacing: 0.2em !important;
+  }
+}
 `;
 
 const doorStyle: CSSProperties = {
@@ -125,6 +137,9 @@ const hintStyle: CSSProperties = {
   color: "rgba(232,230,227,0.45)",
   opacity: 0,
   pointerEvents: "none",
+  width: "max-content",
+  maxWidth: "calc(100vw - 32px)",
+  textAlign: "center",
 };
 
 export function Loader() {
@@ -381,7 +396,7 @@ export function Loader() {
       </div>
 
       <div ref={contentRef} style={contentStyle}>
-        <div style={nameStyle}>
+        <div className="ldr-name" style={nameStyle}>
           {WORDS.map((word, wIdx) => (
             <span key={wIdx} style={{ display: "flex" }}>
               {word.split("").map((char) => {
@@ -406,7 +421,7 @@ export function Loader() {
         <img ref={sealRef} src={SEAL_SRC} alt="" style={sealStyle} />
       </div>
 
-      <div ref={hintRef} style={hintStyle}>
+      <div ref={hintRef} className="ldr-hint" style={hintStyle}>
         CLICK ANYWHERE OR ESC TO SKIP INTRO
       </div>
     </div>

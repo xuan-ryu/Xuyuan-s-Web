@@ -9,6 +9,8 @@ type OffscreenVideoProps = {
   className?: string;
   /** visible share of the element that starts playback */
   threshold?: number;
+  /** "none" defers all fetching until playback (deep-page media on long routes) */
+  preload?: "metadata" | "none" | "auto";
 } & Omit<
   ComponentProps<"video">,
   "autoPlay" | "muted" | "loop" | "playsInline" | "preload" | "src" | "poster" | "className"
@@ -23,18 +25,19 @@ export function OffscreenVideo({
   poster,
   className,
   threshold = 0.35,
+  preload = "metadata",
   ...rest
 }: OffscreenVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  // Starts false to match the server render (reading matchMedia in the
+  // initializer makes the first client render disagree with SSR markup —
+  // React 19 leaves such attribute mismatches unpatched).
+  const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = () => setReduced(mq.matches);
+    onChange();
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
@@ -69,7 +72,7 @@ export function OffscreenVideo({
       muted
       loop
       playsInline
-      preload="metadata"
+      preload={preload}
       controls={reduced}
       {...rest}
     />

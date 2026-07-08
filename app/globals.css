@@ -82,7 +82,9 @@
   /* JetBrains Mono is already loaded (layout.tsx) — it leads the mono stack */
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
-  --font-brush: "LiuJian-Mao-Cao Regular", "LiuJian Mao Cao",
+  /* Subset (108KB, wordmark glyphs) leads; the 2.2MB full face is per-glyph
+     fallback so it only downloads when a brush glyph falls outside the subset. */
+  --font-brush: "LiuJian Mao Cao", "LiuJian-Mao-Cao Regular",
     "Source Han Serif SC", serif;
 
   /* ── Type scale ──────────────────────────────────────────────────
@@ -2413,56 +2415,64 @@ body.hero-night .nav-links a.active {
   margin-right: 0;
 }
 
-.about-header [data-fade],
-.about-essay [data-fade],
-.about-dark [data-fade],
-.about-activities [data-fade],
-.about-testimonials [data-fade],
-.about-habits [data-fade] {
-  transform: translate3d(0, 34px, 0);
-  filter: blur(3px);
-}
+/* Hidden initial states live under no-preference so reduced-motion and no-JS
+   read the finished page (site contract). Base carries opacity 0.001 to match
+   the keyframes' from-state — a visible-but-blurred base flashed off the moment
+   the observer fired (2026-07-08 audit). */
+@media (prefers-reduced-motion: no-preference) {
+  .about-header [data-fade],
+  .about-essay [data-fade],
+  .about-dark [data-fade],
+  .about-activities [data-fade],
+  .about-testimonials [data-fade],
+  .about-habits [data-fade] {
+    opacity: 0.001;
+    transform: translate3d(0, 34px, 0);
+    filter: blur(3px);
+  }
 
-.about-header [data-fade].is-visible,
-.about-essay [data-fade].is-visible,
-.about-dark [data-fade].is-visible,
-.about-activities [data-fade].is-visible,
-.about-testimonials [data-fade].is-visible,
-.about-habits [data-fade].is-visible {
-  animation: aboutSoftIn 0.9s var(--ease-reveal) forwards;
-}
+  .about-header [data-fade].is-visible,
+  .about-essay [data-fade].is-visible,
+  .about-dark [data-fade].is-visible,
+  .about-activities [data-fade].is-visible,
+  .about-testimonials [data-fade].is-visible,
+  .about-habits [data-fade].is-visible {
+    animation: aboutSoftIn 0.9s var(--ease-reveal) forwards;
+  }
 
-.about-photo[data-fade],
-.about-kyoto[data-fade],
-.about-logo-wall[data-fade],
-.about-dojo-wall[data-fade],
-.about-testimonial[data-fade],
-.about-habit[data-fade] {
-  transform: translate3d(0, 42px, 0) scale(0.985);
-  filter: blur(5px);
-}
+  .about-photo[data-fade],
+  .about-kyoto[data-fade],
+  .about-logo-wall[data-fade],
+  .about-dojo-wall[data-fade],
+  .about-testimonial[data-fade],
+  .about-habit[data-fade] {
+    opacity: 0.001;
+    transform: translate3d(0, 42px, 0) scale(0.985);
+    filter: blur(5px);
+  }
 
-.about-photo[data-fade].is-visible,
-.about-kyoto[data-fade].is-visible,
-.about-logo-wall[data-fade].is-visible,
-.about-dojo-wall[data-fade].is-visible,
-.about-testimonial[data-fade].is-visible,
-.about-habit[data-fade].is-visible {
-  animation: aboutMediaIn 1s var(--ease-silk) forwards;
-}
+  .about-photo[data-fade].is-visible,
+  .about-kyoto[data-fade].is-visible,
+  .about-logo-wall[data-fade].is-visible,
+  .about-dojo-wall[data-fade].is-visible,
+  .about-testimonial[data-fade].is-visible,
+  .about-habit[data-fade].is-visible {
+    animation: aboutMediaIn 1s var(--ease-silk) forwards;
+  }
 
-.about-testimonial:nth-child(2)[data-fade].is-visible,
-.about-habit:nth-child(2)[data-fade].is-visible {
-  animation-delay: 70ms;
-}
+  .about-testimonial:nth-child(2)[data-fade].is-visible,
+  .about-habit:nth-child(2)[data-fade].is-visible {
+    animation-delay: 70ms;
+  }
 
-.about-testimonial:nth-child(3)[data-fade].is-visible,
-.about-habit:nth-child(3)[data-fade].is-visible {
-  animation-delay: 130ms;
-}
+  .about-testimonial:nth-child(3)[data-fade].is-visible,
+  .about-habit:nth-child(3)[data-fade].is-visible {
+    animation-delay: 130ms;
+  }
 
-.about-habit:nth-child(4)[data-fade].is-visible {
-  animation-delay: 190ms;
+  .about-habit:nth-child(4)[data-fade].is-visible {
+    animation-delay: 190ms;
+  }
 }
 
 @keyframes aboutSoftIn {
@@ -3671,13 +3681,19 @@ body.hero-night .nav-links a.active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* The finished-state contract. !important on purpose: page-scoped entrance
+     rules (e.g. .about-essay [data-fade].is-visible) out-specify a bare
+     [data-fade] reset and replayed their animations for reduced-motion users
+     (2026-07-08 audit). Descendant-level hidden states are each page's job to
+     gate under no-preference — do not add a [data-fade] * reset here (it would
+     force designed sub-1 opacities and scrims solid). */
   .fade-up,
   [data-fade],
   .text-reveal-item {
-    animation: none;
-    opacity: 1;
-    transform: none;
-    filter: none;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 
 }

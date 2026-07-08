@@ -17,6 +17,10 @@ export function SmoothScroll() {
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      // let Lenis take over native hash-link clicks (the Pulse run-log rail
+      // is anchor navigation) — same smooth ride, no hand-rolled scrollTo;
+      // under reduced motion Lenis never mounts and the jump stays native
+      anchors: true,
     });
     // publish so scroll-pinned components can sync to Lenis's own emission
     setLenis(lenis);
