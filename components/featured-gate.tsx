@@ -840,11 +840,17 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           object-fit: cover; object-position: var(--fg-pos, center);
           display: block;
           transform-origin: var(--fg-origin, 50% 50%);
-          transform: scale(var(--fg-zoom, 1));
+          /* focal zooms are tuned for ~1440 viewports; on wide screens the
+             opening itself is huge and the same crop upscales a 1280w clip
+             into blur (owner bug, 2560) — cap the zoom there */
+          transform: scale(min(var(--fg-zoom, 1), var(--fg-cap, 10)));
           transition: transform 1.4s var(--ease-silk);
         }
         .fg-gate:hover .fg-cover,
-        .fg-gate:hover .fg-video { transform: scale(calc(var(--fg-zoom, 1) * 1.035)); }
+        .fg-gate:hover .fg-video { transform: scale(calc(min(var(--fg-zoom, 1), var(--fg-cap, 10)) * 1.035)); }
+        @media (min-width: 1920px) {
+          .fg-cell { --fg-cap: 1.2; }
+        }
         /* soft radial falloff so the rim always reads as a round opening */
         .fg-vignette {
           position: absolute; inset: 0; z-index: 2; pointer-events: none;
