@@ -72,7 +72,7 @@ const MARGINALIA: Record<string, { quote: string; source: string }> = {
 const XREF: Record<string, { label: string; note: string }> = {
   "1-1": {
     label: "Cross-ref · trade ledger",
-    note: "Proposed → pushback → verdict, four times over. The full record closes this chapter.",
+    note: "Proposed, pushback, verdict — four times over. The full record closes this chapter.",
   },
 };
 
@@ -276,23 +276,6 @@ const froghireCss = `
   font-weight: 400;
   line-height: 1.5;
   color: rgba(5, 5, 5, 0.68);
-}
-.froghire-hero-proof {
-  grid-column: 1 / -1;
-  align-self: start;
-  min-width: 0;
-  margin: clamp(40px, 4.4vw, 64px) 0 0;
-}
-.froghire-hero-proof-media {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 7;
-  border: 1px solid var(--work-rule);
-  background: var(--paper-warm);
-}
-.froghire-hero-proof-media img {
-  object-fit: cover;
-  object-position: left top;
 }
 .froghire-meta {
   grid-column: 10 / -1;
@@ -672,9 +655,6 @@ const froghireCss = `
 .froghire-fig--169 {
   aspect-ratio: 16 / 9;
 }
-.froghire-fig--219 {
-  aspect-ratio: 21 / 9;
-}
 .froghire-fig--map {
   padding: clamp(16px, 2.4vw, 32px);
 }
@@ -889,6 +869,20 @@ const froghireCss = `
   justify-content: flex-end;
   margin: 0 0 14px;
 }
+/* cue names the visitor's actual gesture: "Hover" for pointer input,
+   "Tap" on coarse/touch input — swapped in CSS so SSR markup carries both
+   and hydration stays clean. */
+.froghire-cue-tap {
+  display: none;
+}
+@media (hover: none), (pointer: coarse) {
+  .froghire-cue-hover {
+    display: none;
+  }
+  .froghire-cue-tap {
+    display: inline;
+  }
+}
 .froghire-map {
   width: 100%;
   height: auto;
@@ -988,15 +982,11 @@ const froghireCss = `
   .froghire-lede {
     order: 3;
   }
-  .froghire-hero-proof {
-    order: 4;
-  }
   .froghire-meta {
     order: 5;
   }
   .froghire-hero h1,
   .froghire-lede,
-  .froghire-hero-proof,
   .froghire-triage-label,
   .froghire-triage-copy,
   .froghire-triage-board,
@@ -1015,11 +1005,6 @@ const froghireCss = `
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--work-grid-gap);
     margin-top: clamp(36px, 5vw, 56px);
-  }
-  .froghire-hero-proof {
-    grid-row: auto;
-    max-width: none;
-    margin-top: clamp(28px, 4vw, 48px);
   }
   .froghire-brief-inner h2 {
     margin-bottom: 8px;
@@ -1104,6 +1089,9 @@ const froghireCss = `
   .froghire-fig--map {
     padding: 12px;
   }
+  .froghire-interlude-attr {
+    grid-column: 1 / -1;
+  }
   /* ledger rows stack as definition lists */
   .froghire-ledger-headrow {
     display: none;
@@ -1173,10 +1161,6 @@ const froghireCss = `
   from { opacity: 0; transform: scaleY(0); }
   to { opacity: 1; transform: scaleY(1); }
 }
-@keyframes frogProofSettle {
-  from { transform: scale(1.04); }
-  to { transform: scale(1); }
-}
 @media (prefers-reduced-motion: no-preference) {
   /* 1 · chapter head — the hairline draws, then the claim rises behind it */
   .froghire-chapter-head[data-fade] .froghire-chapter-rule {
@@ -1213,10 +1197,6 @@ const froghireCss = `
   .froghire-triage-board[data-fade].is-visible .froghire-triage-step {
     animation: frogAssembleRise 0.46s var(--ease-spring) forwards;
     animation-delay: calc(260ms + var(--fro-d, 0ms));
-  }
-
-  .froghire-hero-proof[data-fade].is-visible img {
-    animation: frogProofSettle 1.2s var(--ease-silk) forwards;
   }
 
   /* 3 · figure caption follows its media — the media rides the parent fade,
@@ -1431,7 +1411,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                   {ch1.sections[2].image && (
                     <Image
                       src={ch1.sections[2].image}
-                      alt="Resume tutorial benchmark showing onboarding, in-context feature education, and feedback states"
+                      alt="Concept board of the resume-tutorial benchmark: onboarding, in-context feature education, and feedback states"
                       width={2752}
                       height={1536}
                       sizes="100vw"
@@ -1439,7 +1419,8 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                   )}
                 </div>
                 <FigCaption index="05" className="froghire-c-below">
-                  Resume tutorial benchmark — instant launch, contextual
+                  Resume tutorial benchmark — a concept board recreated from
+                  the competitive teardown: instant launch, contextual
                   teaching, and feedback after the tour
                 </FigCaption>
               </figure>
@@ -1452,7 +1433,12 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                 <div className="froghire-fig froghire-fig--map froghire-f-full">
                   <p className="froghire-cue-row">
                     <InteractiveCue accent="#5ac75a">
-                      Hover a complaint to trace it to a flaw
+                      <span className="froghire-cue-hover">
+                        Hover a complaint to trace it to a flaw
+                      </span>
+                      <span className="froghire-cue-tap">
+                        Tap a complaint to trace it to a flaw
+                      </span>
                     </InteractiveCue>
                   </p>
                   <FroghireAffinityMap />
@@ -1543,8 +1529,8 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                     <Image
                       src={ch2.sections[1].image}
                       alt="Montage of the shipped dashboard: the subscription page pared to its price, and the resume manager with one active resume"
-                      width={6860}
-                      height={5063}
+                      width={2000}
+                      height={1476}
                       sizes="(max-width: 1079px) 100vw, 72vw"
                     />
                   )}
@@ -1574,19 +1560,20 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
                 </div>
               </figure>
               <figure className="froghire-figrow" data-fade>
-                <div className="froghire-fig froghire-fig--219 froghire-f-full">
+                <div className="froghire-fig froghire-fig--auto froghire-f-full">
                   {ch2.sections[2].image && (
                     <Image
                       src={ch2.sections[2].image}
-                      alt="Screens from the QA log of nearly one hundred issues"
-                      fill
+                      alt="Collage of the shipped FrogHire pages walked during QA: brand components, partner, coach application, and pricing"
+                      width={5986}
+                      height={2922}
                       sizes="100vw"
-                      style={{ objectFit: "cover", objectPosition: "50% 0%" }}
                     />
                   )}
                 </div>
                 <FigCaption index="11" className="froghire-c-below">
-                  Part of the ~100-issue QA log
+                  The shipped surfaces the QA passes walked, screen by screen
+                  — brand components, partner, coach, and pricing pages
                 </FigCaption>
               </figure>
             </Sec>
@@ -1596,8 +1583,8 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
             <Sec chapter={1} section={ch2.sections[3]} index={3}>
               <figure className="froghire-figrow" data-fade>
                 <FigCaption index="12" className="froghire-c-left">
-                  Sprint review — PM, CEO, mentor, designer around the same
-                  table
+                  Sprint review, redrawn as an illustration — PM, CEO,
+                  mentor, designer around the same table
                 </FigCaption>
                 <div className="froghire-fig froghire-fig--169 froghire-f-b">
                   {ch2.sections[3].image && (
@@ -1626,9 +1613,9 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
             What survived
           </p>
           <p className="froghire-coda-copy" data-fade>
-            Registration recovered, the product kept moving — and sometimes
-            keeping the product alive is the most meaningful design you can
-            deliver.
+            Registration recovered, and the product kept moving. The ledger
+            closed mostly in half-wins — only the filters shipped whole. A
+            half-win that ships, I learned, still counts.
           </p>
         </div>
       </section>

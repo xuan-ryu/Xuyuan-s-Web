@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { CSSProperties } from "react";
 
 // The Trade Ledger closes Chapter 2 and is the SOLE teller of the four
@@ -56,13 +62,29 @@ const TRADES: Trade[] = [
   },
 ];
 
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Hydration-safe reduced-motion read: server snapshot false so SSR markup
+// (data-stamped="false") and the hydration render agree; reading matchMedia
+// in a useState initializer was a hydration mismatch for reduced-motion
+// visitors. Real value lands right after mount via useSyncExternalStore.
+function usePrefersReducedMotion() {
+  const subscribe = useCallback((onChange: () => void) => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
+}
 
 export function FroghireTradeLedger() {
   const tableRef = useRef<HTMLDivElement>(null);
-  const [stamped, setStamped] = useState(prefersReducedMotion);
+  // Reduced motion stamps immediately (derived below; CSS enforces the
+  // static final state regardless).
+  const reduced = usePrefersReducedMotion();
+  const [stamped, setStamped] = useState(false);
 
   useEffect(() => {
     const el = tableRef.current;
@@ -85,7 +107,7 @@ export function FroghireTradeLedger() {
   return (
     <section
       className="froghire-ledger froghire-shell"
-      data-stamped={stamped ? "true" : "false"}
+      data-stamped={stamped || reduced ? "true" : "false"}
       aria-labelledby="froghire-ledger-title"
     >
       <div className="froghire-grid">

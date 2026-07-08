@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { CSSProperties } from "react";
 
 // Chapter 1, S4 figure: the six real complaints from the FrogHire bug log
@@ -70,8 +76,28 @@ const FLAWS = [
   { label: "MISSING TRUST", count: "2 of 6 complaints" },
 ];
 
-const matchesMedia = (query: string) =>
-  typeof window !== "undefined" && window.matchMedia(query).matches;
+// Hydration-safe matchMedia: the server snapshot is always false so the SSR
+// markup and the hydration render agree (desktop geometry, animations not yet
+// final); React then re-renders with the real value right after mount and on
+// every media change. The old useState(() => matchMedia(...).matches)
+// initializer made the client's first render diverge from the server HTML —
+// React refused to patch it up and the phone SVG stayed on the desktop
+// viewBox forever.
+function useMediaQuery(query: string) {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    [query],
+  );
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
+}
 
 // ── Geometry ────────────────────────────────────────────────────────────────
 // Desktop: viewBox 1200×560, 12 internal fields of 100. Notes on fields 1–5,
@@ -114,27 +140,16 @@ function stackedGeo() {
 
 export function FroghireAffinityMap() {
   const rootRef = useRef<SVGSVGElement>(null);
-  const [stacked, setStacked] = useState(() =>
-    matchesMedia("(max-width: 809.98px)"),
-  );
-  const [live, setLive] = useState(() =>
-    matchesMedia("(prefers-reduced-motion: reduce)"),
-  );
-  const [settled, setSettled] = useState(() =>
-    matchesMedia("(prefers-reduced-motion: reduce)"),
-  );
+  // Phone restack — the SVG swaps to the vertical composition.
+  const stacked = useMediaQuery("(max-width: 809.98px)");
+  // Reduced motion renders the final state immediately (live/settled derive
+  // from it below; CSS also enforces it).
+  const reduced = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const [live, setLive] = useState(false);
+  const [settled, setSettled] = useState(false);
   const [hot, setHot] = useState<number | null>(null);
 
-  // Phone restack — the SVG swaps to the vertical composition.
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 809.98px)");
-    const onChange = () => setStacked(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-
-  // Entrance: fires once, then the observer disconnects. Reduced motion
-  // renders the final state immediately (CSS also enforces it).
+  // Entrance: fires once, then the observer disconnects.
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
@@ -165,7 +180,7 @@ export function FroghireAffinityMap() {
   return (
     <svg
       ref={rootRef}
-      className={`froghire-map${live ? " is-live" : ""}${settled ? " is-settled" : ""}`}
+      className={`froghire-map${live || reduced ? " is-live" : ""}${settled || reduced ? " is-settled" : ""}`}
       viewBox={geo.viewBox}
       role="group"
       aria-label="Affinity map: six complaints from the bug log converge into three systemic flaws — no onboarding, broken hierarchy, missing trust."
