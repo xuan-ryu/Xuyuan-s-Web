@@ -6,8 +6,8 @@
 // preview clip: it mounts the <video> lazily on the first pointerenter /
 // focusin of the enclosing row link, plays while the row is hovered/focused,
 // and pauses on leave — so it is inherently paused offscreen. Under
-// prefers-reduced-motion (or hoverless pointers, where the plate is a static
-// tap-focus image) the video never mounts and the cover stays a still.
+// prefers-reduced-motion (or hoverless pointers, where the plate is hidden
+// and the row is a plain link) the video never mounts.
 // Visibility-driven reels elsewhere use components/ui/offscreen-video.tsx;
 // this one is pointer/focus-driven by design.
 
@@ -90,7 +90,7 @@ export function WorkIndexPlate({ title, cover, previewVideo }: WorkIndexPlatePro
           ) : null}
         </>
       ) : (
-        // typographic fallback plate (Pulse has no cover asset yet):
+        // typographic fallback plate for any project without a cover asset:
         // ink panel, condensed title, gold baseline rule — gold is the
         // static-detail accent (amber stays interactive-only).
         <span className="wki-plate-fallback">

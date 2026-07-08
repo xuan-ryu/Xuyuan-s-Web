@@ -6,7 +6,7 @@ export const site = {
   description:
     "AI design engineer crafting digital products where design meets code — an oriental aesthetic with modern engineering.",
   email: "xuan.ryu8@gmail.com",
-  phone: "+1 4405813229",
+  phone: "+1 (440) 581-3229",
   location: "New York, NY",
   resumeUrl: "/media/about/resume.pdf?v=0707",
   socials: {

@@ -1,7 +1,8 @@
 // /work — 检索, the printed catalogue index.
 //
-// One Müller-Brockmann catalogue table on paper: continuous mono numerals
-// 01–06, condensed ink entries, tabular meta (discipline / year), a sticky
+// One Müller-Brockmann catalogue table on paper: mono numerals running
+// continuously across categories, condensed ink entries, tabular meta
+// (discipline / year), a sticky
 // category thumb-tab in the left margin, and a "plate" (the project's real
 // cover / preview clip) that slips in from the right margin on hover/focus.
 // The old card view, icon toggle, and WebGL dust are deleted by design — the
@@ -54,9 +55,14 @@ const workGroups = [
 // The index needs a clean 4–7 char year column; duration strings in data are
 // inconsistent ("2025 - present", "09/2022-04/2024"), so format here — no
 // data-model change (coherence adjustment).
+function yearNumbers(project: Project): number[] {
+  const source = project.poster?.details.year ?? project.duration;
+  return [...source.matchAll(/(?:19|20)\d{2}/g)].map((m) => Number(m[0]));
+}
+
 function displayYear(project: Project): string {
   const source = project.poster?.details.year ?? project.duration;
-  const years = [...source.matchAll(/(?:19|20)\d{2}/g)].map((m) => Number(m[0]));
+  const years = yearNumbers(project);
   if (years.length === 0) return "";
   const start = Math.min(...years);
   const end = Math.max(...years);
@@ -66,7 +72,7 @@ function displayYear(project: Project): string {
 }
 
 export default function WorkIndex() {
-  // continuous catalogue numerals 01–06 across categories
+  // continuous catalogue numerals across categories
   let counter = 0;
   const groups = workGroups.map((group) => ({
     ...group,
@@ -79,6 +85,20 @@ export default function WorkIndex() {
         numeral: String(++counter).padStart(2, "0"),
       })),
   }));
+  // colophon facts derived from the same rows the table prints — never
+  // hardcoded, so the line stays true as projects are added.
+  const allRows = groups.flatMap((group) => group.rows);
+  const catalogueYears = allRows.flatMap(({ project }) =>
+    yearNumbers(project),
+  );
+  const hasPresent = allRows.some(({ project }) =>
+    /present/i.test(project.poster?.details.year ?? project.duration),
+  );
+  const yearStart = Math.min(...catalogueYears);
+  const yearEnd = Math.max(
+    ...catalogueYears,
+    hasPresent ? new Date().getFullYear() : 0,
+  );
   return (
     <div className="wki-page">
       <header className="wki-header">
@@ -145,12 +165,13 @@ export default function WorkIndex() {
           </section>
         ))}
 
-        {/* index colophon — the quiet exit on the same table span */}
+        {/* index colophon — catalogue facts on the same table span (the
+            contact CTA lives in the footer; no duplicate here) */}
         <div className="wki-colophon" data-fade>
           <div className="wki-colophon-inner">
-            <Cta href="/contact" variant="quiet">
-              Get in Touch
-            </Cta>
+            <p className="wki-colophon-note">
+              {allRows.length} projects &middot; {yearStart} &ndash; {yearEnd}
+            </p>
           </div>
         </div>
       </div>
@@ -168,7 +189,7 @@ export default function WorkIndex() {
           --work-grid-gap: clamp(18px, 2.3vw, 32px);
           --work-rule: rgba(5, 5, 5, 0.14);
           --wki-rule-hover: rgba(5, 5, 5, 0.28);
-          --wki-meta-ink: rgba(5, 5, 5, 0.48);
+          --wki-meta-ink: rgba(5, 5, 5, 0.62);
           --wki-row-pad: var(--space-8);
           /* optical drop from the title's box top to its cap line — keeps
              numerals/meta on the cap line of the condensed titles */
@@ -216,7 +237,7 @@ export default function WorkIndex() {
           width: 100%;
           max-width: var(--work-shell-max);
           margin-inline: auto;
-          padding: 0 var(--work-gutter) clamp(120px, 12vw, 192px);
+          padding: 0 var(--work-gutter) clamp(96px, 10vw, 160px);
         }
         .wki-category {
           display: grid;
@@ -431,6 +452,16 @@ export default function WorkIndex() {
           gap: var(--space-6);
           padding-top: var(--space-6);
         }
+        .wki-colophon-note {
+          margin: 0;
+          font-family: var(--font-mono);
+          font-size: var(--text-label);
+          font-weight: 400;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          font-variant-numeric: tabular-nums;
+          color: var(--wki-meta-ink);
+        }
 
         /* ── entrance: quiet fade-rise, 60ms stagger (overrides the
               global 60px fadeUp for these rows) ─────────────────────── */
@@ -514,13 +545,16 @@ export default function WorkIndex() {
                 3 * var(--work-grid-gap)
             );
           }
+          /* stacked layouts drop the tick one numeral line (line + gap =
+             --space-6) to the title's cap — same derivation on phone */
           .wki-row-link::before {
-            top: calc(var(--wki-row-pad) + 26px + var(--wki-cap-nudge));
+            top: calc(var(--wki-row-pad) + var(--space-6) + var(--wki-cap-nudge));
           }
         }
 
-        /* ── phone (≤809): single column; numeral + title + year; the
-              plate is a static 4:3 print shown on tap-focus only ────── */
+        /* ── phone (≤809): single column; numeral + title + year; rows
+              are plain links — the plate never shows (tap = navigate,
+              so a focus-revealed print would be a false affordance) ── */
         @media (max-width: 809.98px) {
           .wki-page {
             --wki-row-pad: var(--space-6);
@@ -586,28 +620,11 @@ export default function WorkIndex() {
             transform: none;
           }
           .wki-plate {
-            /* relative (not static): the plate stays in flow below the title
-               but remains the containing block for the fill image */
-            position: relative;
-            top: auto;
-            right: auto;
-            grid-column: 1 / -1;
-            grid-row: 3;
             display: none;
-            width: 100%;
-            aspect-ratio: 4 / 3;
-            margin-top: var(--space-4);
-            opacity: 1;
-            transform: none;
-          }
-          .wki-row-link:focus .wki-plate,
-          .wki-row-link:focus-visible .wki-plate {
-            display: block;
-            transform: none;
           }
           .wki-row-link::before {
             left: -12px;
-            top: calc(var(--wki-row-pad) + 25px + var(--wki-cap-nudge));
+            top: calc(var(--wki-row-pad) + var(--space-6) + var(--wki-cap-nudge));
           }
           .wki-colophon-inner {
             grid-column: 1 / -1;

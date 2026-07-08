@@ -9,12 +9,13 @@ const SEAL_SRC =
   "/media/shared/seal.png";
 
 const SERVICES = [
-  "Branding",
-  "Website and App Design",
-  "Design & Marketing",
+  "Product / UX design",
+  "AI prototyping",
+  "Design systems",
+  "Something else",
 ];
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "success" | "error";
 type FieldKey = "name" | "email" | "message";
 type Errors = Partial<Record<FieldKey, string>>;
 
@@ -46,25 +47,37 @@ export function ContactForm() {
     }
 
     setErrors({});
-    setStatus("submitting");
+    // optional field — when nothing is selected the line is omitted entirely
+    // (a bare data.get("service") would stringify null into the body).
+    const service = String(data.get("service") || "").trim();
+    const heading = service
+      ? `Name: ${name}\r\nService: ${service}`
+      : `Name: ${name}`;
     // encodeURIComponent, not hand-rolled %0D%0A: unescaped '&'/'#'/newlines in
     // user input would otherwise truncate or flatten the mailto body.
-    const body = encodeURIComponent(
-      `Name: ${name}\r\nService: ${data.get("service")}\r\n\r\n${message}`,
-    );
+    const body = encodeURIComponent(`${heading}\r\n\r\n${message}`);
     const subject = encodeURIComponent(`Portfolio inquiry from ${name}`);
     window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
     setStatus("success");
   }
 
-  const submitting = status === "submitting";
+  // editing any field after a send returns the button to its idle label
+  function handleFormInput() {
+    if (status === "success") setStatus("idle");
+  }
+
   const fieldProps = (k: FieldKey) =>
     errors[k]
       ? ({ "aria-invalid": true, "aria-describedby": `${k}-error` } as const)
       : {};
 
   return (
-    <form className="ctc-form" onSubmit={handleSubmit} noValidate>
+    <form
+      className="ctc-form"
+      onSubmit={handleSubmit}
+      onInput={handleFormInput}
+      noValidate
+    >
       <div className="ctc-form-row">
         <div className="ctc-field">
           <label htmlFor="name">Name</label>
@@ -101,7 +114,7 @@ export function ContactForm() {
         <label htmlFor="service">Service</label>
         <select id="service" name="service" defaultValue="">
           <option value="" disabled>
-            Select...
+            Select&hellip;
           </option>
           {SERVICES.map((s) => (
             <option key={s} value={s}>
@@ -131,13 +144,8 @@ export function ContactForm() {
           large
           full
           className="ctc-submit"
-          disabled={submitting}
         >
-          {submitting
-            ? "Opening email…"
-            : status === "success"
-              ? "Email opened"
-              : "Submit"}
+          {status === "success" ? "Email opened" : "Submit"}
         </Cta>
         {/* seal-on-send — the letter is sealed when the mailto hands off;
             decorative (aria-hidden), the aria-live line below announces. */}

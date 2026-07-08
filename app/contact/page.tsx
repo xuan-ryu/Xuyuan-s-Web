@@ -157,7 +157,6 @@ a.ctc-ledger-value:focus-visible {
   .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(1) { animation-delay: 80ms; }
   .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(2) { animation-delay: 160ms; }
   .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(3) { animation-delay: 240ms; }
-  .ctc-ledger[data-fade].is-visible .ctc-ledger-row:nth-child(4) { animation-delay: 320ms; }
   .ctc-portrait[data-fade] .ctc-portrait-chop {
     opacity: 0.001;
     transform: translate(-40%, 30%) rotate(-6deg) scale(1.18);
@@ -279,6 +278,10 @@ a.ctc-ledger-value:focus-visible {
 .ctc-field textarea::placeholder {
   color: var(--stone);
 }
+/* unselected select reads as a placeholder, matching input::placeholder */
+.ctc-field select:has(option[value=""]:checked) {
+  color: var(--stone);
+}
 .ctc-field input:focus,
 .ctc-field select:focus,
 .ctc-field textarea:focus {
@@ -330,15 +333,21 @@ a.ctc-ledger-value:focus-visible {
   align-self: stretch;
   pointer-events: none;
 }
+/* finished state by default (RM contract: hidden initial states live only
+   under no-preference); the press animation supplies its own from-frame. */
 .ctc-seal-stamp {
   position: absolute;
   left: 0;
   top: 50%;
   margin-top: -42px;
-  opacity: 0;
+  transform: rotate(-4deg);
   transform-origin: 50% 60%;
-  animation: ctcSealPress 0.48s var(--ease-spring) forwards;
   filter: drop-shadow(0 2px 8px rgba(5, 5, 5, 0.18));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ctc-seal-stamp {
+    animation: ctcSealPress 0.48s var(--ease-spring) both;
+  }
 }
 @keyframes ctcSealPress {
   from {
@@ -355,14 +364,6 @@ a.ctc-ledger-value:focus-visible {
   font-size: var(--text-meta);
   line-height: 1.5;
   color: rgba(10, 10, 10, 0.66);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ctc-seal-stamp {
-    animation: none;
-    opacity: 1;
-    transform: rotate(-4deg);
-  }
 }
 
 /* tablet — single rail: intro + ledger, then the photograph at
@@ -495,7 +496,7 @@ export default function Contact() {
                 <dd>
                   <a
                     className="ctc-ledger-value"
-                    href={`tel:${site.phone.replace(/\s+/g, "")}`}
+                    href={`tel:${site.phone.replace(/[^+\d]/g, "")}`}
                   >
                     {site.phone}
                   </a>
