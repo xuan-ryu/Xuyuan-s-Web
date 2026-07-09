@@ -1308,6 +1308,35 @@ drawBody() {
                     ctx.fillStyle = p.color
                     this.drawOrganicSpot(this.segments[p.seg], p.size, p.seed)
                 }
+                // 3b. body volume — top-down, the light is the water surface, so
+                // the spine reads bright and the flanks curve into soft shadow.
+                // One cross-body gradient (short axis) over base AND pattern
+                // turns the flat cutout into a rounded, living body.
+                if (qualityTier > 0) {
+                    const n = this.numSegments
+                    const midIdx = Math.floor(n * 0.4)
+                    const mid = this.segments[midIdx]
+                    const head = this.segments[2]
+                    const tailS = this.segments[Math.max(2, n - 4)]
+                    const ang = Math.atan2(tailS.y - head.y, tailS.x - head.x)
+                    const perp = ang + Math.PI / 2
+                    const R = (this.radii[midIdx] || 10) * 1.25
+                    const g = ctx.createLinearGradient(
+                        mid.x + Math.cos(perp) * R,
+                        mid.y + Math.sin(perp) * R,
+                        mid.x - Math.cos(perp) * R,
+                        mid.y - Math.sin(perp) * R
+                    )
+                    // dark base fish (showa) wants a lighter touch than pale ones
+                    const edge = this.type === "showa" ? 0.16 : 0.24
+                    g.addColorStop(0.0, `rgba(6, 10, 16, ${edge})`)
+                    g.addColorStop(0.34, "rgba(255,255,255,0.045)")
+                    g.addColorStop(0.5, "rgba(255,255,255,0.12)")
+                    g.addColorStop(0.66, "rgba(255,255,255,0.045)")
+                    g.addColorStop(1.0, `rgba(6, 10, 16, ${edge})`)
+                    ctx.fillStyle = g
+                    ctx.fill(this._bodyPath)
+                }
                 ctx.restore()
                 // 4. 墨边描边
                 ctx.strokeStyle = this.colors.inkEdge

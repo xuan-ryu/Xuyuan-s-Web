@@ -1541,8 +1541,14 @@ export default function DigitalLandscape(props: Props) {
                             // keeps the crest a touch denser while letting the
                             // ink fall off gradually down the slopes — so peaks
                             // read as soft masses, not dark wires/points.
+                            // ridge carries more ink than before: a lower
+                            // exponent broadens the crest's dense band and a
+                            // higher weight packs more grains onto the spine, so
+                            // the 山脊 reads as a concentrated ink mass (owner
+                            // 2026-07-08). Still × depth below, so far ranges
+                            // stay a pale wash — no dark wire at the horizon.
                             let probStructure =
-                                Math.pow(tRidge, 1.6) * 2.2 + shadow * 1.2
+                                Math.pow(tRidge, 1.45) * 3.2 + shadow * 1.2
                             probStructure *= 0.5 + 0.5 * tCm
                             probStructure *=
                                 mixF(0.3, 1.1, depth) *
@@ -1573,7 +1579,7 @@ export default function DigitalLandscape(props: Props) {
                                 // ridges keep their ink bones, far ranges melt
                                 // into a pale wash so no dark wire floats at the
                                 // horizon
-                                (1.0 + Math.pow(tRidge, 1.6) * 0.78 * depth)
+                                (1.0 + Math.pow(tRidge, 1.5) * 1.18 * depth)
                             if (farFactor > 0.1)
                                 aBase += 0.55 * farFactor * isPeak
                             for (let p = 0; p < count; p++) {
@@ -1629,7 +1635,7 @@ export default function DigitalLandscape(props: Props) {
                                 const mossProb =
                                     onSpine * onCrest * lit * nearGate * tCm
                                 if (
-                                    g < mossProb * 0.95 * inkCount &&
+                                    g < mossProb * 1.35 * inkCount &&
                                     pIdx < maxPoints
                                 ) {
                                     const dots = qualityTier === 1 ? 5 : 8
