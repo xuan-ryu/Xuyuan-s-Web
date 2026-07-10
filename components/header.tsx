@@ -129,8 +129,31 @@ export function Header() {
           );
         });
     };
+    // Touch devices: sampling costs elementsFromPoint + computed-style walks
+    // per nav element (5 on tablet-width navs) — doing that every scroll frame
+    // fights the compositor during flings (owner report: tablet scroll jank).
+    // Throttle continuous-scroll sampling on coarse pointers; the trailing
+    // timeout still lands one final sample after the last scroll event, and
+    // event-driven scheduleSettledSamples() passes stay per-frame accurate.
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    let throttleTimer = 0;
+    let lastRun = 0;
     const schedule = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      if (!coarse) {
+        if (!raf) raf = requestAnimationFrame(update);
+        return;
+      }
+      const now = performance.now();
+      if (now - lastRun >= 180) {
+        lastRun = now;
+        if (!raf) raf = requestAnimationFrame(update);
+      } else if (!throttleTimer) {
+        throttleTimer = window.setTimeout(() => {
+          throttleTimer = 0;
+          lastRun = performance.now();
+          if (!raf) raf = requestAnimationFrame(update);
+        }, 180 - (now - lastRun));
+      }
     };
     const clearSettledSamples = () => {
       if (settleRaf1) cancelAnimationFrame(settleRaf1);
@@ -179,6 +202,7 @@ export function Header() {
       window.removeEventListener("loaderFinished", scheduleSettledSamples);
       mo?.disconnect();
       if (raf) cancelAnimationFrame(raf);
+      if (throttleTimer) window.clearTimeout(throttleTimer);
       clearSettledSamples();
     };
   }, [pathname]);

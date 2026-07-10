@@ -84,7 +84,7 @@ export default function DesignSystemPage() {
           </div>
           <div className="ds-board-window">
             <Image
-              src="/media/home/roof-piece-a.png"
+              src="/media/home/roof-piece-a.webp"
               alt=""
               fill
               sizes="360px"

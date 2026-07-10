@@ -4,9 +4,9 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 const D6NZ =
-  "/media/home/roof-piece-a.png";
+  "/media/home/roof-piece-a.webp";
 const ABW =
-  "/media/home/roof-piece-b.png";
+  "/media/home/roof-piece-b.webp";
 
 // Live composition: two roof artworks, each rendered twice. The pieces drift
 // as you scroll — the upper pair slides right (+0.0317 px per scrolled px),
