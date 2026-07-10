@@ -2800,10 +2800,49 @@ body.hero-night .nav-links a.active {
   height: 1062px;
 }
 .roof-d {
-  left: calc(50% - 418px);
+  /* same treatment as roof-b: overlap piece C by 2px and clip the artwork's
+     anti-aliased left column, so no night-sky hairline can open at the joint */
+  left: calc(50% - 421px);
   top: 369px;
   width: 1902px;
   height: 1062px;
+  clip-path: inset(0 0 0 2px);
+}
+
+/* Tablet portrait (741–1239): the desktop collage above was measured at 1440
+   and its fixed-px pieces mis-tile on narrower shells (white gables floating
+   in the sky, seam lines mid-screen — owner report, iPad portrait 2026-07-10).
+   Same composition, expressed in vw (px ÷ 14.40), so it scales as one piece.
+   The b/d lefts sit ~0.4vw further left than the pure conversion: paint
+   overlap at the joints so rounding can never open a hairline. */
+@media (min-width: 741px) and (max-width: 1239px) {
+  .home-roof-transition {
+    height: calc(117.15vw - 40vh);
+  }
+  .roof-a {
+    left: calc(50% - 102.85vw);
+    top: 1.18vw;
+    width: 133.89vw;
+    height: 74.72vw;
+  }
+  .roof-b {
+    left: calc(50% + 30.35vw);
+    top: 1.18vw;
+    width: 133.89vw;
+    height: 74.72vw;
+  }
+  .roof-c {
+    left: calc(50% - 161.11vw);
+    top: 25.69vw;
+    width: 132.15vw;
+    height: 73.75vw;
+  }
+  .roof-d {
+    left: calc(50% - 29.51vw);
+    top: 25.63vw;
+    width: 132.08vw;
+    height: 73.68vw;
+  }
 }
 
 .home-koi-section {
@@ -2840,7 +2879,10 @@ body.hero-night .nav-links a.active {
     height: 414px;
   }
   .roof-b {
-    left: 226px;
+    /* 4px left of the butt-fit (226): with the 2px edge clip this paints a
+       2px overlap under piece A — a 0-overlap butt joint let the night sky
+       through as a vertical hairline at fractional DPRs (owner report) */
+    left: 222px;
     top: 339px;
     width: 742px;
     height: 414px;
@@ -2852,7 +2894,8 @@ body.hero-night .nav-links a.active {
     height: 456px;
   }
   .roof-d {
-    left: 790px;
+    /* same 2px paint overlap against piece C (butt-fit was 790) */
+    left: 786px;
     top: 500px;
     width: 816px;
     height: 455px;
