@@ -7,6 +7,7 @@ import { Cta } from "@/components/ui/cta";
 import { ICUE_CSS, InteractiveCue } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import HongyadongScene from "@/components/hongyadong";
+import { AboutDarkPin } from "@/components/about-dark-pin";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 export const metadata: Metadata = {
@@ -343,36 +344,12 @@ export default function About() {
           </div>
         </div>
       </section>
-      {/* Bottom-pin offset for the dark→activities cover. The dark band is
-          taller than the viewport and its height changes with width, so the
-          sticky `top` (= viewport − band height) can't be a static value.
-          This measures it and writes --dark-pin-top; a full-page load runs the
-          inline script directly, and it re-measures on resize / content reflow.
-          Only desktop (≥1080px) bottom-pins — narrower widths stack the band
-          (position: relative; top: auto via the media query below). */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){
-  var el = document.querySelector(".abf-dark");
-  if (!el) return;
-  // Write the offset through an injected stylesheet rule rather than the
-  // element's inline style: React owns this <section>, and mutating its style
-  // before hydration would trip a hydration-mismatch error. A head <style> is
-  // outside React's tree, so it stays clean. offsetHeight is unaffected by the
-  // top offset we set, so there is no measure/apply feedback loop.
-  var sheet = document.createElement("style");
-  document.head.appendChild(sheet);
-  var apply = function(){
-    if (!window.matchMedia("(min-width: 1080px)").matches) { sheet.textContent = ""; return; }
-    sheet.textContent = ".abf-dark{--dark-pin-top:" + (window.innerHeight - el.offsetHeight) + "px}";
-  };
-  apply();
-  window.addEventListener("resize", apply, { passive: true });
-  window.addEventListener("load", apply);
-  if (window.ResizeObserver) { new ResizeObserver(apply).observe(el); }
-})();`,
-        }}
-      />
+      {/* Bottom-pin offset for the dark→activities cover — measured on mount
+          (and on resize/reflow) by a client effect; see about-dark-pin.tsx for
+          why this must not be an inline <script>. Only desktop (≥1080px)
+          bottom-pins — narrower widths stack the band (position: relative;
+          top: auto via the media query below). */}
+      <AboutDarkPin />
       {/* ── "one roll of film" pass (.abf-) — page-owned styles ──
           globals.css .about-* rules keep styling the unchanged markup;
           everything new or overridden lives here under the abf prefix. */}

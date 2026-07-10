@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ChunkGuard } from "@/components/chunk-guard";
 import { FadeReveal } from "@/components/fade-reveal";
 import { GsapReveal } from "@/components/gsap-reveal";
 import { SmoothScroll } from "@/components/smooth-scroll";
@@ -88,6 +89,7 @@ export default function RootLayout({
           `}</style>
         </noscript>
         <div id="page-root">
+          <ChunkGuard />
           <SmoothScroll />
           <FadeReveal />
           <GsapReveal />
