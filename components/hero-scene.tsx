@@ -2826,6 +2826,12 @@ export default function DigitalLandscape(props: Props) {
                  Selected Work. Desktop keeps the measured flow. */
               .hero-spacer { height: 22vh !important; }
               .profile-zone { height: 1320px !important; }
+              /* the wrapper's desktop min-height (300vh − 911px) scales with
+                 VIEWPORT HEIGHT and swallowed the compressed flow on tall
+                 phones — a 1430px-tall screen got a 3379px prelude again
+                 (owner screenshot 2026-07-10). Phones pace by the spacer+zone
+                 flow alone. */
+              [data-hero-bg] { min-height: 0 !important; }
               .framer-xy-hero h1 { font-size: clamp(28px, 9vw, 42px); gap: 10px; margin: 0 0 14px 0; }
               .framer-xy-sub { font-size: 13px; line-height: 1.7; }
               .hero-quote { font-size: 13px; max-width: 88vw; }
