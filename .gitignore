@@ -51,3 +51,4 @@ backups/
 
 # local-only archives (moved out of the served tree + repo)
 /archive-local
+dev.log
