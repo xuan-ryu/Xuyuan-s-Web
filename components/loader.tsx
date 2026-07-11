@@ -230,16 +230,16 @@ export function Loader() {
   }, [unlockBody]);
 
   useEffect(() => {
-    if (!shouldRun) return;
+    if (!shouldRun || gone) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") exitLoader();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [exitLoader, shouldRun]);
+  }, [exitLoader, shouldRun, gone]);
 
   useEffect(() => {
-    if (!shouldRun) return;
+    if (!shouldRun || gone) return;
     const originalOverflow = document.body.style.overflow;
     const originalTouchAction = document.body.style.touchAction;
     const originalOverscroll = document.body.style.overscrollBehavior;
@@ -264,10 +264,13 @@ export function Loader() {
       lockedLenis?.start();
     };
     return unlockBody;
-  }, [unlockBody, shouldRun]);
+  }, [unlockBody, shouldRun, gone]);
 
   useEffect(() => {
-    if (!shouldRun) return;
+    // gone flips after the doors finish: the component renders null but stays
+    // mounted, so without this guard the capture-phase preventDefault would
+    // outlive the loader and kill native touch scrolling for the whole visit
+    if (!shouldRun || gone) return;
     const preventScroll = (event: Event) => event.preventDefault();
     window.addEventListener("wheel", preventScroll, {
       capture: true,
@@ -281,7 +284,7 @@ export function Loader() {
       window.removeEventListener("wheel", preventScroll, { capture: true });
       window.removeEventListener("touchmove", preventScroll, { capture: true });
     };
-  }, [shouldRun]);
+  }, [shouldRun, gone]);
 
   useEffect(() => {
     if (!shouldRun) return;
