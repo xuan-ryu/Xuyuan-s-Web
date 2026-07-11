@@ -57,9 +57,12 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
     if (!root) return;
 
     let done = false;
+    let io: IntersectionObserver | null = null;
 
     const cleanupTriggers = () => {
       window.removeEventListener("koi:feed", onFeed);
+      io?.disconnect();
+      io = null;
     };
 
     const reveal = () => {
@@ -82,6 +85,21 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
     };
 
     window.addEventListener("koi:feed", onFeed);
+
+    // Phones: feeding three times is a hover-era easter egg no touch visitor
+    // discovers, and on the phone layout the (invisible) card stack still
+    // occupies flow — screens of blank water. Surface the cards once the
+    // pond band actually reaches the reader; feeding stays as a bonus.
+    if (window.matchMedia("(pointer: coarse), (max-width: 740px)").matches) {
+      io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) reveal();
+        },
+        // fire when the band's top third is on screen, not at first pixel
+        { rootMargin: "0px 0px -30% 0px" },
+      );
+      io.observe(root);
+    }
 
     return cleanupTriggers;
   }, [forceReveal]);
@@ -183,9 +201,10 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
              also keeps the box stable across the two toggle labels */
           width: 252px; box-sizing: border-box; justify-content: flex-start;
           padding: 12px 18px;
-          background: rgba(10, 10, 10, 0.58);
+          /* shared ink-glass recipe — must match #feed-ui in koi-pond.tsx */
+          background: rgba(10, 10, 10, 0.62);
           backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.14);
+          border: 1px solid rgba(255, 255, 255, 0.16);
           border-radius: var(--radius-control);
           box-shadow: var(--shadow-lift);
           cursor: pointer; user-select: none;
@@ -210,6 +229,10 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           background: rgba(20, 20, 20, 0.72);
           border-color: rgba(255, 255, 255, 0.24);
           color: #fff;
+        }
+        /* universal depress — same 1px settle as every .cta press */
+        .koi-how.is-revealed .koi-how-toggle:active {
+          transform: translateY(1px) scale(0.99);
         }
         .koi-how-toggle:focus-visible {
           outline: var(--focus-ring); outline-offset: var(--focus-offset);
@@ -288,11 +311,11 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             padding: 320px 20px 96px;
           }
           .koi-how-title { position: static; }
-          /* phone: the chip x-docks at 24px and keeps its top anchor at
-             min(50%, 380px) — pair the toggle right under it in the top
-             water area (the card stack flows from 460px down) */
+          /* phone: cards auto-reveal on scroll and sit in normal flow, so
+             collapsing them would just leave a blank band — the tuck-away
+             toggle is a desktop affordance; the pond above stays feedable */
           .koi-how-toggle {
-            left: 24px; top: 416px;
+            display: none;
           }
           .koi-how-card,
           .koi-how-card-1, .koi-how-card-2, .koi-how-card-3 {

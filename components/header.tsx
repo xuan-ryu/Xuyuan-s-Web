@@ -251,11 +251,28 @@ export function Header() {
         className={`nav-drawer${open ? " open" : ""}`}
         aria-hidden={!open}
       >
-        {nav.map((item) => (
-          <Link key={item.href} href={item.href}>
-            {item.label}
-          </Link>
-        ))}
+        {nav.map((item, i) => {
+          const active =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={active ? "active" : ""}
+            >
+              <span className="nav-drawer-num" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              {item.label}
+            </Link>
+          );
+        })}
+        <div className="nav-drawer-foot">
+          <span className="nav-drawer-foot-label">Get in touch</span>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </div>
       </div>
     </>
   );

@@ -2188,9 +2188,11 @@ drawBody() {
               display: flex; align-items: center;
               gap: 14px;
               padding: 13px 20px;
-              background: rgba(10, 10, 10, 0.58);
+              /* one ink-glass recipe across the chip family (feed chip,
+                 How-I-Work toggle, case INDEX chip): 0.62 ink, 0.16 hairline */
+              background: rgba(10, 10, 10, 0.62);
               backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-              border: 1px solid rgba(255,255,255,0.14);
+              border: 1px solid rgba(255,255,255,0.16);
               border-radius: var(--radius-control);
               cursor: pointer; user-select: none; pointer-events: auto;
               transition: background var(--dur-fast) ease,
@@ -2220,7 +2222,8 @@ drawBody() {
             #hero-ui.dock-measure .feed-pellets { width: 22px; height: 22px; }
             #hero-ui.dock-measure .feed-sub { display: none; }
             #feed-ui:hover { background: rgba(20, 20, 20, 0.72); border-color: rgba(255,255,255,0.24); }
-            #feed-ui:active { transform: scale(0.98); }
+            /* universal depress — same 1px settle as every .cta press */
+            #feed-ui:active { transform: translateY(1px) scale(0.99); }
             #feed-ui:focus-visible{outline: var(--focus-ring); outline-offset: var(--focus-offset)}
 
             .feed-pellets {

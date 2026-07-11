@@ -452,34 +452,105 @@ body.hero-night .nav-links a.active {
 .nav-toggle.open span:nth-child(3) {
   transform: translateY(-6.5px) rotate(-45deg);
 }
+/* Full-screen ink leaf (redesign 2026-07-11 — the old drawer was an unstyled
+   white list): condensed uppercase index like the site's display voice, mono
+   row numbers, seal red on the current page, and the footer's GET IN TOUCH
+   line closing the sheet. Sits under the fixed nav (z 1000) so the ink chip
+   toggle stays on top and flips to a close glyph. */
 .nav-drawer {
   display: none;
   position: fixed;
-  top: var(--nav-h);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--color-bg);
+  inset: 0;
+  background: var(--ink-950);
   z-index: 99;
   flex-direction: column;
-  padding: 40px 28px;
-  gap: 4px;
+  padding: calc(var(--nav-h) + 40px) 24px 36px;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .nav-drawer.open {
   display: flex;
 }
-.nav-drawer a {
-  font-family: var(--font-serif);
-  font-size: var(--text-heading);
-  letter-spacing: 0.06em;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--color-line);
-  color: var(--color-fg);
-  transition: opacity 0.2s;
+.nav-drawer > a {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: var(--font-condensed);
+  font-size: clamp(40px, 11vw, 56px);
+  font-weight: 300;
+  letter-spacing: var(--track-display);
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--paper);
+  transition: color var(--dur-fast) var(--ease-standard);
 }
-.nav-drawer a:hover {
-  opacity: 0.45;
+.nav-drawer > a:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.nav-drawer > a:active {
+  color: rgba(255, 255, 255, 0.6);
+}
+.nav-drawer > a.active {
+  color: var(--seal-red-soft);
+}
+.nav-drawer-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 400;
+  letter-spacing: var(--track-eyebrow);
+  color: rgba(255, 255, 255, 0.38);
+}
+.nav-drawer > a.active .nav-drawer-num {
+  color: var(--seal-red-soft);
+}
+.nav-drawer-foot {
+  margin-top: auto;
+  padding-top: 48px;
+}
+.nav-drawer-foot-label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+.nav-drawer-foot a {
+  font-family: var(--font-text);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: var(--paper);
+  text-decoration: none;
+}
+.nav-drawer-foot a:active {
+  color: var(--accent-amber);
+}
+/* rows brush in one after another when the leaf opens */
+@media (prefers-reduced-motion: no-preference) {
+  .nav-drawer.open > a,
+  .nav-drawer.open .nav-drawer-foot {
+    animation: navDrawerIn 0.5s var(--ease-silk) both;
+  }
+  .nav-drawer.open > a:nth-child(1) { animation-delay: 0.05s; }
+  .nav-drawer.open > a:nth-child(2) { animation-delay: 0.11s; }
+  .nav-drawer.open > a:nth-child(3) { animation-delay: 0.17s; }
+  .nav-drawer.open > a:nth-child(4) { animation-delay: 0.23s; }
+  .nav-drawer.open .nav-drawer-foot { animation-delay: 0.32s; }
+}
+@keyframes navDrawerIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 @media (max-width: 640px) {
   .content-nav {
@@ -496,7 +567,7 @@ body.hero-night .nav-links a.active {
     margin: 8px 12px 0 auto;
     padding: 0;
     background: var(--ink-900);
-    border-radius: 2px;
+    border-radius: var(--radius-control);
     pointer-events: auto;
   }
   .nav-logo {
@@ -726,6 +797,8 @@ body.hero-night .nav-links a.active {
   width: 100%;
 }
 .cta--solid {
+  position: relative;
+  overflow: hidden;
   min-height: 52px;
   padding: 0 var(--space-8);
   border-radius: var(--radius-control);
@@ -733,9 +806,27 @@ body.hero-night .nav-links a.active {
   background: var(--ink-900);
   color: var(--paper);
 }
+/* hover answers with the site's seal-red rule wipe (the quiet CTA's gesture),
+   not a color flood — the slab deepens a step and the red draws across its
+   foot. Amber stays reserved for the focus ring. */
+.cta--solid::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--seal-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-gesture) var(--ease-silk);
+}
 .cta--solid:hover {
-  background: var(--accent-amber);
-  color: var(--ink-950);
+  background: var(--ink-950);
+}
+.cta--solid:hover::after,
+.cta--solid:focus-visible::after {
+  transform: scaleX(1);
 }
 .cta--line {
   min-height: 52px;
@@ -802,6 +893,7 @@ body.hero-night .nav-links a.active {
 }
 @media (prefers-reduced-motion: reduce) {
   .cta,
+  .cta--solid::after,
   .cta--quiet::after {
     transition: none;
   }
@@ -4525,3 +4617,5 @@ body.hero-night .nav-links a.active {
     animation: none;
   }
 }
+
+

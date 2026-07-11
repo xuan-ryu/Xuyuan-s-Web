@@ -110,7 +110,7 @@ export function CaseMap({ chapters, accent }: Props) {
           cursor: pointer; user-select: none;
           font-family: var(--font-sans);
           font-size: var(--text-micro); font-weight: 500;
-          letter-spacing: 0.16em; text-transform: uppercase;
+          letter-spacing: var(--track-eyebrow); text-transform: uppercase;
           line-height: 1; color: rgba(255, 255, 255, 0.85);
           transition: transform 0.2s var(--ease-soft);
         }
@@ -152,9 +152,9 @@ export function CaseMap({ chapters, accent }: Props) {
           text-align: left;
           font-family: var(--font-sans);
           font-size: var(--text-label); font-weight: 400;
-          letter-spacing: 0.1em; text-transform: uppercase;
+          letter-spacing: var(--track-caps); text-transform: uppercase;
           color: rgba(255, 255, 255, 0.88);
-          border-radius: 3px;
+          border-radius: var(--radius-control);
         }
         .cmap-row:active { background: rgba(255, 255, 255, 0.08); }
         .cmap-row-num {

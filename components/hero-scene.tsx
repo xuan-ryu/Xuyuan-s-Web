@@ -2543,8 +2543,26 @@ export default function DigitalLandscape(props: Props) {
             /* Quote, scroll-hint, right vertical — gated the same way */
             .hero-quote { opacity: 0; transform: translateY(6px); filter: blur(3px); }
             .scene-loaded .hero-quote { animation: appleRevealHint 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards; }
-            .hero-scroll-hint { opacity: 0; transform: translateY(4px); }
+            /* the pinned hero layer is pointer-events:none — the hint must
+               opt back in or the button is decorative (it was: 2026-07-11) */
+            .hero-scroll-hint { opacity: 0; transform: translateY(4px); transition: color 0.35s var(--ease-silk); pointer-events: auto; }
             .scene-loaded .hero-scroll-hint { animation: appleRevealHint 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
+            /* the cue answers the pointer: label inks up, the dash reaches
+               toward it in seal red — same accent grammar as the quiet CTA */
+            .hero-scroll-hint-rule {
+                width: 40px; height: 1px; flex-shrink: 0;
+                background: #888; opacity: 0.5;
+                transition: width 0.35s var(--ease-silk),
+                            background 0.35s var(--ease-silk),
+                            opacity 0.35s var(--ease-silk);
+            }
+            .hero-scroll-hint:hover { color: var(--ink-950); }
+            .hero-scroll-hint:hover .hero-scroll-hint-rule {
+                width: 56px; background: var(--seal-red); opacity: 1;
+            }
+            .hero-scroll-hint:focus-visible {
+                outline: var(--focus-ring); outline-offset: var(--focus-offset);
+            }
             @keyframes appleRevealHint {
                 to { opacity: 1; transform: translateY(0); filter: blur(0); }
             }
@@ -2878,7 +2896,7 @@ export default function DigitalLandscape(props: Props) {
                 .framer-xy-sub { color: #3f3f3f; }
                 .hero-quote { color: #2e2e2e !important; }
                 .hero-scroll-hint { color: #2e2e2e !important; }
-                .hero-scroll-hint > div { background: #2e2e2e !important; }
+                .hero-scroll-hint-rule { background: #2e2e2e !important; transition: none !important; }
             }
 
 `),
@@ -3059,18 +3077,14 @@ export default function DigitalLandscape(props: Props) {
                                 fontFamily: "var(--font-sans)",
                                 fontSize: "var(--text-micro)",
                                 fontWeight: 300,
-                                letterSpacing: "0.2em",
+                                letterSpacing: "var(--track-eyebrow)",
                                 color: "#888",
                                 textTransform: "uppercase",
                             }}
                         >
-                            <div
-                                style={{
-                                    width: "40px",
-                                    height: "1px",
-                                    background: "#888",
-                                    opacity: 0.5,
-                                }}
+                            <span
+                                className="hero-scroll-hint-rule"
+                                aria-hidden="true"
                             />
                             {scrollHint}
                         </button>
@@ -3097,6 +3111,10 @@ export default function DigitalLandscape(props: Props) {
                     position: "relative",
                     height: "calc(164vh + max(0px, 2152px - 155vh))",
                     zIndex: 10,
+                    // the zone is a transparent runway over the pinned hero —
+                    // it must not eat clicks meant for the hero (the scroll
+                    // hint was unreachable); interactive children re-enable
+                    pointerEvents: "none",
                 }}
             >
                 <div

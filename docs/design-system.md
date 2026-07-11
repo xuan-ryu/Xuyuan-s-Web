@@ -296,8 +296,10 @@ Contract:
   (work-card button, resume link, form submit, the ds specimens).
 - Emphasis ladder (one component, three variants):
   - `solid` — filled ink slab (`--ink-900` on `--paper`), 52px tall,
-    `--radius-control`. The primary page action. Hover is `--accent-amber`
-    fill flipping the label to ink (never white-on-amber).
+    `--radius-control`. The primary page action. Hover deepens the slab to
+    `--ink-950` while a 2px seal-red rule wipes along its foot (2026-07-11:
+    replaced the amber fill — a saturated flood was the one loud gesture in
+    an otherwise ink-and-paper chrome).
   - `line` — hairline rectangle (`1px var(--rule)`), transparent; fills to ink
     on hover. The secondary action (e.g. `All Work` beside a section title).
   - `quiet` — no box; an uppercase label with a seal-red rule that wipes in on
@@ -310,8 +312,9 @@ Contract:
   forms); the disabled state ships with the component.
 - Every variant shares one `:focus-visible` contract: `var(--focus-ring)`
   (2px amber) at `var(--focus-offset)`.
-- Seal red is reserved for the `quiet` indicator rule (see the skill's hover
-  /focus-indicator rule); amber is the `solid` hover accent. No new colors.
+- Seal red is the shared hover indicator across all three variants (the rule
+  wipe); amber is reserved for the focus ring and footer link hovers. No new
+  colors.
 - Links inside body copy still use a plain text underline or amber hover, not
   the CTA classes.
 
