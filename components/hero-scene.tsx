@@ -2819,10 +2819,13 @@ export default function DigitalLandscape(props: Props) {
               /* live mobile: greeting wraps inside the viewport (one phrase per
                  row-ish), container must not exceed the screen */
               .framer-xy-hero { max-width: 86vw !important; }
-              /* live mobile: roof section starts at doc y1848 —
-                 spacer 186 + zone 1662 keeps the flow tight like desktop */
+              /* mobile pacing (2026-07-10 owner pass): the live-measured zone
+                 (1662) made the visitor scroll ~4 screens of prelude before
+                 any work showed. 1150 keeps the intro-card pin readable
+                 (~300px of pinned travel) but hands the saved screen to
+                 Selected Work. Desktop keeps the measured flow. */
               .hero-spacer { height: 22vh !important; }
-              .profile-zone { height: 1662px !important; }
+              .profile-zone { height: 1320px !important; }
               .framer-xy-hero h1 { font-size: clamp(28px, 9vw, 42px); gap: 10px; margin: 0 0 14px 0; }
               .framer-xy-sub { font-size: 13px; line-height: 1.7; }
               .hero-quote { font-size: 13px; max-width: 88vw; }
@@ -3010,12 +3013,43 @@ export default function DigitalLandscape(props: Props) {
                         >
                             {quoteLine}
                         </div>
-                        <div
+                        {/* tappable: one tap jumps past the prelude straight to
+                            Selected Work — on phones the hero+roof run several
+                            screens, and the hint is the natural escape hatch */}
+                        <button
+                            type="button"
                             className="hero-scroll-hint"
+                            onClick={() => {
+                                let lenis: import("lenis").default | null =
+                                    null
+                                subscribeLenis((l) => {
+                                    lenis = l
+                                })()
+                                const target =
+                                    document.querySelector<HTMLElement>(
+                                        "#featured"
+                                    )
+                                if (!target) return
+                                if (lenis) {
+                                    ;(lenis as import("lenis").default).scrollTo(
+                                        target,
+                                        { duration: 1.6 }
+                                    )
+                                } else {
+                                    target.scrollIntoView({
+                                        behavior: "smooth",
+                                    })
+                                }
+                            }}
+                            aria-label="Skip to Selected Work"
                             style={{
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "12px",
+                                padding: 0,
+                                border: 0,
+                                background: "none",
+                                cursor: "pointer",
                                 fontFamily: "var(--font-sans)",
                                 fontSize: "var(--text-micro)",
                                 fontWeight: 300,
@@ -3033,7 +3067,7 @@ export default function DigitalLandscape(props: Props) {
                                 }}
                             />
                             {scrollHint}
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>

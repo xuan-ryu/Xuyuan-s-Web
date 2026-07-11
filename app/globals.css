@@ -2868,13 +2868,16 @@ body.hero-night .nav-links a.active {
 }
 
 @media (max-width: 740px) {
-  /* live mobile (390w): roof section runs 1848→3301, pieces at rel y 339/500 */
+  /* mobile pacing (2026-07-10 owner pass): the live-measured 1453px band ran
+     ~1.7 phone screens, mostly empty runout under the eaves — on a phone the
+     crossing is a beat, not a scene. Both tiers ride higher and the band ends
+     right under the lower eaves. Same collage, same joints. */
   .home-roof-transition {
-    height: 1453px;
+    height: 800px;
   }
   .roof-a {
     left: -516px;
-    top: 339px;
+    top: 110px;
     width: 742px;
     height: 414px;
   }
@@ -2883,28 +2886,28 @@ body.hero-night .nav-links a.active {
        2px overlap under piece A — a 0-overlap butt joint let the night sky
        through as a vertical hairline at fractional DPRs (owner report) */
     left: 222px;
-    top: 339px;
+    top: 110px;
     width: 742px;
     height: 414px;
   }
   .roof-c {
     left: -27px;
-    top: 500px;
+    top: 290px;
     width: 817px;
     height: 456px;
   }
   .roof-d {
     /* same 2px paint overlap against piece C (butt-fit was 790) */
     left: 786px;
-    top: 500px;
+    top: 290px;
     width: 816px;
     height: 455px;
   }
 
   /* mobile: same full-bleed ink band, pond stage keeps its height */
   .home-koi-section {
-    height: 972px;
-    min-height: 900px;
+    height: 860px;
+    min-height: 820px;
   }
   .home-koi-frame {
     left: 0;

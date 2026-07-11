@@ -73,7 +73,7 @@ export function WorkIndexPlate({ title, cover, previewVideo }: WorkIndexPlatePro
             src={cover}
             alt=""
             fill
-            sizes="(min-width: 1080px) 30vw, (min-width: 810px) 46vw, 92vw"
+            sizes="(min-width: 1080px) 30vw, (min-width: 810px) 46vw, 34vw"
           />
           {armed && previewVideo ? (
             // decorative muted preview loop; the row text carries the information

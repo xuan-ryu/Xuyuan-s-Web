@@ -1,0 +1,13 @@
+
+> portfolio@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.175:3000
+✓ Ready in 462ms
+
+ GET / 200 in 376ms (next.js: 129ms, application-code: 247ms)
+ GET / 200 in 60ms (next.js: 2ms, application-code: 58ms)
+ GET /work 200 in 107ms (next.js: 28ms, application-code: 79ms)
+ GET /work/nyma 200 in 943ms (next.js: 363ms, generate-params: 320ms, application-code: 581ms)

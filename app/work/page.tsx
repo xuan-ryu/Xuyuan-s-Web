@@ -592,23 +592,31 @@ export default function WorkIndex() {
             flex-wrap: wrap;
             row-gap: var(--space-1);
           }
+          /* phone rows read as catalogue cards: numeral / title / year on the
+             left, the print ALWAYS visible as a small plate on the right
+             (2026-07-10 owner pass — the hover-only plate left phones a
+             text-only list, choosing projects blind) */
           .wki-row-link {
-            grid-template-columns: minmax(0, 1fr) auto;
-            column-gap: var(--space-4);
+            grid-template-columns: minmax(0, 1fr) clamp(96px, 30vw, 132px);
+            column-gap: var(--space-5);
             min-height: 0;
           }
           .wki-row-num {
             grid-column: 1;
             grid-row: 1;
           }
-          .wki-row-year {
-            grid-column: 2;
-            grid-row: 1;
-          }
           .wki-row-title {
-            grid-column: 1 / -1;
+            grid-column: 1;
             grid-row: 2;
             margin-top: var(--space-2);
+          }
+          .wki-row-year {
+            grid-column: 1;
+            grid-row: 3;
+            justify-self: start;
+            text-align: left;
+            margin-top: var(--space-2);
+            padding-top: 0;
           }
           .wki-row-link:hover .wki-row-title,
           .wki-row-link:focus-visible .wki-row-title {
@@ -620,7 +628,21 @@ export default function WorkIndex() {
             transform: none;
           }
           .wki-plate {
-            display: none;
+            /* relative (not static): the cover <Image fill> positions against
+               the plate itself, not the whole row */
+            position: relative;
+            top: auto;
+            right: auto;
+            grid-column: 2;
+            grid-row: 1 / 4;
+            align-self: center;
+            width: 100%;
+            opacity: 1;
+            transform: none;
+            transition: none;
+          }
+          .wki-plate-fallback-title {
+            font-size: var(--text-label);
           }
           .wki-row-link::before {
             left: -12px;

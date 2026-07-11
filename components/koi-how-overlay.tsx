@@ -283,7 +283,9 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             max-width: none; height: auto; margin: 0;
             display: flex; flex-direction: column;
             gap: 28px;
-            padding: 460px 20px 96px;
+            /* 320px of open water above the stack (was 460): enough pond to
+               feed in, less dead travel on a phone (2026-07-10 pacing pass) */
+            padding: 320px 20px 96px;
           }
           .koi-how-title { position: static; }
           /* phone: the chip x-docks at 24px and keeps its top anchor at
@@ -303,7 +305,7 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
         @media (max-width: 740px) {
           .home-koi-section.koi-has-how {
             height: auto;
-            min-height: 972px;
+            min-height: 860px;
           }
         }
       `)}</style>

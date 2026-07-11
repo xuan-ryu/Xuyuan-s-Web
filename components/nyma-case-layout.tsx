@@ -10,6 +10,7 @@ import {
 import { NymaPhone } from "./nyma-phone";
 import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
 import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
+import { CaseMap } from "./ui/case-map";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Nyma — "The Archive Thread". The one case page that steps inside Nyma's
@@ -2815,6 +2816,17 @@ export function NymaCaseLayout({ project }: { project: Project }) {
       />
       <NymaScroll />
       <div className="ny-navscrim" aria-hidden="true" />
+      {/* phone reading aids: progress hairline + chapter index (the page runs
+          ~38 phone screens). Labels derive from the chapters' own numbers. */}
+      <CaseMap
+        chapters={[
+          ...(project.chapters ?? []).map((ch, i) => ({
+            id: `ny-ch${i + 1}`,
+            label: (ch.number.split("·")[1] ?? ch.number).trim(),
+          })),
+          { id: "ny-turn", label: "The thread holds" },
+        ]}
+      />
 
       {/* ── Hero: the manual's page furniture, then the cover band ── */}
       <section className="ny-hero" id="header">
