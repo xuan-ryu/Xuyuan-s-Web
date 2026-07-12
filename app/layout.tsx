@@ -7,6 +7,7 @@ import { FadeReveal } from "@/components/fade-reveal";
 import { GsapReveal } from "@/components/gsap-reveal";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { PageTransition } from "@/components/page-transition";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { site } from "@/data/site";
 import "./globals.css";
@@ -99,8 +100,9 @@ export default function RootLayout({
           <main>{children}</main>
           <Footer />
         </div>
-        {/* real-user Core Web Vitals → Vercel Speed Insights; no-op in dev */}
+        {/* real-user Core Web Vitals + visitor counts → Vercel; no-op in dev */}
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
