@@ -298,6 +298,11 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               start: "top top",
               end: PIN_END,
               pin: true,
+              // transform-based pinning: the position:fixed flip at pin
+              // start/end registered as two full-viewport layout shifts
+              // (CLS 1.0 + 0.89 — the whole "Poor 1.06" Speed Insights
+              // score); transforms are exempt from layout-shift accounting
+              pinType: "transform",
               scrub: 0.6,
               invalidateOnRefresh: true,
               onUpdate(self) {
