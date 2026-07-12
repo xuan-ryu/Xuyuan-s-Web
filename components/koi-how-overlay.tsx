@@ -86,11 +86,13 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
 
     window.addEventListener("koi:feed", onFeed);
 
-    // Phones: feeding three times is a hover-era easter egg no touch visitor
-    // discovers, and on the phone layout the (invisible) card stack still
-    // occupies flow — screens of blank water. Surface the cards once the
-    // pond band actually reaches the reader; feeding stays as a bonus.
-    if (window.matchMedia("(pointer: coarse), (max-width: 740px)").matches) {
+    // Phones + narrow tablets: feeding three times is a hover-era easter egg
+    // no touch visitor discovers, and on the flowed layouts (≤900px) the
+    // (invisible) card stack still occupies flow — screens of blank water.
+    // Surface the cards once the pond band actually reaches the reader;
+    // feeding stays as a bonus. (901px+ keeps the feed gate: the band is
+    // fixed-height there, so hidden cards cost no space.)
+    if (window.matchMedia("(pointer: coarse), (max-width: 900px)").matches) {
       io = new IntersectionObserver(
         (entries) => {
           if (entries.some((entry) => entry.isIntersecting)) reveal();
@@ -281,17 +283,71 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           .koi-how-card { pointer-events: auto; }
         }
 
-        @media (max-width: 1250px) and (min-width: 741px) {
-          /* narrower shells: keep two rails but pull them inside the viewport;
-             the lower cards keep a real vertical gap instead of stacking into
-             one dense block. */
+        @media (max-width: 1250px) and (min-width: 901px) {
+          /* mid shells: the fixed-px stagger collapsed into one cramped
+             column here (12px gaps, cards sharing a rail — owner report
+             2026-07-12). Compose as a grid anchored to the band's foot
+             instead: two cards shoulder to shoulder, the third centered
+             beneath, open water above. The band keeps its fixed 180dvh
+             height — the lotus frame's %-anchored pads (and the crossing
+             handoff) depend on it. */
           .koi-how-title { left: 48px; }
-          /* toggle stays paired with the feed chip's left-edge dock, not the
-             title rail */
-          .koi-how-card { width: min(640px, calc(100vw - 96px)); }
-          .koi-how-card-1 { left: auto; right: 48px; top: 400px; }
-          .koi-how-card-2 { left: 48px; top: 768px; }
-          .koi-how-card-3 { left: auto; right: 48px; top: 1130px; }
+          .koi-how-canvas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px 24px;
+            align-content: end;
+            padding: 0 48px 72px;
+          }
+          .koi-how-card,
+          .koi-how-card-1, .koi-how-card-2, .koi-how-card-3 {
+            position: static;
+            width: auto;
+            min-height: 0;
+          }
+          .koi-how-card-3 {
+            grid-column: 1 / -1;
+            width: min(640px, 100%);
+            justify-self: center;
+          }
+        }
+
+        @media (max-width: 900px) and (min-width: 741px) {
+          /* narrow tablet: the crossing never runs here (901px boundary),
+             so the band may grow — flow the stack like the phone, title on
+             the open water above, toggle retired (collapsing a flowed stack
+             just leaves a hole) */
+          .koi-how {
+            position: relative;
+            inset: auto;
+          }
+          .koi-how-canvas {
+            max-width: none;
+            height: auto;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            /* clears the title (24vh) and the docked chip (~26% of band) */
+            padding: 560px 48px 112px;
+          }
+          .koi-how-title { left: 48px; }
+          .koi-how-card,
+          .koi-how-card-1, .koi-how-card-2, .koi-how-card-3 {
+            position: static;
+            width: min(640px, 100%);
+            min-height: 0;
+          }
+          .koi-how-card-2 { align-self: flex-end; }
+          .koi-how-toggle { display: none; }
+        }
+        /* narrow-tablet modifier for the host section — same contract as the
+           phone one below: grow with the stack, never shrink under the band */
+        @media (max-width: 900px) and (min-width: 741px) {
+          .home-koi-section.koi-has-how {
+            height: auto;
+            min-height: max(1555px, 180dvh);
+          }
         }
 
         @media (max-width: 740px) {
