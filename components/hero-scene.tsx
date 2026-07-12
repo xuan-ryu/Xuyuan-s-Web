@@ -1096,11 +1096,26 @@ export default function DigitalLandscape(props: Props) {
             // motion lives in the mountain collapse, not the sky. Darkens a touch
             // early so the sky is already dark when the white collapse plays out.
             const nightT = smoothstepF(0.12, 0.28, progress)
+            // Release when the roof section's BOTTOM nears mid-viewport (the
+            // white wall owns the frame). Was a hardcoded roofTop+900, tuned
+            // on the 1327px desktop roof (equivalent to this formula ±4px);
+            // on tablet shells the roof is only ~730px tall, so +900 landed
+            // past the section and the night never lifted until Selected
+            // Work — white gables floating on black, then a black band
+            // chasing the ridge out of the viewport. Phones keep the legacy
+            // +900: their single-ridge composition stays on the night the
+            // whole way (an early dawn behind the crest reads wrong there).
+            const roofHeight =
+                roofSectionEl?.offsetHeight ?? winHeight * 1.47
+            const nightReleaseStart =
+                window.innerWidth > 740
+                    ? roofTop + Math.max(0, roofHeight - winHeight * 0.47)
+                    : roofTop + 900
             const nightRelease =
                 1 -
                 smoothstepF(
-                    roofTop + 900,
-                    roofTop + 900 + winHeight * 0.35,
+                    nightReleaseStart,
+                    nightReleaseStart + winHeight * 0.35,
                     currentScrollY
                 )
             if (overlayEl)

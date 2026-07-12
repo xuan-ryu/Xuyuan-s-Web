@@ -2909,7 +2909,13 @@ body.hero-night .nav-links a.active {
    overlap at the joints so rounding can never open a hairline. */
 @media (min-width: 741px) and (max-width: 1239px) {
   .home-roof-transition {
-    height: calc(117.15vw - 40vh);
+    /* End the section where the ARTWORK ends: lower tier bottom = 25.63vw +
+       73.68vw = 99.3vw, minus the 11vh scroll surge that lifts the collage
+       at exit — any taller opens a night band between eaves and Selected
+       Work. (The first conversion kept the desktop's -40vh verbatim, which
+       over-shrank the passage to ~0.68 viewports: the artwork's baked night
+       sky never left the frame before the handoff.) */
+    height: calc(99.3vw - 11vh);
   }
   .roof-a {
     left: calc(50% - 102.85vw);
@@ -4617,5 +4623,9 @@ body.hero-night .nav-links a.active {
     animation: none;
   }
 }
+
+
+
+
 
 

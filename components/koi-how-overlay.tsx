@@ -152,10 +152,13 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           pointer-events: none;
         }
         .koi-how.is-revealed .koi-how-card { pointer-events: auto; }
-        /* staggered below the (bigger) title — card 1 clears its line */
-        .koi-how-card-1 { left: 624px; top: 400px; min-height: 356px; }
+        /* staggered below the (bigger) title — card 1 clears its line.
+           The right-rail cards anchor from the RIGHT (176/112px = their
+           1440-canvas insets), so between 1251-1439px they slide inward
+           instead of poking past the viewport (48px hscroll at 1280). */
+        .koi-how-card-1 { left: auto; right: 176px; top: 400px; min-height: 356px; }
         .koi-how-card-2 { left: 112px; top: 768px; min-height: 322px; }
-        .koi-how-card-3 { left: 688px; top: 1130px; min-height: 322px; }
+        .koi-how-card-3 { left: auto; right: 112px; top: 1130px; min-height: 322px; }
 
         /* On the pond the cards drop ValueCard's heavy frosted glass (its
            inline blur(28px) pops in during the fade). The pond grew dense
