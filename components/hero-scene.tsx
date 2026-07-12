@@ -2543,25 +2543,13 @@ export default function DigitalLandscape(props: Props) {
             /* Quote, scroll-hint, right vertical — gated the same way */
             .hero-quote { opacity: 0; transform: translateY(6px); filter: blur(3px); }
             .scene-loaded .hero-quote { animation: appleRevealHint 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards; }
-            /* the pinned hero layer is pointer-events:none — the hint must
-               opt back in or the button is decorative (it was: 2026-07-11) */
-            .hero-scroll-hint { opacity: 0; transform: translateY(4px); transition: color 0.35s var(--ease-silk); pointer-events: auto; }
+            /* a caption, not a control (owner 2026-07-12): it names the
+               gesture — the gesture itself is the interaction */
+            .hero-scroll-hint { opacity: 0; transform: translateY(4px); }
             .scene-loaded .hero-scroll-hint { animation: appleRevealHint 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
-            /* the cue answers the pointer: label inks up, the dash reaches
-               toward it in seal red — same accent grammar as the quiet CTA */
             .hero-scroll-hint-rule {
                 width: 40px; height: 1px; flex-shrink: 0;
                 background: #888; opacity: 0.5;
-                transition: width 0.35s var(--ease-silk),
-                            background 0.35s var(--ease-silk),
-                            opacity 0.35s var(--ease-silk);
-            }
-            .hero-scroll-hint:hover { color: var(--ink-950); }
-            .hero-scroll-hint:hover .hero-scroll-hint-rule {
-                width: 56px; background: var(--seal-red); opacity: 1;
-            }
-            .hero-scroll-hint:focus-visible {
-                outline: var(--focus-ring); outline-offset: var(--focus-offset);
             }
             @keyframes appleRevealHint {
                 to { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -2896,7 +2884,7 @@ export default function DigitalLandscape(props: Props) {
                 .framer-xy-sub { color: #3f3f3f; }
                 .hero-quote { color: #2e2e2e !important; }
                 .hero-scroll-hint { color: #2e2e2e !important; }
-                .hero-scroll-hint-rule { background: #2e2e2e !important; transition: none !important; }
+                .hero-scroll-hint-rule { background: #2e2e2e !important; }
             }
 
 `),
@@ -3037,43 +3025,16 @@ export default function DigitalLandscape(props: Props) {
                         >
                             {quoteLine}
                         </div>
-                        {/* tappable: one tap jumps past the prelude straight to
-                            Selected Work — on phones the hero+roof run several
-                            screens, and the hint is the natural escape hatch */}
-                        <button
-                            type="button"
+                        {/* a caption naming the gesture — deliberately NOT a
+                            control (owner 2026-07-12); scrolling itself is the
+                            interaction it points at */}
+                        <div
                             className="hero-scroll-hint"
-                            onClick={() => {
-                                let lenis: import("lenis").default | null =
-                                    null
-                                subscribeLenis((l) => {
-                                    lenis = l
-                                })()
-                                const target =
-                                    document.querySelector<HTMLElement>(
-                                        "#featured"
-                                    )
-                                if (!target) return
-                                if (lenis) {
-                                    ;(lenis as import("lenis").default).scrollTo(
-                                        target,
-                                        { duration: 1.6 }
-                                    )
-                                } else {
-                                    target.scrollIntoView({
-                                        behavior: "smooth",
-                                    })
-                                }
-                            }}
-                            aria-label="Skip to Selected Work"
+                            aria-hidden="true"
                             style={{
                                 display: "flex",
                                 alignItems: "center",
                                 gap: "12px",
-                                padding: 0,
-                                border: 0,
-                                background: "none",
-                                cursor: "pointer",
                                 fontFamily: "var(--font-sans)",
                                 fontSize: "var(--text-micro)",
                                 fontWeight: 300,
@@ -3087,7 +3048,7 @@ export default function DigitalLandscape(props: Props) {
                                 aria-hidden="true"
                             />
                             {scrollHint}
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>
