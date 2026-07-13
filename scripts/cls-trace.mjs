@@ -5,6 +5,7 @@ import { launchBrowser } from "./_pw.mjs";
 
 const route = process.argv[2] ?? "/";
 const skipLoader = process.argv.includes("--skip-loader");
+const BASE = process.env.CLS_BASE ?? "http://localhost:3000";
 
 const browser = await launchBrowser();
 const ctx = await browser.newContext({
@@ -55,7 +56,7 @@ await ctx.addInitScript(() => {
 });
 
 const page = await ctx.newPage();
-await page.goto(`http://localhost:3000${route}`, {
+await page.goto(`${BASE}${route}`, {
   waitUntil: "networkidle",
   timeout: 60000,
 });
