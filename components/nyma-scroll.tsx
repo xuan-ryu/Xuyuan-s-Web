@@ -2,13 +2,13 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { subscribeLenis } from "@/lib/lenis-bus";
+import { subscribeScrollFrame } from "@/lib/scroll-behavior";
 
 // Nyma case page — scroll choreography controller (renders null).
 //
 // Same contract as pulse-scroll.tsx (the precedent): one client mount, all
 // selectors scoped to `.nyma-case-page`, GSAP + ScrollTrigger loaded lazily,
-// ScrollTrigger kept in sync with Lenis via the lenis-bus, everything inside
+// ScrollTrigger kept in sync through Scroll Behaviour, everything inside
 // one gsap.context and reverted on unmount. Enter-once moments run on
 // IntersectionObserver (Lenis + ST enter-triggers can fire late/never on
 // programmatic jumps); ScrollTrigger is used for true scrubs only.
@@ -47,8 +47,7 @@ export function NymaScroll() {
 
     let cancelled = false;
     let ctx: { revert: () => void } | null = null;
-    let unsubLenis: (() => void) | null = null;
-    let lenisDetach: (() => void) | null = null;
+    let unsubscribeScroll: (() => void) | null = null;
     const timers: number[] = [];
     const observers: IntersectionObserver[] = [];
 
@@ -60,14 +59,7 @@ export function NymaScroll() {
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      unsubLenis = subscribeLenis((lenis) => {
-        lenisDetach?.();
-        lenisDetach = null;
-        if (lenis) {
-          lenis.on("scroll", ScrollTrigger.update);
-          lenisDetach = () => lenis.off("scroll", ScrollTrigger.update);
-        }
-      });
+      unsubscribeScroll = subscribeScrollFrame(ScrollTrigger.update);
 
       ctx = gsap.context(() => {
         // ── navscrim: off while a dark band (hero, Turn) sits under the
@@ -348,8 +340,7 @@ export function NymaScroll() {
       root.classList.remove("ny-motion");
       timers.forEach((t) => window.clearTimeout(t));
       observers.forEach((io) => io.disconnect());
-      lenisDetach?.();
-      unsubLenis?.();
+      unsubscribeScroll?.();
       ctx?.revert();
     };
   }, [pathname]);

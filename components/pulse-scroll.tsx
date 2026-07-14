@@ -2,16 +2,16 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { subscribeLenis } from "@/lib/lenis-bus";
+import { subscribeScrollFrame } from "@/lib/scroll-behavior";
 
 // Pulse case page — scroll choreography controller (renders null).
 //
 // One client mount drives every scripted moment on the page via selectors
 // scoped to `.pulse-case-page`; the layout itself stays a server component.
 // GSAP + ScrollTrigger load lazily inside the effect (featured-gate
-// precedent) and ScrollTrigger is kept in sync with Lenis's own scroll
-// emission via the lenis-bus (the DOM scroll event is one frame stale under
-// smooth scroll). Everything is created inside one gsap.context and reverted
+// precedent) and ScrollTrigger is kept in sync through Scroll Behaviour's
+// same-frame subscription (the DOM event is stale under smooth scroll).
+// Everything is created inside one gsap.context and reverted
 // on unmount — triggers, tweens, and inline styles all clean up.
 //
 // Progressive-enhancement contract (reduced-motion + no-JS correctness):
@@ -44,8 +44,7 @@ export function PulseScroll() {
 
     let cancelled = false;
     let ctx: { revert: () => void } | null = null;
-    let unsubLenis: (() => void) | null = null;
-    let lenisDetach: (() => void) | null = null;
+    let unsubscribeScroll: (() => void) | null = null;
     const timers: number[] = [];
     // Enter-once moments run on IntersectionObserver, NOT ScrollTrigger:
     // under Lenis, ST enter-triggers can fire late/never on programmatic
@@ -61,14 +60,7 @@ export function PulseScroll() {
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      unsubLenis = subscribeLenis((lenis) => {
-        lenisDetach?.();
-        lenisDetach = null;
-        if (lenis) {
-          lenis.on("scroll", ScrollTrigger.update);
-          lenisDetach = () => lenis.off("scroll", ScrollTrigger.update);
-        }
-      });
+      unsubscribeScroll = subscribeScrollFrame(ScrollTrigger.update);
 
       ctx = gsap.context(() => {
         // ── hero console: typewriter stream (once, then the caret holds) ──
@@ -325,8 +317,7 @@ export function PulseScroll() {
       cancelled = true;
       timers.forEach((t) => window.clearTimeout(t));
       observers.forEach((io) => io.disconnect());
-      lenisDetach?.();
-      unsubLenis?.();
+      unsubscribeScroll?.();
       ctx?.revert();
     };
   }, [pathname]);

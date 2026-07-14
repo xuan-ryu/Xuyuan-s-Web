@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { adjacent, type Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 
 // Mirrors the Framer "poster" template (hunger1942, vr-education): centered
 // title + lede → tall poster image → black about/details section → essay
@@ -10,7 +11,7 @@ export function PosterLayout({ project }: { project: Project }) {
   const poster = project.poster;
   if (!poster) return null;
 
-  const { prev, next } = adjacent(project.slug);
+  const { prev, next } = projectCatalog.adjacent(project.slug);
   const details: [string, ReactNode][] = [
     ["Project:", poster.details.project],
     ["Client:", poster.details.client],

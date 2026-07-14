@@ -2947,6 +2947,11 @@ body.hero-night .nav-links a.active {
   height: max(1555px, 180dvh);
   min-height: 1180px;
   position: relative;
+  /* Keep the pond's high-z-index vignette, grain, lotus, and controls inside
+     one local stack. Without this boundary they paint above the pinned work
+     transition while the pond is still rising, exposing its horizontal top
+     edge as a dark seam. */
+  isolation: isolate;
   /* full-bleed ink (owner decision): the moon-gate crossing dissolves black
      into black — the pond IS the other side of the gate, and the page now
      ENDS in the night: pond ink flows straight into the ink footer (the

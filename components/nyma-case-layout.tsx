@@ -7,9 +7,11 @@ import {
   NymaColorRoles,
   NymaWardrobes,
 } from "./nyma-interactives";
+import { NymaDrafts } from "./nyma-drafts";
 import { NymaPhone } from "./nyma-phone";
-import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
+import { NymaSystemBoard } from "./nyma-system-board";
+import { InteractiveCue } from "./ui/interactive-cue";
+import { OutcomeBand } from "./ui/outcome-band";
 import { CaseMap } from "./ui/case-map";
 import { stripCssComments } from "@/lib/css-sanitize";
 
@@ -51,9 +53,18 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // the cover's bottom-right agency credit; the rename busts stale caches).
 //
 // Choreography lives in <NymaScroll /> (GSAP + ScrollTrigger over the
-// lenis-bus). Server markup is always the FINAL state — reduced motion and
+// Scroll Behaviour). Server markup is always the FINAL state — reduced motion and
 // no-JS read a finished page; motion only rewinds and replays it.
+//
+// This file is the server layout only: markup plus the page-scoped CSS
+// string. It holds no state and no effects — every interactive specimen
+// (directions, color roles, wardrobes, drafts, phone, system board) is an
+// imported client module, and all scroll work stays in NymaScroll.
 
+/* ---- nyma page css ---- */
+// One page-scoped stylesheet in a single template literal, injected via
+// stripCssComments so its internal /* section */ comments never ship to
+// view-source. Navigate it by the ── seam comments inside the literal.
 const nymaCss = `
 /* ── Nyma case page — The Archive Thread ─────────────────────────────── */
 /* Real Murecho weights, page-scoped. The site's murecho-latin.woff2 is a
@@ -84,19 +95,25 @@ const nymaCss = `
 }
 .nyma-case-page {
   /* Nyma surfaces (manual topic 3.1) */
-  --ny-stage: #f2efea;      /* Parchment — the page ground */
+  /* owner 2026-07-13: the page ground moves from Parchment to Archival
+     White — parchment survives only inside product recreations that
+     genuinely use it */
+  --ny-stage: #ffffff;      /* Archival White — the page ground */
   --ny-canvas: #ffffff;     /* Archival White — cards, plates */
   --ny-chrome: #f5f5f5;     /* Soft Archive */
-  --ny-ink: #1c1a17;        /* Ceramic Black */
-  --ny-text-2: #45423d;
-  --ny-text-3: #6d6960;
-  /* faintest text stop that still clears 4.5:1 on the parchment (the old
-     #9a948a sat at ~2.7:1 under 11–12px mono — 2026-07-08 audit) */
-  --ny-text-4: #716c62;
-  --ny-line: rgba(28, 26, 23, 0.11);
-  --ny-line-strong: rgba(28, 26, 23, 0.22);
-  --ny-shadow-rest: 0 1px 2px rgba(28, 26, 23, 0.04), 0 4px 12px rgba(28, 26, 23, 0.05);
-  --ny-shadow-lift: 0 2px 6px rgba(28, 26, 23, 0.06), 0 16px 32px rgba(28, 26, 23, 0.09);
+  /* owner 2026-07-14: page chrome black is plain PURE black + neutral
+     grays — Ceramic Black (#1c1a17) survives only as literals inside the
+     product recreations (lot card, direction scenes, color-law swatch),
+     where it is the shipped product's own value */
+  --ny-ink: #000000;
+  --ny-text-2: #464646;
+  --ny-text-3: #6a6a6a;
+  /* faintest text stop still clears 4.5:1 on white under 11–12px mono */
+  --ny-text-4: #6f6f6f;
+  --ny-line: rgba(0, 0, 0, 0.11);
+  --ny-line-strong: rgba(0, 0, 0, 0.22);
+  --ny-shadow-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --ny-shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.06), 0 16px 32px rgba(0, 0, 0, 0.09);
 
   /* Nyma semantics — role-based, never decorative */
   --ny-blue: #0d5eaf;       /* Activation Blue — interactive states ONLY */
@@ -129,7 +146,7 @@ const nymaCss = `
   z-index: 1;
 }
 /* content slides under the transparent nav instead of colliding with it
-   (pulse navscrim precedent, parchment flavored) */
+   (pulse navscrim precedent, white flavored) */
 .ny-navscrim {
   position: fixed;
   top: 0;
@@ -138,7 +155,7 @@ const nymaCss = `
   height: 72px;
   z-index: 50;
   pointer-events: none;
-  background: linear-gradient(180deg, var(--ny-stage) 58%, rgba(242, 239, 234, 0) 100%);
+  background: linear-gradient(180deg, var(--ny-stage) 58%, rgba(255, 255, 255, 0) 100%);
   /* hidden by default (no-JS/reduced-motion never show it); NymaScroll turns
      it on only while NO ink band sits under the nav — the parchment fog over
      the dark hero/Turn was the owner's worst-read artifact */
@@ -154,11 +171,10 @@ const nymaCss = `
 .nyma-case-page figure {
   margin: 0;
 }
-/* standalone figures need real air before the next section's eyebrow —
-   audit: captions were reading as the next block's label */
-.nyma-case-page .ny-chapter > figure {
-  margin: var(--gap-block) 0 calc(var(--gap-block) * 1.25);
-}
+/* (standalone figures carry NO margins — the chapter grid's row-gap is the
+   ONE block rhythm, 2026-07-14 audit; a caption still reads as its own
+   plate's because it sits 14px under the plate vs a full gap above the
+   next block) */
 .nyma-case-page [data-fade].is-visible {
   animation-delay: var(--d, 0ms);
 }
@@ -187,7 +203,9 @@ const nymaCss = `
 }
 .ny-pl {
   font-style: normal;
-  color: var(--ny-trace-dark);
+  /* text is black/gray only (owner 2026-07-14) — the plate index leads in
+     ink, the caption body stays gray */
+  color: var(--ny-ink);
   margin-right: 0.65em;
 }
 
@@ -297,7 +315,9 @@ const nymaCss = `
   width: 100%;
   max-width: var(--work-shell-max);
   margin: 0 auto;
-  padding: clamp(48px, 6vw, 88px) var(--work-gutter) 0;
+  /* bottom padding: the meta values were sitting ~12px off the outcome
+     band's top rule (owner 2026-07-14) */
+  padding: clamp(48px, 6vw, 88px) var(--work-gutter) clamp(32px, 4vw, 56px);
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--work-grid-gap);
@@ -313,7 +333,7 @@ const nymaCss = `
   color: var(--ny-text-2);
 }
 .ny-hero-meta {
-  grid-column: 1 / 8;
+  grid-column: 1 / -1;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -338,66 +358,14 @@ const nymaCss = `
   color: var(--ny-text-2);
 }
 
-/* the contents card — the manual's black TOC, doubling as page nav */
-.ny-toc {
-  grid-column: 8 / -1;
-  grid-row: 1 / span 2;
-  align-self: start;
-  box-sizing: border-box;
-  background: var(--ny-ink);
-  color: #f2efea;
-  padding: 22px 24px 18px;
-  --icue-text: rgba(242, 239, 234, 0.6);
-}
-.ny-toc header {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  /* no text-transform: νήμα must not be uppercased into ΝΉΜΑ */
-  color: rgba(242, 239, 234, 0.55);
-  padding-bottom: 14px;
-  border-bottom: 1px solid rgba(242, 239, 234, 0.16);
-  margin-bottom: 8px;
-}
-.ny-toc ol {
-  list-style: none;
-  margin: 0 0 14px;
-  padding: 0;
-}
-.ny-toc li a {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 7px 0;
-  font-family: var(--ny-mono);
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  color: #f2efea;
-  text-decoration: none;
-  transition: color 0.2s var(--ease-silk);
-}
-.ny-toc li a i {
-  font-style: normal;
-  color: rgba(242, 239, 234, 0.45);
-  min-width: 34px;
-  transition: color 0.2s var(--ease-silk);
-}
-.ny-toc li a:hover,
-.ny-toc li a:focus-visible {
-  color: #9cc4f0;
-}
-.ny-toc li a:hover i,
-.ny-toc li a:focus-visible i {
-  color: #9cc4f0;
-}
+/* (the black TOC card is retired — owner 2026-07-13: the hero row carried
+   too many small labels, and the sticky thread rail already IS the page's
+   index navigation) */
 /* keyboard: every clickable specimen control takes the site focus ring */
-.ny-toc li a:focus-visible,
 .ny-dir-tab:focus-visible,
 .ny-ward-tab:focus-visible,
-.ny-roles-chip:focus-visible {
+.ny-roles-chip:focus-visible,
+.ny-draft:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
@@ -406,6 +374,10 @@ const nymaCss = `
 .nyma-case-page .proj-summary {
   background: transparent;
   color: inherit;
+  /* the global slab's full-shell top/bottom rules doubled the outcome
+     band's content-width rule into a second, wider line (owner
+     2026-07-14); the band's rule is the ONE separator here */
+  border: 0;
   border-radius: 0;
   margin: 0 auto;
   padding: clamp(54px, 6vw, 82px) var(--work-gutter) calc(var(--gap-section) / 2);
@@ -443,43 +415,9 @@ const nymaCss = `
   line-height: 1.62;
   color: var(--ny-text-2);
 }
-.ny-ledger {
-  grid-column: 9 / -1;
-  align-self: start;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--ny-line-strong);
-}
-.ny-ledger > div {
-  padding: 16px 0 18px;
-  border-bottom: 1px solid var(--ny-line);
-}
-.ny-ledger strong {
-  display: block;
-  font-family: var(--ny-display);
-  font-size: clamp(36px, 3.6vw, 54px);
-  font-weight: 300;
-  line-height: 1.05;
-  font-variant-numeric: tabular-nums;
-  color: var(--ny-ink);
-}
-.ny-ledger span {
-  display: block;
-  margin-top: 6px;
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  line-height: 1.5;
-  color: var(--ny-text-3);
-}
-.ny-ledger-note {
-  grid-column: 1 / -1;
-  margin: 12px 0 0;
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  line-height: 1.6;
-  color: var(--ny-text-4);
-}
+/* (the 4/3/2/1 summary ledger is retired with the TOC card — same
+   2026-07-13 cleanup: decorative counts plus their mono labels were more
+   furniture than fact; the at-a-glance band keeps the real numbers) */
 
 /* ── The acts: thread rail + chapters ──────────────────────────────────── */
 .ny-acts {
@@ -562,7 +500,7 @@ const nymaCss = `
   color: var(--ny-ink);
 }
 .ny-rail li.is-run i {
-  color: var(--ny-trace-dark);
+  color: var(--ny-ink); /* b/w text rule — the amber stitch bar carries state */
 }
 .ny-acts-main {
   grid-column: 3 / -1;
@@ -580,6 +518,13 @@ const nymaCss = `
 .nyma-case-page .case-chapter {
   max-width: none;
   margin: 0;
+  /* ONE chapter rhythm (2026-07-14 audit: block gaps ran 64/80 mixed via
+     scattered per-block margins and collapse-through) — the chapter is a
+     single column with exactly one --gap-block between blocks; the blocks
+     themselves carry no vertical margins. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--gap-block);
 }
 .nyma-case-page .case-chapter:last-of-type {
   padding-bottom: calc(var(--gap-section) * 0.35);
@@ -589,32 +534,11 @@ const nymaCss = `
 #ny-ch1 .ny-section {
   align-items: center;
 }
-/* ── the white stage (owner 2026-07-07): chapter 4 steps off the archive
-   desk onto the product's own ground — Archival White, full-bleed. The
-   parchment returns after; the Turn still sinks to ink. Plates get the
-   stronger hairline so they keep their object edge on white. ── */
-.ny-stage-white {
-  position: relative;
-}
-/* a white SHEET pinned on the desk (owner rev 2: the full-bleed stage read
-   wrong and its 100vw caused horizontal scroll) — inset to the content
-   column plus half a grid gap, hairline edge; the rail stays on parchment */
-.ny-stage-white::before {
-  content: "";
-  position: absolute;
-  inset: 0 calc(var(--work-grid-gap) * -0.5);
-  background: #ffffff;
-  border: 1px solid var(--ny-line);
-  z-index: -1;
-}
-.ny-stage-white .ny-plate,
-.ny-stage-white .ny-ward,
-.ny-stage-white .ny-pagescroll-frame,
-.ny-stage-white .ny-pagescroll-bar {
-  border-color: var(--ny-line-strong);
-}
+/* (the ch4 white SHEET is retired with the white page ground — owner
+   2026-07-13: a boxed white sheet around the body read as a giant card.
+   Plates now carry the stronger hairline globally instead.) */
 .ny-chapter-head {
-  margin-bottom: var(--gap-block);
+  margin-bottom: 0; /* the chapter's row-gap owns the rhythm */
 }
 .ny-chapter-meta {
   display: flex;
@@ -627,10 +551,6 @@ const nymaCss = `
   letter-spacing: 0.03em;
   color: var(--ny-text-3);
   padding-bottom: 10px;
-}
-.ny-chapter-name {
-  font-weight: 700;
-  color: var(--ny-ink);
 }
 .ny-chapter-claim {
   margin: clamp(24px, 3vw, 40px) 0 0;
@@ -650,22 +570,10 @@ const nymaCss = `
   grid-template-columns: repeat(10, minmax(0, 1fr));
   column-gap: var(--work-grid-gap);
   row-gap: var(--gap-block);
-  margin-bottom: var(--gap-block);
-}
-.ny-section:last-child {
-  margin-bottom: 0;
 }
 .ny-copy {
   grid-column: 1 / 7;
   min-width: 0;
-}
-.ny-copy-tags {
-  margin: 0 0 14px;
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ny-trace-dark);
 }
 .ny-copy h3 {
   margin: 0 0 16px;
@@ -690,15 +598,27 @@ const nymaCss = `
   min-width: 0;
   align-self: start;
 }
+/* rows whose aside WALKS (the full-length page / codified-artifact scrubs
+   run ~2 viewports past their short copy): keep the copy in view beside the
+   walk instead of leaving cols 1-6 as a dead half-viewport (2026-07-13
+   audit). Desktop only — below 1080 the columns stack. */
+@media (min-width: 1081px) {
+  .ny-walkrow .ny-copy {
+    position: sticky;
+    top: clamp(96px, 16vh, 180px);
+    align-self: start;
+  }
+}
 .ny-full {
   grid-column: 1 / -1;
   min-width: 0;
 }
 
-/* plates: white cards on the parchment desk */
+/* plates: framed objects on the white ground — the stronger hairline keeps
+   their object edge now that canvas and stage share the same white */
 .ny-plate {
   background: var(--ny-canvas);
-  border: 1px solid var(--ny-line);
+  border: 1px solid var(--ny-line-strong);
   box-shadow: var(--ny-shadow-rest);
 }
 .ny-plate img {
@@ -709,10 +629,6 @@ const nymaCss = `
      (phone audit: ch4's white plates left whole viewports pure white) */
   background: var(--ny-chrome);
 }
-.ny-stage-white .ny-plate img {
-  background: var(--ny-stage);
-}
-
 /* ── Ch 1 · condition report card ──────────────────────────────────────── */
 .ny-condition {
   box-sizing: border-box;
@@ -766,7 +682,7 @@ const nymaCss = `
 }
 .ny-condition li[data-state="worn"] em,
 .ny-condition li[data-state="missing"] em {
-  color: var(--ny-trace-dark);
+  color: var(--ny-ink); /* b/w text rule — the ~ / ✕ glyphs carry the state */
 }
 .ny-condition li[data-state="worn"] em::before {
   content: "~ ";
@@ -783,7 +699,7 @@ const nymaCss = `
 
 /* ── Ch 2 · fates, etymology, moodboard table, field, directions ──────── */
 .ny-fates {
-  grid-column: 6 / -1;
+  grid-column: 7 / -1; /* the one aside width — same rail as every aside */
 }
 .ny-fates .ny-plate {
   background: var(--ny-ink);
@@ -798,7 +714,7 @@ const nymaCss = `
   column-gap: clamp(24px, 3vw, 48px);
   row-gap: 10px;
   padding: clamp(40px, 5vw, 64px) 0;
-  margin: var(--gap-block) 0;
+  margin: 0;
   border-top: 1px solid var(--ny-line-strong);
   border-bottom: 1px solid var(--ny-line-strong);
 }
@@ -829,6 +745,10 @@ const nymaCss = `
 .ny-etym-def {
   grid-column: 1 / -1;
   margin: 0;
+  /* the Greek sits at line-height 0.9, so its descenders (μ, ή) reach well
+     below its grid row — give the definition real clearance (2026-07-13
+     audit: the caption collided with the wordmark) */
+  padding-top: clamp(16px, 2.4vw, 32px);
   font-family: var(--ny-mono);
   font-size: 12px;
   letter-spacing: 0.04em;
@@ -844,7 +764,6 @@ const nymaCss = `
   position: relative;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: var(--gap-block) 0;
 }
 @media (min-width: 769px) {
   .ny-motion .ny-strip {
@@ -906,8 +825,7 @@ const nymaCss = `
 /* the field — competitor flows, layered; full width so the board reads */
 .ny-competitive {
   grid-column: 1 / -1;
-  position: relative;
-  margin-top: var(--gap-block);
+  position: relative; /* the section's row-gap owns the space above */
 }
 .ny-competitive-zoom {
   position: absolute;
@@ -924,11 +842,11 @@ const nymaCss = `
 }
 
 /* the direction board */
+/* specimen wrappers sit OPEN on the white ground (owner 2026-07-13: a white
+   box around the whole specimen read as a card around body content) — only
+   the product recreations inside keep their frames */
 .ny-dir {
-  background: var(--ny-canvas);
-  border: 1px solid var(--ny-line);
-  box-shadow: var(--ny-shadow-rest);
-  padding: 18px 20px;
+  padding: 0;
 }
 .ny-dir-tabs {
   display: flex;
@@ -975,7 +893,9 @@ const nymaCss = `
   display: grid;
   grid-template-columns: 7fr 5fr;
   gap: clamp(20px, 3vw, 48px);
-  align-items: start;
+  /* the legend column runs shorter than the card — center it so the gap
+     reads as air, not as a hole (same call as #ny-ch1, 2026-07-13 audit) */
+  align-items: center;
   padding: clamp(20px, 2.6vw, 32px) 0;
   border-bottom: 1px solid var(--ny-line);
 }
@@ -1255,25 +1175,12 @@ const nymaCss = `
   color: var(--ny-text-3);
 }
 .ny-dir-verdict.is-chosen {
-  color: var(--ny-trace-dark);
+  color: var(--ny-ink); /* b/w text rule — the ✓ carries the verdict */
 }
 .ny-dir-verdict.is-chosen::before {
   content: "✓ ";
 }
-.ny-dir-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding-top: 14px;
-}
-.ny-dir-note {
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--ny-text-4);
-}
+/* (the specimen footers are retired — cues live in the caption row) */
 
 /* ── Ch 3 · manual stack, color roles, type ladder ─────────────────────── */
 /* four openings of the manual, fanned like documents on a desk */
@@ -1303,10 +1210,7 @@ const nymaCss = `
 
 /* color roles specimen */
 .ny-roles {
-  background: var(--ny-canvas);
-  border: 1px solid var(--ny-line);
-  box-shadow: var(--ny-shadow-rest);
-  padding: 18px 20px;
+  padding: 0; /* open on the ground — see the .ny-dir note */
 }
 .ny-roles-chips {
   display: flex;
@@ -1358,7 +1262,7 @@ const nymaCss = `
   display: grid;
   grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
   gap: clamp(20px, 3vw, 40px);
-  align-items: start;
+  align-items: center; /* legend centers beside the taller lot card */
   padding: clamp(20px, 2.6vw, 32px) 0 18px;
 }
 /* the lot card — every part tagged with the color it is allowed to use */
@@ -1531,11 +1435,6 @@ const nymaCss = `
   line-height: 1.65;
   color: var(--ny-text-4);
 }
-.ny-roles-foot {
-  padding-top: 14px;
-  border-top: 1px solid var(--ny-line);
-}
-
 /* the type ladder */
 .ny-ladder {
   border-top: 1px solid var(--ny-line-strong);
@@ -1613,9 +1512,6 @@ const nymaCss = `
   color: var(--ny-text-4);
 }
 
-.ny-wall {
-  margin: var(--gap-block) 0;
-}
 .ny-wall-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1650,7 +1546,7 @@ const nymaCss = `
   height: clamp(500px, 68vh, 780px);
   overflow-y: auto;
   background: var(--ny-canvas);
-  border: 1px solid var(--ny-line);
+  border: 1px solid var(--ny-line-strong);
   box-shadow: var(--ny-shadow-rest);
 }
 .ny-motion .ny-pagescroll-frame {
@@ -1668,7 +1564,7 @@ const nymaCss = `
   gap: 10px;
   padding: 10px 14px;
   background: var(--ny-chrome);
-  border: 1px solid var(--ny-line);
+  border: 1px solid var(--ny-line-strong);
   border-bottom: 0;
   font-family: var(--ny-mono);
   font-size: 10px;
@@ -1693,10 +1589,7 @@ const nymaCss = `
 
 /* the inclusivity test — three wardrobes, one shell */
 .ny-ward {
-  background: var(--ny-canvas);
-  border: 1px solid var(--ny-line);
-  box-shadow: var(--ny-shadow-rest);
-  padding: 18px 20px;
+  padding: 0; /* open on the ground — see the .ny-dir note */
 }
 .ny-ward-tabs {
   display: flex;
@@ -1735,7 +1628,7 @@ const nymaCss = `
   display: grid;
   grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
   gap: clamp(20px, 3vw, 48px);
-  align-items: start;
+  align-items: center; /* legend centers beside the taller wardrobe card */
   padding: clamp(20px, 2.6vw, 32px) 0 18px;
 }
 .ny-ward-card {
@@ -1849,10 +1742,6 @@ const nymaCss = `
   line-height: 1.6;
   color: var(--ny-text-2);
 }
-.ny-ward-foot {
-  padding-top: 14px;
-  border-top: 1px solid var(--ny-line);
-}
 @media (max-width: 768px) {
   .ny-ward-stage {
     grid-template-columns: 1fr;
@@ -1863,28 +1752,281 @@ const nymaCss = `
 }
 
 /* ── Ch 5 · workflow loop, drafts pair ─────────────────────────────────── */
+/* the working loop, drawn AS a loop (owner 2026-07-14: four text columns
+   with dash fragments read as rows, not a cycle) — ONE closed thread (the
+   νήμα motif) runs through four stations on its top edge and returns along
+   its bottom edge; small ticks point the direction of travel. Text stays
+   black/gray; the thread is the page's one colored mark. */
 .ny-loop {
-  box-sizing: border-box;
-  background: var(--ny-canvas);
-  border: 1px solid var(--ny-line);
-  box-shadow: var(--ny-shadow-rest);
-  padding: 20px;
+  position: relative;
+  padding: 0 0 64px;
 }
+.ny-loop-track {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  right: 8px;
+  bottom: 16px;
+  pointer-events: none;
+}
+/* the thread itself is an SVG stroke so it can MARCH: the dashes travel
+   clockwise — left-to-right along the stations, right-to-left home along
+   the return edge — which animates the loop's direction of travel */
+.ny-loop-thread {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+.ny-loop-thread-path {
+  x: 0px;
+  y: 0px;
+  width: 100%;
+  height: 100%;
+  rx: 24px;
+  fill: none;
+  stroke: var(--ny-trace);
+  stroke-width: 1;
+  stroke-dasharray: 4 7;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ny-loop-thread-path {
+    animation: nyThreadMarch 9s linear infinite;
+  }
+}
+@keyframes nyThreadMarch {
+  to {
+    stroke-dashoffset: -110px;
+  }
+}
+/* direction ticks riding the thread — forward along the top, back along
+   the bottom (recreated product geometry: 8px triangles on a 1px line) */
+.ny-loop-tick {
+  position: absolute;
+  top: -4px;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 7px solid var(--ny-trace);
+}
+.ny-loop-tick:nth-of-type(1) { left: 32%; }
+.ny-loop-tick:nth-of-type(2) { left: 56%; }
+.ny-loop-tick:nth-of-type(3) { left: 80%; }
+.ny-loop-tick.is-back {
+  top: auto;
+  bottom: -4px;
+  border-left: 0;
+  border-right: 7px solid var(--ny-trace);
+}
+.ny-loop-tick.is-back:nth-of-type(4) { left: 24%; }
 .ny-loop-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr clamp(24px, 3vw, 48px) 1fr clamp(24px, 3vw, 48px) 1fr clamp(24px, 3vw, 48px) 1fr;
-  align-items: stretch;
-  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: clamp(16px, 2vw, 32px);
+  padding: 0 clamp(28px, 3.4vw, 52px);
 }
 .ny-loop-node {
+  position: relative;
+  padding: 24px 0 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  row-gap: 8px;
+  align-content: start;
+}
+/* the station: a point ON the thread — hollow until its turn comes */
+.ny-loop-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ny-canvas);
+  border: 1px solid var(--ny-trace);
+  transition: background 0.4s var(--ease-silk);
+}
+.ny-loop-node.is-on .ny-loop-dot {
+  background: var(--ny-trace);
+}
+/* with motion, a station pops as its turn arrives (the sequence itself is
+   driven by NymaScroll re-adding .is-on in order) */
+@media (prefers-reduced-motion: no-preference) {
+  .ny-loop-node.is-on .ny-loop-dot {
+    animation: nyLoopDotPop 0.5s var(--ease-spring);
+  }
+}
+@keyframes nyLoopDotPop {
+  from {
+    transform: scale(0.4);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+/* ── the mini artifact windows: terminal → canvas → rule sheet → live
+   storefront. Product-frame recreations, so they keep their own inner
+   geometry; everything b/w except the ONE amber rule line in the code
+   sheet (the written design rule travelling the loop). ── */
+.ny-loop-scene {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  height: 112px;
+  margin-bottom: 6px;
   border: 1px solid var(--ny-line-strong);
-  padding: 18px 18px 16px;
+  background: var(--ny-canvas);
+  overflow: hidden;
+}
+/* 01 — the prototype terminal: ink panel, lines typed in, caret blinking */
+.ny-loop-scene.is-proto {
+  background: var(--ny-ink);
+  border-color: var(--ny-ink);
+  padding: 16px 14px;
   display: grid;
   gap: 10px;
   align-content: start;
-  transition: border-color 0.4s var(--ease-silk), background 0.4s var(--ease-silk);
+}
+.ny-loop-scene.is-proto b {
+  display: block;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.32);
+  transform-origin: left center;
+}
+.ny-loop-scene.is-proto b:nth-of-type(1) { width: 56%; background: rgba(255, 255, 255, 0.6); }
+.ny-loop-scene.is-proto b:nth-of-type(2) { width: 84%; }
+.ny-loop-scene.is-proto b:nth-of-type(3) { width: 38%; }
+.ny-loop-scene.is-proto b:nth-of-type(4) {
+  width: 9px;
+  height: 11px;
+  background: rgba(255, 255, 255, 0.75);
+}
+/* 02 — the canvas: dotted ground, a selected frame with corner handles */
+.ny-loop-scene.is-figma {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.16) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+.ny-loop-scene.is-figma b {
+  position: absolute;
+  background: var(--ny-canvas);
+}
+.ny-loop-scene.is-figma b:nth-of-type(1) {
+  left: 18%;
+  top: 20%;
+  width: 38%;
+  height: 60%;
+  border: 1.5px solid var(--ny-ink);
+}
+.ny-loop-scene.is-figma b:nth-of-type(1)::before,
+.ny-loop-scene.is-figma b:nth-of-type(1)::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: var(--ny-canvas);
+  border: 1.5px solid var(--ny-ink);
+}
+.ny-loop-scene.is-figma b:nth-of-type(1)::before { left: -5px; top: -5px; }
+.ny-loop-scene.is-figma b:nth-of-type(1)::after { right: -5px; bottom: -5px; }
+.ny-loop-scene.is-figma b:nth-of-type(2) {
+  left: 64%;
+  top: 32%;
+  width: 24%;
+  height: 42%;
+  border: 1px solid var(--ny-line-strong);
+}
+/* 03 — the rule sheet: code lines draw in; ONE line is the written rule */
+.ny-loop-scene.is-code {
+  padding: 16px 14px;
+  display: grid;
+  gap: 11px;
+  align-content: start;
+}
+.ny-loop-scene.is-code b {
+  display: block;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.14);
+  transform-origin: left center;
+}
+.ny-loop-scene.is-code b:nth-of-type(1) { width: 88%; }
+.ny-loop-scene.is-code b:nth-of-type(2) { width: 62%; }
+.ny-loop-scene.is-code b.is-rule { width: 34%; background: var(--ny-trace); }
+.ny-loop-scene.is-code b:nth-of-type(4) { width: 76%; }
+.ny-loop-scene.is-code b:nth-of-type(5) { width: 48%; }
+/* 04 — live: the storefront reduced to its bones + a solid ink LIVE tag */
+.ny-loop-scene.is-live {
+  padding: 14px 14px 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+.ny-loop-scene.is-live b {
+  display: block;
+  height: 26px;
+  background: rgba(0, 0, 0, 0.1);
+}
+.ny-loop-scene.is-live b.is-mark {
+  grid-column: 1 / -1;
+  height: 10px;
+  width: 44px;
+  background: var(--ny-ink);
+}
+.ny-loop-scene.is-live::after {
+  content: "LIVE";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 6px;
+  background: var(--ny-ink);
+  color: #ffffff;
+  font-family: var(--ny-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+/* with motion: a scene assembles piece by piece as its station lights,
+   and the terminal caret keeps blinking (final state ships in markup —
+   reduced-motion and no-JS read the finished windows) */
+@media (prefers-reduced-motion: no-preference) {
+  .ny-loop-node.is-on .ny-loop-scene b {
+    animation: nyLoopSceneIn 0.55s var(--ease-silk) backwards;
+  }
+  .ny-loop-node.is-on .ny-loop-scene b:nth-of-type(2) { animation-delay: 0.12s; }
+  .ny-loop-node.is-on .ny-loop-scene b:nth-of-type(3) { animation-delay: 0.24s; }
+  .ny-loop-node.is-on .ny-loop-scene b:nth-of-type(4) { animation-delay: 0.36s; }
+  .ny-loop-node.is-on .ny-loop-scene b:nth-of-type(5) { animation-delay: 0.48s; }
+  .ny-loop-node.is-on .ny-loop-scene.is-proto b:nth-of-type(4) {
+    animation: nyLoopSceneIn 0.4s var(--ease-silk) 0.36s backwards,
+      nyLoopCaret 1.2s steps(2, end) 0.8s infinite;
+  }
+}
+@keyframes nyLoopSceneIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes nyLoopCaret {
+  50% {
+    opacity: 0;
+  }
+}
+.ny-loop-index {
+  grid-column: 1;
+  grid-row: 2;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: var(--ny-text-4);
 }
 .ny-loop-node strong {
+  grid-column: 2;
+  grid-row: 2;
   font-family: var(--ny-mono);
   font-size: 12px;
   font-weight: 400;
@@ -1892,6 +2034,7 @@ const nymaCss = `
   color: var(--ny-ink);
 }
 .ny-loop-node em {
+  grid-column: 2;
   font-style: normal;
   font-family: var(--ny-mono);
   font-size: 11px;
@@ -1900,89 +2043,243 @@ const nymaCss = `
   color: var(--ny-text-3);
   max-width: 24ch;
 }
-/* lit = trace yellow: the loop is a static diagram, and blue is reserved
-   for genuinely interactive states (2026-07-07 audit — the page must obey
-   its own color law) */
-.ny-loop-node.is-on {
-  border-color: var(--ny-trace);
-  background: var(--ny-trace-soft);
-}
-.ny-loop-stitch {
-  align-self: center;
-  height: 2px;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--ny-line-strong) 0 6px,
-    transparent 6px 11px
-  );
-}
+/* the return label sits ON the bottom edge, knocking the thread out
+   behind it */
 .ny-loop-return {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0 14px;
+  background: var(--ny-stage);
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ny-text-4);
+}
+
+/* ---- pl.13 drafts desk ---- */
+/* two AI drafts as papers on a desk: the front sheet shows whole, the other
+   peeks behind, and clicking a sheet shuffles it forward. Poses are
+   translate/rotate/scale only (motion rules); translate percentages are
+   tuned so the scaled back sheet stays inside the content column. */
+.ny-drafts {
+  position: relative;
+  aspect-ratio: 1.9;
+}
+.ny-draft {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 54%;
+  padding: 0;
+  border: 1px solid var(--ny-line-strong);
+  background: var(--ny-canvas);
+  box-shadow: var(--ny-shadow-rest);
+  cursor: pointer;
+  text-align: left;
+}
+.ny-draft img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ny-draft-chip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 4px 8px;
+  background: var(--ny-ink);
+  color: #ffffff;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ny-drafts[data-front="a"] .is-a,
+.ny-drafts[data-front="b"] .is-b {
+  z-index: 2;
+  box-shadow: var(--ny-shadow-lift);
+}
+.ny-drafts[data-front="a"] .is-a {
+  transform: translate(4%, 5%) rotate(-0.6deg);
+}
+.ny-drafts[data-front="a"] .is-b {
+  transform: translate(92%, 1%) rotate(1.6deg) scale(0.84);
+}
+.ny-drafts[data-front="b"] .is-b {
+  transform: translate(78%, 5%) rotate(0.6deg);
+}
+.ny-drafts[data-front="b"] .is-a {
+  transform: translate(-1%, 1%) rotate(-1.6deg) scale(0.84);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ny-draft {
+    transition: transform 0.55s var(--ease-silk),
+      box-shadow 0.55s var(--ease-silk);
+  }
+}
+
+/* ---- pl.14 system board ---- */
+/* the coded rules rendered live as component specimens — a product-frame
+   recreation, so the framed card is earned; Activation Blue stays with the
+   interactive law card (pl.07), and the one trace chip is the product's
+   own RESERVE MET idiom */
+.ny-sysboard {
+  border: 1px solid var(--ny-line-strong);
+  background: var(--ny-canvas);
+  box-shadow: var(--ny-shadow-rest);
+  padding: 20px;
+  display: grid;
+  gap: 22px;
+}
+/* the document masthead — carries the "one page, generated from the repo"
+   fact the retired artifact screenshot used to carry */
+.ny-sysboard-mast {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  align-items: baseline;
   gap: 12px;
-  margin-top: 12px;
+  margin: -20px -20px 0;
+  padding: 12px 14px;
+  background: var(--ny-ink);
+  color: #ffffff;
+}
+.ny-sysboard-mast b {
+  font-family: var(--ny-mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+}
+.ny-sysboard-mast span {
+  font-family: var(--ny-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+  text-align: right;
+}
+.ny-sysboard-head {
+  display: block;
+  margin-bottom: 12px;
   font-family: var(--ny-mono);
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ny-text-4);
 }
-.ny-loop-return i {
-  flex: 1;
-  height: 2px;
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--ny-trace) 0 6px,
-    transparent 6px 11px
-  );
-}
-
-/* two drafts, argued against each other — deliberately asymmetric so the
-   comparison reads at a glance (owner note: near-identical shots had no
-   contrast) */
-.ny-pair {
-  display: grid;
-  grid-template-columns: 7fr 5fr;
-  gap: clamp(20px, 2.6vw, 36px);
-  align-items: start;
-  margin: var(--gap-block) 0 0;
-}
-.ny-pair-item header {
+.ny-sysboard-row {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 12px;
-  padding: 0 0 10px;
 }
-.ny-pair-item h4 {
-  margin: 0;
-  font-family: var(--ny-display);
-  font-size: clamp(20px, 1.9vw, 26px);
+.ny-sysboard-row b {
   font-weight: 400;
-  line-height: 1.25;
-}
-.ny-pair-item header span {
   font-family: var(--ny-mono);
+}
+.ny-sys-btn {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+}
+.ny-sys-btn.is-solid {
+  background: var(--ny-ink);
+  color: #ffffff;
+}
+.ny-sys-btn.is-line {
+  border: 1px solid var(--ny-ink);
+  color: var(--ny-ink);
+}
+.ny-sys-link {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ny-ink);
+  border-bottom: 1px solid var(--ny-ink);
+  padding-bottom: 2px;
+}
+.ny-sys-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--ny-ink);
+}
+.ny-sys-tag i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ny-ink);
+}
+.ny-sys-chip {
+  padding: 4px 8px;
+  background: var(--ny-trace-soft);
   color: var(--ny-trace-dark);
-  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-.ny-pair-item .ny-plate {
-  overflow: hidden;
-}
-.ny-pair-item p {
-  margin: 12px 0 0;
-  max-width: 52ch;
-  font-family: var(--ny-mono);
-  font-size: 11px;
-  line-height: 1.65;
-  letter-spacing: 0.02em;
+.ny-sys-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--ny-text-3);
 }
-.ny-pair-foot {
-  margin-top: 16px;
+.ny-sys-field {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid var(--ny-line-strong);
+  padding: 10px 12px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ny-text-4);
+}
+.ny-sysboard-foot {
+  margin: 0;
+  border-top: 1px solid var(--ny-line);
+  padding-top: 12px;
+  font-family: var(--ny-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ny-text-4);
+}
+
+/* ---- pl.16 canvas + pl.17 prototype row ---- */
+/* the canvas takes the copy columns (a small proof plate, not a reading
+   surface) and centers against the taller phone in the aside columns */
+.ny-protorow {
+  align-items: center;
+}
+.ny-canvas-fig {
+  grid-column: 1 / 7;
+  min-width: 0;
+}
+/* bottom-anchored cover crop: the box is 64 image-px shorter than the
+   asset, so the baked-in toggle strip at the top is cut while the
+   Onboarding row label keeps its clearance */
+.ny-canvas-crop {
+  position: relative;
+  aspect-ratio: 1440 / 1336;
+  overflow: hidden;
+}
+.ny-canvas-crop img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
 }
 
 /* ── Ch 6 · phones ─────────────────────────────────────────────────────── */
@@ -1991,7 +2288,6 @@ const nymaCss = `
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(20px, 3vw, 48px);
   align-items: start;
-  margin-top: var(--gap-block);
 }
 .ny-phones .ny-plate:nth-child(2) {
   margin-top: clamp(20px, 2.6vw, 40px);
@@ -1999,9 +2295,7 @@ const nymaCss = `
 .ny-phones .ny-plate:nth-child(3) {
   margin-top: clamp(40px, 5vw, 80px);
 }
-.ny-wide {
-  margin: var(--gap-block) 0 0;
-}
+/* (.ny-wide no longer needs its own margin — chapter row-gap owns it) */
 
 /* ── The Turn — ink band; the page's ONE seal-red stitch ───────────────── */
 .ny-turn-wrap {
@@ -2011,8 +2305,9 @@ const nymaCss = `
 .ny-turn {
   box-sizing: border-box;
   /* dark-ground light model: top rim catch-light + faint from-top glow
-     (shared treatment with the site footer) — base stays Ceramic Black */
-  background: radial-gradient(120% 80% at 50% 0%, #232019, #1c1a17);
+     (shared treatment with the site footer) — base is pure black now
+     (owner 2026-07-14) */
+  background: radial-gradient(120% 80% at 50% 0%, #161616, #000000);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   color: #f2efea;
   padding: clamp(48px, 6vw, 88px) clamp(28px, 4vw, 72px);
@@ -2038,7 +2333,7 @@ const nymaCss = `
 }
 .ny-turn h2 {
   margin: 0 0 clamp(28px, 3.6vw, 48px);
-  max-width: 26ch;
+  max-width: 20ch;
   font-family: var(--ny-display);
   font-size: clamp(36px, 4vw, 58px);
   font-weight: 300;
@@ -2048,11 +2343,14 @@ const nymaCss = `
 }
 .ny-turn-copy {
   display: grid;
-  gap: 1em;
-  max-width: 66ch;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 64px);
+  max-width: none;
 }
 .ny-turn-copy p {
   margin: 0;
+  border-top: 1px solid rgba(242, 239, 234, 0.18);
+  padding-top: 18px;
   font-size: var(--text-body, 18px);
   line-height: 1.66;
   color: rgba(242, 239, 234, 0.82);
@@ -2073,10 +2371,6 @@ const nymaCss = `
   .ny-acts-main {
     grid-column: 1 / -1;
   }
-  .ny-toc {
-    grid-column: 1 / -1;
-    grid-row: auto;
-  }
   .ny-hero-lede,
   .ny-hero-meta {
     grid-column: 1 / -1;
@@ -2087,16 +2381,12 @@ const nymaCss = `
   .nyma-case-page .proj-summary .proj-summary-copy {
     grid-column: 1 / -1;
   }
-  .ny-ledger {
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--work-grid-gap);
-  }
   .ny-copy {
     grid-column: 1 / -1;
   }
   .ny-aside,
   .ny-fates,
+  .ny-canvas-fig,
   .ny-competitive {
     grid-column: 1 / -1;
   }
@@ -2105,9 +2395,6 @@ const nymaCss = `
   .ny-hero-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 16px;
-  }
-  .ny-ledger {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .ny-wall-grid {
     grid-template-columns: 1fr;
@@ -2122,24 +2409,48 @@ const nymaCss = `
   .ny-phones .ny-plate:nth-child(3) {
     margin-top: 0;
   }
-  .ny-pair {
-    grid-template-columns: 1fr;
+  /* phone: the drafts desk stacks — both sheets full width, no shuffle */
+  .ny-drafts {
+    aspect-ratio: auto;
+    display: grid;
+    gap: 16px;
+  }
+  .ny-draft {
+    position: static;
+    width: 100%;
+    transform: none !important;
   }
   .ny-roles-stage {
     grid-template-columns: 1fr;
   }
+  /* phone: the racetrack thread hides; stations stack with their dots on a
+     left margin and the return label becomes a plain closing row */
+  .ny-loop {
+    padding-bottom: 0;
+  }
+  .ny-loop-track {
+    display: none;
+  }
   .ny-loop-row {
     grid-template-columns: 1fr;
+    row-gap: 20px;
+    padding: 0;
   }
-  .ny-loop-stitch {
-    width: 2px;
-    height: 16px;
-    justify-self: center;
-    background-image: repeating-linear-gradient(
-      180deg,
-      var(--ny-line-strong) 0 5px,
-      transparent 5px 9px
-    );
+  .ny-loop-node {
+    padding: 0 0 0 24px;
+  }
+  .ny-loop-dot {
+    top: 4px;
+  }
+  .ny-loop-return {
+    position: static;
+    transform: none;
+    padding: 16px 0 0;
+    background: none;
+    text-align: left;
+  }
+  .ny-turn-copy {
+    grid-template-columns: 1fr;
   }
   .ny-etym {
     grid-template-columns: 1fr;
@@ -2689,22 +3000,29 @@ button.nyp-summary-row[aria-pressed="true"] > em {
   --ob-stat-font: var(--ny-display);
   /* 400, not 500 — the weight ladder keeps 500 as a hover step only */
   --ob-stat-weight: 400;
+  /* rules align with the content column (owner 2026-07-14: the band's
+     hairlines ran a gutter wider than the hero meta's rule directly above
+     — two adjacent rules at two widths read as a slip). The band box
+     shrinks to the content width and drops its inner gutter instead. */
+  max-width: calc(var(--work-shell-max) - 2 * var(--work-gutter));
+  --ob-pad-x: 0px;
 }
 `;
 
 // ── helpers ─────────────────────────────────────────────────────────────
 
+/* ---- thread rail ---- */
 const railTopics = [
-  "Inheritance",
-  "Thread",
-  "Rulebook",
-  "Pages",
-  "Codification",
-  "Handoff",
+  "The gap",
+  "The thesis",
+  "The language",
+  "The product",
+  "The framework",
+  "The continuity",
   // de-templated 2026-07-07: Pulse ch.10 already closes on "The turn";
   // Nyma's rail/TOC label varies (#ny-turn anchor + the Turn band's
-  // "Most memorable moment" eyebrow stay unchanged)
-  "The thread holds",
+  // reflection closes on the platform system rather than the name alone)
+  "One system",
 ];
 
 function ThreadRail() {
@@ -2730,8 +3048,13 @@ function ThreadRail() {
   );
 }
 
+/* ---- topic head ---- */
 // The manual's page furniture: "Topic — n.0 / Page no. — NN" over a drawn
 // hairline, then the chapter claim.
+// One mono line of page furniture, then the claim (owner 2026-07-14: the
+// old two-line Topic/Page block + a right-aligned chapter name stacked
+// three metadata items over every H2 — and the name duplicated both the
+// rail's active entry and the claim below it).
 function TopicHead({
   number,
   page,
@@ -2741,16 +3064,13 @@ function TopicHead({
   page: string;
   title: string;
 }) {
-  const [idx, name] = number.split("·").map((s) => s.trim());
+  const [idx] = number.split("·").map((s) => s.trim());
   return (
     <header className="ny-chapter-head" data-fade>
       <div className="ny-chapter-meta">
         <span>
-          Topic — {Number(idx)}.0
-          <br />
-          Page no. — {page}
+          Topic — {Number(idx)}.0 · Page no. — {page}
         </span>
-        <span className="ny-chapter-name">{name}</span>
       </div>
       <i className="ny-hairline" data-hairline aria-hidden="true" />
       <h2 className="ny-chapter-claim">{title}</h2>
@@ -2758,10 +3078,13 @@ function TopicHead({
   );
 }
 
+/* ---- prose and caption ---- */
+// No eyebrow tags (owner 2026-07-14: "不同的大的小的标题" — the mono caps
+// row above every H3 was a fourth heading tier; the hierarchy is now
+// topic line → H2 claim → H3 → body, nothing else).
 function Prose({ section }: { section: CaseSection }) {
   return (
     <div className="ny-copy" data-fade>
-      <p className="ny-copy-tags">{section.tags}</p>
       <h3>{section.heading}</h3>
       {section.body.map((p) => (
         <p key={p}>{p}</p>
@@ -2770,27 +3093,44 @@ function Prose({ section }: { section: CaseSection }) {
   );
 }
 
-function Caption({ pl, children }: { pl: string; children: React.ReactNode }) {
+// One furniture row per figure (owner hierarchy cleanup, 2026-07-13):
+// caption left, gesture cue right — the same single row under every
+// artifact, never a second stacked mono line.
+function Caption({
+  pl,
+  cue,
+  children,
+}: {
+  pl: string;
+  cue?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <figcaption className="ny-caption">
       <span>
         <em className="ny-pl">Pl. {pl}</em>
         {children}
       </span>
+      {cue ? <InteractiveCue>{cue}</InteractiveCue> : null}
     </figcaption>
   );
 }
 
+/* ---- wall plates data ---- */
+// Column split balances the hang: col1 sums 5841, col2 5748 at the shared
+// 900 width, so with col2's clamp(48px…96px) drop the two bottoms land
+// within ~40px (2026-07-13 audit: the old split left a ~300px hole under
+// the right column). The two Sell pages read stacked in col2 on purpose.
 const wallPlates: [string, number, number, string][] = [
   // column 1
   ["web-marketplace", 900, 1583, "Marketplace — index"],
-  ["web-sell", 900, 1969, "Sell — listing intake"],
+  ["web-profile", 900, 1688, "Profile — public"],
   ["web-auction", 900, 1583, "Auctions — index"],
   ["web-message", 900, 987, "Messages"],
   // column 2
   ["web-mkt-listing", 900, 966, "Marketplace — listing intake"],
   ["web-live-auctions", 900, 844, "Auctions — live"],
-  ["web-profile", 900, 1688, "Profile — public"],
+  ["web-sell", 900, 1969, "Sell — listing intake"],
   ["web-selling-method", 900, 1969, "Sell — method"],
 ];
 
@@ -2811,7 +3151,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
     <article className="case-study-page nyma-case-page" data-has-cover="false">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(nymaCss + ICUE_CSS + OUTCOME_BAND_CSS),
+          __html: stripCssComments(nymaCss),
         }}
       />
       <NymaScroll />
@@ -2824,7 +3164,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             id: `ny-ch${i + 1}`,
             label: (ch.number.split("·")[1] ?? ch.number).trim(),
           })),
-          { id: "ny-turn", label: "The thread holds" },
+          { id: "ny-turn", label: "One system" },
         ]}
       />
 
@@ -2840,7 +3180,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             <span className="ny-archhead-title">
               Nyma
               <br />
-              <em>Brand &amp; Design System</em>
+              <em>Platform Brand &amp; Product System</em>
             </span>
             <span className="ny-archhead-right">2025 – 2026</span>
           </div>
@@ -2864,33 +3204,8 @@ export function NymaCaseLayout({ project }: { project: Project }) {
           <p className="ny-hero-lede" data-fade>
             {project.oneliner}
           </p>
-          <aside className="ny-toc" data-fade aria-label="Contents">
-            <header>
-              {/* sic — verbatim from the manual's own contents page
-                  (brandmanual/3.png); do not "correct" to CONTENTS */}
-              <span>TABLE OF CONTENT</span>
-              <span>νήμα — THREAD</span>
-            </header>
-            <ol>
-              {[
-                ["#ny-ch1", "The inheritance"],
-                ["#ny-ch2", "The thread"],
-                ["#ny-ch3", "The rulebook"],
-                ["#ny-ch4", "The pages"],
-                ["#ny-ch5", "The codification"],
-                ["#ny-ch6", "The handoff"],
-                ["#ny-turn", "The thread holds"],
-              ].map(([href, label], i) => (
-                <li key={href}>
-                  <a href={href}>
-                    <i>{i + 1}.0</i>
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-            <InteractiveCue>click a topic to jump to its page</InteractiveCue>
-          </aside>
+          {/* (the manual's black TOC card is retired — 2026-07-13 cleanup;
+              the sticky thread rail below is the page's index) */}
           <dl className="ny-hero-meta" data-fade>
             {meta.map(([label, value]) => (
               <div key={label}>
@@ -2917,38 +3232,15 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             </p>
           ))}
         </div>
-        {/* every displayed number keeps ONE home: 17 and 30–40 live in the
-            at-a-glance band above, ~50 in the ch.4 tally — the ledger holds
-            the rest (2026-07-08 audit: same-screen repeats) */}
-        <aside className="ny-ledger" data-fade aria-label="Project figures">
-          <div>
-            <strong data-count="4">4</strong>
-            <span>directions, drafted as conversation</span>
-          </div>
-          <div>
-            <strong data-count="3">3</strong>
-            <span>accent roles, enforced</span>
-          </div>
-          <div>
-            <strong data-count="2">2</strong>
-            <span>engineers who build after me</span>
-          </div>
-          <div>
-            <strong>1</strong>
-            <span>designer — me</span>
-          </div>
-          <p className="ny-ledger-note">
-            counts come from the working archive: the direction studies, the
-            manual’s color law, the team roster
-          </p>
-        </aside>
+        {/* (the 4/3/2/1 ledger is retired — 2026-07-13 cleanup; the
+            at-a-glance band above keeps the page's real numbers) */}
       </section>
 
       {/* ── The acts: the thread stitches the chapters together ── */}
       <div className="ny-acts">
         <ThreadRail />
         <div className="ny-acts-main">
-          {/* ── 1.0 · The inheritance ── */}
+          {/* ── 1.0 · The gap ── */}
           {inherit && (
             <section
               className="case-chapter ny-chapter"
@@ -3009,7 +3301,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             </section>
           )}
 
-          {/* ── 2.0 · The thread ── */}
+          {/* ── 2.0 · The thesis ── */}
           {thread && (
             <section
               className="case-chapter ny-chapter"
@@ -3136,7 +3428,10 @@ export function NymaCaseLayout({ project }: { project: Project }) {
 
               <figure className="ny-full" data-fade>
                 <NymaDirections />
-                <Caption pl="05">
+                <Caption
+                  pl="05"
+                  cue="click a direction — the same platform, four voices"
+                >
                   four AI-drafted directions, kept as conversation material —
                   never as answers
                 </Caption>
@@ -3144,7 +3439,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             </section>
           )}
 
-          {/* ── 3.0 · The rulebook ── */}
+          {/* ── 3.0 · The language ── */}
           {rulebook && (
             <section
               className="case-chapter ny-chapter"
@@ -3210,7 +3505,10 @@ export function NymaCaseLayout({ project }: { project: Project }) {
 
               <figure className="ny-full" data-fade>
                 <NymaColorRoles />
-                <Caption pl="07">
+                <Caption
+                  pl="07"
+                  cue="click a swatch — the card shows where that color is allowed"
+                >
                   the color law, live — role-based, never decorative
                 </Caption>
               </figure>
@@ -3250,10 +3548,10 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             </section>
           )}
 
-          {/* ── 4.0 · The pages ── */}
+          {/* ── 4.0 · The product ── */}
           {pages && (
             <section
-              className="case-chapter ny-chapter ny-stage-white"
+              className="case-chapter ny-chapter"
               data-act="3"
               id="ny-ch4"
             >
@@ -3309,7 +3607,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </Caption>
               </figure>
 
-              <div className="ny-section">
+              <div className="ny-section ny-walkrow">
                 {pages.sections[1] && <Prose section={pages.sections[1]} />}
                 <figure className="ny-aside" data-fade>
                   <div className="ny-pagescroll">
@@ -3348,7 +3646,10 @@ export function NymaCaseLayout({ project }: { project: Project }) {
 
               <figure className="ny-full" data-fade>
                 <NymaWardrobes />
-                <Caption pl="11">
+                <Caption
+                  pl="11"
+                  cue="switch the wardrobe — the shell doesn't move"
+                >
                   the inclusivity test — three wardrobes that share nothing,
                   one shell that never moves
                 </Caption>
@@ -3356,7 +3657,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             </section>
           )}
 
-          {/* ── 5.0 · The codification ── */}
+          {/* ── 5.0 · The framework ── */}
           {codify && (
             <section
               className="case-chapter ny-chapter"
@@ -3369,37 +3670,95 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 {/* full row: four columns in a 430px aside wrapped one word
                     per line (owner bug report) — the loop needs air */}
                 <figure className="ny-full" data-fade>
+                  {/* station order per the owner (2026-07-14): the prototype
+                      opens the flow discussion, Figma refines, Claude Code
+                      polishes the front-end, and it ships — then around
+                      again for the next surface */}
                   <div
                     className="ny-loop"
                     role="img"
-                    aria-label="The working loop: Figma for visual refinement, Claude Design for on-system edits, Claude Code for generation, and the front-end repo where the design rules live — re-export and refine, around again."
+                    aria-label="The working loop: a Claude Code and Claude Design prototype opens the flow discussion, Figma refines the visuals, Claude Code polishes the front-end from the written rules, and it ships live — then around again for the next surface."
                   >
+                    <i className="ny-loop-track" aria-hidden="true">
+                      <svg className="ny-loop-thread">
+                        <rect className="ny-loop-thread-path" />
+                      </svg>
+                      <b className="ny-loop-tick" />
+                      <b className="ny-loop-tick" />
+                      <b className="ny-loop-tick" />
+                      <b className="ny-loop-tick is-back" />
+                    </i>
+                    {/* each station carries a mini working-artifact window
+                        (the Pulse craft — recreate the artifact and let it
+                        move — drawn in Nyma's own b/w): terminal → canvas →
+                        rule sheet → live storefront. Scenes assemble when
+                        the station lights; the final state ships in the
+                        markup. */}
                     <div className="ny-loop-row">
                       <div className="ny-loop-node is-on">
+                        <i className="ny-loop-dot" aria-hidden="true" />
+                        <span
+                          className="ny-loop-scene is-proto"
+                          aria-hidden="true"
+                        >
+                          <b />
+                          <b />
+                          <b />
+                          <b />
+                        </span>
+                        <span className="ny-loop-index">01</span>
+                        <strong>CLAUDE CODE · DESIGN</strong>
+                        <em>the prototype first — flows discussed on a working artifact</em>
+                      </div>
+                      <div className="ny-loop-node is-on">
+                        <i className="ny-loop-dot" aria-hidden="true" />
+                        <span
+                          className="ny-loop-scene is-figma"
+                          aria-hidden="true"
+                        >
+                          <b />
+                          <b />
+                        </span>
+                        <span className="ny-loop-index">02</span>
                         <strong>FIGMA</strong>
                         <em>visual refinement · no longer the only truth</em>
                       </div>
-                      <i className="ny-loop-stitch" aria-hidden="true" />
                       <div className="ny-loop-node is-on">
-                        <strong>CLAUDE DESIGN</strong>
-                        <em>edit the artifact, on-system</em>
-                      </div>
-                      <i className="ny-loop-stitch" aria-hidden="true" />
-                      <div className="ny-loop-node is-on">
+                        <i className="ny-loop-dot" aria-hidden="true" />
+                        <span
+                          className="ny-loop-scene is-code"
+                          aria-hidden="true"
+                        >
+                          <b />
+                          <b />
+                          <b className="is-rule" />
+                          <b />
+                          <b />
+                        </span>
+                        <span className="ny-loop-index">03</span>
                         <strong>CLAUDE CODE</strong>
-                        <em>generate · refine from written rules</em>
+                        <em>the front-end, polished from written rules</em>
                       </div>
-                      <i className="ny-loop-stitch" aria-hidden="true" />
                       <div className="ny-loop-node is-on">
-                        <strong>FRONT-END REPO</strong>
-                        <em>where the design rules live</em>
+                        <i className="ny-loop-dot" aria-hidden="true" />
+                        <span
+                          className="ny-loop-scene is-live"
+                          aria-hidden="true"
+                        >
+                          <b className="is-mark" />
+                          <b />
+                          <b />
+                          <b />
+                          <b />
+                        </span>
+                        <span className="ny-loop-index">04</span>
+                        <strong>LIVE</strong>
+                        <em>shipped — the design rules stay in the repo</em>
                       </div>
                     </div>
-                    <div className="ny-loop-return">
-                      <span>re-export</span>
-                      <i aria-hidden="true" />
-                      <span>refine · around again</span>
-                    </div>
+                    <p className="ny-loop-return">
+                      around again — the next surface
+                    </p>
                   </div>
                   <Caption pl="12">
                     one loop — the nodes light in the order a change travels
@@ -3407,96 +3766,34 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </figure>
               </div>
 
+              {/* ---- pl.13 drafts desk (two sheets, flip to front) ---- */}
               <figure className="ny-full" data-fade>
-                <div className="ny-pair">
-                  <div className="ny-pair-item">
-                    <header>
-                      <h4>Draft A — the editorial argument</h4>
-                      <span>color · commerce-forward</span>
-                    </header>
-                    <div className="ny-plate">
-                      <Image
-                        src="/media/work/nyma/ai-draft-njal.png"
-                        width={1440}
-                        height={1230}
-                        alt="An AI-generated HTML draft: colorful live-auction and marketplace product rows under bold section headers."
-                        sizes="(max-width: 768px) 100vw, 48vw"
-                      />
-                    </div>
-                    <p>
-                      argues with imagery — colorful lots, magazine grids, the
-                      platform as a shop window
-                    </p>
-                  </div>
-                  <div className="ny-pair-item">
-                    <header>
-                      <h4>Draft B — the structural argument</h4>
-                      <span>mono · system-forward</span>
-                    </header>
-                    <div className="ny-plate">
-                      <Image
-                        src="/media/work/nyma/ai-draft-platform.png"
-                        width={1440}
-                        height={1290}
-                        alt="An AI-generated HTML draft: a monochrome Platform Advantages card row and grayscale auction listings, typeset in mono."
-                        sizes="(max-width: 768px) 100vw, 34vw"
-                      />
-                    </div>
-                    <p>
-                      argues with structure — fees, formats, verification;
-                      the platform as an institution
-                    </p>
-                  </div>
-                </div>
-                <div className="ny-pair-foot">
-                  <Caption pl="13">
-                    two HTML drafts generated from the same written brand
-                    language — the shipped site keeps B&rsquo;s structure and
-                    A&rsquo;s pacing
-                  </Caption>
-                </div>
+                <NymaDrafts />
+                <Caption
+                  pl="13"
+                  cue="click a sheet — the other argument comes forward"
+                >
+                  two HTML drafts generated from the same written brand
+                  language — the shipped site keeps B&rsquo;s structure and
+                  A&rsquo;s pacing
+                </Caption>
               </figure>
 
-              <div className="ny-section" style={{ marginTop: "var(--gap-block)" }}>
+              {/* ---- pl.14 system board (the coded rules, rendered) ---- */}
+              <div className="ny-section">
                 {codify.sections[1] && <Prose section={codify.sections[1]} />}
                 <figure className="ny-aside" data-fade>
-                  <div className="ny-pagescroll">
-                    <div className="ny-pagescroll-bar">
-                      <i />
-                      <i />
-                      <i />
-                      <span>nyma — design system, standalone artifact</span>
-                    </div>
-                    <div className="ny-pagescroll-frame">
-                      <Image
-                        src="/media/work/nyma/claude-design-system.png"
-                        width={1440}
-                        height={2200}
-                        alt="The codified NYMA design system as one standalone page: role-based color documentation and the two-role typography rules, generated from the repo."
-                        sizes="(max-width: 1080px) 100vw, 36vw"
-                      />
-                    </div>
-                    <div className="ny-pagescroll-foot">
-                      <Caption pl="14">
-                        the system, codified — one artifact the whole team reads
-                      </Caption>
-                      <InteractiveCue>
-                        <span className="ny-cue-scrub">
-                          keep scrolling — the artifact walks its own length
-                        </span>
-                        <span className="ny-cue-hand">
-                          scroll inside the frame — the artifact walks its own
-                          length
-                        </span>
-                      </InteractiveCue>
-                    </div>
-                  </div>
+                  <NymaSystemBoard />
+                  <Caption pl="14">
+                    the system, rendered — action slabs, signals, and fields
+                    straight from the coded rules
+                  </Caption>
                 </figure>
               </div>
             </section>
           )}
 
-          {/* ── 6.0 · The handoff ── */}
+          {/* ── 6.0 · The continuity ── */}
           {handoff && (
             <section
               className="case-chapter ny-chapter"
@@ -3545,38 +3842,43 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </figure>
               </div>
 
-              {/* the shipped commerce screens, shown once — as a working
-                  recreation instead of a static plate (owner 2026-07-08:
-                  "复现成可交互的 prototype，带手机 frame 的放在网页上") */}
-              <figure className="ny-wide ny-full" data-fade>
-                <NymaPhone />
-                <div className="nyp-foot">
+              {/* ---- pl.16 canvas + pl.17 prototype, one row ---- */}
+              {/* the assembled flows (small proof plate, centered against
+                  its taller neighbour) beside the working commerce
+                  prototype (owner 2026-07-08: "复现成可交互的 prototype，
+                  带手机 frame 的放在网页上") — canvas reads first, the
+                  interactive is the payoff */}
+              <div className="ny-section ny-protorow">
+                <figure className="ny-canvas-fig" data-fade>
+                  <div className="ny-plate ny-canvas-crop">
+                    <Image
+                      src="/media/work/nyma/claude-mobile.png"
+                      width={1440}
+                      height={1400}
+                      alt="The mobile prototype canvas: onboarding and core flows laid out as connected screens the team can build against."
+                      sizes="(max-width: 1080px) 100vw, 632px"
+                    />
+                  </div>
                   <Caption pl="16">
-                    auctions · bag · saved — the commerce spine, rebuilt as a
-                    working prototype; every interface fact from the shipped
-                    mobile design
+                    the mobile flows, assembled on one canvas for the team to
+                    build against
                   </Caption>
-                  <InteractiveCue>
-                    click through the screens — the lots, bag, and totals
-                    respond
-                  </InteractiveCue>
-                </div>
-              </figure>
-
-              <figure className="ny-wide ny-full" data-fade>
-                <div className="ny-plate">
-                  <Image
-                    src="/media/work/nyma/claude-mobile.png"
-                    width={1440}
-                    height={1400}
-                    alt="The mobile prototype canvas: onboarding and core flows laid out as connected screens the team can build against."
-                    sizes="(max-width: 1080px) 100vw, 72vw"
-                  />
-                </div>
-                <Caption pl="17">
-                  the mobile canvas, assembled for the team to build against
-                </Caption>
-              </figure>
+                </figure>
+                <figure className="ny-aside" data-fade>
+                  <NymaPhone />
+                  <div className="nyp-foot">
+                    <Caption pl="17">
+                      auctions · bag · saved — the commerce spine, rebuilt as
+                      a working prototype; every interface fact from the
+                      shipped mobile design
+                    </Caption>
+                    <InteractiveCue>
+                      click through the screens — the lots, bag, and totals
+                      respond
+                    </InteractiveCue>
+                  </div>
+                </figure>
+              </div>
             </section>
           )}
 
@@ -3585,7 +3887,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
             <div className="ny-turn-wrap" data-act="6" id="ny-turn">
               <section className="ny-turn" aria-labelledby="ny-turn-title">
                 <p className="ny-turn-eyebrow" data-fade>
-                  Most memorable moment
+                  What changed my practice
                 </p>
                 <i className="ny-turn-stitch" aria-hidden="true" />
                 <h2 id="ny-turn-title" data-fade>
@@ -3597,7 +3899,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                   ))}
                 </div>
                 <p className="ny-turn-foot" data-fade>
-                  νήμα — the thread holds
+                  Brand · product · implementation — one system
                 </p>
               </section>
             </div>

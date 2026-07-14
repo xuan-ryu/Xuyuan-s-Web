@@ -2,16 +2,29 @@
 
 "use client";
 
+// Home hero — the full-page ink-mountain WebGL scene plus the night "page 2"
+// profile card. Framer-ported client island; mounted once on the home page.
+// Scroll 0→1 over ~one viewport drives the whole choreography: day ink
+// painting → black/white inversion → dust dispersal into a star field →
+// profile card pinned like a setting moon behind the roof transition.
+// Contract: per-frame updates write inline styles / GL uniforms only (no
+// React state per frame); low-end / mobile / reduced-motion early-returns to
+// a CSS-SVG or photo fallback BEFORE three.js is ever fetched; unmount tears
+// down every listener, the hero-night body class, and all GL resources.
+// Does NOT own smooth scrolling (lib/scroll-behavior) or font loading
+// (app/layout injector), and never runs inside the Framer canvas anymore.
+
 import * as React from "react"
 import { useEffect, useRef } from "react"
 // NOTE: three.js is NOT imported statically — it's lazily `await import`ed inside
 // init3D() so mobile/low-end devices (which early-return to the CSS/SVG ink
 // fallback before init3D ever runs) never download or parse the ~150KB engine.
-import { subscribeLenis } from "@/lib/lenis-bus"
+import { subscribeScrollFrame } from "@/lib/scroll-behavior"
 import { Wordmark } from "@/components/wordmark"
 import { stripCssComments } from "@/lib/css-sanitize"
 
 
+/* ---- props and dom helpers ---- */
 type BirdDatum = {
     baseX: number
     baseY: number
@@ -70,6 +83,7 @@ function setClassState(
     }
 }
 
+/* ---- mountain shaders ---- */
 // 顶点着色器 — 墨山粒子：云海涌动 + 鼠标聚光
 const mountainVert = `
   precision mediump float;
@@ -244,6 +258,7 @@ const mountainFrag = `
   }
 `
 
+/* ---- bird shaders ---- */
 const birdVert = `
   attribute float aSize;
   uniform float uTime;
@@ -318,6 +333,7 @@ const birdFrag = `
   }
 `
 
+/* ---- star shaders ---- */
 const starVert = `
   attribute float aSize;
   attribute float aPhase;
@@ -353,6 +369,7 @@ const starFrag = `
   }
 `
 
+/* ---- flowmap and mist shaders ---- */
 // ——— flowmap (流场) — a low-res velocity field the cursor stirs and that
 // dissipates over time; the mountain samples it to drift like fluid (izanami-
 // style). Update pass: previous field * dissipation + a velocity splat at the
@@ -425,6 +442,7 @@ const mistFrag = `
   }
 `
 
+/* ---- terrain math helpers ---- */
 function hash(n: number) {
     return Math.abs(Math.sin(n) * 10000.0) % 1.0
 }
@@ -565,6 +583,7 @@ function getTerrainData(
     return _td
 }
 
+/* ---- gpu probe ---- */
 // One-shot GPU probe. CPU cores / deviceMemory say nothing about the GPU, yet
 // the point cloud is GPU-bound — so an 8-core laptop with an Intel iGPU, or a
 // browser with hardware acceleration disabled (→ software WebGL), would score a
@@ -596,6 +615,7 @@ function detectGPU(): { isSoftware: boolean; isIntegrated: boolean; name: string
     }
 }
 
+/* ---- hero component ---- */
 export default function DigitalLandscape(props: Props) {
     // de-framered: this never runs inside the Framer canvas anymore
     const isCanvas = false
@@ -692,6 +712,7 @@ export default function DigitalLandscape(props: Props) {
         }
     }, [isCanvas, scrollDemo])
 
+    /* ---- main scene effect ---- */
     useEffect(() => {
         if (typeof window === "undefined") return
         let isMounted = true
@@ -801,6 +822,7 @@ export default function DigitalLandscape(props: Props) {
         let winWidth = window.innerWidth
         let resumeSceneAnimation: (() => void) | null = null
 
+        /* ---- mouse tracking ---- */
         const mouseNDC = { x: 0, y: 0 }
         // smoothed cursor velocity (NDC/frame) — drives the "sliding water" wake
         const prevMouseNDC = { x: 0, y: 0 }
@@ -841,6 +863,7 @@ export default function DigitalLandscape(props: Props) {
             })
         }
 
+        /* ---- scroll plumbing ---- */
         // Shared scroll value: handleScroll writes this, animation loop reads it.
         // Decouples the animation loop from getScrollY() — which may return 0
         // when isCanvas is misdetected in Framer live-preview frames.
@@ -913,6 +936,7 @@ export default function DigitalLandscape(props: Props) {
                       Math.max(0, 2152 - winHeight * 1.55)
         }
 
+        /* ---- scroll handler ---- */
         const handleScroll = () => {
             if (!isMounted) return
             const componentTop =
@@ -1168,6 +1192,7 @@ export default function DigitalLandscape(props: Props) {
             }
         }
 
+        /* ---- scroll subscription and raf poll ---- */
         // Scroll source for the pin/fade transforms. Two drivers, mutually
         // exclusive per frame:
         //
@@ -1182,29 +1207,7 @@ export default function DigitalLandscape(props: Props) {
         //    suppress the stale DOM path.
         //  • No Lenis (reduced-motion / pre-mount / Framer canvas): fall back to
         //    the DOM scroll event.
-        let lenisActive = false
-        const onScrollRaf = () => {
-            if (lenisActive) return
-            handleScroll()
-        }
-        document.addEventListener("scroll", onScrollRaf, {
-            passive: true,
-            capture: true,
-        })
-        let lenisDetach: (() => void) | null = null
-        const onLenisScroll = () => handleScroll()
-        const unsubLenis = subscribeLenis((lenis) => {
-            lenisDetach?.()
-            lenisDetach = null
-            if (lenis) {
-                lenisActive = true
-                lenis.on("scroll", onLenisScroll)
-                lenisDetach = () => lenis.off("scroll", onLenisScroll)
-            } else {
-                lenisActive = false
-            }
-            handleScroll()
-        })
+        const unsubscribeScroll = subscribeScrollFrame(handleScroll)
         handleScroll()
 
         // ── RAF poll: Framer published/preview never fires DOM scroll events.
@@ -1255,6 +1258,7 @@ export default function DigitalLandscape(props: Props) {
         if (pollIO && backgroundRef.current)
             pollIO.observe(backgroundRef.current)
 
+        /* ---- low-end fallback ---- */
         // ── Mobile / 低端设备: skip Three.js entirely, use CSS ink fallback ──
         // Software WebGL (HW-accel off / SwiftShader / llvmpipe) can't push the
         // point cloud — route it to the CSS ink fallback too.
@@ -1330,11 +1334,7 @@ export default function DigitalLandscape(props: Props) {
                 isMounted = false
                 document.body.classList.remove("hero-night")
                 cancelAnimationFrame(scrollPollRaf)
-                unsubLenis?.()
-                lenisDetach?.()
-                document.removeEventListener("scroll", onScrollRaf, {
-                    capture: true,
-                })
+                unsubscribeScroll()
                 document.removeEventListener(
                     "visibilitychange",
                     resumeScrollPoll
@@ -1353,6 +1353,7 @@ export default function DigitalLandscape(props: Props) {
             }
         }
 
+        /* ---- init3d scene setup ---- */
         async function init3D() {
             try {
                 // lazy-load the engine here so it lands in its own chunk,
@@ -1420,6 +1421,7 @@ export default function DigitalLandscape(props: Props) {
                     0.3,
                     1.8
                 )
+                /* ---- mountain geometry builder ---- */
                 // Re-runnable particle-field builder. Resize rebuilds the field
                 // for the new width (debounced) instead of stretching the
                 // original, so the point count tracks screen size and the
@@ -1732,6 +1734,7 @@ export default function DigitalLandscape(props: Props) {
                 if (!geo || !isMounted) return
                 lastBuiltW = containerW
 
+                /* ---- mountain material ---- */
                 mountainMat = new THREE.ShaderMaterial({
                     vertexShader: mountainVert,
                     fragmentShader: mountainFrag,
@@ -1775,6 +1778,7 @@ export default function DigitalLandscape(props: Props) {
                     }, 380)
                 }
 
+                /* ---- flowmap and mist setup ---- */
                 // — Flowmap (流场) ————————————————————————————————————
                 // a low-res velocity field the cursor stirs; it dissipates each
                 // frame, and the mountain samples it to drift like fluid
@@ -1834,6 +1838,7 @@ export default function DigitalLandscape(props: Props) {
                     mistCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
                 }
 
+                /* ---- star field setup ---- */
                 // — Star field ——————————————————————————————————————
                 const starCount =
                     qualityTier === 1
@@ -1894,6 +1899,7 @@ export default function DigitalLandscape(props: Props) {
                 scene.add(starMesh)
                 // ——————————————————————————————————————————————————
 
+                /* ---- bird flock setup ---- */
                 const flockCount =
                         qualityTier === 0 ? 0 : qualityTier === 1 ? 2 : 3,
                     birdsPerFlock = 15,
@@ -2001,6 +2007,7 @@ export default function DigitalLandscape(props: Props) {
             }
         }
 
+        /* ---- animation loop ---- */
         function startAnimation(
             sceneArg: any,
             cameraArg: any,
@@ -2056,6 +2063,7 @@ export default function DigitalLandscape(props: Props) {
             let slowAccum = 0
             let adaptCooldown = 0
 
+            /* ---- visibility pause system ---- */
             // ── Visibility / pause system ──────────────────────────────────
             let isRunning = false
             let isPageVisible =
@@ -2159,6 +2167,7 @@ export default function DigitalLandscape(props: Props) {
             updateState()
             // ──────────────────────────────────────────────────────────────
 
+            /* ---- animate frame ---- */
             function animate() {
                 if (!isRunning) return
                 // Check scroll-based visibility BEFORE scheduling — stops RAF entirely
@@ -2453,6 +2462,7 @@ export default function DigitalLandscape(props: Props) {
             }
         }
 
+        /* ---- resize handling ---- */
         let resizeRaf = 0
         let scheduleMountainRebuild: ((w: number) => void) | null = null
         const handleResize = () => {
@@ -2474,15 +2484,12 @@ export default function DigitalLandscape(props: Props) {
         window.addEventListener("resize", handleResize, { passive: true })
         init3D()
 
+        /* ---- effect teardown ---- */
         return () => {
             isMounted = false
             document.body.classList.remove("hero-night")
             cancelAnimationFrame(scrollPollRaf)
-            unsubLenis?.()
-            lenisDetach?.()
-            document.removeEventListener("scroll", onScrollRaf, {
-                capture: true,
-            })
+            unsubscribeScroll()
             document.removeEventListener("visibilitychange", resumeScrollPoll)
             window.removeEventListener("focus", resumeScrollPoll)
             pollIO?.disconnect()
@@ -2515,6 +2522,7 @@ export default function DigitalLandscape(props: Props) {
         }
     }, [enableMouseSpotlight, isCanvas, liteMode])
 
+    /* ---- scene markup ---- */
     return (
         <div
             ref={backgroundRef}
@@ -2528,6 +2536,7 @@ export default function DigitalLandscape(props: Props) {
                 backgroundColor: "#FFFFFF",
             }}
         >
+            {/* ---- injected scene css ---- */}
             <style
                 dangerouslySetInnerHTML={{
                     __html: stripCssComments(`
@@ -2906,6 +2915,7 @@ export default function DigitalLandscape(props: Props) {
                 }}
             />
 
+            {/* ---- night overlay layer ---- */}
             {/* Night overlay — opacity 0→1，只走 Compositor，替代 backgroundColor repaint
                 fixed: doubles as the night-sky backdrop behind the roof
                 transition's transparent sky, so the moon sets BEHIND the eaves */}
@@ -2923,6 +2933,7 @@ export default function DigitalLandscape(props: Props) {
                 }}
             />
 
+            {/* ---- wordmark layer ---- */}
             {/* Wordmark — a fixed layer ABOVE the WebGL wrapper but at the page
                 level (so it DIFFERENCE-blends against the white backgroundRef +
                 the ink mountains). White text → reads black on the white page,
@@ -2956,6 +2967,7 @@ export default function DigitalLandscape(props: Props) {
                 </div>
             </div>
 
+            {/* ---- webgl wrapper and hero copy ---- */}
             {/* 第一页 WebGL Wrapper — fixed 跳出 Framer 祖先 layout，消除 sticky 弹跳 */}
             <div
                 ref={wrapperRef}
@@ -3068,6 +3080,7 @@ export default function DigitalLandscape(props: Props) {
                 </div>
             </div>
 
+            {/* ---- hero spacer and profile zone ---- */}
             {/* Hero spacer: with the 164vh profile zone this sums to the live
                 flow height 300vh − 911px (45vh at a 1000px-tall viewport). */}
             <div

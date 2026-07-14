@@ -53,6 +53,7 @@ export default function RootLayout({
             can't cause a hydration mismatch. media="print" keeps it off the
             render path; display=swap. */}
         <script
+          // leak-ok: plain JS string, contains no comments to strip
           dangerouslySetInnerHTML={{
             __html:
               "(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Noto+Sans+SC:wght@200;300;400;500;600;700&family=Saira+Condensed:wght@100;200;300;400&family=Oswald:wght@200;300&family=JetBrains+Mono:wght@100..800&display=swap';l.media='print';l.onload=function(){this.media='all';};document.head.appendChild(l);})();",

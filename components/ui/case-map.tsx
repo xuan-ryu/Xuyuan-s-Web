@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { subscribeLenis } from "@/lib/lenis-bus";
+import { scrollTo } from "@/lib/scroll-behavior";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 type Chapter = { id: string; label: string };
@@ -58,21 +58,15 @@ export function CaseMap({ chapters, accent }: Props) {
     setOpen(false);
     const target = document.getElementById(id);
     if (!target) return;
-    let lenis: import("lenis").default | null = null;
-    subscribeLenis((l) => {
-      lenis = l;
-    })();
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    if (lenis && !reduced) {
-      (lenis as import("lenis").default).scrollTo(target, {
-        duration: 1.2,
-        offset: -72,
-      });
-    } else {
-      target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-    }
+    scrollTo(target, {
+      duration: 1.2,
+      offset: reduced ? 0 : -72,
+      immediate: reduced,
+      fallback: reduced ? "auto" : "smooth",
+    });
   };
 
   if (!chapters.length) return null;

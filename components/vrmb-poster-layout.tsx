@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { adjacent, type Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 import { VrmbFlightLine } from "@/components/vrmb-flight-line";
 import { VrmbParticleStrip } from "@/components/vrmb-particle-strip";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
+import { OutcomeBand } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // VR Monarch Butterfly — "a naturalist's field folio for a virtual migration"
@@ -19,8 +20,13 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // Framer assets (see the probe notes at the bottom of this file). All
 // microcopy below is hardcoded here — NOT in data/projects.ts — pending owner
 // sign-off on the migration facts and exhibition sentences.
+// Server component, no state; the only client pieces are the imported
+// flight-line and particle-strip components. All page styling is the `css`
+// literal below (comments stripped at injection via stripCssComments) —
+// its internal ---- banners mirror the numbered chapters in the JSX.
 const MEDIA = "/media/work/vr";
 
+/* ---- scoped folio css ---- */
 const css = `
 .vrmb-page {
   /* Case palette — drawn from the specimen itself (owner rule 2026-07-05):
@@ -756,11 +762,12 @@ const css = `
 }
 `;
 
+/* ---- poster layout component ---- */
 export function VrmbPosterLayout({ project }: { project: Project }) {
   const poster = project.poster;
   if (!poster) return null;
 
-  const { prev, next } = adjacent(project.slug);
+  const { prev, next } = projectCatalog.adjacent(project.slug);
   const details: [string, ReactNode][] = [
     ["Project:", poster.details.project],
     ["Client:", poster.details.client],
@@ -773,7 +780,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
   return (
     <article className="poster-page vrmb-page">
       <style
-        dangerouslySetInnerHTML={{ __html: stripCssComments(css + OUTCOME_BAND_CSS) }}
+        dangerouslySetInnerHTML={{ __html: stripCssComments(css) }}
       />
 
       {/* 1 · Specimen plate */}
@@ -1150,6 +1157,7 @@ export function VrmbPosterLayout({ project }: { project: Project }) {
   );
 }
 
+/* ---- crop provenance notes ---- */
 // Derived assets in public/media/work/vr (all crops pixel-probed on 2026-07-02
 // with a canvas scan of the original Framer assets; rects are source-pixel
 // exact, with measured near-black letterbox bars trimmed):

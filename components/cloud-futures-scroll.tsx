@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { subscribeLenis } from "@/lib/lenis-bus";
-import type Lenis from "lenis";
+import { scrollTo } from "@/lib/scroll-behavior";
 
 // Scroll spine for the Cloud Support Futures page: the fixed case rail
 // (the authority gate's page-level incarnation), the four-color reading
@@ -27,13 +26,8 @@ export function CfCaseRail() {
   const [active, setActive] = useState(0);
   const [dark, setDark] = useState(false);
   const barRef = useRef<HTMLSpanElement>(null);
-  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    const unsub = subscribeLenis((l) => {
-      lenisRef.current = l;
-    });
-
     const stageEls = Array.from(
       document.querySelectorAll<HTMLElement>("[data-cf-stage]"),
     );
@@ -75,7 +69,6 @@ export function CfCaseRail() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
-      unsub();
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
@@ -92,9 +85,7 @@ export function CfCaseRail() {
       n.classList.add("is-visible");
     });
     const y = el.getBoundingClientRect().top + window.scrollY - 72;
-    const lenis = lenisRef.current;
-    if (lenis) lenis.scrollTo(y, { duration: 1.1 });
-    else window.scrollTo({ top: y, behavior: "smooth" });
+    scrollTo(y, { duration: 1.1 });
   };
 
   return (

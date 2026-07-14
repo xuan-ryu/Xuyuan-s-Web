@@ -3,7 +3,7 @@
 import Lenis from "lenis";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { setLenis } from "@/lib/lenis-bus";
+import { installScrollAdapter } from "@/lib/scroll-behavior";
 
 // The original Framer site ships Lenis smooth scrolling — the inertia is a
 // big part of how the scroll choreography feels. Same defaults here.
@@ -22,8 +22,19 @@ export function SmoothScroll() {
       // under reduced motion Lenis never mounts and the jump stays native
       anchors: true,
     });
-    // publish so scroll-pinned components can sync to Lenis's own emission
-    setLenis(lenis);
+    const uninstallAdapter = installScrollAdapter({
+      scrollTo: (target, options) => {
+        const adapterOptions = { ...options };
+        delete adapterOptions.fallback;
+        lenis.scrollTo(target, adapterOptions);
+      },
+      pause: () => lenis.stop(),
+      resume: () => lenis.start(),
+      subscribeFrame: (listener) => {
+        lenis.on("scroll", listener);
+        return () => lenis.off("scroll", listener);
+      },
+    });
 
     let rafId = 0;
     const raf = (time: number) => {
@@ -34,7 +45,7 @@ export function SmoothScroll() {
 
     return () => {
       cancelAnimationFrame(rafId);
-      setLenis(null);
+      uninstallAdapter();
       lenis.destroy();
     };
   }, []);

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { InteractiveCue } from "./ui/interactive-cue";
 
 // Nyma case page — the two hands-on specimens. Styles live in the page's
 // scoped <style> (nyma-case-layout.tsx); these components only carry state.
@@ -204,14 +203,9 @@ export function NymaDirections() {
           </p>
         </div>
       </div>
-      <footer className="ny-dir-foot">
-        <InteractiveCue>
-          click a direction — the same platform, four voices
-        </InteractiveCue>
-        <span className="ny-dir-note">
-          the blend that shipped: archival structure, editorial pacing
-        </span>
-      </footer>
+      {/* the gesture cue lives in the figure's caption row (one furniture
+          row per figure — 2026-07-13 hierarchy cleanup); the shipped-blend
+          note was cut as redundant with the Archival tab's own ✓ verdict */}
     </div>
   );
 }
@@ -328,11 +322,7 @@ export function NymaWardrobes() {
           </div>
         </div>
       </div>
-      <footer className="ny-ward-foot">
-        <InteractiveCue>
-          switch the wardrobe — the shell doesn&rsquo;t move
-        </InteractiveCue>
-      </footer>
+      {/* gesture cue lives in the figure's caption row — see NymaDirections */}
     </div>
   );
 }
@@ -460,11 +450,7 @@ export function NymaColorRoles() {
           </p>
         </div>
       </div>
-      <footer className="ny-roles-foot">
-        <InteractiveCue>
-          click a swatch — the card shows where that color is allowed
-        </InteractiveCue>
-      </footer>
+      {/* gesture cue lives in the figure's caption row — see NymaDirections */}
     </div>
   );
 }

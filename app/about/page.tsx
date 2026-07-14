@@ -4,17 +4,30 @@ import { Fragment, type CSSProperties } from "react";
 import { about } from "@/data/about";
 import { site } from "@/data/site";
 import { Cta } from "@/components/ui/cta";
-import { ICUE_CSS, InteractiveCue } from "@/components/ui/interactive-cue";
+import { InteractiveCue } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import HongyadongScene from "@/components/hongyadong";
 import { AboutDarkPin } from "@/components/about-dark-pin";
 import { stripCssComments } from "@/lib/css-sanitize";
+
+// About page — server component for the /about route: Hongyadong hero, then
+// one editorial scroll ("one roll of film"): frame 00 intro, frame 01 What
+// Changed + tools wall, frame 02 shutter, frame 03 How I Work dark band, then
+// vita / voices / habits. All copy comes from data/about.ts + data/site.ts.
+// Contract: the server markup IS the final state — [data-fade] entrances are
+// additive; everything new to this pass styles under the .abf- prefix in the
+// trailing page-owned style block (stripCssComments strips its comments at
+// injection); the dark→activities page-turn pin offset is measured at runtime
+// by the AboutDarkPin client mount.
+// Does NOT run client JS itself and does not restyle unchanged markup — the
+// base .about-* rules stay in globals.css.
 
 export const metadata: Metadata = {
   title: "About",
   description: about.heroIntro,
 };
 
+/* ---- constants and dojo caption prep ---- */
 const SEAL = "/media/shared/seal.png";
 
 // 心・技・体 hanging-scroll column + gloss, derived from the data/about.ts
@@ -45,6 +58,7 @@ export default function About() {
         scrollDemo={0}
       />
 
+      {/* ---- frame 00 intro ---- */}
       {/* ── Frame 00 — intro: portrait, koan, bio, resume ── */}
       <section className="about-header">
         <div className="container about-layout">
@@ -101,6 +115,7 @@ export default function About() {
         </div>
       </section>
 
+      {/* ---- frame 01 what changed ---- */}
       {/* ── Frame 01 — What Changed + toolbox index + sealed poster line ── */}
       <section className="section about-essay about-essay-right abf-pad">
         <div className="container">
@@ -174,6 +189,7 @@ export default function About() {
         </div>
       </section>
 
+      {/* ---- page turn and frame 02 shutter ---- */}
       <div className="about-page-turn">
         {/* ── Frame 02 — Before the Shutter Closes + 恰好 + Kyoto reel ── */}
         <section className="section about-essay about-shutter abf-shutter">
@@ -212,6 +228,7 @@ export default function About() {
           </div>
         </section>
 
+        {/* ---- frame 03 dark turn ---- */}
         <div className="about-dark-turn">
           {/* ── Frame 03 — How I Work: ink band, hanging scroll, dojo wall ── */}
           <section className="section about-dark abf-dark">
@@ -272,6 +289,7 @@ export default function About() {
             </div>
           </section>
 
+          {/* ---- vita timeline ---- */}
           {/* ── Rebate — vita timeline ── */}
           <section className="section about-activities abf-vita-sec">
             <div className="container">
@@ -297,6 +315,7 @@ export default function About() {
         </div>
       </div>
 
+      {/* ---- voices ---- */}
       {/* ── Rebate — voices ── */}
       <section className="section about-testimonials abf-voices">
         <div className="abf-vshell">
@@ -321,6 +340,7 @@ export default function About() {
         </div>
       </section>
 
+      {/* ---- habits ---- */}
       {/* ── Rebate — habits contact strip ── */}
       <section className="section about-habits abf-habits">
         <div className="container">
@@ -344,12 +364,14 @@ export default function About() {
           </div>
         </div>
       </section>
+      {/* ---- dark pin mount ---- */}
       {/* Bottom-pin offset for the dark→activities cover — measured on mount
           (and on resize/reflow) by a client effect; see about-dark-pin.tsx for
           why this must not be an inline <script>. Only desktop (≥1080px)
           bottom-pins — narrower widths stack the band (position: relative;
           top: auto via the media query below). */}
       <AboutDarkPin />
+      {/* ---- page owned styles ---- */}
       {/* ── "one roll of film" pass (.abf-) — page-owned styles ──
           globals.css .about-* rules keep styling the unchanged markup;
           everything new or overridden lives here under the abf prefix. */}
@@ -687,7 +709,6 @@ h2.about-habits-title.abf-t,
 }
 
 /* ─ shared interactive-cue primitive + placement under the wall ─ */
-${ICUE_CSS}
 .abf-tools-cue {
   margin-top: clamp(20px, 2.4vw, 30px);
 }

@@ -1,5 +1,5 @@
 import { site } from "@/data/site";
-import { projects } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 import { Loader } from "@/components/loader";
 import HeroScene from "@/components/hero-scene";
 import KoiPondScene from "@/components/koi-pond-lazy";
@@ -26,7 +26,6 @@ export default function Home() {
         scrollHint={site.scrollHint}
         page2Title={site.brandmark}
         page2Subtitle={site.blackPage.body}
-        page2Footer="The craft lives in the transitions."
         photoUrl="/media/shared/portrait.jpg"
       />
 
@@ -36,7 +35,10 @@ export default function Home() {
           framed in a round opening in the white garden wall beneath the eaves.
           Replaces the earlier moon-dial selector. */}
       <div id="featured" style={{ backgroundColor: "#020305" }}>
-        <FeaturedGate projects={projects} />
+        <FeaturedGate
+          projects={projectCatalog.all}
+          continuationText={site.homeHow.continueHint}
+        />
       </div>
 
       {/* The pond hosts How I Work: after a few feed drops, the title + method
@@ -55,8 +57,8 @@ export default function Home() {
                 eyebrow="INTERLUDE / INK ECOSYSTEM"
                 titleMain="A small pond"
                 titleSub="for the wandering eye"
-                tag="three drops surface how I work"
-                feedText="Drop me a problem"
+                tag={site.homeHow.feedHint}
+                feedText={site.homeHow.feedText}
                 showScrollTip
                 introDurationMs={800}
                 heroBoxXvw={50}

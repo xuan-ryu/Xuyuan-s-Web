@@ -6,7 +6,7 @@
 export const about = {
   heading: "About Me.",
   heroIntro:
-    "I'm an AI design engineer who likes making messy ideas behave: interfaces, prototypes, design systems, and the rules that help teams keep building after the first demo.",
+    "I'm an AI product designer and design engineer who likes making messy ideas behave: interfaces, prototypes, design systems, and the rules that help teams keep building after the first demo.",
   hometown: "My Hometown, Chongqing, China — A City Grounded in Its People.",
   koan: {
     zh: "好雪片々，不落别處",
@@ -14,7 +14,7 @@ export const about = {
     caption: "— Zen kōan on full presence",
   },
   bio: [
-    "Hi, I’m Xuyuan Liu, an AI design engineer based in New York, by way of Cornell.",
+    "Hi, I’m Xuyuan Liu, an AI product designer and design engineer based in New York, by way of Cornell.",
     "My work sits between product, interface, and code. I still start from a human question, but more and more I find myself asking a systems question too: what should stay consistent after the first version works?",
   ],
   resumeNote:

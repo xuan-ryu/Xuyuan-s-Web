@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { adjacent, type Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 import { Cta } from "@/components/ui/cta";
 import { HungerLoupeFrame } from "@/components/hunger-loupe-frame";
-import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
+import { InteractiveCue } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
+import { OutcomeBand } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The 1942 Edition" (spec-hunger1942): the project printed its own broadsheet,
@@ -18,7 +19,12 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // numbers and the active loupe ring.
 // Plate titles and captions are hardcoded here (data/projects.ts additions are
 // deferred to the serialized data pass).
+// Server component with NO client JS of its own: the loupe lives in
+// HungerLoupeFrame, reveals ride the global FadeReveal plus the served CSS
+// string below (comments stripped at injection) — reduced motion and no-JS
+// read the finished, fully-inked page.
 
+/* ---- plate data ---- */
 const SHEET_ALT =
   "Back to History — an aged 1942-style broadsheet dated 2023-04-20, the game-design document appendix. Its columns carry the oral histories the levels are built from: the Henan disaster, the storylines of Wan Shouren, Xuchang, and Zhengzhou.";
 
@@ -60,11 +66,15 @@ const PLATES = [
   },
 ];
 
+/* ---- HungerPosterLayout assembly ---- */
+// The desk itself: masthead → outcome band → broadsheet → dispatch →
+// motion reel → editorial → archive plates → poster nav. Each JSX section
+// below carries its own `── N ·` banner.
 export function HungerPosterLayout({ project }: { project: Project }) {
   const poster = project.poster;
   if (!poster) return null;
 
-  const { prev, next } = adjacent(project.slug);
+  const { prev, next } = projectCatalog.adjacent(project.slug);
   const youtubeHref = poster.details.livePreview?.href;
   const plates = PLATES.slice(0, poster.gallery.length).map((plate, i) => ({
     ...plate,
@@ -79,7 +89,7 @@ export function HungerPosterLayout({ project }: { project: Project }) {
     <article className="poster-page hunger-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(hungerCss + ICUE_CSS + OUTCOME_BAND_CSS),
+          __html: stripCssComments(hungerCss),
         }}
       />
 
@@ -331,6 +341,10 @@ export function HungerPosterLayout({ project }: { project: Project }) {
   );
 }
 
+/* ---- hunger css string ---- */
+// One served stylesheet for the whole page (dangerouslySetInnerHTML via
+// stripCssComments). Interior `── ` comments mark its own sections — grep
+// them to slice; never add TSX banners inside the literal.
 const hungerCss = `
 /* ============================================================
    Hunger 1942 — "The 1942 Edition" archival broadsheet layout.

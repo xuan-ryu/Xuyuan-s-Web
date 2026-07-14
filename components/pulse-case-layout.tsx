@@ -8,9 +8,8 @@ import { PulseComponentBrowser } from "./pulse-component-browser";
 import { PulseCreativeBrief } from "./pulse-creative-brief";
 import { PulsePlaygroundDemo } from "./pulse-playground-demo";
 import { PulseTokenChips } from "./pulse-token-chips";
-import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
+import { InteractiveCue } from "./ui/interactive-cue";
 import { OffscreenVideo } from "./ui/offscreen-video";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Pulse — "Studio Bloom" (owner direction, 2026-07-04): the one case page
@@ -18,7 +17,7 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // its scroll page-turn are retired (owner rejection); the page now sits on
 // Pulse's own stage — the #f4f7f7 neutral ground with soft cyan blooms,
 // glass bentos, white inner cards, ink chrome — and the "agent" feel comes
-// from motion and semantics, never from neon: a run-log rail tracks the acts,
+// from motion and semantics, never from neon: a case map tracks the acts,
 // the generation-status ladder lights in sequence, counters count, the
 // monolith splits on scrub, a typed stream runs in the hero console. Pulse's
 // own written rules hold here too: no glow, no halo, color only with meaning.
@@ -28,7 +27,7 @@ import { stripCssComments } from "@/lib/css-sanitize";
 //
 // Grid, named first (Muller-Brockmann rule): container = the shared work
 // shell (max 1440, margins --work-gutter, 12 columns, gutters
-// --work-grid-gap). Standing rails: the run-log rail cols 1-2 (sticky,
+// --work-grid-gap). Standing rails: the case-map rail cols 1-2 (sticky,
 // desktop only); chapter content cols 3-12, itself a 10-column grid — copy
 // 1-7 (≤62ch), aside artifacts 7-11, insets/full 1-11. Hero: H1 cols 4-10,
 // lede 4-9, run console cols 10-12 rows 1-3. Vertical rhythm: one
@@ -37,19 +36,25 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // product-frame recreations keep Pulse's own geometry, incl. its sanctioned
 // fully-rounded status pills — a product idiom, not a portfolio pill).
 //
-// Copy: verbatim from data/projects.ts (the 9-act causal chain — melee →
-// bet → look → wake-up → rescue → base → skills → interface → product; the
-// Turn closes). This layout attaches evidence positionally. Numbers were
+// Copy: verbatim from data/projects.ts (context first, then the thesis —
+// product → look set the stage; melee → bet → wake-up → rescue → base →
+// skills → interface carry the AI-era story; the proof lands the
+// before/after; the Turn closes). This layout attaches evidence
+// positionally. Numbers were
 // re-verified against the Pulse repo's git record on 2026-07-04: the peak
 // file is 10,180 lines (rev-verified; the earlier 13,020 didn't survive
-// audit), 824 commits over five weeks with 308 structural, 40 components in
+// audit), 824 commits over five weeks with 308 structural, 62 components in
 // the handoff library, 1,905 net dead lines removed (commit-subject
 // verbatim). Confidentiality invariants: teammates anonymous, tools as
 // categories, no commit hashes, package identity generalized.
 //
 // Choreography lives in <PulseScroll /> (GSAP + ScrollTrigger over the
-// lenis-bus). The server markup is always the FINAL state — reduced motion
+// Scroll Behaviour). The server markup is always the FINAL state — reduced motion
 // and no-JS read a finished page; motion only rewinds and replays it.
+// This file deliberately ships NO client JS of its own: server markup plus
+// one served CSS string (comments stripped at injection). The interactive
+// artifacts — component browser, creative brief, playground, token chips —
+// are separate client components imported above; don't inline them here.
 
 // ── Specimen data (traced to the Pulse system source) ──────────────────────
 
@@ -98,49 +103,70 @@ const ramps = [
   },
 ];
 
-// Component inventory — all 40 names from the Pulse handoff registry,
-// in registry order (verified against the preview's COMPONENTS array).
+// Component inventory — all 62 names from the current Pulse registry.
 const inventory = [
+  "ActionCard",
+  "ActionRangeTabs",
+  "ActivityHeatmap",
   "AIPanel",
+  "AnalyticsSubtabs",
+  "ApprovalChain",
   "Button",
+  "ButtonDanger",
+  "ButtonGhost",
   "ButtonPrimary",
   "ButtonSecondary",
-  "ButtonGhost",
-  "ButtonDanger",
-  "IconButton",
+  "CalendarPopover",
+  "CalendarPostBlock",
   "Card",
-  "Grid",
-  "MetricCard",
-  "ActionCard",
-  "MediaCard",
+  "ChartShell",
+  "ComboChart",
+  "CommandSummary",
+  "ConfirmBar",
+  "DataList",
+  "DataTable",
+  "DateRangeControl",
+  "DonutChart",
   "EmptyCard",
   "ErrorCard",
-  "ConfirmBar",
-  "Modal",
-  "Icon",
-  "PlatformBadge",
-  "PostChip",
-  "PlatformPreview",
-  "ApprovalChain",
-  "SegmentedTabs",
-  "PageNavTabs",
-  "ReportRangeTabs",
-  "ActionRangeTabs",
-  "AnalyticsSubtabs",
-  "SignalSeverityTabs",
-  "SignalRow",
-  "SignalCard",
-  "HorizontalBarChart",
-  "VerticalBarChart",
-  "ComboChart",
-  "LineChart",
+  "FeedbackState",
+  "Field",
   "FunnelChart",
-  "DataTable",
-  "ScoreGauge",
-  "StatList",
-  "Sidebar",
-  "StatusPill",
+  "GeoChart",
+  "Grid",
+  "HorizontalBarChart",
+  "Icon",
+  "IconButton",
+  "LineChart",
+  "MediaCard",
+  "MediaPreview",
+  "MetricBlock",
+  "MetricCard",
+  "MirroredBarChart",
+  "Modal",
   "NodeGenerationMap",
+  "PageNavTabs",
+  "PieChart",
+  "PlatformBadge",
+  "PlatformPreview",
+  "Popover",
+  "PostChip",
+  "RadarChart",
+  "ReportCallout",
+  "ReportRangeTabs",
+  "ScoreGauge",
+  "SegmentedTabs",
+  "Sidebar",
+  "SignalCard",
+  "SignalRow",
+  "SignalSeverityTabs",
+  "SourceCitationRow",
+  "StatList",
+  "StatusPill",
+  "Timeline",
+  "TreemapChart",
+  "VerticalBarChart",
+  "WordCloud",
 ];
 
 // The Create-with-AI flow — human checkpoints are the page's one seal-red
@@ -154,32 +180,19 @@ const gateSteps = [
   { label: "Publish", note: "a person releases — always", human: true },
 ];
 
-// The run-log rail — the page's agent spine. One entry per act, each a real
-// anchor into its chapter (the rail was already tracking data-act; now it
-// navigates too). Ids land on the chapter sections below.
+// Case map — seven editorial chapters. Supporting sections share their
+// parent chapter's data-act so the rail stays calm as the evidence expands.
 const acts = [
-  { id: "act-melee", label: "The melee" },
-  { id: "act-bet", label: "The bet" },
-  { id: "act-look", label: "The look" },
-  { id: "act-wakeup", label: "The wake-up" },
-  { id: "act-rescue", label: "The rescue" },
-  { id: "act-base", label: "The base" },
-  { id: "act-skills", label: "The skills" },
-  { id: "act-interface", label: "The interface" },
-  { id: "act-product", label: "The product" },
-  { id: "act-turn", label: "The turn" },
+  { id: "act-product", label: "Product" },
+  { id: "act-melee", label: "Fragmentation" },
+  { id: "act-bet", label: "Convergence" },
+  { id: "act-base", label: "System" },
+  { id: "act-skills", label: "Operating model" },
+  { id: "act-proof", label: "Proof" },
+  { id: "act-turn", label: "Reflection" },
 ];
 
-// Figures ledger — scope stats only (the hero console owns the run stats,
-// so nothing repeats: 824/40/5wk live there; 6/1/10,180/gates live here).
-const ledger: Array<[string, string]> = [
-  ["6", "tools, one product"],
-  ["1", "week to the pitch"],
-  ["10,180", "lines, the peak file"],
-  ["2", "gates + 1 publish rule"],
-];
-
-// ── The melee (ch. 01): four prototypes with the same face and
+// ── The melee (ch. 03): four prototypes with the same face and
 //    incompatible sources. The shared wireframe strip on top is the "one
 //    face"; under it, each card shows its source's characteristic UI idiom
 //    (canvas selection, inline-style soup, chat paste, photo composite) —
@@ -207,7 +220,7 @@ const meleeSources = [
   },
 ] as const;
 
-// ── The brand rules (ch. 03) — the written identity, four rules + the
+// ── The brand rules (ch. 02) — the written identity, four rules + the
 //    generation ladder in one card (the prose stays at label budget). ──
 const brandRules: Array<[string, string]> = [
   ["surface", "neutral first — gray stage, soft cyan light"],
@@ -216,7 +229,17 @@ const brandRules: Array<[string, string]> = [
   ["color", "only with meaning · red = falling data"],
 ];
 
-// ── Commit stream (ch. 05) — commit-style subjects, paraphrased from the
+// ── The tells (ch. 10) — how generated UI gives itself away, read against
+//    the campaign after-shot; each row names the tell and the base rule
+//    that forbids it (the copy makes the claim; this card is the checklist). ──
+const proofTells: Array<[string, string]> = [
+  ["a second voice", "one typeface · tabular numerals"],
+  ["decorative color", "six semantic ramps · color only with meaning"],
+  ["loud hierarchy", "size · spacing · tone — no bold, no border chrome"],
+  ["off-scale gaps", "8-based rhythm · every value on the token scale"],
+];
+
+// ── Commit stream (ch. 06) — commit-style subjects, paraphrased from the
 //    repo's real flavor; no hashes, no names. Two rows drift on scrub. ──
 const tickerRows: string[][] = [
   [
@@ -239,7 +262,7 @@ const tickerRows: string[][] = [
   ],
 ];
 
-// ── The skill card (ch. 07) — condensed from the real skill files. ──
+// ── The skill card (ch. 08) — condensed from the real skill files. ──
 const skillRules = [
   "compose from the component library before inventing page-local UI",
   "tokens only — no raw hex, no off-scale spacing or type",
@@ -247,7 +270,7 @@ const skillRules = [
   "run the consistency check before any handoff",
 ];
 
-// ── Four roles, one base (ch. 08) — the hub diagram's spokes. ──
+// ── Four roles, one base (ch. 09) — the hub diagram's spokes. ──
 const hubRoles: Array<[string, string]> = [
   ["design", "live preview + Figma boards"],
   ["engineering", "typed package + contracts"],
@@ -255,9 +278,9 @@ const hubRoles: Array<[string, string]> = [
   ["product", "one runnable flow"],
 ];
 
-// ── CI guard checks (ch. 06) — the jobs that protect the canonical HTML
+// ── CI guard checks (ch. 07) — the jobs that protect the canonical HTML
 //    library on every merge. The pipeline's later publish/pages jobs ship
-//    the SEPARATE npm package (ch. 08), so they're not shown here — the
+//    the SEPARATE npm package (ch. 09), so they're not shown here — the
 //    package hasn't been introduced yet at this point in the story. ──
 const ciSteps: Array<[string, string]> = [
   ["verify", "inventory ↔ preview ↔ board"],
@@ -265,7 +288,7 @@ const ciSteps: Array<[string, string]> = [
   ["generated", "hand-edit guard"],
 ];
 
-// ── Build timeline (ch. 07 close), drawn as a commit spine. Notes at label
+// ── Build timeline (ch. 08 close), drawn as a commit spine. Notes at label
 //    budget; `mine: false` marks a teammate's / the team's milestone (the
 //    outlined nodes — attribution is part of the drawing). Five verified
 //    weeks, 2026-05-30 → 2026-07-04, 824 commits. ──
@@ -325,7 +348,7 @@ const milestones = [
     mine: false,
   },
   {
-    // the 1,905 figure keeps its precise home in the ch. 05 ticker stats —
+    // the 1,905 figure keeps its precise home in the ch. 06 ticker stats —
     // this milestone names the event, not the number
     date: "Early July",
     title: "The payoff: the dead lines go",
@@ -350,9 +373,7 @@ const SHOT_W = 1440;
 const SHOT_H = 1000;
 
 // ── Microcopy set once here. ─────────────────────────────────────────────────
-const turnClaim =
-  "From shipping pages to building the system that ships them.";
-// The publish guardrail — verbatim project rule, typeset once under ch. 09.
+// The publish guardrail — verbatim project rule, typeset once under ch. 01.
 const guardrail = "AI can draft and schedule. A person releases to publish.";
 const guardrailNote =
   "The guardrail is independent of the gates, so turning approvals off never lets an agent publish on its own.";
@@ -362,6 +383,10 @@ const doctrineQuote =
 const fileQuote =
   "Preserve file:// support because designers may open this export directly.";
 
+/* ---- pulse css string ---- */
+// One served stylesheet for the whole page (dangerouslySetInnerHTML via
+// stripCssComments). Interior `── ` comments mark its own sections — grep
+// them to slice; never add TSX banners inside the literal.
 const pulseCss = `
 /* ── Pulse case page — Studio Bloom ──────────────────────────────────────
    The page adopts Pulse's own stage: #f4f7f7 ground, soft cyan blooms,
@@ -920,14 +945,16 @@ const pulseCss = `
   line-height: 1.5;
   color: var(--pp-text-3);
 }
-/* ── Ch. 09 — the product tour, one horizontal media band: three equal
-   cells (Home still · Calendar recording · onboarding still) sharing one
-   caption. Cells crop with object-fit: cover — the calendar recording is
-   1280×720 with ~34px pillarbox bars each side (measured 2026-07-08), so
-   the 4/3 center crop removes the bars entirely. ── */
-.pulse-band {
+/* ── Ch. 01 — the product tour (owner call 2026-07-13: the three-up band
+   rendered each screen ~380px wide — unreadable in the chapter that IS
+   the product). Home leads full-width and WHOLE (it is the decision
+   surface the copy names); the Calendar recording and onboarding share a
+   pair row below. Still one figure, one caption. Pair cells crop with
+   object-fit: cover — the calendar recording is 1280×720 with ~34px
+   pillarbox bars each side (measured 2026-07-08), so the 4/3 center crop
+   removes the bars entirely. ── */
+.pulse-tour {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--work-grid-gap);
 }
 .pulse-band-cell {
@@ -947,7 +974,7 @@ const pulseCss = `
   object-position: center;
 }
 @media (max-width: 809px) {
-  .pulse-band {
+  .pulse-tour .pulse-shot-pair {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -961,7 +988,7 @@ const pulseCss = `
 .pulse-shot-label.is-before { color: var(--pp-amber-dark); }
 .pulse-shot-label.is-after { color: var(--pp-green-dark); }
 
-/* ── Ch. 01 — the melee grid ────────────────────────────────────────────── */
+/* ── Ch. 03 — the melee grid ────────────────────────────────────────────── */
 .pulse-melee {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1180,7 +1207,7 @@ const pulseCss = `
   }
 }
 
-/* ── Ch. 03 — the generation-status ladder ──────────────────────────────── */
+/* ── Ch. 02 — the generation-status ladder ──────────────────────────────── */
 .pulse-ladder {
   display: flex;
   flex-wrap: wrap;
@@ -1207,7 +1234,7 @@ const pulseCss = `
 .pulse-ladder-pill[data-state="live"].is-on       { background: var(--pp-green-soft); color: var(--pp-green-dark); border-color: var(--pp-green-line); }
 .pulse-ladder-pill[data-state="attention"].is-on  { background: var(--pp-amber-soft); color: var(--pp-amber-dark); border-color: var(--pp-amber-line); }
 
-/* ── Ch. 04 — the monolith splits ───────────────────────────────────────── */
+/* ── Ch. 05 — the monolith splits ───────────────────────────────────────── */
 .pulse-monolith {
   display: flex;
   align-items: flex-end;
@@ -1307,7 +1334,7 @@ const pulseCss = `
   color: var(--pp-ink);
 }
 
-/* ── Ch. 05 — commit stream + loss card ─────────────────────────────────── */
+/* ── Ch. 06 — commit stream + loss card ─────────────────────────────────── */
 .pulse-ticker {
   overflow: hidden;
   display: grid;
@@ -1399,7 +1426,7 @@ const pulseCss = `
   color: var(--pp-text-4);
 }
 
-/* ── Ch. 06 — token sheet, ramps, inventory, CI chain ───────────────────── */
+/* ── Ch. 07 — token sheet, ramps, inventory, CI chain ───────────────────── */
 .pulse-spec-chips {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1642,7 +1669,7 @@ const pulseCss = `
   color: var(--pp-text-3);
 }
 
-/* ── Ch. 07 — skill card + build timeline ───────────────────────────────── */
+/* ── Ch. 08 — skill card + build timeline ───────────────────────────────── */
 .pulse-truth-epigraph {
   margin: 14px 0 2px;
   font-size: var(--text-meta);
@@ -1792,7 +1819,7 @@ const pulseCss = `
   }
 }
 
-/* ── Ch. 09 — product artifacts (brief, chat, guardrail) ────────────────── */
+/* ── Ch. 01 — product artifacts (brief, chat, guardrail) ────────────────── */
 .pulse-artifact {
   overflow: hidden;
   border: 1px solid var(--pp-line);
@@ -2738,8 +2765,252 @@ const pulseCss = `
   --ob-body: var(--pp-text-2);
   --ob-stat-ink: var(--pp-ink);
 }
+
+/* ── 2026 case-study edit: product-first, editorial, and quieter ───────── */
+.pulse-bloom {
+  opacity: 0.5;
+  animation: none !important;
+}
+.pulse-rail li.is-run::after {
+  animation: none !important;
+}
+.pulse-case-page .case-study-hero {
+  min-height: min(900px, 100dvh);
+  padding: clamp(112px, 10vw, 152px) var(--work-gutter)
+    clamp(72px, 7vw, 104px);
+  row-gap: clamp(20px, 2vw, 32px);
+  align-items: start;
+}
+.pulse-case-page .case-hero-kicker {
+  grid-column: 1 / 6;
+  grid-row: 1;
+  margin: 0;
+  color: var(--case-detail);
+}
+.pulse-case-page .case-study-hero h1 {
+  grid-column: 1 / 6;
+  grid-row: 2;
+  align-self: end;
+  font-size: clamp(64px, 7vw, 112px);
+  line-height: 0.9;
+}
+.pulse-case-page .case-hero-lede {
+  grid-column: 1 / 6;
+  grid-row: 3;
+  max-width: 42ch;
+  margin: 0;
+  color: var(--pp-text-2);
+}
+.pulse-case-page .case-hero-meta {
+  grid-column: 1 / 6;
+  grid-row: 4;
+  align-self: end;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--work-grid-gap);
+  border-top: 1px solid var(--pp-line-strong);
+}
+.pulse-case-page .case-hero-meta div {
+  padding: 12px 0;
+  border-bottom-color: var(--pp-line);
+}
+.pulse-hero-product {
+  grid-column: 6 / -1;
+  grid-row: 1 / 5;
+  align-self: center;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--pp-line-strong);
+  border-radius: 20px;
+  background: var(--pp-canvas);
+  box-shadow: var(--pp-shadow-rest);
+}
+.pulse-hero-product-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--pp-line);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pp-text-4);
+}
+.pulse-hero-product > img {
+  display: block;
+  background: var(--pp-stage);
+}
+.pulse-hero-proof {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--pp-line);
+}
+.pulse-hero-proof span {
+  min-width: 0;
+  padding: 18px;
+  font-size: var(--text-label);
+  line-height: 1.35;
+  color: var(--pp-text-3);
+}
+.pulse-hero-proof span + span {
+  border-left: 1px solid var(--pp-line);
+}
+.pulse-hero-proof strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: clamp(24px, 2.4vw, 36px);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--pp-ink);
+}
+.pulse-case-page .proj-summary {
+  padding: clamp(80px, 8vw, 120px) var(--work-gutter);
+  row-gap: 32px;
+}
+.pulse-case-page .proj-summary h2 {
+  grid-column: 1 / 6;
+  max-width: 12ch;
+  font-family: var(--font-text);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.pulse-case-page .proj-summary-copy {
+  grid-column: 7 / -1;
+  max-width: 68ch;
+}
+.pulse-case-page .proj-summary p {
+  font-family: var(--font-text);
+  color: var(--pp-text-2);
+}
+.pulse-rail-card {
+  padding: 12px 0;
+  border: 0;
+  border-top: 1px solid var(--pp-line-strong);
+  border-radius: 0;
+  background: transparent;
+}
+.pulse-rail li.is-done::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  align-self: center;
+  border-radius: 50%;
+  background: var(--pp-line-strong);
+}
+.pulse-rail li.is-run::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  align-self: center;
+  border-radius: 50%;
+  background: var(--pp-cyan-600);
+}
+.pulse-chapter {
+  padding: clamp(96px, 10vw, 144px) 0;
+}
+.pulse-chapter.is-subchapter {
+  padding-top: 48px;
+  padding-bottom: clamp(80px, 8vw, 112px);
+}
+.pulse-chapter.is-subchapter .pulse-chapter-head {
+  grid-column: 1 / 8;
+}
+.pulse-chapter.is-subchapter .pulse-chapter-claim {
+  max-width: 18em;
+  font-size: clamp(36px, 4vw, 56px);
+}
+.pulse-chapter.is-subchapter .pulse-chapter-headrule {
+  background: var(--pp-line);
+}
+.pulse-chapter-claim {
+  max-width: 18em;
+  font-size: clamp(48px, 5.4vw, 80px);
+  letter-spacing: -0.025em;
+}
+
+@media (max-width: 1079px) {
+  .pulse-case-page .case-study-hero {
+    min-height: 0;
+  }
+  .pulse-case-page .case-hero-kicker,
+  .pulse-case-page .case-study-hero h1,
+  .pulse-case-page .case-hero-lede,
+  .pulse-case-page .case-hero-meta {
+    grid-column: 1 / 6;
+  }
+  .pulse-hero-product {
+    grid-column: 6 / -1;
+  }
+}
+
+@media (max-width: 809px) {
+  .pulse-case-page .case-study-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 112px;
+    padding-bottom: 72px;
+  }
+  .pulse-case-page .case-hero-kicker,
+  .pulse-case-page .case-study-hero h1,
+  .pulse-case-page .case-hero-lede,
+  .pulse-case-page .case-hero-meta,
+  .pulse-hero-product {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .pulse-case-page .case-hero-kicker { order: 1; }
+  .pulse-case-page .case-study-hero h1 { order: 2; font-size: clamp(64px, 22vw, 88px); }
+  .pulse-case-page .case-hero-lede { order: 3; }
+  .pulse-hero-product { order: 4; margin-top: 16px; border-radius: 14px; }
+  .pulse-case-page .case-hero-meta { order: 5; grid-template-columns: minmax(0, 1fr); }
+  .pulse-hero-product-head {
+    padding: 12px 14px;
+  }
+  .pulse-hero-product-head span:last-child {
+    display: none;
+  }
+  .pulse-hero-proof {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pulse-hero-proof span {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .pulse-hero-proof span + span {
+    border-left: 0;
+    border-top: 1px solid var(--pp-line);
+  }
+  .pulse-hero-proof strong {
+    min-width: 40px;
+    margin: 0;
+    font-size: 24px;
+  }
+  .pulse-case-page .proj-summary {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+  .pulse-case-page .proj-summary h2,
+  .pulse-case-page .proj-summary-copy {
+    grid-column: 1;
+    max-width: none;
+  }
+  .pulse-chapter,
+  .pulse-chapter.is-subchapter {
+    padding: 80px 0;
+  }
+  .pulse-chapter.is-subchapter .pulse-chapter-head {
+    grid-column: 1;
+  }
+  .pulse-chapter-claim,
+  .pulse-chapter.is-subchapter .pulse-chapter-claim {
+    font-size: clamp(38px, 12vw, 54px);
+  }
+}
 `;
 
+/* ---- chapter head component ---- */
 // Chapter head: mono index above the claim (title outweighs index).
 function ChapterHead({ number, title }: { number: string; title: string }) {
   return (
@@ -2751,7 +3022,8 @@ function ChapterHead({ number, title }: { number: string; title: string }) {
   );
 }
 
-// The run-log rail — ONE persistent spine beside all the acts (QA: the old
+/* ---- run rail component ---- */
+// The case-map rail — ONE persistent spine beside all the acts (QA: the old
 // per-chapter copies read as nine duplicate cards). Server markup renders
 // the FINAL state (all acts done — the run finished); when motion is
 // allowed, PulseScroll rewinds it and drives done/running live from the
@@ -2763,10 +3035,10 @@ function RunRail() {
     <aside className="pulse-rail">
       <nav
         className="pulse-rail-card"
-        aria-label="Run log — jump to a chapter"
+        aria-label="Case study chapters"
         data-fade
       >
-        <span className="pulse-rail-head">Run log</span>
+        <span className="pulse-rail-head">Case map</span>
         <ol data-rail>
           {acts.map((act, i) => (
             <li key={act.id} className="is-done">
@@ -2782,6 +3054,7 @@ function RunRail() {
   );
 }
 
+/* ---- section prose component ---- */
 // Section prose: eyebrow tags + heading + body (copy rail, cols 1-7 of the
 // chapter's 10). Figures attach after this, per section, in the caller.
 function SectionProse({ section }: { section: CaseSection }) {
@@ -2796,6 +3069,10 @@ function SectionProse({ section }: { section: CaseSection }) {
   );
 }
 
+/* ---- PulseCaseLayout assembly ---- */
+// The page itself: hero → overview → the acts (rail + ten chapters) → the
+// Turn → adjacent case. Chapters come positionally from data/projects.ts;
+// each JSX chapter below carries its own `── NN ·` banner.
 export function PulseCaseLayout({ project }: { project: Project }) {
   const meta = [
     ["Role", project.role],
@@ -2803,9 +3080,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
     ["Type", project.type],
     ["Teams", project.teams],
   ];
-  // The nine-act causal chain from data/projects.ts:
-  // melee → bet → look → wake-up → rescue → base → skills → interface → product.
-  const [melee, bet, look, wakeup, rescue, base, skills, iface, product] =
+  // Chapters from data/projects.ts — context first, then the thesis:
+  // product → look (Part 1, the product on its own terms), melee → bet →
+  // wake-up → rescue → base → skills → interface (Part 2, the AI-era
+  // story), proof (Part 3, the before/after).
+  const [product, look, melee, bet, wakeup, rescue, base, skills, iface, proof] =
     project.chapters ?? [];
   const moment = project.moment;
 
@@ -2813,7 +3092,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
     <article className="case-study-page pulse-case-page" data-has-cover="false">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(pulseCss + ICUE_CSS + OUTCOME_BAND_CSS),
+          __html: stripCssComments(pulseCss),
         }}
       />
       <PulseScroll />
@@ -2824,59 +3103,35 @@ export function PulseCaseLayout({ project }: { project: Project }) {
       </div>
       <div className="pulse-navscrim" aria-hidden="true" />
 
-      {/* ── Hero: H1 + lede + meta rail + the run console ── */}
+      {/* ── Hero: the product first, with the system proof beside it ── */}
       <section className="case-study-hero" id="header">
         <p className="case-hero-kicker" data-fade>
-          Case Study
+          Product design · Design systems · Design engineering
         </p>
         <h1 data-fade>{project.title}</h1>
-        <aside className="pulse-console" aria-label="Project run console" data-fade>
-          <header className="pulse-console-head">
-            <span>
-              <em className="pulse-fig">Fig. 01</em>Run console
-            </span>
-            <span
-              className="pulse-pill"
-              data-state="ready"
-              data-cycle="queued:queued|scheduled:scheduled|generating:generating|ready:ready"
-            >
-              ready
-            </span>
-          </header>
-          <p
-            className="pulse-stream"
-            data-stream="six prototypes into one system, five weeks"
-          >
-            six prototypes into one system, five weeks
-          </p>
-          <div className="pulse-console-ledger">
-            <div>
-              <strong data-count="824">824</strong>
-              <span>commits &middot; five weeks</span>
-            </div>
-            <div>
-              <strong data-count="40">40</strong>
-              <span>components, one source</span>
-            </div>
-            <div>
-              <strong>3</strong>
-              <span>human checkpoints</span>
-            </div>
-          </div>
-          <svg className="pulse-ecg" viewBox="0 0 640 64" aria-hidden="true">
-            <path
-              className="pulse-ecg-base"
-              d="M0 40 H190 l10 -14 12 26 10 -30 12 22 8 -4 H420 l10 -10 12 18 8 -8 H640"
-            />
-            <path
-              className="pulse-ecg-trace"
-              d="M0 40 H190 l10 -14 12 26 10 -30 12 22 8 -4 H420 l10 -10 12 18 8 -8 H640"
-            />
-          </svg>
-        </aside>
         <p className="case-hero-lede" data-fade>
           {project.oneliner}
         </p>
+        <figure className="pulse-hero-product" data-fade>
+          <div className="pulse-hero-product-head">
+            <span>Pulse / Home</span>
+            <span>Unified product runtime</span>
+          </div>
+          <Image
+            src="/media/work/pulse/pulse-app-home.png"
+            alt="Pulse Home showing action items, the content queue, and live signals in one workspace"
+            width={SHOT_W}
+            height={SHOT_H}
+            priority
+            sizes="(max-width: 809px) 100vw, 62vw"
+            style={{ width: "100%", height: "auto" }}
+          />
+          <figcaption className="pulse-hero-proof">
+            <span><strong>6</strong> product surfaces</span>
+            <span><strong>62</strong> canonical components</span>
+            <span><strong>3</strong> system checks passing</span>
+          </figcaption>
+        </figure>
         <dl className="case-hero-meta" data-fade>
           {meta.map(([label, value]) => (
             <div key={label}>
@@ -2887,13 +3142,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </dl>
       </section>
 
-      {/* ── At a glance: the recruiter's skim row (audit #1) ── */}
-      {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
-
-      {/* ── Overview: what Pulse is + the scope, once + figures ledger ── */}
+      {/* ── Overview: assignment and expanded scope, once ── */}
       <section className="proj-summary" aria-labelledby="project-summary">
         <h2 id="project-summary" data-fade>
-          Project Summary
+          The assignment became the operating system
         </h2>
         <div className="proj-summary-copy">
           {(project.summary ?? [project.blurb]).map((p) => (
@@ -2902,29 +3154,274 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             </p>
           ))}
         </div>
-        <aside className="pulse-ledger" aria-label="Project figures" data-fade>
-          {ledger.map(([n, unit]) => (
-            <div key={unit}>
-              <strong>{n}</strong>
-              <span>{unit}</span>
-            </div>
-          ))}
-          <p className="pulse-ledger-note">
-            teammates, tools, and the package identity are generalized on
-            purpose &mdash; the work is real; the internals stay internal
-          </p>
-        </aside>
       </section>
 
-      {/* ── The acts: one persistent run-log rail beside all nine chapters
-          and the Turn — the "one run" spine, driven on scroll ── */}
+      {/* ── The case map: seven chapters, with supporting subchapters ── */}
       <div className="pulse-acts">
         <RunRail />
         <div className="pulse-acts-main">
 
-      {/* ── 01 · The melee ── */}
+      {/* ── 01 · The product ── */}
+      {product && (
+        <section className="case-chapter pulse-chapter" id="act-product" data-act="0">
+            <ChapterHead number={product.number} title={product.title} />
+            {product.sections[0] && (
+              <div className="pulse-section">
+                <SectionProse section={product.sections[0]} />
+                {/* the product tour (2026-07-13 owner call: three-up band was
+                    unreadable) — Home leads full-width and whole, the
+                    Calendar recording (owner recording, 2026-07-07) and
+                    onboarding pair up below; one figure, one caption */}
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-tour">
+                    <div className="pulse-shot">
+                      <Image
+                        src="/media/work/pulse/pulse-app-home.png"
+                        alt="Pulse app Home page: workspace sidebar for the demo brand, action-item KPI tiles, content queue, and signals feed"
+                        width={SHOT_W}
+                        height={SHOT_H}
+                        sizes="(max-width: 1080px) 100vw, 1120px"
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </div>
+                    <div className="pulse-shot-pair">
+                      <div className="pulse-band-cell pulse-shot">
+                        <OffscreenVideo
+                          src="/media/work/pulse/calendar-run.mp4"
+                          poster="/media/work/pulse/calendar-run-poster.jpg"
+                          aria-label="Pulse Calendar walkthrough: day, week, month and list views with the schedule-health rail and scheduling queue"
+                        />
+                      </div>
+                      <div className="pulse-band-cell pulse-shot">
+                        <Image
+                          src="/media/work/pulse/pulse-app-onboarding.png"
+                          alt="Pulse brand onboarding: an editorial hero reading 'Your brand, decoded. Your channels, run.' above brand-URL and brand-guide inputs"
+                          width={SHOT_W}
+                          height={916}
+                          sizes="(max-width: 809px) 100vw, 560px"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 02</em>The product,
+                      toured &mdash; Home leads as the decision surface; the
+                      scheduling Calendar (recorded) and brand onboarding
+                      follow, every screen served from a file:// address
+                    </span>
+                  </figcaption>
+                </figure>
+              </div>
+            )}
+            {product.sections[1] && (
+              <div className="pulse-section">
+                <SectionProse section={product.sections[1]} />
+                <div className="pulse-section-aside">
+                  <figure data-fade>
+                    <div className="pulse-artifact">
+                      <PulseCreativeBrief />
+                    </div>
+                    <figcaption className="pulse-fig-caption">
+                      <span>
+                        <em className="pulse-fig">Fig. 03</em>The Creative
+                        Brief &mdash; a person shapes the AI draft
+                      </span>
+                      <InteractiveCue>edit a field, then approve</InteractiveCue>
+                    </figcaption>
+                  </figure>
+                  <figure data-fade style={{ marginTop: 24 }}>
+                    <div className="pulse-artifact">
+                      <div className="pulse-chat">
+                        <div className="pulse-chat-turn">
+                          <p className="pulse-chat-assistant">
+                            Draft brief is ready &mdash; audience and tone come
+                            from your brand vault.
+                          </p>
+                          <p className="pulse-chat-note">
+                            assistant &middot; plain text, no bubble
+                          </p>
+                        </div>
+                        <div className="pulse-chat-turn">
+                          <div className="pulse-chat-user">
+                            <span>Tighten the key message.</span>
+                          </div>
+                          <p className="pulse-chat-note is-right">
+                            user &middot; ink bubble, right-aligned
+                          </p>
+                        </div>
+                        <div className="pulse-chat-turn">
+                          <div className="pulse-chat-card">
+                            <strong>Creative Brief</strong>
+                            <i aria-hidden="true" />
+                            <i aria-hidden="true" />
+                            <i aria-hidden="true" />
+                            <span>Open brief</span>
+                          </div>
+                          <p className="pulse-chat-note">
+                            rich content &middot; a card; inline controls stay
+                            flat
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <figcaption className="pulse-fig-caption">
+                      <span>
+                        <em className="pulse-fig">Fig. 04</em>Chat contract
+                        &mdash; the assistant follows the product component
+                        contract
+                      </span>
+                    </figcaption>
+                  </figure>
+                </div>
+              </div>
+            )}
+            {product.sections[2] && (
+              <div className="pulse-section">
+                <SectionProse section={product.sections[2]} />
+                <figure className="pulse-section-inset" data-fade>
+                  <div className="pulse-chain-row is-approvals">
+                    <div className="pulse-chain-cell">
+                      <i>01</i>
+                      <strong>Reviewer</strong>
+                    </div>
+                    <span className="pulse-chain-link">SLA 24h</span>
+                    <div className="pulse-chain-cell">
+                      <i>02</i>
+                      <strong>Brand admin</strong>
+                    </div>
+                    <span className="pulse-chain-link">SLA 24h</span>
+                    <div className="pulse-chain-cell">
+                      <i>03</i>
+                      <strong>Org owner</strong>
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 05</em>Approval chain
+                      &mdash; reviewer to brand admin to org owner, a 24-hour
+                      SLA at each handoff
+                    </span>
+                  </figcaption>
+                </figure>
+                <div className="pulse-guardrail pulse-section-inset" data-fade>
+                  <p className="pulse-guardrail-claim">{guardrail}</p>
+                  <p className="pulse-guardrail-note">{guardrailNote}</p>
+                </div>
+              </div>
+            )}
+        </section>
+      )}
+
+      {/* ── 02 · The look ── */}
+      {look && (
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-look" data-act="0">
+            <ChapterHead number={look.number} title={look.title} />
+            {look.sections[0] && (
+              <div className="pulse-section">
+                <SectionProse section={look.sections[0]} />
+                <figure className="pulse-section-aside" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>brand rules &middot; written day one</span>
+                    </header>
+                    <div className="pulse-kv">
+                      {brandRules.map(([rule, deal]) => (
+                        <div className="pulse-kv-row" key={rule}>
+                          <span>{rule}</span>
+                          <em>{deal}</em>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="pulse-ladder">
+                      <span className="pulse-ladder-pill is-on" data-state="queued">
+                        queued
+                      </span>
+                      <span className="pulse-ladder-pill is-on" data-state="scheduled">
+                        scheduled
+                      </span>
+                      <span className="pulse-ladder-pill is-on" data-state="generating">
+                        generating
+                      </span>
+                      <span className="pulse-ladder-pill is-on" data-state="ready">
+                        ready
+                      </span>
+                      <span className="pulse-ladder-pill is-on" data-state="live">
+                        published
+                      </span>
+                      <span className="pulse-ladder-pill is-on" data-state="attention">
+                        needs attention
+                      </span>
+                    </div>
+                    <p className="pulse-spec-foot">
+                      the generation ladder &mdash; each hue has one job; they
+                      light in order as you arrive
+                    </p>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 06</em>Few rules, firmly
+                      held &mdash; color appears only when it means something
+                    </span>
+                  </figcaption>
+                </figure>
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-shot-pair">
+                    <div className="pulse-shot">
+                      <Image
+                        src="/media/work/pulse/accent-study.png"
+                        alt="Pulse accent study: two identical dashboards rendered side by side, one with the cyan candidate accent and one with green"
+                        width={SHOT_W}
+                        height={SHOT_H}
+                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 520px"
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </div>
+                    <div className="pulse-shot">
+                      <Image
+                        src="/media/work/pulse/cyan-experiment.png"
+                        alt="Pulse home dashboard experiment with the winning cyan accent applied across signals, decision queue, and weekly report"
+                        width={SHOT_W}
+                        height={SHOT_H}
+                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 520px"
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 07</em>The accent study
+                      &mdash; identical dashboards, candidate accents side by
+                      side; then the cyan experiment on a full Home
+                    </span>
+                  </figcaption>
+                </figure>
+                <figure className="pulse-section-inset" data-fade>
+                  <div className="pulse-shot">
+                    <Image
+                      src="/media/work/pulse/foundations-color.png"
+                      alt="Pulse design-system foundations: the 'Neutral first, color with meaning' section with named swatches, status chips, and semantics rules"
+                      width={SHOT_W}
+                      height={SHOT_H}
+                      sizes="(max-width: 1080px) 100vw, 1030px"
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 08</em>The rules, written
+                      down &mdash; the foundations page every hue answers to
+                    </span>
+                  </figcaption>
+                </figure>
+              </div>
+            )}
+        </section>
+      )}
+
+      {/* ── 03 · The melee ── */}
       {melee && (
-        <section className="case-chapter pulse-chapter" id="act-melee" data-act="0">
+        <section className="case-chapter pulse-chapter" id="act-melee" data-act="1">
             <ChapterHead number={melee.number} title={melee.title} />
             {melee.sections[0] && (
               <div className="pulse-section">
@@ -2985,7 +3482,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 02</em>Four prototypes,
+                      <em className="pulse-fig">Fig. 09</em>Four prototypes,
                       one face &mdash; and four sources that cannot be merged
                     </span>
                   </figcaption>
@@ -2995,9 +3492,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 02 · The bet ── */}
+      {/* ── 04 · The bet ── */}
       {bet && (
-        <section className="case-chapter pulse-chapter" id="act-bet" data-act="1">
+        <section className="case-chapter pulse-chapter" id="act-bet" data-act="2">
             <ChapterHead number={bet.number} title={bet.title} />
             {bet.sections[0] && (
               <div className="pulse-section">
@@ -3052,7 +3549,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 03</em>The bet &mdash;
+                      <em className="pulse-fig">Fig. 10</em>The bet &mdash;
                       the style pass made six efforts rhyme; it was a look,
                       not a system
                     </span>
@@ -3063,115 +3560,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 03 · The look ── */}
-      {look && (
-        <section className="case-chapter pulse-chapter" id="act-look" data-act="2">
-            <ChapterHead number={look.number} title={look.title} />
-            {look.sections[0] && (
-              <div className="pulse-section">
-                <SectionProse section={look.sections[0]} />
-                <figure className="pulse-section-aside" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>brand rules &middot; written day one</span>
-                    </header>
-                    <div className="pulse-kv">
-                      {brandRules.map(([rule, deal]) => (
-                        <div className="pulse-kv-row" key={rule}>
-                          <span>{rule}</span>
-                          <em>{deal}</em>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="pulse-ladder">
-                      <span className="pulse-ladder-pill is-on" data-state="queued">
-                        queued
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="scheduled">
-                        scheduled
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="generating">
-                        generating
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="ready">
-                        ready
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="live">
-                        published
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="attention">
-                        needs attention
-                      </span>
-                    </div>
-                    <p className="pulse-spec-foot">
-                      the generation ladder &mdash; each hue has one job; they
-                      light in order as you arrive
-                    </p>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 04</em>Few rules, firmly
-                      held &mdash; color appears only when it means something
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-shot-pair">
-                    <div className="pulse-shot">
-                      <Image
-                        src="/media/work/pulse/accent-study.png"
-                        alt="Pulse accent study: two identical dashboards rendered side by side, one with the cyan candidate accent and one with green"
-                        width={SHOT_W}
-                        height={SHOT_H}
-                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 520px"
-                        style={{ width: "100%", height: "auto" }}
-                      />
-                    </div>
-                    <div className="pulse-shot">
-                      <Image
-                        src="/media/work/pulse/cyan-experiment.png"
-                        alt="Pulse home dashboard experiment with the winning cyan accent applied across signals, decision queue, and weekly report"
-                        width={SHOT_W}
-                        height={SHOT_H}
-                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 520px"
-                        style={{ width: "100%", height: "auto" }}
-                      />
-                    </div>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 05</em>The accent study
-                      &mdash; identical dashboards, candidate accents side by
-                      side; then the cyan experiment on a full Home
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-shot">
-                    <Image
-                      src="/media/work/pulse/foundations-color.png"
-                      alt="Pulse design-system foundations: the 'Neutral first, color with meaning' section with named swatches, status chips, and semantics rules"
-                      width={SHOT_W}
-                      height={SHOT_H}
-                      sizes="(max-width: 1080px) 100vw, 1030px"
-                      style={{ width: "100%", height: "auto" }}
-                    />
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 06</em>The rules, written
-                      down &mdash; the foundations page every hue answers to
-                    </span>
-                  </figcaption>
-                </figure>
-              </div>
-            )}
-        </section>
-      )}
-
-      {/* ── 04 · The wake-up ── */}
+      {/* ── 05 · The wake-up ── */}
       {wakeup && (
-        <section className="case-chapter pulse-chapter" id="act-wakeup" data-act="3">
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-wakeup" data-act="2">
             <ChapterHead number={wakeup.number} title={wakeup.title} />
             {wakeup.sections[0] && (
               <div className="pulse-section">
@@ -3217,7 +3608,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 07</em>The wake-up file
+                      <em className="pulse-fig">Fig. 11</em>The wake-up file
                       against the shape that replaced it &mdash; scroll runs
                       the split
                     </span>
@@ -3269,7 +3660,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 08</em>Engineer my own
+                      <em className="pulse-fig">Fig. 12</em>Engineer my own
                       page, then ask engineering
                     </span>
                   </figcaption>
@@ -3279,9 +3670,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 05 · The rescue ── */}
+      {/* ── 06 · The rescue ── */}
       {rescue && (
-        <section className="case-chapter pulse-chapter" id="act-rescue" data-act="4">
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-rescue" data-act="2">
             <ChapterHead number={rescue.number} title={rescue.title} />
             {rescue.sections[0] && (
               <div className="pulse-section">
@@ -3331,16 +3722,14 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 09</em>AI carried the
+                      <em className="pulse-fig">Fig. 13</em>AI carried the
                       bulk; the fidelity was hand work
                     </span>
                   </figcaption>
                 </figure>
                 <figure className="pulse-section-full" data-fade>
-                  {/* 824/five-weeks live in the hero console only — this row
-                      keeps the two numbers the commit stream itself is about
-                      (308 also heads the at-a-glance band as the skim stat;
-                      here it sits in its native context) */}
+                  {/* Activity counts stay here, in the evidence that explains
+                      them, instead of competing with the product outcome. */}
                   <div className="pulse-ticker-stats">
                     <div>
                       <strong data-count="308">308</strong>
@@ -3366,7 +3755,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 10</em>The commit stream,
+                      <em className="pulse-fig">Fig. 14</em>The commit stream,
                       paraphrased from the repo&rsquo;s own log &mdash; no
                       hashes, no names
                     </span>
@@ -3382,9 +3771,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 06 · The base ── */}
+      {/* ── 07 · The base ── */}
       {base && (
-        <section className="case-chapter pulse-chapter" id="act-base" data-act="5">
+        <section className="case-chapter pulse-chapter" id="act-base" data-act="3">
             <ChapterHead number={base.number} title={base.title} />
             {base.sections[0] && (
               <div className="pulse-section">
@@ -3433,7 +3822,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 11</em>The canonical
+                      <em className="pulse-fig">Fig. 15</em>The canonical
                       token sheet &mdash; six ramps, one scale, one rhythm
                     </span>
                     <InteractiveCue>click / tap a chip to copy its hex</InteractiveCue>
@@ -3450,8 +3839,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 12</em>The full registry
-                      &mdash; 40 components, each its own folder over shared
+                      <em className="pulse-fig">Fig. 16</em>The full registry
+                      &mdash; 62 components, each its own folder over shared
                       tokens
                     </span>
                   </figcaption>
@@ -3471,7 +3860,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 13</em>The CI guard checks
+                      <em className="pulse-fig">Fig. 17</em>The CI guard checks
                       &mdash; inventory, tokens, and hand-edits, reconciled on
                       every merge
                     </span>
@@ -3501,9 +3890,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 07 · The skills ── */}
+      {/* ── 08 · The skills ── */}
       {skills && (
-        <section className="case-chapter pulse-chapter" id="act-skills" data-act="6">
+        <section className="case-chapter pulse-chapter" id="act-skills" data-act="4">
             <ChapterHead number={skills.number} title={skills.title} />
             {skills.sections[0] && (
               <div className="pulse-section">
@@ -3564,7 +3953,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 14</em>The repetition
+                      <em className="pulse-fig">Fig. 18</em>The repetition
                       loop a skill deletes
                     </span>
                   </figcaption>
@@ -3590,7 +3979,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 15</em>The rules, made
+                      <em className="pulse-fig">Fig. 19</em>The rules, made
                       loadable &mdash; on-system by construction, not by repair
                     </span>
                   </figcaption>
@@ -3643,7 +4032,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 16</em>Harness control
+                      <em className="pulse-fig">Fig. 20</em>Harness control
                       &mdash; the feedback loop that stays
                     </span>
                   </figcaption>
@@ -3675,7 +4064,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 17</em>Build timeline
+                      <em className="pulse-fig">Fig. 21</em>Build timeline
                       &mdash; five weeks from melee to system, late May to
                       early July 2026
                     </span>
@@ -3686,9 +4075,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 08 · The interface ── */}
+      {/* ── 09 · The interface ── */}
       {iface && (
-        <section className="case-chapter pulse-chapter" id="act-interface" data-act="7">
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-interface" data-act="4">
             <ChapterHead number={iface.number} title={iface.title} />
             {iface.sections[0] && (
               <div className="pulse-section">
@@ -3697,9 +4086,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <PulseComponentBrowser />
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 18</em>The component
+                      <em className="pulse-fig">Fig. 22</em>The component
                       browser, rebuilt live &mdash; real components from the
-                      Pulse registry; the shipped browser holds all 40
+                      Pulse registry; the shipped browser holds all 62
                     </span>
                     <InteractiveCue>
                       click through the registry &mdash; every state runs
@@ -3719,7 +4108,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 19</em>The sliced Figma
+                      <em className="pulse-fig">Fig. 23</em>The sliced Figma
                       board &mdash; deliberately non-interactive, built to be
                       imported into design review
                     </span>
@@ -3750,7 +4139,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 20</em>The package&rsquo;s
+                      <em className="pulse-fig">Fig. 24</em>The package&rsquo;s
                       plate &mdash; styles sync from the canonical CSS at build
                       time
                     </span>
@@ -3762,7 +4151,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 21</em>The playground
+                      <em className="pulse-fig">Fig. 25</em>The playground
                       idea, live &mdash; feed a component data and watch it
                       hold: empty, overflowing, broken
                     </span>
@@ -3784,7 +4173,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 22</em>The real
+                      <em className="pulse-fig">Fig. 26</em>The real
                       playground &mdash; the published AIPanel rendered live,
                       with per-component knobs and a JSON data editor
                     </span>
@@ -3798,10 +4187,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     <div
                       className="pflow-hub"
                       role="img"
-                      aria-label="One base — the tokens and 40 components — read four ways: design reads the live preview and Figma boards, engineering reads the typed package and contracts, ML reads the editable data states, product reads one runnable flow."
+                      aria-label="One base — the tokens and 62 components — read four ways: design reads the live preview and Figma boards, engineering reads the typed package and contracts, ML reads the editable data states, product reads one runnable flow."
                     >
                       <div className="pflow-hub-bar" aria-hidden="true">
-                        One base &mdash; tokens + 40 components
+                        One base &mdash; tokens + 62 components
                       </div>
                       {hubRoles.map(([role]) => (
                         <span
@@ -3827,7 +4216,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 23</em>The interface,
+                      <em className="pulse-fig">Fig. 27</em>The interface,
                       read four ways
                     </span>
                   </figcaption>
@@ -3837,156 +4226,41 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 09 · The product ── */}
-      {product && (
-        <section className="case-chapter pulse-chapter" id="act-product" data-act="8">
-            <ChapterHead number={product.number} title={product.title} />
-            {product.sections[0] && (
+      {/* ── 10 · The proof ── */}
+      {proof && (
+        <section className="case-chapter pulse-chapter" id="act-proof" data-act="5">
+            <ChapterHead number={proof.number} title={proof.title} />
+            {proof.sections[0] && (
               <div className="pulse-section">
-                <SectionProse section={product.sections[0]} />
-                {/* the product tour, one band (2026-07-08 review: the old
-                    three stacked cards read as an eight-screen showroom) —
-                    Home, the Calendar recording (owner recording,
-                    2026-07-07), and onboarding share one row and one
-                    caption; the Analytics still was cut, not compressed */}
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-band">
-                    <div className="pulse-band-cell pulse-shot">
-                      <Image
-                        src="/media/work/pulse/pulse-app-home.png"
-                        alt="Pulse app Home page: workspace sidebar for the demo brand, action-item KPI tiles, content queue, and signals feed"
-                        width={SHOT_W}
-                        height={SHOT_H}
-                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 380px"
-                      />
+                <SectionProse section={proof.sections[0]} />
+                {/* the tells card sits beside the copy (the copy makes the
+                    claim, the card is the checklist); the before/after pair
+                    lands full-width below it */}
+                <figure className="pulse-section-aside" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>generated-ui tells &middot; the rule against each</span>
+                    </header>
+                    <div className="pulse-kv">
+                      {proofTells.map(([tell, rule]) => (
+                        <div className="pulse-kv-row" key={tell}>
+                          <span>{tell}</span>
+                          <em>{rule}</em>
+                        </div>
+                      ))}
                     </div>
-                    <div className="pulse-band-cell pulse-shot">
-                      <OffscreenVideo
-                        src="/media/work/pulse/calendar-run.mp4"
-                        poster="/media/work/pulse/calendar-run-poster.jpg"
-                        aria-label="Pulse Calendar walkthrough: day, week, month and list views with the schedule-health rail and scheduling queue"
-                      />
-                    </div>
-                    <div className="pulse-band-cell pulse-shot">
-                      <Image
-                        src="/media/work/pulse/pulse-app-onboarding.png"
-                        alt="Pulse brand onboarding: an editorial hero reading 'Your brand, decoded. Your channels, run.' above brand-URL and brand-guide inputs"
-                        width={SHOT_W}
-                        height={916}
-                        sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 380px"
-                      />
-                    </div>
+                    <p className="pulse-spec-foot">
+                      held by tokens, skills, and the CI checks &mdash; not by
+                      taste
+                    </p>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 24</em>One static export,
-                      toured &mdash; Home, the scheduling Calendar (recorded),
-                      and brand onboarding, every screen served from a
-                      file:// address
+                      <em className="pulse-fig">Fig. 28</em>The tells &mdash;
+                      what gives generated UI away, and what forbids it here
                     </span>
                   </figcaption>
                 </figure>
-              </div>
-            )}
-            {product.sections[1] && (
-              <div className="pulse-section">
-                <SectionProse section={product.sections[1]} />
-                <div className="pulse-section-aside">
-                  <figure data-fade>
-                    <div className="pulse-artifact">
-                      <PulseCreativeBrief />
-                    </div>
-                    <figcaption className="pulse-fig-caption">
-                      <span>
-                        <em className="pulse-fig">Fig. 25</em>The Creative
-                        Brief &mdash; a person shapes the AI draft
-                      </span>
-                      <InteractiveCue>edit a field, then approve</InteractiveCue>
-                    </figcaption>
-                  </figure>
-                  <figure data-fade style={{ marginTop: 24 }}>
-                    <div className="pulse-artifact">
-                      <div className="pulse-chat">
-                        <div className="pulse-chat-turn">
-                          <p className="pulse-chat-assistant">
-                            Draft brief is ready &mdash; audience and tone come
-                            from your brand vault.
-                          </p>
-                          <p className="pulse-chat-note">
-                            assistant &middot; plain text, no bubble
-                          </p>
-                        </div>
-                        <div className="pulse-chat-turn">
-                          <div className="pulse-chat-user">
-                            <span>Tighten the key message.</span>
-                          </div>
-                          <p className="pulse-chat-note is-right">
-                            user &middot; ink bubble, right-aligned
-                          </p>
-                        </div>
-                        <div className="pulse-chat-turn">
-                          <div className="pulse-chat-card">
-                            <strong>Creative Brief</strong>
-                            <i aria-hidden="true" />
-                            <i aria-hidden="true" />
-                            <i aria-hidden="true" />
-                            <span>Open brief</span>
-                          </div>
-                          <p className="pulse-chat-note">
-                            rich content &middot; a card; inline controls stay
-                            flat
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <figcaption className="pulse-fig-caption">
-                      <span>
-                        <em className="pulse-fig">Fig. 26</em>Chat contract
-                        &mdash; the assistant follows the product component
-                        contract
-                      </span>
-                    </figcaption>
-                  </figure>
-                </div>
-              </div>
-            )}
-            {product.sections[2] && (
-              <div className="pulse-section">
-                <SectionProse section={product.sections[2]} />
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-chain-row is-approvals">
-                    <div className="pulse-chain-cell">
-                      <i>01</i>
-                      <strong>Reviewer</strong>
-                    </div>
-                    <span className="pulse-chain-link">SLA 24h</span>
-                    <div className="pulse-chain-cell">
-                      <i>02</i>
-                      <strong>Brand admin</strong>
-                    </div>
-                    <span className="pulse-chain-link">SLA 24h</span>
-                    <div className="pulse-chain-cell">
-                      <i>03</i>
-                      <strong>Org owner</strong>
-                    </div>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 27</em>Approval chain
-                      &mdash; reviewer to brand admin to org owner, a 24-hour
-                      SLA at each handoff
-                    </span>
-                  </figcaption>
-                </figure>
-                <div className="pulse-guardrail pulse-section-inset" data-fade>
-                  <p className="pulse-guardrail-claim">{guardrail}</p>
-                  <p className="pulse-guardrail-note">{guardrailNote}</p>
-                </div>
-              </div>
-            )}
-            {product.sections[3] && (
-              <div className="pulse-section">
-                <SectionProse section={product.sections[3]} />
                 {/* before/after + the build annotation, one card (2026-07-08
                     review: the separate intake/base flow figure re-told this
                     pair) — each column carries its own build facts */}
@@ -4033,7 +4307,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 28</em>Same brief, rebuilt
+                      <em className="pulse-fig">Fig. 29</em>Same brief, rebuilt
                       &mdash; a browse-first Campaign Library became a
                       decision-first Overview
                     </span>
@@ -4047,13 +4321,13 @@ export function PulseCaseLayout({ project }: { project: Project }) {
       {/* ── The Turn — reflective climax; the spine carries the page's one
           seal-red moment (the human-gate stamps) ── */}
       {moment && (
-        <div className="pulse-turn-wrap" id="act-turn" data-act="9">
+        <div className="pulse-turn-wrap" id="act-turn" data-act="6">
           <section className="pulse-turn" aria-labelledby="pulse-turn-title">
             <p className="pulse-turn-eyebrow" data-fade>
-              Most memorable moment
+              Reflection
             </p>
             <h2 className="pulse-turn-claim" id="pulse-turn-title" data-fade>
-              {turnClaim}
+              {moment.title}
             </h2>
             <div className="pulse-turn-copy" data-fade>
               {moment.body.map((p) => (
@@ -4075,7 +4349,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             </div>
             <footer className="pulse-spine-caption" data-fade>
               <span>
-                <em className="pulse-fig">Fig. 29</em>Create-with-AI &mdash;
+                <em className="pulse-fig">Fig. 30</em>Create-with-AI &mdash;
                 where a person stays in the loop
               </span>
               <span className="pulse-spine-legend">
@@ -4094,7 +4368,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               </div>
               <figcaption className="pulse-fig-caption">
                 <span>
-                  <em className="pulse-fig">Fig. 30</em>The gate, recorded
+                  <em className="pulse-fig">Fig. 31</em>The gate, recorded
                   &mdash; brief &middot; approve &middot; generate &middot;
                   review &middot; publish, a person at every red step
                 </span>

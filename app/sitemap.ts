@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { projects } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 
 const BASE = "https://xuyuanliu.com";
 
@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: BASE, priority: 1 },
     { url: `${BASE}/work`, priority: 0.9 },
-    ...projects.map((p) => ({
+    ...projectCatalog.all.map((p) => ({
       url: `${BASE}/work/${p.slug}`,
       priority: 0.8,
     })),

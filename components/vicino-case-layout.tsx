@@ -1,18 +1,30 @@
+// Vicino case page — server-rendered layout (case-layout family).
+//
+// One file carries the whole page: a served critical-CSS template literal
+// (~3200 lines, comment-stripped at injection) plus the station-by-station
+// JSX arc — band canvas (hero workflow canvas + outcome band) -> band frame
+// (01 overview, 02 context & problem) -> band flow (03 main path, 04
+// interface zoning) -> band reflect (closing moment, next case).
+// Copy comes from data/projects.ts (orchestrator-owned) reshaped by
+// refreshFacts; declassified artifacts (flow overview, seal) are hardcoded.
+// Deliberately no client hooks and no scroll scripting here — all
+// interactivity lives in the imported Vicino* client components.
 import Image from "next/image";
 import Link from "next/link";
 import type { Project } from "@/data/projects";
 import { CaseNext } from "@/components/case-next";
 import { OffscreenVideo } from "./ui/offscreen-video";
-import { InteractiveCue, ICUE_CSS } from "./ui/interactive-cue";
+import { InteractiveCue } from "./ui/interactive-cue";
 import { VicinoAudienceViz } from "./vicino-audience-viz";
 import { VicinoCheckpointViz } from "./vicino-checkpoint-viz";
 import { VicinoInterventionViz } from "./vicino-intervention-viz";
 import { VicinoModelBoard } from "./vicino-model-board";
 import { VicinoPipelineViz } from "./vicino-pipeline-viz";
 import { VicinoWorkflowCanvas } from "./vicino-workflow-canvas";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
+import { OutcomeBand } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
+/* ---- module constants + fact refresh ---- */
 const SEAL_SRC = "/media/shared/seal.png";
 
 // Render-level fact refresh grounded in the owner's own zoning vocabulary:
@@ -25,6 +37,12 @@ function refreshFacts(copy: string) {
   );
 }
 
+/* ---- served critical css literal ---- */
+// The entire page stylesheet ships from this one template literal via
+// dangerouslySetInnerHTML; stripCssComments removes its internal notes at
+// injection. Never add TSX section banners inside the string — navigate the
+// CSS by its own /* ---- */ markers (shell, hero, stations 01-07, product
+// nodes, canvas pause, tablet, phone) instead.
 const vicinoCriticalCss = `
 .vicino-case-page {
   /* ------------------------------------------------------------------
@@ -112,7 +130,6 @@ const vicinoCriticalCss = `
   color: var(--paper);
   overflow: hidden;
 }
-${ICUE_CSS}
 .vicino-case-page p {
   text-wrap: pretty;
 }
@@ -3242,6 +3259,7 @@ h2.vicino-closing-title {
 }
 `;
 
+/* ---- case layout component ---- */
 export function VicinoCaseLayout({ project }: { project: Project }) {
   const sections = project.chapters?.flatMap((chapter) => chapter.sections) ?? [];
   const videos = project.moment?.videos ?? [];
@@ -3280,12 +3298,13 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
     <article className="vicino-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(vicinoCriticalCss + OUTCOME_BAND_CSS),
+          __html: stripCssComments(vicinoCriticalCss),
         }}
       />
 
       {/* ── reading zones: large flat color blocks (canvas black ↔ graphite)
           for scroll rhythm — continuous, no page-turn, no rounded sheets ── */}
+      {/* ---- band canvas: station 00 hero + outcome band ---- */}
       <div className="vicino-band" data-zone="canvas">
       <section className="vicino-hero" id="header">
         <div className="vicino-hero-copy">
@@ -3313,7 +3332,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
       </div>
 
+      {/* ---- band frame: reading stations 01-02 ---- */}
       <div className="vicino-band" data-zone="frame">
+      {/* ---- station 01 overview ---- */}
       <section
         className="vicino-station vicino-opening-statement"
         aria-labelledby="vicino-opening-title"
@@ -3355,6 +3376,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         )}
       </section>
 
+      {/* ---- station 02 context and problem ---- */}
       <section className="vicino-station vicino-brief">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
@@ -3394,7 +3416,9 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       </section>
       </div>
 
+      {/* ---- band flow: canvas stations 03-04 ---- */}
       <div className="vicino-band" data-zone="flow">
+      {/* ---- station 03 main path ---- */}
       <section className="vicino-station vicino-flow">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
@@ -3458,6 +3482,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
         </div>
       </section>
 
+      {/* ---- station 04 interface zoning board ---- */}
       <section className="vicino-station vicino-model">
         <span className="vicino-station-rule" aria-hidden="true" />
         <p className="vicino-station-index" data-fade>
@@ -3492,6 +3517,7 @@ export function VicinoCaseLayout({ project }: { project: Project }) {
       </section>
       </div>
 
+      {/* ---- band reflect: closing moment + next case ---- */}
       <div className="vicino-band" data-zone="reflect">
       {project.moment && (
         <section className="vicino-station vicino-closing">

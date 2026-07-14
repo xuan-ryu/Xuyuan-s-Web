@@ -5,8 +5,7 @@ import { OffscreenVideo } from "./ui/offscreen-video";
 import { RoperGuessVsAmerica } from "./roper-guess-vs-america";
 import { RoperCheckpointDiagram } from "./roper-checkpoint-diagram";
 import { roperSamplePoll } from "./roper-poll-data";
-import { ICUE_CSS } from "./ui/interactive-cue";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "./ui/outcome-band";
+import { OutcomeBand } from "./ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // "The Ledger and the Weathervane" — Roper Center's bespoke case layout
@@ -30,7 +29,16 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // 40px; sections pad 96–160px. Rails: index cols 1–3, claims cols 4–10,
 // copy cols 4–9 (≤60ch), inline figures cols 4–12, full evidence cols 1–12.
 // Tablet (810–1079): 8 cols, rails stack. Phone (≤809): one reading column.
+//
+// Server component only — no state, no effects, no scroll JS of its own:
+// the two client modules (RoperGuessVsAmerica, RoperCheckpointDiagram) own
+// their interactivity, and entrance motion rides the global [data-fade]
+// reveal in CSS. Reduced motion and no-JS read the finished layout.
 
+/* ---- roper page css ---- */
+// One page-scoped stylesheet in a single template literal, injected via
+// stripCssComments so its internal /* section */ comments never ship to
+// view-source. Navigate it by the ── seam comments inside the literal.
 const roperCriticalCss = `
 .roper-case-page {
   --roper-gutter: clamp(18px, 1.6vw, 28px);
@@ -926,6 +934,7 @@ const roperCriticalCss = `
 }
 `;
 
+/* ---- principles data ---- */
 const principles = [
   // terms + definitions quoted from chapter 1 §4 ("The Moment Complaints
   // Became a Design Compass") in data/projects.ts — no invented data.
@@ -935,6 +944,7 @@ const principles = [
   { term: "Outcomes", note: "Design must point back to learning goals." },
 ];
 
+/* ---- figure mats ---- */
 // figure mats for the evidence ledger (chapter 1, rows 01–03)
 const evidenceFigs = [
   {
@@ -978,6 +988,7 @@ const decisionFigs = [
   },
 ];
 
+/* ---- roper page layout ---- */
 export function RoperCaseLayout({ project }: { project: Project }) {
   const poll = roperSamplePoll;
 
@@ -1011,7 +1022,7 @@ export function RoperCaseLayout({ project }: { project: Project }) {
     <article className="roper-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(roperCriticalCss + ICUE_CSS + OUTCOME_BAND_CSS),
+          __html: stripCssComments(roperCriticalCss),
         }}
       />
 

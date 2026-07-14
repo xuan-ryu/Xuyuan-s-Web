@@ -6,6 +6,17 @@ import * as React from "react"
 import { useEffect, useRef } from "react"
 import { stripCssComments } from "@/lib/css-sanitize"
 
+// Home intro — the Hongyadong night-scene stage: a sticky 100vh canvas
+// island that samples the source photograph into image particles and plays
+// an ink-on-white → lit-night transition as the page scrolls (backdrop mix,
+// particle ignite, river glow, fog, drifting motes, text color sync).
+// Adaptive quality: 3-tier TIER_CFG scored from device signals, then
+// demoted/promoted live from measured frame times; the rAF loop runs only
+// while the tab is visible AND the root intersects the viewport.
+// Phones (≤768) swap the canvas for the actual photo + scrim — the sim
+// never runs there; reduced-motion pins reveals and disables hover push.
+// Deliberately untyped (@ts-nocheck) and untokenised: sampling thresholds
+// and scroll geometry are tuned Framer-era literals; do not "clean up".
 
 type Props = {
     imageSrc: string
@@ -19,6 +30,7 @@ type Props = {
     scrollDemo: number
 }
 
+/* ---- math + color helpers ---- */
 function clamp(value: number, min: number, max: number) {
     return Math.max(min, Math.min(max, value))
 }
@@ -62,6 +74,7 @@ function setStyleIfChanged(
     }
 }
 
+/* ---- reveal text rendering ---- */
 function tokenizeRevealLine(line: string) {
     const normalized = line.replace(/\s+/g, " ").trim()
     if (!normalized) return []
@@ -133,6 +146,7 @@ function renderRevealCharacters(text: string) {
     })
 }
 
+/* ---- particle types ---- */
 type ImageParticle = {
     x: number
     y: number
@@ -157,6 +171,7 @@ type Mote = {
     warm: boolean
 }
 
+/* ---- component + refs ---- */
 /**
  * @framerSupportedLayoutWidth any-prefer-fixed
  * @framerSupportedLayoutHeight any-prefer-fixed
@@ -227,6 +242,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
         let pxImgData: ImageData | null = null
         let pxPixels: Uint8ClampedArray | null = null
 
+        /* ---- device signals + tier config ---- */
         const isCanvas = false // de-framered: never inside the Framer canvas
         const touchCapable = "ontouchstart" in window
         const cores = navigator.hardwareConcurrency || 2
@@ -355,6 +371,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             },
         ]
 
+        /* ---- text color sync ---- */
         const syncUIText = (progress: number) => {
             const phonePhoto = !!(phonePhotoQuery && phonePhotoQuery.matches)
             const textT = phonePhoto ? 1 : smoothstep(0.12, 0.48, progress)
@@ -407,6 +424,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             signatureNoteRef.current?.classList.toggle("is-visible", signatureReady)
         }
 
+        /* ---- motes + particle sampling ---- */
         const buildMotes = () => {
             const cfg = TIER_CFG[tier]
             motes = Array.from(
@@ -590,6 +608,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             }
         }
 
+        /* ---- fog + backdrop drawing ---- */
         const drawFog = (time: number, drift: number) => {
             const fogStrength = smoothstep(0.48, 0.02, drift)
             if (fogStrength < 0.005) return
@@ -722,6 +741,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
 
         }
 
+        /* ---- particle field drawing ---- */
         const drawImageParticles = (
             time: number,
             drift: number,
@@ -846,6 +866,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             ctx.drawImage(pxCanvas, 0, 0, W, H)
         }
 
+        /* ---- resize + tier apply ---- */
         const resize = () => {
             W = Math.max(rootEl.clientWidth, 1)
             H = Math.max(stageEl.getBoundingClientRect().height, 1)
@@ -900,6 +921,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             else setTimeout(rebuild, 0)
         }
 
+        /* ---- scroll progress sync ---- */
         const syncProgress = () => {
             const rawScroll = isCanvas
                 ? clamp(scrollDemoRef.current, 0, 1) * scrollMax
@@ -915,6 +937,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             syncUIText(progress)
         }
 
+        /* ---- render loop ---- */
         const render = (now: number) => {
             const dt = now - lastNow
             lastNow = now
@@ -978,6 +1001,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             rafId = requestAnimationFrame(render)
         }
 
+        /* ---- pointer + resize handlers ---- */
         const handlePointerMove = (event: MouseEvent) => {
             if (!TIER_CFG[tier].hoverOn || reducedMotion) return
             mouseX = event.clientX
@@ -997,6 +1021,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             }, 120)
         }
 
+        /* ---- run gate + listeners ---- */
         // Single run gate: the loop runs only while the tab is visible AND the
         // stage's root is in the viewport. Without the IO gate, tiers 1-2 keep
         // redrawing full frames after the user scrolls past the sticky stage.
@@ -1042,6 +1067,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
         window.addEventListener("touchend", handlePointerLeave)
         document.addEventListener("visibilitychange", handleVisibility)
 
+        /* ---- startup + reveal kickoff ---- */
         titleRef.current?.classList.remove("is-ready")
         titleReadyFrame = requestAnimationFrame(() => {
             titleRef.current?.classList.add("is-ready")
@@ -1074,6 +1100,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             sourceImageEl.addEventListener("error", start, { once: true })
         }
 
+        /* ---- teardown ---- */
         return () => {
             cancelAnimationFrame(rafId)
             cancelAnimationFrame(titleReadyFrame)
@@ -1105,6 +1132,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                 color: "#000",
             }}
         >
+            {/* ---- scoped styles ---- */}
             <style>{stripCssComments(`
                 .hyf-stage {
                     position: sticky;
@@ -1631,6 +1659,7 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                 }
             `)}</style>
 
+            {/* ---- stage markup ---- */}
             <div ref={stageRef} className="hyf-stage">
                 {/* eslint-disable-next-line @next/next/no-img-element -- canvas samples this exact source image via ref/crossOrigin. */}
                 <img
@@ -1694,7 +1723,8 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                             className="hyf-facts hyf-reveal-copy"
                             style={{ ["--reveal-delay" as any]: "200ms" }}
                         >
-                            AI DESIGN ENGINEER&nbsp;&nbsp;·&nbsp;&nbsp;NEW YORK,
+                            AI PRODUCT DESIGNER&nbsp;&nbsp;·&nbsp;&nbsp;AI
+                            DESIGN ENGINEER&nbsp;&nbsp;·&nbsp;&nbsp;NEW YORK,
                             NY&nbsp;&nbsp;·&nbsp;&nbsp;CORNELL M.S. &rsquo;25
                         </p>
                     </div>

@@ -1,8 +1,8 @@
 // Project data transcribed verbatim from the Framer export
-// (local Framer export work/*/index.html). Two templates exist on the
-// live site: "case" (vicino-ai, froghire-ai, roper-center) and "poster"
-// (hunger1942, vr-education). Copy intentionally preserves the source text,
-// including its quirks ("one more features", full-width colon).
+// (local Framer export work/*/index.html). The source used case and poster
+// templates; the current Project Catalog assigns an explicit Case Layout.
+// Copy intentionally preserves the source text, including its quirks
+// ("one more features", full-width colon).
 
 
 export type CaseSection = {
@@ -57,10 +57,25 @@ export type ProjectOutcomes = {
   stat: { value: string; label: string };
 };
 
+export type WorkCategoryId = "uiux" | "interaction-games";
+
+export type ProjectLayoutId =
+  | "case"
+  | "poster"
+  | "pulse"
+  | "nyma"
+  | "vicino"
+  | "froghire"
+  | "roper"
+  | "cloud-futures"
+  | "hunger"
+  | "vrmb";
+
 export type Project = {
   slug: string;
   title: string;
-  template: "case" | "poster";
+  category: WorkCategoryId;
+  layout: ProjectLayoutId;
   cover?: string;
   /** video shown in the home Featured hover preview */
   previewVideo?: string;
@@ -86,78 +101,115 @@ export const projects: Project[] = [
   {
     slug: "pulse",
     title: "Pulse",
-    template: "case",
+    category: "uiux",
+    layout: "pulse",
     cover: `/media/work/pulse/pulse-app-home.png`,
     previewVideo: `/media/work/pulse/preview.mp4`,
     coverClass: "cover-pulse",
-    tags: ["Product Design", "Design System", "AI"],
+    tags: ["Product Design", "Design Systems", "Design Engineering"],
     oneliner:
-      "Pulse is an AI marketing platform — strategic signal to published post, with a person at every gate. I joined a team prototyping it in six different tools, a week from a pitch — and built the design production system so that rescue never happens twice.",
+      "Pulse is an AI marketing platform with a person at every gate. I designed its core product surfaces, then built the system that let a small team — and its AI tools — ship them as one coherent platform.",
     blurb:
-      "Pulse is an AI marketing platform that takes a brand team from a strategic signal to a published social post without giving up human judgment. I joined to design its homepage — and left owning the way the whole team ships: the unified pitch mockup merged from everyone’s prototypes, a token-driven design system of 40 components, the standards and automation that keep AI-generated UI on-system, and the campaign production flow with a person at every gate.\n\nTwo beliefs run through the work. Pages that look alike aren’t a product until they share one system. And AI should draft while humans decide — every generative step is wrapped in an editable brief, a review, or an approval gate.",
-    role: "Product Designer · Design System · Front-end",
+      "Pulse takes a brand team from strategic signal to published post without giving up human judgment. I joined to design Home, then took ownership of the system underneath the product: one runnable app, a canonical component library, AI-readable design rules, verified build contracts, and a release flow in which a person always makes the final decision.",
+    role: "Product Designer · Design Systems · Front-end",
     duration: "2025 – present",
     type: "Intern",
     teams: "PMs, Design Team, Dev Team",
     // Overview = what Pulse is + the owner's scope, once. The belief lives in
     // the moment band; the acts carry the detail — no smearing.
     summary: [
-      "Pulse takes a brand team from a strategic signal to a published social post — an AI marketing platform that never gives up human judgment. When I picked it up, the team was prototyping that one product in six different tools — pages that looked alike and shared nothing underneath — with about a week to fold them into a flow we could pitch.",
-      "Over five intensive weeks I went from owning the homepage to owning how the team ships: the merged mockup itself, then the token-driven design system and component library, the automation that keeps AI-generated UI on-system, and the handoff surfaces that let design, engineering, ML, and product finally work from one base.",
+      "I joined with about a week to a pitch and one product scattered across six prototyping tools. My first assignment was Home, but a useful front door required understanding the whole product: Signal, Strategy, Campaigns, Calendar, Analytics, the assistant, and the human decisions connecting them.",
+      "That work expanded into a unified application runtime, 62 canonical components, AI-readable design skills, automated consistency checks, and a React distribution layer. The outcome was not just a cleaner prototype. It was a shared way for design, engineering, ML, product, and coding agents to keep building the same product.",
     ],
-    // At-a-glance band — all figures from this page's own record (git-audited
-    // ledger + chapters above). The hero console owns the run stats verbatim
-    // (824 · five weeks, "40 components, one source"), so this band says the
-    // system without repeating the console's numbers; the stat is the
-    // structural-commit count the console doesn't show.
+    // At-a-glance proof points. The case page keeps these facts in the hero
+    // instead of repeating them in a separate outcome band.
     outcomes: {
       bullets: [
-        "Token-driven design system every surface composes from",
-        "Six prototype tools merged into one runnable app",
-        "AI drafts; a person releases at every gate",
+        "Six product surfaces converged on one runtime",
+        "62 canonical components checked across source, docs, and preview",
+        "AI-readable rules and CI keep new work aligned",
       ],
-      stat: { value: "308", label: "structural commits" },
+      stat: { value: "3", label: "system checks passing" },
     },
     moment: {
-      title:
-        "When Pulse turned me from someone who ships pages into someone who builds the system that ships them",
+      title: "The deliverable was the system underneath the product",
       body: [
-        "Pulse did not hand me a design-system brief. It handed me a melee: one product, six tools, a deadline, and the discovery that pages which look identical can share nothing at all. The real deliverable was never one more screen. It was the base underneath all of them.",
-        "So the work became structure. Tokens instead of taste, components instead of copies, and written rules an AI loads instead of instructions repeated into a chat box. Design reads previews, engineering reads a typed package, ML reads data states, product reads one runnable flow. The melee ended when everyone stopped squeezing into the same files and started shipping from the same base.",
-        "One rule survived every iteration untouched: AI can draft and schedule, but a person always releases to publish. Speed where it helps, a deliberate checkpoint where it matters. That balance, not the automation, was the design.",
+        "I started by shipping Home. The deeper work was turning incompatible prototypes into a shared product system: tokens instead of taste, components instead of copies, one runtime instead of parallel demos, and written rules the AI loads before it works.",
+        "One product decision stayed constant through every technical change: AI can draft and schedule, but a person releases to publish. The system made the team faster; the human gate kept that speed accountable.",
       ],
       // The gate-flow recording renders in the layout's Turn (Fig. 30).
     },
-    // Arc (owner 2026-07 rework #2 — the full first-person causal chain):
-    //   melee -> bet -> look -> wake-up -> rescue -> base -> skills ->
-    //   interface -> product; the Turn (moment) closes it.
-    // Engineering facts are verified against the Pulse repo's own git record
-    // (2026-07-04 audit): 824 commits over five weeks (308 structural), the
-    // monolith's true historical peak is 10,180 lines (the earlier 13,020
-    // figure did not survive the audit), 40 components in the handoff
-    // library (37 in the React package), 1,905 net dead lines removed
-    // (commit-subject verbatim).
+    // Arc: product → fragmentation → convergence → system → operating model
+    // → proof. Engineering facts are verified against the live Pulse repo;
+    // activity counts stay out of the primary narrative because the system
+    // and product outcomes are the stronger evidence.
     // Confidentiality: teammates stay anonymous, tools are described as
     // categories (no brand list), no package identity, no commit hashes.
     // The pulse layout attaches its specimen figures to these positionally.
     chapters: [
       {
-        number: "01 · The melee",
-        title: "Same product, six tools — and not one shared line.",
+        number: "01 · Product",
+        title: "A marketing studio with a person at every gate.",
+        sections: [
+          {
+            tags: "ZERO TO ONE · PRODUCT DESIGN",
+            heading: "One pipeline, drawn as a workspace",
+            body: [
+              "Pulse is an AI marketing platform designed from a blank page, and its whole shape follows one pipeline: a strategic signal becomes direction, direction becomes campaigns, campaigns produce posts, the calendar runs them, and analytics reads the results. The design work was giving that loop a home a brand team can live in.",
+              "Each stage got a surface — Signal, Strategy, Campaigns, the production Studio, the Calendar, Analytics — with the assistant docked beside all of them, and Home in front as the decision surface: action items, the content queue, the day’s signals, not a wall of charts. The whole thing reads as a calm studio rather than a dashboard; a tool you live in all day has no business shouting at you.",
+            ],
+          },
+          {
+            tags: "CORE FLOW · CREATE WITH AI",
+            heading:
+              "A light brief, drafted by the AI, owned by the human",
+            body: [
+              "A post starts inside its campaign. New Post, then Create with AI, and from there it is a conversation rather than a form: the user gives a goal and a few assets, Pulse reads the brand vault and the campaign, and a structured Creative Brief comes back as editable fields inside the chat. Only approval hands off to generation.",
+            ],
+          },
+          {
+            tags: "HUMAN IN THE LOOP · BY DESIGN",
+            // The publish-guardrail rule is set once by the pulse layout as the
+            // guardrail artifact below this section - not repeated here.
+            heading:
+              "Where the person sits is designed, not bolted on",
+            body: [
+              "The person’s place in that flow got the same attention as any screen. A plan gate signs off direction and spend before any credits burn; a content gate signs off the finished creative before it goes live; the chain — reviewer, brand admin, org owner — runs on SLA timers with an escalation that never auto-approves. That placement — early on spend, late on quality — is product design, not paperwork.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "01A · Design language",
+        title: "Quiet on purpose.",
+        sections: [
+          {
+            tags: "DESIGN LANGUAGE · UI DIRECTION",
+            heading: "Neutral first, color with meaning",
+            body: [
+              "The stage stays neutral — gray ground, soft cyan light — so the work is the only thing that speaks. Color appears only when it means something: cyan for ready, blue for scheduled, amber for risk, red reserved for falling data. Learn the palette once and every screen after that reads itself. The same economy runs through the type: one face for everything, tabular numerals for data, and hierarchy built from size, spacing, and tone — never bold.",
+              "The identity had to be settled fast, and it had to survive being reproduced by AI, so I kept the rules few and wrote every one of them down. I also refused to pick the direction by taste alone: the accent candidates ran against the same dashboard side by side, and the winner had to prove itself on a full Home screen before we ratified the palette. Writing the rules down felt like documentation at the time. It turned out to be the seed of everything that follows.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "02 · Fragmentation",
+        title: "One product, six incompatible prototypes.",
         sections: [
           {
             tags: "AI PROTOTYPING · FRAGMENTATION",
             heading:
               "Prototypes that only looked like one product",
             body: [
-              "When I picked up Pulse, everyone was iterating on the same product in a different tool: canvas frames, an AI page-builder, model-pasted HTML, screens composited from images. An early style pass kept the pages looking related, but nothing underneath matched. With a week left before the pitch we had to fold all of it into one flow, and that is where the lesson landed for me. Visual consistency is not system consistency.",
+              "The studio you just toured is five weeks downstream of a very different scene. When I picked up Pulse, everyone was iterating on the same product in a different tool: canvas frames, an AI page-builder, model-pasted HTML, screens composited from images. An early style pass kept the pages looking related, but nothing underneath matched. With a week left before the pitch we had to fold all of it into one flow, and that is where the lesson landed for me. Visual consistency is not system consistency.",
             ],
           },
         ],
       },
       {
-        number: "02 · The bet",
-        title: "Boards can’t be pitched. Working code can.",
+        number: "03 · Convergence",
+        title: "From prototype fragments to one working product.",
         sections: [
           {
             tags: "CODE-FIRST · PROTOTYPE STRATEGY",
@@ -169,21 +221,8 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "03 · The look",
-        title: "Branding at deadline speed: a studio, not a dashboard.",
-        sections: [
-          {
-            tags: "BRAND · UI DIRECTION",
-            heading: "Neutral first, color with meaning",
-            body: [
-              "The identity had to be settled fast, and it had to survive AI reproduction, so I kept the rules few and wrote every one of them down. I also refused to pick the direction by taste alone. The accent candidates ran against the same dashboard side by side, and the winner had to prove itself on a full Home screen before we ratified the palette.",
-            ],
-          },
-        ],
-      },
-      {
-        number: "04 · The wake-up",
-        title: "Owning Home meant reading everyone’s code.",
+        number: "03A · The map",
+        title: "Home forced the whole system into view.",
         sections: [
           {
             tags: "HOMEPAGE · INFORMATION ARCHITECTURE",
@@ -205,8 +244,8 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "05 · The rescue",
-        title: "One week, every prototype, one app.",
+        number: "03B · The rebuild",
+        title: "One app, built to receive real data.",
         sections: [
           {
             tags: "INTEGRATION · MIGRATION",
@@ -227,15 +266,15 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "06 · The base",
-        title: "The look became law: one base the whole team ships from.",
+        number: "04 · System",
+        title: "The visual language became a canonical system.",
         sections: [
           {
             tags: "TOKENS · COMPONENTS · ONE SOURCE",
             heading:
               "One canonical base, checked by machines",
             body: [
-              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — beneath the 40 standalone components, and every screen composes from those contracts before inventing anything page-local. The standard became commits rather than advice: Prettier normalized the codebase, I purged 1,905 verified-dead lines, and a dependency-free check now enforces all of it in CI.",
+              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — beneath 62 standalone components, and every screen composes from those contracts before inventing anything page-local. The standard became commits rather than advice: formatting normalized the codebase, dead code came out, and dependency-free checks now enforce the contracts in CI.",
             ],
           },
           {
@@ -249,8 +288,8 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "07 · The skills",
-        title: "Rules the AI loads, so nobody has to repeat them.",
+        number: "05 · Operating model",
+        title: "The system became a way of working.",
         sections: [
           {
             tags: "SKILLS · AUTOMATION",
@@ -270,8 +309,8 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "08 · The interface",
-        title: "Four roles, one base: previews, a package, a playground.",
+        number: "05A · Interfaces",
+        title: "One source, several ways to use it.",
         sections: [
           {
             tags: "TWO PREVIEWS · HANDOFF",
@@ -292,45 +331,20 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "09 · The product",
-        title: "What the base carried: a studio with a person inside.",
+        number: "06 · Proof",
+        title: "The same page before and after the system.",
         sections: [
           {
-            tags: "SURFACES · HIERARCHY · ASSISTANT",
-            heading:
-              "A calm studio, not a dashboard",
-            body: [
-              "On top of the system sits the application: a sidebar workspace that runs from Home and its docked assistant through Calendar, Signal, Analytics, Strategy, Campaigns, and the production Studio. Hierarchy comes from tone, spacing, and rhythm before borders, and every screenshot on this page renders from a plain file:// address.",
-            ],
-          },
-          {
-            tags: "AI FLOW · CREATIVE BRIEF",
-            heading:
-              "A light brief, drafted by the AI, owned by the human",
-            body: [
-              "A post starts inside its campaign. New Post, then Create with AI, and from there it is a conversation rather than a form: the user gives a goal and a few assets, Pulse reads the brand vault and the campaign, and a structured Creative Brief comes back as editable fields inside the chat. Only approval hands off to generation.",
-            ],
-          },
-          {
-            tags: "APPROVALS · GUARDRAILS",
-            // The publish-guardrail rule is set once by the pulse layout as the
-            // guardrail artifact below this section - not repeated here.
-            heading:
-              "Two gates and a guardrail keep a person in charge",
-            body: [
-              "Approval runs through an ordered chain — reviewer, brand admin, org owner — with SLA timers and an escalation that never auto-approves. A plan gate signs off direction and spend before any credits burn; a content gate signs off the finished creative before it goes live.",
-            ],
-          },
-          {
-            tags: "CAMPAIGN PAGE · TAKEOVER",
-            // Fig. attach in the layout: before/after screenshots + a build-diff
-            // card. Numbers from the Pulse repo's own git record (campaign
-            // standalone track): 207 commits, 2026-06-18 → 07-04.
+            tags: "CAMPAIGN PAGE · BEFORE / AFTER",
+            // Fig. attach in the layout: before/after screenshots + the
+            // tells card. Numbers from the Pulse repo's own git record
+            // (campaign standalone track): 207 commits, 2026-06-18 → 07-04.
             heading:
               "Rebuilding a vibe-coded page, step by step",
             body: [
               "The clearest proof of all this is the Campaign page. It reached me as a teammate’s quick, vibe-coded prototype — one four-thousand-line HTML file, styles inlined, images pasted in as data, no system underneath. It looked like a product and behaved like a draft.",
               "Over about two and a half weeks I rebuilt it on the base, a commit at a time: I pulled the status tabs and badges out as real components, reshaped the flow from a flat Campaign Library into a decision-first Overview — what needs your approval and what’s mid-production, with the assistant proposing directions from the week’s signals — added the plan-diff gate and the approval chain, and finally let it consume the design-system components directly. Same brief; a real product. A picture became something engineering could receive and a designer could keep owning — which is the whole point.",
+              "The quiet is the point too. Generated UI gives itself away in small tells, and the base forbids every one of them — so the more of the page the AI writes, the less it reads as AI-written. Quality stopped depending on who, or what, typed the code.",
             ],
           },
         ],
@@ -342,41 +356,42 @@ export const projects: Project[] = [
   {
     slug: "nyma",
     title: "Nyma",
-    template: "case",
+    category: "uiux",
+    layout: "nyma",
     cover: `/media/work/nyma/cover.png`,
     previewVideo: `/media/work/nyma/preview.mp4`,
     coverClass: "cover-nyma",
-    tags: ["Brand & Product", "Design System", "AI Workflow"],
+    tags: ["Platform Brand", "Product Design", "Design Engineering"],
     oneliner:
-      "Nyma is a social resale platform for designer, luxury, and vintage fashion — people comment, save, and follow around the pieces, not just buy them. I joined as the only designer after the marketplace and auction architecture were built, and gave the platform what it didn’t have yet: a brand with a reason, a visual system, and design rules codified into the front-end repo.",
+      "Nyma was not a rebrand layered onto a finished marketplace. As the only designer, I rebuilt its design layer across brand, product, and implementation—then codified the system so it could carry the platform from web into mobile.",
     blurb:
-      "Nyma is a 2C social resale platform for designer, luxury, and vintage fashion — closer to a community formed around garments than a listing-based marketplace. When I joined, the transaction and auction architecture were already in place and a website was live, but the visual foundation was weak, the UI logic needed cleanup, and the founders liked the name Nyma without a story behind it.\n\nMy work was the design layer, end to end: I traced the name to νήμα — Greek for thread — and rebuilt the brand around continuity, designed the key pages by hand, wrote the 17-page brand manual, and then codified the system into the front-end repo so a team of one front-end engineer, one back-end engineer, and no designer can keep shipping consistently after my contract ends.",
+      "Nyma is a social resale platform for designer, luxury, and vintage fashion. Its commerce architecture worked when I joined, but its brand, product aesthetic, interface logic, and implementation rules did not yet form one platform.\n\nAs the only designer, I rebuilt that layer end to end: a platform idea around continuity, one visual and interaction grammar across the core web experience, and a coded framework the team could carry into mobile.",
     role: "Brand & Product Designer — the only designer",
     duration: "2025 – 2026",
     type: "Intern",
     teams: "2 founders · 1 front-end · 1 back-end",
+    // One paragraph on purpose (2026-07-13 cleanup): the old second
+    // paragraph restated the hero lede almost verbatim.
     summary: [
-      "Nyma is a 2C social resale platform for designer, luxury, and vintage fashion. Users don’t just buy and sell — they comment, save, and follow around the pieces, so the product has to feel like a community formed around garments, not a transaction site. When I joined, the marketplace and auction architecture were built and a website was live; what was missing was the design layer. The visual foundation was weak, the UI logic needed cleanup, and the founders liked the name Nyma without being able to say what it meant.",
-      "I traced the name to νήμα — Greek for thread — and everything hung from that: moodboards and AI-assisted direction studies, a 17-page brand manual with role-based color and an archival typographic voice, thirty-odd key pages designed by hand in Figma — and finally the whole system written into code, so the rules survive me and the team can build mobile without a designer in the room.",
+      "Nyma is a social resale platform for designer, luxury, and vintage fashion. Its commerce architecture worked when I joined, but brand, product aesthetic, interface logic, and implementation rules did not yet form one platform — so the work became rebuilding that layer end to end: a platform idea around continuity, one visual and interaction grammar for the core web experience, and a coded framework the team can carry into mobile.",
     ],
     // At-a-glance band — facts from the summary/chapters above: the νήμα
     // discovery, 30–40 hand-designed pages, codification into the repo,
     // and the manual's own pagination (17 pages).
     outcomes: {
       bullets: [
-        "Brand rebuilt from νήμα — Greek for thread",
-        "30–40 key pages designed by hand in Figma",
-        "Design rules codified into the front-end repo",
+        "One platform language across brand, product, and interaction",
+        "30–40 core web surfaces redesigned within the system",
+        "Design and implementation rules codified in the front-end repo",
       ],
-      stat: { value: "17", label: "brand-manual pages" },
+      stat: { value: "17", label: "operational brand-system pages" },
     },
     moment: {
       title:
-        "When a name the founders just liked became the thread everything hangs from",
+        "When the brand became a framework for building the platform.",
       body: [
-        "Nyma didn’t need a logo first; it needed a reason. The founders liked the sound of the name, but nobody could say what it meant. Researching it, I found νήμα — Greek for thread — and the whole brand was suddenly in one word: garments carrying stories from one owner into the next, resale as continuity instead of clearance. Every decision after that pulled the same thread — the Fates on the moodboards, the role-based palette, the archival voice, the condition reports, and finally the rules written into the repo. And because the thread has to hold every wardrobe — designer, luxury, vintage — the system stayed deliberately quiet enough for all of them to enter.",
-        "The honest part: I’m not a trained graphic designer, and Nyma was my first time owning visual identity at this scale. Stakeholder feedback was positive and the visual quality moved far, but a sharper eye would have made some calls sharper still — next time I bring critique in earlier.",
-        "And I would codify from month one. The system I built at the end to hand off mobile is the system that would have made every earlier month faster. Same lesson as Vicino, from the other side: the earlier the framework exists, the more AI compounds. The later it exists, the more you are cleaning up retroactively.",
+        "The turning point was not finding a story for the name. It was watching the same idea survive translation: from continuity as a brand principle, to color and type rules, to product flows, components, and finally code.",
+        "I would bring visual critique in earlier and codify from month one. The framework built near the end would have made every earlier decision faster to test, easier to share, and less dependent on one designer’s memory.",
       ],
     },
     // Arc (deck slides 22–27): inheritance → thread → rulebook → pages →
@@ -387,108 +402,117 @@ export const projects: Project[] = [
     // Confidentiality: agency credit and mock personal data stay out of crops.
     chapters: [
       {
-        number: "01 · The inheritance",
-        title: "Architecture in place. Meaning missing.",
+        number: "01 · The gap",
+        title: "A working platform without a coherent design layer.",
         sections: [
           {
-            tags: "2C SOCIAL RESALE · AS FOUND",
-            heading: "A working platform that didn’t know what it was",
+            tags: "PLATFORM AUDIT · AS FOUND",
+            heading: "The commerce worked. The platform did not yet speak as one",
             body: [
-              "I joined after the hard plumbing was done: marketplace and auction architecture in place, a website already live. And Nyma was never meant to be a listing board — people comment, save, and follow around the items, so it has to feel like a community formed around fashion pieces. But the visual foundation was weak, the UI logic needed cleanup, and the brand rationale was underdeveloped. The founders liked the name; the name didn’t yet mean anything. My scope became the whole design layer: brand direction, visual system, UI logic — and, later, turning all of it into rules a two-engineer team can build from without me.",
+              "I joined after the hard plumbing was done: marketplace and auction architecture in place, a website already live. But the brand rationale, product aesthetic, interface logic, and implementation rules had developed as separate decisions.",
+              "Nyma was also more social than a listing board: people comment, save, and follow around the pieces. My scope became the missing design layer—one platform language the brand, product, and two-engineer team could all build from.",
             ],
           },
         ],
       },
       {
-        number: "02 · The thread",
-        title: "νήμα — the name already knew what the brand should be.",
+        number: "02 · The thesis",
+        title: "Thread became a platform principle, not just a brand story.",
         sections: [
           {
-            tags: "NAMING · RESEARCH",
-            heading: "Finding the thread inside Nyma",
+            tags: "PLATFORM IDEA · RESEARCH",
+            heading: "From a name to a way the platform should behave",
             body: [
-              "Researching the word, I found Nyma could connect to νήμα — Greek for thread. That one link gave the name narrative and visual potential it never had: garments carrying stories across owners, continuity instead of pure transaction, resale as something curated and cultural rather than clearance. I built the moodboards around that idea — the Fates spinning and cutting thread, Greek textile patterns, archival fashion photography — and the direction stopped being a taste question.",
+              "Researching Nyma led me to νήμα—Greek for thread. It gave the name more than a story: garments move between owners, value circulates, provenance accumulates, and a community forms around what each piece carries forward.",
+              "That made continuity the platform thesis. The brand had to feel archival rather than promotional; the product had to make history, condition, trust, and relationships visible; the system had to hold all of it together.",
             ],
           },
           {
-            tags: "MOODBOARDS · AI EXPLORATION",
-            heading: "Directions as conversation material",
+            tags: "COMPETITIVE STUDY · DIRECTION TESTS",
+            heading: "Testing which expression could carry the thesis",
             body: [
-              "In parallel I used AI to widen the search. I fed it my competitive research, the secondhand platforms I had studied, visual references, and the brand-language drafts I was writing, and had it generate brand directions, homepage narratives, positioning, and copy versions. That let us compare quickly whether Nyma should lean editorial like a fashion magazine, archival like a curated archive, transactional like a typical marketplace, or fashion-forward with louder style. The outputs were never final answers — they were conversation material that helped a name that merely sounded good become a grounded direction around thread, continuity, and curation.",
+              "I mapped how secondhand platforms framed value—editorial, archival, transactional, or fashion-forward—then used moodboards and AI-assisted studies to compare those positions quickly.",
+              "AI widened the option space; it did not choose the direction. The deciding question was whether each concept could support Nyma’s full product: luxury and vintage, community and commerce, expressive imagery and repeatable interface rules.",
             ],
           },
         ],
       },
       {
-        number: "03 · The rulebook",
-        title: "Structural, not expressive — a brand designed to be maintained.",
+        number: "03 · The language",
+        title: "One design grammar for every wardrobe.",
         sections: [
           {
-            tags: "BRAND MANUAL · OPERATIONAL RULES",
-            heading: "Rules that protect the objects",
+            tags: "DESIGN LANGUAGE · OPERATIONAL RULES",
+            heading: "A brand system that governs product decisions",
             body: [
-              "The manual I wrote defines Nyma’s identity as structural rather than expressive: restrained, consistent, and secondary to the objects it carries. It reads as operational rules — what must remain constant, where variation is permitted, where expression is intentionally limited. When uncertainty arises, priority goes to clarity, reduction, and structural consistency. The line I kept coming back to: this brand is not meant to be reinterpreted — it is meant to be maintained.",
+              "The manual was not a style guide detached from the product. It defined what stays constant, where variation is allowed, and how brand choices shape interface behavior. Clarity, reduction, and structural consistency became operating rules.",
+              "That shifted the identity from a set of assets into a shared decision framework. A founder, designer, or engineer could use the same logic to judge a new page instead of interpreting the brand from scratch.",
             ],
           },
           {
-            tags: "COLOR ROLES · TYPOGRAPHY",
-            heading: "Color that signals, type that archives",
+            tags: "COLOR ROLES · TYPE SYSTEM · INCLUSIVITY",
+            heading: "Quiet enough to receive every wardrobe",
             body: [
-              "Color at Nyma is role-based, never decorative. Ceramic Black contains; the archival whites surface; Ceramic Yellow appears only as a material trace; Activation Blue is reserved exclusively for interactive states. Any use of color outside its defined role is misuse — the palette signals structure, state, and continuity instead of expressing identity. Murecho carries the words in thin and regular weights — bold is nearly absent from the system — an archival voice that is quiet, precise, deliberately non-performative, with mono reserved for system data, the way an archive labels its objects.",
-              "The restraint is also hospitality. Nyma serves wardrobes that have nothing to do with each other — a couture archive, a designer drop, a worn pair of Levi’s — and the system has to receive all of them without re-styling itself. That is the real reason the rules are this quiet: inclusivity was the design decision underneath the design decisions.",
+              "Color carries roles, not decoration: Ceramic Black contains, archival whites surface content, Ceramic Yellow leaves a trace, and Activation Blue marks interaction. Type stays thin and precise, with mono reserved for system data.",
+              "Restraint was not aesthetic minimalism for its own sake. The same shell had to hold a couture archive, a designer drop, and worn Levi’s without restyling itself. The quieter the system, the more varied the wardrobe it could receive.",
             ],
           },
         ],
       },
       {
-        number: "04 · The pages",
-        title: "Thirty-odd pages by hand; AI where hands weren’t needed.",
+        number: "04 · The product",
+        title: "The design language became the product.",
         sections: [
           {
-            tags: "FIGMA · BY HAND",
-            heading: "The pages AI couldn’t deliver",
+            tags: "CORE FLOWS · PRODUCT DESIGN",
+            heading: "Applying one system across the platform’s spine",
             body: [
-              "Once the direction settled, the work shifted into production — and AI’s role had to shrink. For the major feature pages it could suggest structure, but not the designer-level layout, hierarchy, and editorial pacing the brand needed. So I designed and iterated the thirty-to-forty key pages by hand in Figma: marketplace and auction surfaces, listing and seller flows, onboarding, profile, messaging — the spine of the product.",
+              "With the language in place, I redesigned the core web experience by hand in Figma: marketplace and auction surfaces, listing and seller flows, onboarding, profile, messaging, orders, and the social layer around each piece.",
+              "Across those flows, the work was less about making each screen distinctive than making the platform recognizable as one system—the same hierarchy, pacing, components, and interaction logic across very different tasks.",
             ],
           },
           {
-            tags: "AI ASSETS · STYLE VS INCLUSIVITY",
-            heading: "Minimal enough for the items, editorial enough for a voice",
+            tags: "CONTENT SYSTEM · RANGE TEST",
+            heading: "Specific without becoming exclusive",
             body: [
-              "Imagery was a different problem: a fashion resale platform needs a lot of it to feel alive, and there was no content library yet. Beyond public-domain and licensed references, I used AI-generated assets for mood imagery and atmosphere that matched the site’s tone while keeping copyright risk low. The judgment underneath everything was the trade between style and inclusivity — premium enough for designer-fashion users, welcoming enough for vintage and broader resale buyers. Most calls in the system were made to hold styles that share nothing: the same card, grid, and type have to serve an Hermès collector and a vintage seller without re-styling. That is why the language landed on minimal but editorial: minimal so the items carry the page, editorial so the brand keeps a voice.",
+              "Fashion resale needs imagery to make inventory feel alive, but Nyma had no content library. I combined licensed and public-domain references with AI-generated atmosphere, using generation to expand the world without deciding the product.",
+              "Every choice was tested across three unlike wardrobes: luxury, designer, and vintage. Minimal structure let the objects lead; editorial pacing gave the platform a voice. The system had to feel specific without becoming exclusive.",
             ],
           },
         ],
       },
       {
-        number: "05 · The codification",
-        title: "The design system left Figma and moved into the repo.",
+        number: "05 · The framework",
+        title: "The design language became an implementation framework.",
         sections: [
           {
-            tags: "FRONT-END REPO · DESIGN RULES",
-            heading: "Decisions written once, reused everywhere",
+            tags: "DESIGN SYSTEM · FRONT-END REPO",
+            heading: "The repo became part of the design surface",
             body: [
-              "Nyma is a small company; a heavy, formal design system was never the point. But the product kept growing, and I didn’t want to re-make the same design decisions every time a new surface appeared. So I started codifying the existing system directly into the front-end repo: layout rules, typography, spacing, component behavior, reusable patterns — design decisions as code the product can’t drift away from.",
+              "Nyma did not need a heavy enterprise design system. It needed a small set of rules the product could not quietly drift away from: layout, type, spacing, component behavior, and reusable patterns written into the front-end repo.",
+              "Codifying those decisions changed the deliverable. I was no longer handing engineering a collection of screens; I was giving the team a framework that could reproduce the same product logic on the next surface.",
             ],
           },
           {
-            tags: "FIGMA · CLAUDE DESIGN · CLAUDE CODE",
-            heading: "Figma stopped being the only source of truth",
+            tags: "FIGMA · CODE · AI-ASSISTED BUILD",
+            heading: "One loop between visual judgment and implementation",
             body: [
-              "That changed how I work. Instead of designing in Figma and handing off, I moved across Figma, Claude Design, and Claude Code as one loop: explore a direction with AI, generate the code, fix details back in Figma, re-export and let AI refine — or edit in Claude Design, or adjust the repo directly. Figma stayed for visual refinement, but the codified front-end system became where design rules are preserved, reused, and extended. The lesson I keep re-learning: AI only scales you when the framework is clear. Unclear brand, inconsistent system, vague prompt — AI just generates more noise. Framework first; then it compounds.",
+              "Figma remained the place for visual refinement, but it stopped being the only source of truth. I moved between Figma, Claude Design, Claude Code, and the repo, using each change to update the shared system rather than patch one screen.",
+              "AI accelerated generation and translation only after the framework was explicit. With stable rules, it could extend the product; without them, it produced more interpretations. The leverage came from the system, not the prompt.",
             ],
           },
         ],
       },
       {
-        number: "06 · The handoff",
-        title: "A system that keeps working after I leave.",
+        number: "06 · The continuity",
+        title: "One system carried the platform from web into mobile.",
         sections: [
           {
-            tags: "MOBILE · ROADMAP · CONTINUITY",
-            heading: "Prototypes and a roadmap the team can build against",
+            tags: "MOBILE · ROADMAP · SYSTEM CONTINUITY",
+            heading: "A framework the team could extend without starting over",
             body: [
-              "The reason the system matters now: the team is starting their mobile build, and my contract is wrapping up. So I used the same AI workflow to prepare their continuity — AI-generated early prototype directions for mobile as starting points, and a product roadmap built from competitor study plus a structured conversation with AI, output as HTML, brought into Figma, and merged with the design system into a working prototype the team can build against. The codified system isn’t for me; it’s the layer that preserves visual and interaction consistency after I’m gone. That is the real test of whether a design system is doing its job.",
+              "As the team began the mobile build, I used the same framework to prepare starting directions, connect the roadmap to competitor research, and assemble a working prototype that combined the new flows with Nyma’s existing design rules.",
+              "The point was not to predict every mobile screen. It was to give two engineers a coherent base for the next decision: the same brand logic, interaction grammar, and components adapted to a new surface without starting over.",
             ],
           },
         ],
@@ -500,7 +524,8 @@ export const projects: Project[] = [
   {
     slug: "vicino-ai",
     title: "Vicino AI",
-    template: "case",
+    category: "uiux",
+    layout: "vicino",
     cover: `/media/work/vicino/cover.png`,
     previewVideo: `/media/work/vicino/preview.mp4`,
     coverClass: "cover-vicino",
@@ -654,7 +679,8 @@ export const projects: Project[] = [
   {
     slug: "froghire-ai",
     title: "FrogHire.ai",
-    template: "case",
+    category: "uiux",
+    layout: "froghire",
     cover: `/media/work/froghire/cover.png`,
     previewVideo: `/media/work/froghire/preview.mp4`,
     coverClass: "cover-froghire",
@@ -792,7 +818,8 @@ export const projects: Project[] = [
   {
     slug: "roper-center",
     title: "Roper Center",
-    template: "case",
+    category: "uiux",
+    layout: "roper",
     cover: `/media/work/roper/cover.png`,
     previewVideo: `/media/work/roper/preview.mp4`,
     coverClass: "cover-roper",
@@ -914,7 +941,8 @@ export const projects: Project[] = [
   {
     slug: "cloud-support-futures",
     title: "Cloud Support Futures",
-    template: "case",
+    category: "uiux",
+    layout: "cloud-futures",
     cover: `/media/work/cloud-futures/cover.png`,
     coverClass: "cover-cloud-futures",
     tags: ["Speculative Design", "UX Research", "AI"],
@@ -958,7 +986,8 @@ export const projects: Project[] = [
   {
     slug: "hunger1942",
     title: "Hunger 1942",
-    template: "poster",
+    category: "interaction-games",
+    layout: "hunger",
     // cover-v3: masthead credit line redacted (teammate real-name policy) and
     // the baked XUYAUN typo glyph-swapped; renamed to bust caches.
     cover: `/media/work/hunger/cover-v3.png`,
@@ -1023,7 +1052,8 @@ export const projects: Project[] = [
   {
     slug: "vr-education",
     title: "VR Monarch Butterfly",
-    template: "poster",
+    category: "interaction-games",
+    layout: "vrmb",
     cover: `/media/work/vr/cover.png`,
     coverClass: "cover-vr-monarch",
     tags: ["VR Design", "Unity"],
@@ -1078,17 +1108,3 @@ export const projects: Project[] = [
     order: 7,
   },
 ];
-
-// Record<…, Project | undefined>: lookups come from the URL slug, so a miss is
-// a real case every consumer must handle (both current callers already guard).
-export const projectsBySlug: Record<string, Project | undefined> =
-  Object.fromEntries(projects.map((p) => [p.slug, p]));
-
-export function adjacent(slug: string) {
-  const sorted = [...projects].sort((a, b) => a.order - b.order);
-  const i = sorted.findIndex((p) => p.slug === slug);
-  return {
-    prev: i > 0 ? sorted[i - 1] : null,
-    next: i < sorted.length - 1 ? sorted[i + 1] : null,
-  };
-}

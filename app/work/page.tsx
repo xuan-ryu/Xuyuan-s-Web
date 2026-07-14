@@ -20,7 +20,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { projects, projectsBySlug, type Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 import { Cta } from "@/components/ui/cta";
 import { WorkIndexPlate } from "@/components/work-index-plate";
 import { stripCssComments } from "@/lib/css-sanitize";
@@ -29,28 +30,6 @@ export const metadata: Metadata = {
   title: "Work",
   description: "Selected projects by Xuyuan Liu.",
 };
-
-const workGroups = [
-  {
-    id: "uiux",
-    index: "01",
-    title: "UI/UX",
-    projectSlugs: [
-      "pulse",
-      "nyma",
-      "vicino-ai",
-      "froghire-ai",
-      "cloud-support-futures",
-      "roper-center",
-    ],
-  },
-  {
-    id: "interaction-games",
-    index: "02",
-    title: "Interaction & Games",
-    projectSlugs: ["hunger1942", "vr-education"],
-  },
-] as const;
 
 // The index needs a clean 4–7 char year column; duration strings in data are
 // inconsistent ("2025 - present", "09/2022-04/2024"), so format here — no
@@ -74,16 +53,13 @@ function displayYear(project: Project): string {
 export default function WorkIndex() {
   // continuous catalogue numerals across categories
   let counter = 0;
-  const groups = workGroups.map((group) => ({
+  const groups = projectCatalog.groups.map((group) => ({
     ...group,
-    rows: group.projectSlugs
-      .map((slug) => projectsBySlug[slug])
-      .filter((project): project is Project => Boolean(project))
-      .map((project, groupRow) => ({
-        project,
-        groupRow,
-        numeral: String(++counter).padStart(2, "0"),
-      })),
+    rows: group.projects.map((project, groupRow) => ({
+      project,
+      groupRow,
+      numeral: String(++counter).padStart(2, "0"),
+    })),
   }));
   // colophon facts derived from the same rows the table prints — never
   // hardcoded, so the line stays true as projects are added.

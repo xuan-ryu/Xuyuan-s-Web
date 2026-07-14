@@ -6,6 +6,18 @@ import * as React from "react"
 import { useEffect, useMemo, useRef } from "react"
 import { stripCssComments } from "@/lib/css-sanitize"
 
+// Home hero — the ink koi pond: a self-contained 2D-canvas island rendering
+// swimming koi, food pellets and hatching eggs (lily pads exist but are
+// switched off). One useEffect owns the whole simulation: device-scored
+// quality tiers (DPR / fish / food caps), the dt-normalised rAF loop,
+// IntersectionObserver + page-visibility pausing, and a single teardown that
+// unbinds every listener it added.
+// Reduced-motion contract: the loop parks after ONE finished frame; feed
+// drops repaint via refreshStaticFrame() only.
+// Talks to the How-I-Work overlay purely through DOM CustomEvents
+// (koi:feed out, koi:how-reveal in) — no React props cross that boundary.
+// Deliberately untyped (@ts-nocheck) and untokenised: physics and geometry
+// literals are tuned values from the Framer original; do not "clean up".
 
 type Props = {
     eyebrow: string
@@ -53,6 +65,7 @@ export default function InkKoiEcosystem(props: Props) {
         )
             return
 
+        /* ---- text scramble intro ---- */
         // 🌟 乱码解码涌现动效 (Text Scramble)
         const doScramble = (el: HTMLElement) => {
             const original = el.getAttribute("data-text") || el.innerText
@@ -97,6 +110,7 @@ export default function InkKoiEcosystem(props: Props) {
             }
         }, 500)
 
+        /* ---- math utils ---- */
         // =========================
         // Utils
         // =========================
@@ -117,6 +131,7 @@ export default function InkKoiEcosystem(props: Props) {
             return a + angleDelta(a, b) * t
         }
 
+        /* ---- intro reveal ---- */
         // =========================
         // Intro animation (JS Driven)
         // =========================
@@ -135,6 +150,7 @@ export default function InkKoiEcosystem(props: Props) {
                 scrollTip.style.opacity = String(Math.max(0, 1 - scrollY / 120))
         }
 
+        /* ---- intro skip ---- */
         // =========================
         // ✨ 新增：跳过动画逻辑
         // =========================
@@ -171,6 +187,7 @@ export default function InkKoiEcosystem(props: Props) {
         }
         window.addEventListener("keydown", handleKeyDown)
 
+        /* ---- feed mode + dock ---- */
         // =========================
         // Feed mode
         // =========================
@@ -269,6 +286,7 @@ export default function InkKoiEcosystem(props: Props) {
         feedBtn.addEventListener("pointerdown", onFeedPointerDown)
         feedBtn.addEventListener("keydown", onFeedKeyDown)
 
+        /* ---- canvas quality tiers ---- */
         // =========================
         // Canvas setup + quality
         // =========================
@@ -331,6 +349,7 @@ export default function InkKoiEcosystem(props: Props) {
                       : "contrast(1.1) brightness(1.04) saturate(1.04)"
         }
 
+        /* ---- lily pad layout ---- */
         // =========================
         // Lily pads
         // =========================
@@ -430,6 +449,7 @@ export default function InkKoiEcosystem(props: Props) {
             }
         }
 
+        /* ---- resize + pointer tracking ---- */
         function resize() {
             const prevW = width, prevH = height
 
@@ -497,6 +517,7 @@ export default function InkKoiEcosystem(props: Props) {
         })
         container.addEventListener("pointerleave", onPointerLeave)
 
+        /* ---- water current + food particles ---- */
         const currentAt = (now: number, x: number, y: number) => {
             const t = now * 0.001
             const cx =
@@ -588,6 +609,7 @@ export default function InkKoiEcosystem(props: Props) {
             }
         }
 
+        /* ---- egg entity ---- */
         class Egg {
             x: number
             y: number
@@ -662,6 +684,7 @@ export default function InkKoiEcosystem(props: Props) {
             }
         }
 
+        /* ---- koi entity ---- */
         class Koi {
             x: number
             y: number
@@ -891,6 +914,7 @@ export default function InkKoiEcosystem(props: Props) {
                 return best
             }
 
+            /* ---- koi steering + feeding update ---- */
             update(
                 fishes: any[],
                 foodParticles: any[],
@@ -1241,6 +1265,7 @@ export default function InkKoiEcosystem(props: Props) {
                 this._buildBodyPts()
             }
 
+            /* ---- koi body drawing ---- */
             draw() {
                 this.drawFins()
                 this.drawBody()
@@ -1370,6 +1395,7 @@ drawBody() {
                 )
             }
 
+            /* ---- koi fins + eye ---- */
             drawFins() {
                 ctx.save()
                 ctx.globalCompositeOperation = "source-over"
@@ -1642,6 +1668,7 @@ drawBody() {
             }
         }
 
+        /* ---- pond population ---- */
         const maxFishCount = qualityTier >= 2 ? 34 : qualityTier === 1 ? 24 : 16
         const eggCap = qualityTier >= 2 ? 28 : qualityTier === 1 ? 18 : 10
         const foodCap = qualityTier >= 2 ? 180 : qualityTier === 1 ? 120 : 72
@@ -1710,6 +1737,7 @@ drawBody() {
         const foodParticles: any[] = []
         const eggs: any[] = []
 
+        /* ---- feeding + hatching ---- */
         function spawnFoodBurst(x: number, y: number) {
             const count = Math.floor(rand(foodBurstMin, foodBurstMax))
             for (let i = 0; i < count; i++)
@@ -1753,6 +1781,7 @@ drawBody() {
             if (fishes.length < maxFishCount) fishes.push(baby)
         }
 
+        /* ---- pointerdown interactions ---- */
         const onPointerDown = (e: PointerEvent) => {
             if (e.button !== 0) return
 
@@ -1796,6 +1825,7 @@ drawBody() {
 
         container.addEventListener("pointerdown", onPointerDown)
 
+        /* ---- background + lily pad drawing ---- */
         function drawBackground() {
             ctx.globalCompositeOperation = "source-over"
             ctx.fillStyle = "#041114"
@@ -1879,6 +1909,7 @@ drawBody() {
             padCtx.restore()
         }
 
+        /* ---- frame pacing + intro timing ---- */
         const introDuration = Math.max(200, props.introDurationMs | 0)
         const introStart = performance.now()
         // reduced-motion: the loop parks after ONE frame (see animate), so
@@ -1919,6 +1950,7 @@ drawBody() {
                 Math.max(1, rect.height || container.clientHeight || 1)
             return visibleArea / totalArea > 0.08
         }
+        /* ---- render loop ---- */
         function animate(now: number) {
             if (!isRunning) return
             if (msPerFrame > 0 && now - lastFrameTime < msPerFrame) {
@@ -1983,6 +2015,7 @@ drawBody() {
             raf = requestAnimationFrame(animate)
         }
 
+        /* ---- visibility + viewport pause ---- */
         const updateAnimationState = () => {
             const shouldRun = isPageVisible && isInViewport
             if (shouldRun === isRunning) return
@@ -2055,6 +2088,7 @@ drawBody() {
         // Start immediately; IntersectionObserver will pause if scrolled out of view
         updateAnimationState()
 
+        /* ---- teardown ---- */
         return () => {
             cancelAnimationFrame(raf)
             document.removeEventListener("visibilitychange", onVisibilityChange)
@@ -2089,6 +2123,7 @@ drawBody() {
                 ["--koi-hero-x" as string]: String(props.heroBoxXvw),
             }}
         >
+            {/* ---- scoped styles ---- */}
             <style>{stripCssComments(`
             .koi-container{
               position:absolute; inset:0; width:100%; height:100%;
@@ -2202,13 +2237,13 @@ drawBody() {
                           transform var(--dur-fast) var(--ease-soft);
               box-shadow: var(--shadow-lift);
             }
-            /* docked: compact to the SAME recipe as the How-I-Work toggle
-               (12/18 padding, 12 gap, 22px icon slot) AND the same fixed
-               252px box (owner: the pair must match in length too) — the two
-               left-edge ink-glass chips read as one control group */
+            /* Docked: keep the shared chip recipe, but give the explanatory
+               line its full reading width instead of clipping it to the
+               shorter How-I-Work toggle. */
             #hero-ui.dismissed #feed-ui {
               padding: 12px 18px; gap: 12px;
-              width: 252px; box-sizing: border-box; justify-content: flex-start;
+              width: min(340px, calc(100vw - 48px));
+              box-sizing: border-box; justify-content: flex-start;
             }
             #hero-ui.dismissed .feed-pellets { width: 22px; height: 22px; }
             /* measuring stub: the settled docked box, synchronously, no
@@ -2217,7 +2252,8 @@ drawBody() {
             #hero-ui.dock-measure .feed-pellets { transition: none !important; }
             #hero-ui.dock-measure #feed-ui {
               padding: 12px 18px; gap: 12px;
-              width: 252px; box-sizing: border-box;
+              width: min(340px, calc(100vw - 48px));
+              box-sizing: border-box;
             }
             #hero-ui.dock-measure .feed-pellets { width: 22px; height: 22px; }
             #hero-ui.dock-measure .feed-sub { display: none; }
@@ -2244,6 +2280,7 @@ drawBody() {
             }
             .feed-text-wrap {
               display: flex; flex-direction: column; gap: 5px;
+              min-width: 0;
             }
             .feed-text {
               font-family: var(--font-sans);
@@ -2259,8 +2296,8 @@ drawBody() {
               font-size: var(--text-micro);
               letter-spacing: 0.18em;
               text-transform: uppercase;
-              line-height: 1;
-              white-space: nowrap;
+              line-height: 1.25;
+              white-space: normal;
               color: rgba(255,255,255,0.42);
             }
             /* once the method is on screen the hint has done its job */
@@ -2295,6 +2332,7 @@ drawBody() {
             .koi-container.feed-mode #feed-cursor { display:block; }
             `)}</style>
 
+            {/* ---- pond markup ---- */}
             <div className="koi-container" ref={containerRef}>
                 <div className="vignette-overlay" />
                 <div className="noise-overlay" />

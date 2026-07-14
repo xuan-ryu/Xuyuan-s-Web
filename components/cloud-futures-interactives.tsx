@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CSSProperties } from "react";
 import { InteractiveCue } from "@/components/ui/interactive-cue";
-import { subscribeLenis } from "@/lib/lenis-bus";
-import type Lenis from "lenis";
+import { acquireScrollLock, scrollTo } from "@/lib/scroll-behavior";
 
 // Interactive beats for the Cloud Support Futures case page. Styles live in
 // the page's scoped critical CSS (prefix cf-, cloud-futures-case-layout.tsx);
@@ -212,7 +211,6 @@ export function CfFutures() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const lenisRef = useRef<Lenis | null>(null);
   const [active, setActive] = useState(0);
   const [live, setLive] = useState(false);
   // page-level lightbox: the 2400px decision flows are the studio's core
@@ -227,7 +225,7 @@ export function CfFutures() {
     const html = document.documentElement;
     const prevOverflow = html.style.overflow;
     html.style.overflow = "hidden";
-    lenisRef.current?.stop();
+    const releaseScroll = acquireScrollLock();
     zoomCloseRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -238,7 +236,7 @@ export function CfFutures() {
     window.addEventListener("keydown", onKey, true);
     return () => {
       html.style.overflow = prevOverflow;
-      lenisRef.current?.start();
+      releaseScroll();
       window.removeEventListener("keydown", onKey, true);
       zoomTriggerRef.current?.focus();
     };
@@ -249,13 +247,10 @@ export function CfFutures() {
   // so the gesture and the motion agree. Mobile and no-JS keep the same
   // track as a native horizontal swipe carousel.
   useEffect(() => {
-    const unsub = subscribeLenis((l) => {
-      lenisRef.current = l;
-    });
     const narrow = window.matchMedia("(max-width: 900px)");
     if (narrow.matches) {
       const vp = viewportRef.current;
-      if (!vp) return unsub;
+      if (!vp) return;
       const onSwipe = () => {
         const w =
           trackRef.current?.children[0]?.getBoundingClientRect().width ||
@@ -265,7 +260,6 @@ export function CfFutures() {
       };
       vp.addEventListener("scroll", onSwipe, { passive: true });
       return () => {
-        unsub();
         vp.removeEventListener("scroll", onSwipe);
       };
     }
@@ -301,7 +295,6 @@ export function CfFutures() {
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
-      unsub();
       cancelAnimationFrame(liveId);
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
@@ -319,9 +312,7 @@ export function CfFutures() {
         el.getBoundingClientRect().top +
         window.scrollY +
         ((i + 0.5) / 4) * (el.offsetHeight - vh);
-      const lenis = lenisRef.current;
-      if (lenis) lenis.scrollTo(y, { duration: 1.1 });
-      else window.scrollTo({ top: y, behavior: "smooth" });
+      scrollTo(y, { duration: 1.1 });
       return;
     }
     setActive(i);

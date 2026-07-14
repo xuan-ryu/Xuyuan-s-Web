@@ -2,7 +2,7 @@ import type { Project } from "@/data/projects";
 import Image from "next/image";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
-import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
+import { InteractiveCue } from "@/components/ui/interactive-cue";
 import {
   CfWorlds,
   CfFutures,
@@ -10,7 +10,7 @@ import {
 } from "@/components/cloud-futures-interactives";
 import { CfCaseRail, CfGate } from "@/components/cloud-futures-scroll";
 import { CaseNext } from "@/components/case-next";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
+import { OutcomeBand } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Cloud Support Futures — a Cornell × Google Cloud sponsored studio.
@@ -23,7 +23,12 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // Bespoke layout per the vicino precedent (scoped critical CSS, switched in
 // app/work/[slug]/page.tsx). Prose comes from data/projects.ts; the diagram
 // and interactive structures live with their components.
+// Server component, no state: all client behavior lives in the imported
+// interactives/scroll components. All page styling is one scoped template
+// literal at the end of the file (comments stripped at injection via
+// stripCssComments) — keep section banners outside that literal.
 
+/* ---- page fonts ---- */
 const cfSans = Roboto({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700"],
@@ -38,6 +43,7 @@ const cfMonoFont = Roboto_Mono({
   variable: "--cf-roboto-mono",
 });
 
+/* ---- framework decks: principles and tensions ---- */
 const PRINCIPLES = [
   {
     num: "1",
@@ -75,6 +81,7 @@ const TENSIONS = [
   { a: "Open access", b: "Gatekeeping", lean: 34 },
 ];
 
+/* ---- brief and review decks ---- */
 const RQS = [
   {
     num: "RQ 1",
@@ -171,6 +178,7 @@ const PROCESS_PHASES = [
   },
 ];
 
+/* ---- lo-fi probe decks ---- */
 const EMOTION_FLOW = [
   "Support problem",
   "Glowing support cue",
@@ -217,6 +225,7 @@ const AFFINITY_CLUSTERS = [
   },
 ];
 
+/* ---- mid-fi evidence decks ---- */
 const MID_FI_EVIDENCE = [
   {
     src: "/media/work/cloud-futures/evidence-mid-fi-quotes.png",
@@ -238,6 +247,7 @@ const MID_FI_EVIDENCE = [
   },
 ];
 
+/* ---- framework evaluation decks ---- */
 const EVALUATION_QUESTIONS = [
   ["Agency", "Who is in charge?"],
   ["Emotion", "Can feelings change priority?"],
@@ -255,6 +265,7 @@ const FRAMEWORK_EVIDENCE = [
   },
 ];
 
+/* ---- synthesis and limits decks ---- */
 // Process evidence only (the finished interfaces and the "human authorizes"
 // verdict live in 07 · Final synthesis — one home per fact): two shots of the
 // raw generated output, captioned for what the process produced.
@@ -314,6 +325,7 @@ const LIMITS_AND_NEXT = [
   },
 ];
 
+/* ---- case layout component ---- */
 export function CloudFuturesCaseLayout({ project }: { project: Project }) {
   return (
     <article className={`cf-page ${cfSans.variable} ${cfMonoFont.variable}`}>
@@ -1007,6 +1019,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
 
       <CaseNext slug={project.slug} />
 
+      {/* ---- scoped case css ---- */}
       <style
         dangerouslySetInnerHTML={{
           __html: stripCssComments(`
@@ -3046,7 +3059,6 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
           color: var(--cf-stone);
         }
 
-        ${ICUE_CSS}
         .cf-page .icue { font-family: var(--cf-mono); }
 
         @media (prefers-reduced-motion: no-preference) {
@@ -3345,7 +3357,7 @@ export function CloudFuturesCaseLayout({ project }: { project: Project }) {
             grid-template-columns: 1fr;
           }
         }
-      ` + OUTCOME_BAND_CSS),
+      `),
         }}
       />
     </article>

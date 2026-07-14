@@ -4,9 +4,9 @@ import { CaseNext } from "@/components/case-next";
 import type { CSSProperties, ReactNode } from "react";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import { FroghireAffinityMap } from "@/components/froghire-affinity-map";
-import { InteractiveCue, ICUE_CSS } from "@/components/ui/interactive-cue";
+import { InteractiveCue } from "@/components/ui/interactive-cue";
 import { FroghireTradeLedger } from "@/components/froghire-trade-ledger";
-import { OutcomeBand, OUTCOME_BAND_CSS } from "@/components/ui/outcome-band";
+import { OutcomeBand } from "@/components/ui/outcome-band";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // FrogHire.ai — the triage ledger.
@@ -18,7 +18,12 @@ import { stripCssComments } from "@/lib/css-sanitize";
 // chapter/H3 retitles are deferred to the batched owner sign-off; the only
 // render-filters here strip a title's surrounding quote marks and lift the
 // mentor's line out of moment.body for the interlude.
+// The whole stylesheet ships from the froghireCss template literal below,
+// comment-stripped at injection; interactivity (affinity map, ledger stamps)
+// lives in the imported Froghire* client components — this layout stays a
+// server component with no hooks and no scroll scripting.
 
+/* ---- render filters ---- */
 /* ── render-filters (no copy is rewritten, only re-framed) ─────────────── */
 
 const stripQuotes = (s: string) =>
@@ -34,6 +39,7 @@ const chapterIndex = (n: string) => {
   return `Ch. ${(m ? m[0] : "0").padStart(2, "0")}`;
 };
 
+/* ---- marginalia and xrefs ---- */
 /* ── marginalia: the review/stakeholder quotes, each living ONLY here ──
    Dedup contract (2026-07-07): every quote below is the sole teller of its
    line — the matching body sentences in data/projects.ts are trimmed to
@@ -76,6 +82,7 @@ const XREF: Record<string, { label: string; note: string }> = {
   },
 };
 
+/* ---- triage flow data ---- */
 const TRIAGE_FLOW = [
   {
     index: "01",
@@ -107,6 +114,7 @@ const TRIAGE_FLOW = [
   },
 ];
 
+/* ---- building blocks: figcaption and sec ---- */
 /* ── building blocks ────────────────────────────────────────────────────── */
 
 function FigCaption({
@@ -167,6 +175,13 @@ function Sec({
   );
 }
 
+/* ---- served scoped css literal ---- */
+// The page stylesheet ships from this template literal via
+// dangerouslySetInnerHTML; stripCssComments removes its internal notes at
+// injection. Never add TSX section banners inside the string — navigate the
+// CSS by its own ── markers (grid shell, docket hero, evidence frames,
+// triage spine, chapters, interlude, trade ledger, affinity map, tablet,
+// phone, reduced motion, assembly) instead.
 /* ── scoped critical CSS ────────────────────────────────────────────────── */
 
 const froghireCss = `
@@ -1218,6 +1233,7 @@ const froghireCss = `
 }
 `;
 
+/* ---- case layout component ---- */
 /* ── layout ─────────────────────────────────────────────────────────────── */
 
 export function FroghireCaseLayout({ project }: { project: Project }) {
@@ -1239,10 +1255,11 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
     <article className="froghire-case-page">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(froghireCss + ICUE_CSS + OUTCOME_BAND_CSS),
+          __html: stripCssComments(froghireCss),
         }}
       />
 
+      {/* ---- docket hero section ---- */}
       {/* ── docket hero ── */}
       <section className="froghire-hero froghire-shell froghire-grid" id="header">
         <p className="froghire-kicker froghire-label" data-fade>
@@ -1269,6 +1286,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
           replacing the old hero stats row — one fact, one place. ── */}
       {project.outcomes && <OutcomeBand outcomes={project.outcomes} />}
 
+      {/* ---- operating model triage section ---- */}
       {/* ── the operating model: overview + triage spine, one section ── */}
       <section
         className="froghire-triage froghire-shell"
@@ -1313,6 +1331,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
         </div>
       </section>
 
+      {/* ---- product in two rooms section ---- */}
       {/* ── the product in two rooms ── */}
       <section
         className="froghire-rooms froghire-shell froghire-grid"
@@ -1351,6 +1370,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
         </figure>
       </section>
 
+      {/* ---- chapter 01 diagnosis ---- */}
       {/* ── chapter 01: diagnosis ── */}
       {ch1 && (
         <section className="froghire-shell" aria-label={ch1.number}>
@@ -1453,6 +1473,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
+      {/* ---- interlude mentor line ---- */}
       {/* ── interlude: the mentor's line ── */}
       {mentorLine && (
         <aside
@@ -1490,6 +1511,7 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
         </aside>
       )}
 
+      {/* ---- chapter 02 negotiation ---- */}
       {/* ── chapter 02: negotiation ── */}
       {ch2 && (
         <section className="froghire-shell" aria-label={ch2.number}>
@@ -1603,9 +1625,11 @@ export function FroghireCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
+      {/* ---- trade ledger section ---- */}
       {/* ── the trade ledger ── */}
       <FroghireTradeLedger />
 
+      {/* ---- closing coda section ---- */}
       {/* ── closing: what survived ── */}
       <section className="froghire-coda froghire-shell" aria-label="What survived">
         <div className="froghire-grid froghire-coda-inner">

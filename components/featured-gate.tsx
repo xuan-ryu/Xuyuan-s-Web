@@ -1,68 +1,75 @@
 "use client";
 
-// Moon Gate (闁哄牆鐗婄粈濠囨⒒? 闁?an editorial index whose preview fills a round opening
+// Garden Window — an editorial index whose preview fills a wide opening
 // in the #fff plaster wall beneath the eaves.
 //
 // Left: a compact index of condensed-uppercase project names (skill's "work
 // index list mode", seal-red active mark). Resting on a name unfolds its story;
 // a seal-red tick slides along the number gutter to the active row.
-// Right: the moon gate holds a vertical film-strip of the covers; selecting
-// slides the strip up/down to the chosen frame, clipped inside the circular
-// opening. Media FILLS the circle (you look through a garden gate at the
-// scene, not at a mounted print) 闁?a soft radial vignette keeps the rim round.
+// Right: the garden window holds a vertical film-strip of the covers; selecting
+// slides the strip up/down inside a horizontal octagonal silhouette. Its
+// 16:10 field keeps wide product recordings legible without losing the garden
+// language of an opening cut through a white plaster wall.
 //
 // Scroll choreography (desktop, motion-safe): browsing the index is HOVER
-// only (owner decision 闁?scroll-driven index switching read as noise). The
+// only (owner decision — scroll-driven index switching read as noise). The
 // section pins for ~2.7 viewports and scroll owns just the crossing: past a
-// short runway the gate scales until the round opening swallows the viewport
+// short runway the window scales until the opening swallows the viewport
 // and sinks to ink; lotus leaves then condense over the ink (the ink is now
 // the pond's water) until the viewport is covered; continued scroll parts
 // the pads outward from the center; at the very end the crossing layer and
 // last chrome dissolve and the
 // koi section (pulled up -100vh so it waits right behind) has risen into
-// place 闁?one flick passes through the moon gate, through the lotus, onto
+// place — one flick passes through the window, through the lotus, onto
 // the pond; an up-flick folds the leaves shut and restores the wall (the
 // whole arrival is scrubbed, nothing is time-driven). Reduced-motion /
 // mobile keep the plain stacked layout, where an idle timer walks the index
 // instead (touch has no hover) and the lotus layer never mounts.
 //
 // English copy, Arabic numerals, one seal-red accent. Prefix fg-.
+//
+// Does NOT own the koi section or the lotus pad geometry: it only toggles
+// classes / a -100vh margin on .home-koi-section, and pad coordinates come
+// from fg-lotus-layer's shared LOTUS_PADS. All scoped styling is one template
+// literal near the end (comments stripped at injection via stripCssComments)
+// — keep section banners outside that literal.
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { FgLotusLayer, LOTUS_PADS } from "@/components/fg-lotus-layer";
-import { subscribeLenis } from "@/lib/lenis-bus";
+import { scrollTo, subscribeScrollFrame } from "@/lib/scroll-behavior";
 import { stripCssComments } from "@/lib/css-sanitize";
 
+/* ---- window geometry and focal crops ---- */
 const FEATURED = 4;
-// Per-project focal override for the round opening: a full product screenshot
-// crammed into the circle reads at ~10% size, so these zoom the cover/preview
-// to a meaningful detail instead. scale = zoom factor, x/y = where that detail
-// sits in the frame (becomes transform-origin). Projects whose media already
-// reads in the circle (wordmark covers, text plates) simply aren't listed.
+// One path owns both the HTML clip and the drawn frame. The horizontal
+// octagon follows the dominant 16:9 preview format without becoming a generic
+// screen.
+const GARDEN_WINDOW_PATH =
+  "M 100 0 H 900 L 1000 100 V 525 L 900 625 H 100 L 0 525 V 100 Z";
+
+// The wide opening already preserves UI context, so focal zoom now only
+// removes capture bars or excess margins.
 const FOCAL: Record<
   string,
   { scale: number; x: string; y: string; pos?: string }
 > = {
-  // light-themed home roam: zoom into the content-queue/signals cluster so
-  // the round opening fills with UI instead of the app's white margins
-  pulse: { scale: 1.55, x: "40%", y: "44%" },
-  // canvas UI: zoom to the node-editor cluster at the frame's center
-  "vicino-ai": { scale: 1.9, x: "50%", y: "58%" },
-  // dashboard recording: anchor the crop on the LEFT half (pos) and zoom to
-  // the job list — the only region that stays dense through the whole clip
-  // (the right pane goes blank mid-video)
-  "froghire-ai": { scale: 1.6, x: "45%", y: "62%", pos: "left center" },
+  pulse: { scale: 1.04, x: "44%", y: "48%" },
+  // The source recording has side capture bars; a slight scale clears them.
+  "vicino-ai": { scale: 1.08, x: "50%", y: "58%" },
+  // The source has a baked-in top bar; keep a stronger, lower-origin crop.
+  "froghire-ai": { scale: 1.28, x: "45%", y: "66%", pos: "left center" },
 };
+/* ---- crossing timeline constants ---- */
 // the pin + lotus layer run only here; the same query gates the layer mount
 const CROSSING_MEDIA =
   "(min-width: 901px) and (prefers-reduced-motion: no-preference)";
-// 闁冲厜鍋撻柍鍏夊亾 crossing fraction map (of the 270% pin) 闁冲厜鍋撻柍鍏夊亾
-// The pin grew 200% 闁?270% for the lotus arrival; runway/zoom/ink keep their
-// old ABSOLUTE scroll lengths (0.12 of 200% 闁?0.09 of 270%, etc.) so the
-// approach feels identical 闁?the added travel is all arrival.
+// ── crossing fraction map (of the 270% pin) ──
+// The pin grew 200% → 270% for the lotus arrival; runway/zoom/ink keep their
+// old ABSOLUTE scroll lengths (0.12 of 200% → 0.09 of 270%, etc.) so the
+// approach feels identical — the added travel is all arrival.
 const PIN_END = "+=270%";
 // Net document height the crossing adds once GSAP builds it: the pin spacer
 // grows the section by PIN_END (% of viewport) while the same setup pulls the
@@ -93,9 +100,16 @@ const PART_DUR = 0.21;
 // The two now share identical pad positions, so the overlap is a clean
 // crossfade (not the old doubled/offset ghost that forced a hard gap).
 const FADE_AT = 0.945; // ink + wall dissolve over the (by now) risen pond
-const SNAP_FREE = 0.13; // below this progress there is no snap 闁?rest and read
+const SNAP_FREE = 0.13; // below this progress there is no snap — rest and read
 
-export function FeaturedGate({ projects }: { projects: Project[] }) {
+/* ---- featured gate component ---- */
+export function FeaturedGate({
+  projects,
+  continuationText,
+}: {
+  projects: readonly Project[];
+  continuationText: string;
+}) {
   // only the product / UI-UX / AI work (the first four); the game + VR pieces
   // live on the full Work page, reached via the CTA below the list
   const list = [...projects]
@@ -106,10 +120,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
   const [tickY, setTickY] = useState<number | null>(null);
   // entrance is component-owned state (NOT the global FadeReveal classes):
   // is-visible painted onto re-rendered nodes gets wiped by React, and the
-  // global observer only arms once per route 闁?state survives everything
+  // global observer only arms once per route — state survives everything
   const [revealed, setRevealed] = useState(false);
   // the lotus layer exists only where the crossing pin runs (desktop,
-  // motion-safe) 闁?reduced-motion / mobile / SSR never even mount it
+  // motion-safe) — reduced-motion / mobile / SSR never even mount it
   const [lotusOn, setLotusOn] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -136,8 +150,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     setActive(i);
   };
 
-  // 闁冲厜鍋撻柍鍏夊亾 seal-red tick: slide to the active row's number (re-measure after the
-  //    accordion settles 闁?collapsing rows above shift the target) 闁冲厜鍋撻柍鍏夊亾
+  /* ---- seal-red tick effect ---- */
+  // ── seal-red tick: slide to the active row's number (re-measure after the
+  //    accordion settles — collapsing rows above shift the target) ──
   useEffect(() => {
     const measure = () => {
       const listEl = listRef.current;
@@ -159,7 +174,30 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     };
   }, [active]);
 
-  // 闁冲厜鍋撻柍鍏夊亾 mount/unmount the lotus layer with the same media boundary as the pin 闁冲厜鍋撻柍鍏夊亾
+  /* ---- window height sync effect ---- */
+  // Keep the preview window locked to the full height of the editorial index.
+  // The detail well below is fixed-height, so project changes no longer feed
+  // a different measurement back into the centred section layout.
+  useEffect(() => {
+    const listEl = listRef.current;
+    const gateEl = gateRef.current;
+    if (!listEl || !gateEl) return;
+
+    const syncWindowToList = () => {
+      const listHeight = Math.ceil(listEl.getBoundingClientRect().height / 2) * 2;
+      const windowWidth = Math.round((listHeight * 1.5) / 2) * 2;
+      gateEl.style.setProperty("--fg-list-height", `${listHeight}px`);
+      gateEl.style.setProperty("--fg-window-width", `${windowWidth}px`);
+    };
+
+    syncWindowToList();
+    const observer = new ResizeObserver(syncWindowToList);
+    observer.observe(listEl);
+    return () => observer.disconnect();
+  }, []);
+
+  /* ---- lotus layer mount effect ---- */
+  // ── mount/unmount the lotus layer with the same media boundary as the pin ──
   useEffect(() => {
     const mq = window.matchMedia(CROSSING_MEDIA);
     const update = () => setLotusOn(mq.matches);
@@ -168,14 +206,14 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // 闁冲厜鍋撻柍鍏夊亾 scroll choreography: pin + beats + through-the-gate zoom + lotus
+  /* ---- scroll choreography effect ---- */
+  // ── scroll choreography: pin + beats + through-the-gate zoom + lotus
   //    arrival. Re-runs when the lotus layer (un)mounts so the timeline is
-  //    always built against the DOM it will actually drive. 闁冲厜鍋撻柍鍏夊亾
+  //    always built against the DOM it will actually drive. ──
   useEffect(() => {
     let cancelled = false;
     let mm: ReturnType<typeof import("gsap").default.matchMedia> | null = null;
-    let lenisDetach: (() => void) | null = null;
-    let unsubLenis: (() => void) | null = null;
+    let unsubscribeScroll: (() => void) | null = null;
 
     (async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -185,22 +223,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      // keep ScrollTrigger in sync with Lenis's own scroll emission 闁?the DOM
-      // scroll event alone is one frame stale under smooth scroll. Also keep
-      // a handle on the instance: the snap glides below are driven BY Lenis
-      // (lenis.scrollTo), because a ScrollTrigger snap tween writing scrollTop
-      // fights Lenis's rAF frame-by-frame and stalls on long distances.
-      let currentLenis: Parameters<Parameters<typeof subscribeLenis>[0]>[0] =
-        null;
-      unsubLenis = subscribeLenis((lenis) => {
-        currentLenis = lenis;
-        lenisDetach?.();
-        lenisDetach = null;
-        if (lenis) {
-          lenis.on("scroll", ScrollTrigger.update);
-          lenisDetach = () => lenis.off("scroll", ScrollTrigger.update);
-        }
-      });
+      // The Scroll Behaviour Interface supplies the post-update frame. Native
+      // scroll events are one frame stale while smooth scrolling is active.
+      unsubscribeScroll = subscribeScrollFrame(ScrollTrigger.update);
 
       mm = gsap.matchMedia();
       mm.add(
@@ -222,23 +247,34 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           prepinRef.current?.classList.add("is-consumed");
 
           // pull the koi section up one viewport so it waits right behind the
-          // pinned gate 闁?the final pin stretch is the pond rising into place
+          // pinned gate — the final pin stretch is the pond rising into place
           // while the ink dissolves (gsap.matchMedia reverts this on cleanup).
           // The pinned section paints above it via .fg-section { z-index: 2 }.
           gsap.set(".home-koi-section", { marginTop: "-100vh" });
 
-          // scale that guarantees the circular opening covers the viewport
-          // from any layout position (worst case: gate center at a corner)
-          const coverScale = () =>
-            (Math.hypot(window.innerWidth, window.innerHeight) /
-              (gate.offsetWidth / 2)) *
-            1.05;
+          // Scale the wide opening until its bounds cover every viewport edge.
+          // This works from the window's actual asymmetric grid position.
+          const coverScale = () => {
+            const rect = gate.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const halfWidth = gate.offsetWidth / 2;
+            const halfHeight = gate.offsetHeight / 2;
+            const xScale =
+              Math.max(centerX, window.innerWidth - centerX) / halfWidth;
+            const yScale =
+              Math.max(centerY, window.innerHeight - centerY) / halfHeight;
+            // Carry the angled sides beyond the viewport before the ink veil
+            // starts to dissolve.
+            return Math.max(xScale, yScale) * 1.16;
+          };
 
-          // 闁冲厜鍋撻柍鍏夊亾 the crossing snap, executed by Lenis 闁冲厜鍋撻柍鍏夊亾
-          // Below SNAP_FREE there is no snap at all 闁?the pinned section can
+          /* ---- crossing snap glide ---- */
+          // ── the crossing snap, executed by Lenis ──
+          // Below SNAP_FREE there is no snap at all — the pinned section can
           // be rested on and browsed by hover. Once the zoom is visibly under
           // way, the crossing always completes in the direction of travel
-          // (down 闁?the pond, up 闁?back to the wall); executed via
+          // (down → the pond, up → back to the wall); executed via
           // lenis.scrollTo because a ScrollTrigger snap tween fights Lenis's
           // rAF and stalls on long glides.
           let snapGliding = false;
@@ -248,8 +284,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
           const trySnap = (self: globalThis.ScrollTrigger) => {
-            const lenis = currentLenis;
-            if (!lenis || snapGliding) return;
+            if (snapGliding) return;
             const p = self.progress;
             if (p <= SNAP_FREE || p >= 0.999) return;
             // hysteresis: scrolling down always completes to the pond, but
@@ -269,11 +304,11 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                 : self.start;
             const dist = Math.abs(y - window.scrollY);
             if (dist < 2) return;
-            // cap raised 1.1 闁?1.3 for the longer (270%) crossing distance
+            // cap raised 1.1 → 1.3 for the longer (270%) crossing distance
             const duration = Math.min(1.3, Math.max(0.35, dist / 1600));
             snapGliding = true;
             // a user flick mid-glide retargets Lenis and onComplete never
-            // fires 闁?the fallback timer re-arms snapping either way
+            // fires — the fallback timer re-arms snapping either way
             window.clearTimeout(snapClear);
             snapClear = window.setTimeout(
               () => {
@@ -281,15 +316,21 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               },
               duration * 1000 + 250,
             );
-            lenis.scrollTo(y, {
+            const started = scrollTo(y, {
               duration,
               easing: easeInOut,
+              fallback: "none",
               onComplete: () => {
                 snapGliding = false;
               },
             });
+            if (!started) {
+              window.clearTimeout(snapClear);
+              snapGliding = false;
+            }
           };
 
+          /* ---- pin timeline beats ---- */
           const tl = gsap.timeline({
             defaults: { ease: "none" },
             scrollTrigger: {
@@ -360,11 +401,12 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
             .to(bg, { backgroundColor: "#020305", duration: 0.04 }, LEAF_IN - 0.02)
             // the handoff: ink (and the now-dark wall) dissolve at the very
             // end, after the crossing layer is gone and the koi section has
-            // risen behind 闁?autoAlpha so the faded layers also stop
+            // risen behind — autoAlpha so the faded layers also stop
             // hit-testing. Until then the ink veil IS the pond surface the
             // lotus pads sit on.
             .to([bg, gate], { autoAlpha: 0, duration: 0.05 }, FADE_AT);
 
+          /* ---- lotus arrival tweens ---- */
           // Lotus arrival: clusters condense over the ink, the edge blossom
           // opens, then the whole pond field parts from the center.
           const layer = section.querySelector<HTMLElement>(".fgl-layer");
@@ -469,14 +511,14 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     return () => {
       cancelled = true;
       mm?.revert();
-      unsubLenis?.();
-      lenisDetach?.();
+      unsubscribeScroll?.();
     };
     // lotusOn: rebuild once the lotus layer's DOM is mounted (or gone)
   }, [lotusOn]);
 
-  // 闁冲厜鍋撻柍鍏夊亾 entrance: arm once when the section approaches; state-driven so no
-  //    re-render or HMR can un-reveal the rows 闁冲厜鍋撻柍鍏夊亾
+  /* ---- entrance reveal effect ---- */
+  // ── entrance: arm once when the section approaches; state-driven so no
+  //    re-render or HMR can un-reveal the rows ──
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -493,21 +535,24 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     return () => io.disconnect();
   }, []);
 
-  // 闁冲厜鍋撻柍鍏夊亾 idle auto-advance 闁?only where the pin doesn't run (mobile), so touch
-  //    users still see all four projects; pauses after any interaction 闁冲厜鍋撻柍鍏夊亾
+  /* ---- idle auto advance effect ---- */
+  // ── idle auto-advance — only where the pin doesn't run (mobile), so touch
+  //    users still see all four projects; pauses after any interaction ──
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const section = sectionRef.current;
+    const cue = hintRef.current;
     if (!section) return;
     let inView = false;
     const io = new IntersectionObserver(
       (entries) => {
         inView = !!entries[0]?.isIntersecting;
+        cue?.classList.toggle("is-section-visible", inView);
       },
       { threshold: 0.35 },
     );
     io.observe(section);
-    const id = window.setInterval(() => {
+    const id = reduceMotion ? undefined : window.setInterval(() => {
       if (!inView || pinnedRef.current || document.hidden) return;
       if (holdTicksRef.current > 0) {
         holdTicksRef.current -= 1;
@@ -517,10 +562,12 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
     }, 4800);
     return () => {
       io.disconnect();
-      window.clearInterval(id);
+      cue?.classList.remove("is-section-visible");
+      if (id !== undefined) window.clearInterval(id);
     };
   }, []);
 
+  /* ---- section markup ---- */
   return (
     <>
     <section
@@ -528,7 +575,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
       aria-labelledby="fg-heading"
       ref={sectionRef}
     >
-      {/* the white plaster wall 闁?a child (not the section bg) so the pond
+      {/* the white plaster wall — a child (not the section bg) so the pond
           handoff can dissolve it while the section stays pinned */}
       <span className="fg-bg" ref={bgRef} aria-hidden="true" />
       <div className="fg-shell">
@@ -589,7 +636,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           </ol>
           </div>
 
-          {/* right: the moon gate 闁?a vertical film-strip that slides */}
+          {/* right: the garden window — a vertical film-strip that slides */}
           <div className="fg-right">
             <Link
               href={`/work/${ap.slug}`}
@@ -598,6 +645,25 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
               tabIndex={-1}
               ref={gateRef}
             >
+              <svg
+                className="fg-window-defs"
+                width="0"
+                height="0"
+                aria-hidden="true"
+              >
+                <defs>
+                  <clipPath
+                    id="fg-garden-window-clip"
+                    clipPathUnits="objectBoundingBox"
+                  >
+                    <path
+                      d={GARDEN_WINDOW_PATH}
+                      transform="scale(0.001 0.0016)"
+                    />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span className="fg-gate-reveal" aria-hidden="true" />
               <span className="fg-gate-inner">
                 <span
                   className="fg-strip"
@@ -657,30 +723,31 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
                     );
                   })}
                 </span>
-                <span className="fg-vignette" aria-hidden="true" />
                 <span className="fg-dip" key={active} aria-hidden="true" />
                 <span className="fg-ink-veil" ref={veilRef} aria-hidden="true" />
               </span>
-              <span className="fg-gate-rim" aria-hidden="true" />
+              <svg
+                className="fg-gate-rim"
+                viewBox="0 0 1000 625"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  className="fg-gate-rim-frame"
+                  d={GARDEN_WINDOW_PATH}
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* continuation cue — after the last featured row the section reads
-          like a page end; this quiet mono line + a slow ink-drip hairline
-          announce the pond below. One element, section voice (mono, one
-          seal-red accent), fades with the head/index when the crossing
-          zoom begins. */}
-      <div className="fg-continue" ref={hintRef} aria-hidden="true">
-        <span className="fg-continue-drop" />
-        <span className="fg-continue-text">The pond is below — keep going</span>
-      </div>
-
-      {/* the lotus arrival 闁?scenery for the scrubbed crossing; mounts only
+      {/* the lotus arrival — scenery for the scrubbed crossing; mounts only
           where the pin runs (desktop, motion-safe) */}
       {lotusOn ? <FgLotusLayer /> : null}
 
+      {/* ---- scoped gate css ---- */}
       <style
         dangerouslySetInnerHTML={{
           __html: stripCssComments(`
@@ -699,7 +766,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           z-index: 2;
           color: #141414;
           /* vh-elastic paddings: the whole composition must FIT one viewport
-             while pinned 闁?content below the fold is unreachable during a pin
+             while pinned — content below the fold is unreachable during a pin
              (the circle's bottom was getting cropped at short viewports) */
           padding-block: clamp(48px, 7vh, 172px);
           min-height: 100vh;
@@ -726,7 +793,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-title {
           margin: 0;
           font-family: var(--font-condensed);
-          font-size: clamp(56px, 8.8vw, 208px);
+          font-size: clamp(56px, 7.4vw, 168px);
           font-weight: 300; line-height: 0.9; letter-spacing: var(--track-display);
           text-transform: uppercase; color: #141414;
         }
@@ -735,8 +802,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           display: grid;
           grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
           align-items: start;
-          gap: clamp(32px, 5vw, 128px);
-          padding-top: clamp(20px, 3.5vh, 84px);
+          gap: clamp(52px, 6vw, 132px);
+          padding-top: clamp(34px, 4.5vh, 68px);
         }
 
         /* ---- accordion index: big condensed names, active unfolds its story ---- */
@@ -753,7 +820,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-row:first-child { border-top: none; }
         .fg-row-link {
           display: block; text-decoration: none; color: inherit; outline: none;
-          padding: clamp(9px, 1.3vh, 16px) 0;
+          padding: clamp(11px, 1.5vh, 18px) 0;
           /* staggered entrance, driven by the section's is-revealed state */
           opacity: 0;
           transform: translateY(26px);
@@ -777,7 +844,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           opacity: 1;
           transform: none;
         }
-        .fg-row-head { display: grid; grid-template-columns: 2.4em 1fr; align-items: baseline; gap: 12px; }
+        .fg-row-head { display: grid; grid-template-columns: 2.4em 1fr; align-items: baseline; gap: 16px; }
         .fg-row-num {
           font-size: var(--text-meta); font-variant-numeric: tabular-nums;
           color: rgba(20,20,22,0.3);
@@ -785,7 +852,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         }
         .fg-row-name {
           font-family: var(--font-condensed);
-          font-size: clamp(30px, 3.7vw, 78px);
+          font-size: clamp(30px, 3.25vw, 68px);
           font-weight: 300; line-height: 1.0; letter-spacing: var(--track-display);
           text-transform: uppercase; color: rgba(20,20,22,0.32);
           transition: color 0.35s var(--ease-silk);
@@ -794,31 +861,31 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-row.is-active .fg-row-name { color: #111; }
         .fg-row-link:focus-visible .fg-row-name { color: #111; }
 
-        /* the story unfolds smoothly under the active title (grid 0fr 闁?1fr) */
+        /* the story unfolds smoothly under the active title (grid 0fr → 1fr) */
         .fg-row-detail {
-          display: grid; grid-template-rows: 0fr;
-          margin-left: calc(2.4em + 12px);
+          display: grid; grid-template-rows: 0px;
+          margin-left: calc(2.4em + 16px);
           opacity: 0;
           transition: grid-template-rows 0.6s var(--ease-silk),
                       opacity 0.5s ease;
         }
-        .fg-row.is-active .fg-row-detail { grid-template-rows: 1fr; opacity: 1; }
-        .fg-row-detail-in { min-height: 0; overflow: hidden; padding-top: 12px; }
+        .fg-row.is-active .fg-row-detail { grid-template-rows: 156px; opacity: 1; }
+        .fg-row-detail-in { min-height: 0; overflow: hidden; padding-top: 14px; }
         .fg-row-desc {
           display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-          max-width: 44ch;
-          font-size: var(--text-body); line-height: 1.5; color: rgba(24,24,27,0.66);
+          max-width: 48ch;
+          font-size: var(--text-body); line-height: 1.55; color: rgba(24,24,27,0.66);
         }
         .fg-row-meta {
           display: flex; align-items: baseline; justify-content: space-between; gap: 18px;
-          margin-top: 14px; max-width: 44ch;
+          margin-top: 16px; max-width: 48ch;
         }
         .fg-row-tags {
           font-size: var(--text-label); text-transform: uppercase; letter-spacing: 0.12em;
           color: rgba(20,20,22,0.5);
         }
         /* label chrome + seal-red rule come from .cta--quiet (globals.css);
-           only the row-level hover trigger is local 闁?the wipe fires when the
+           only the row-level hover trigger is local — the wipe fires when the
            whole row is hovered, not just the label */
         .fg-row-link:hover .fg-row-cta::after,
         .fg-row-link:focus-visible .fg-row-cta::after { transform: scaleX(1); }
@@ -828,25 +895,33 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
            dropped to the big title's baseline */
         .fg-allwork { flex: none; align-self: baseline; }
 
-        /* ---- the moon gate: a vertical film-strip clipped in a circle ---- */
+        /* ---- the wide garden window: a 3:2 sliding film-strip ---- */
         .fg-right { position: relative; display: flex; justify-content: flex-end; }
         .fg-gate {
           position: relative; display: block;
-          /* diameter is capped by the viewport HEIGHT too 闁?while pinned the
-             circle must never hang below the fold (it can't be scrolled to) */
-          width: min(clamp(380px, 40vw, 720px), calc(100vh - 290px));
-          aspect-ratio: 1 / 1;
+          /* Width is derived from the measured list height, then capped by
+             the 7-column field and the pinned viewport. */
+          width: min(var(--fg-window-width, 760px), 840px, calc((100vh - 300px) * 1.5));
+          aspect-ratio: 3 / 2;
           margin-right: clamp(-56px, -3vw, 0px);
-          border-radius: 50%; text-decoration: none; color: inherit;
+          text-decoration: none; color: inherit;
           transform-origin: center;
         }
+        .fg-window-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+        .fg-gate-reveal {
+          position: absolute; inset: 0;
+          clip-path: url(#fg-garden-window-clip);
+          background: #f7f7f5;
+        }
         .fg-gate-inner {
-          position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: #101010;
+          position: absolute; inset: clamp(7px, 0.65vw, 11px);
+          overflow: hidden; background: var(--ink-900);
+          clip-path: url(#fg-garden-window-clip);
         }
         .fg-strip {
           position: absolute; inset: 0;
           display: flex; flex-direction: column;
-          /* selecting a lower item slides the strip up 闁?follows the list */
+          /* selecting a lower item slides the strip up — follows the list */
           transform: translateY(calc(var(--active, 0) * -100%));
           /* visible up/down slide (follows the list), combined with the dip:
              the strip slides across the whole transition while a brief black
@@ -858,7 +933,7 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           position: relative; flex: 0 0 100%; overflow: hidden;
           background: #0a0a0a;
         }
-        /* the scene FILLS the round opening 闁?you look through the gate, not
+        /* the scene FILLS the round opening — you look through the gate, not
            at a mounted print. Slow breathe-in on hover.
            --fg-zoom / --fg-origin (set per project on .fg-cell) crop the view
            to a legible detail instead of a full unreadable screenshot. */
@@ -879,12 +954,6 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         @media (min-width: 1920px) {
           .fg-cell { --fg-cap: 1.2; }
         }
-        /* soft radial falloff so the rim always reads as a round opening */
-        .fg-vignette {
-          position: absolute; inset: 0; z-index: 2; pointer-events: none;
-          background: radial-gradient(circle at 50% 50%,
-            rgba(5,5,5,0) 56%, rgba(5,5,5,0.05) 72%, rgba(5,5,5,0.34) 100%);
-        }
         /* switch = a slow, smooth dip through black, like a page transition */
         .fg-dip {
           position: absolute; inset: 0; z-index: 3; pointer-events: none;
@@ -899,13 +968,17 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           position: absolute; inset: 0; z-index: 4; pointer-events: none;
           background: #020305; opacity: 0;
         }
-        /* a clean opening: a soft top recess + a hairline edge. No inner glow. */
+        /* The SVG repeats the clip path exactly. The black outer frame alone
+           carries the silhouette; the opening stays clean and unembellished. */
         .fg-gate-rim {
-          position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 5;
-          box-shadow:
-            0 0 0 1px rgba(15,16,20,0.68),
-            inset 0 0 0 1px rgba(15,16,20,0.08),
-            0 18px 48px rgba(15,16,20,0.055);
+          position: absolute; inset: 0; width: 100%; height: 100%;
+          pointer-events: none; z-index: 5; overflow: visible;
+          fill: none;
+          filter: drop-shadow(0 14px 24px rgba(15,16,20,0.12));
+        }
+        .fg-gate-rim-frame {
+          stroke: var(--ink-950); stroke-width: clamp(8px, 0.7vw, 12px);
+          stroke-linejoin: miter;
         }
         .fg-gate-plate {
           position: absolute; inset: 0;
@@ -926,27 +999,28 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
 
         /* ---- continuation cue: mono micro-line + slow ink-drip hairline ---- */
         .fg-continue {
-          position: absolute;
+          position: fixed;
           left: 50%;
-          bottom: clamp(14px, 2.6vh, 34px);
+          bottom: clamp(30px, 4.8vh, 58px);
           transform: translateX(-50%);
-          z-index: 1;
+          z-index: 3;
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 14px;
           font-family: var(--font-mono);
-          font-size: var(--text-micro);
-          letter-spacing: 0.22em;
+          font-size: clamp(10px, 0.68vw, 12px);
+          line-height: 1;
+          letter-spacing: 0.2em;
           text-transform: uppercase;
           white-space: nowrap;
-          color: rgba(20, 20, 22, 0.46);
+          color: rgba(20, 20, 22, 0.68);
           opacity: 0;
-          transition: opacity 0.9s var(--ease-silk) 0.55s;
+          transition: opacity 0.65s var(--ease-silk) 0.12s;
           pointer-events: none;
         }
-        .fg-section.is-revealed .fg-continue { opacity: 1; }
+        .fg-continue.is-section-visible { opacity: 1; }
         /* crossing under way — get out of the way fast (no reveal delay) */
-        .fg-section .fg-continue.is-hidden {
+        .fg-continue.is-hidden {
           opacity: 0;
           transition-duration: 0.3s;
           transition-delay: 0s;
@@ -955,9 +1029,9 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         .fg-continue-drop {
           position: relative;
           width: 1px;
-          height: 22px;
+          height: 30px;
           overflow: hidden;
-          background: rgba(20, 20, 22, 0.16);
+          background: rgba(20, 20, 22, 0.28);
         }
         .fg-continue-drop::after {
           content: "";
@@ -965,10 +1039,10 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           left: 0;
           top: 0;
           width: 100%;
-          height: 45%;
+          height: 38%;
           background: var(--seal-red);
           transform: translateY(-110%);
-          animation: fgContinueDrip 3.4s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+          animation: fgContinueDrip 2.8s cubic-bezier(0.45, 0, 0.3, 1) infinite;
         }
         @keyframes fgContinueDrip {
           0% { transform: translateY(-110%); }
@@ -991,7 +1065,8 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
         @media (max-width: 900px) {
           .fg-main { grid-template-columns: 1fr; gap: clamp(30px, 6vh, 52px); padding-top: clamp(30px, 5vh, 52px); }
           .fg-right { order: -1; justify-content: center; }
-          .fg-gate { width: min(72vw, 400px); margin-right: 0; }
+          .fg-gate { width: min(84vw, 560px); margin-right: 0; }
+          .fg-row.is-active .fg-row-detail { grid-template-rows: 208px; }
           .fg-tick { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -1003,13 +1078,20 @@ export function FeaturedGate({ projects }: { projects: Project[] }) {
           .fg-gate:hover .fg-cover,
           .fg-gate:hover .fg-video { transform: scale(var(--fg-zoom, 1)); }
           .fg-row-link { opacity: 1; transform: none; }
-          .fg-continue { opacity: 1; transition: none; }
+          .fg-continue { transition: none; }
+          .fg-continue.is-section-visible { opacity: 1; }
           .fg-continue-drop::after { animation: none; transform: translateY(0); }
         }
       `),
         }}
       />
     </section>
+    {/* viewport-level continuation cue: visible only while Selected Work is
+        in view, then dismissed as soon as the garden-window crossing begins */}
+    <div className="fg-continue" ref={hintRef} aria-hidden="true">
+      <span className="fg-continue-drop" />
+      <span className="fg-continue-text">{continuationText}</span>
+    </div>
     {/* pre-pin placeholder: reserves the net scroll distance the crossing
         will add, only where the pin actually runs (same media boundary);
         consumed the moment the ScrollTrigger's own pin spacer exists */}

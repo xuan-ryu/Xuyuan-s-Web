@@ -127,6 +127,8 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           position: relative;
           max-width: 1440px; height: 100%;
           margin: 0 auto;
+          display: flex;
+          flex-direction: column;
         }
         .koi-how-title {
           /* top in vh: the crossing lands the pond ~12vh past its boundary,
@@ -147,8 +149,9 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             0 0 56px rgba(1, 2, 4, 0.6);
         }
         .koi-how-card {
-          position: absolute;
+          position: relative;
           width: 640px;
+          flex: 0 0 auto;
           pointer-events: none;
         }
         .koi-how.is-revealed .koi-how-card { pointer-events: auto; }
@@ -156,9 +159,21 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
            The right-rail cards anchor from the RIGHT (176/112px = their
            1440-canvas insets), so between 1251-1439px they slide inward
            instead of poking past the viewport (48px hscroll at 1280). */
-        .koi-how-card-1 { left: auto; right: 176px; top: 400px; min-height: 356px; }
-        .koi-how-card-2 { left: 112px; top: 768px; min-height: 322px; }
-        .koi-how-card-3 { left: auto; right: 112px; top: 1130px; min-height: 322px; }
+        .koi-how-card-1 {
+          align-self: flex-end;
+          margin: 400px 176px 0 0;
+          min-height: 356px;
+        }
+        .koi-how-card-2 {
+          align-self: flex-start;
+          margin: 40px 0 0 112px;
+          min-height: 322px;
+        }
+        .koi-how-card-3 {
+          align-self: flex-end;
+          margin: 40px 112px 0 0;
+          min-height: 322px;
+        }
 
         /* On the pond the cards drop ValueCard's heavy frosted glass (its
            inline blur(28px) pops in during the fade). The pond grew dense
@@ -307,6 +322,8 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             position: static;
             width: auto;
             min-height: 0;
+            margin: 0;
+            align-self: auto;
           }
           .koi-how-card-3 {
             grid-column: 1 / -1;
@@ -340,6 +357,8 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
             position: static;
             width: min(640px, 100%);
             min-height: 0;
+            margin: 0;
+            align-self: auto;
           }
           .koi-how-card-2 { align-self: flex-end; }
           .koi-how-toggle { display: none; }
@@ -380,6 +399,8 @@ export function KoiHowOverlay({ title, methods, forceReveal = false }: Props) {
           .koi-how-card-1, .koi-how-card-2, .koi-how-card-3 {
             position: static;
             width: 100%; min-height: 0;
+            margin: 0;
+            align-self: auto;
           }
         }
         /* phone modifier for the host section: let the band grow with the

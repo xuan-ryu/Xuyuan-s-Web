@@ -1,10 +1,12 @@
 export const site = {
   name: "Xuyuan Liu",
   nameZh: "刘 栩源",
-  brandmark: "Hi, I'm Xuyuan — an AI design engineer.",
-  title: "Xuyuan Liu — AI Design Engineer",
+  // NBSP inside "AI product" keeps it together so the black-page title breaks as
+  // "Hi, I'm Xuyuan — / AI product designer & / design engineer."
+  brandmark: "Hi, I'm Xuyuan — AI product designer & design engineer.",
+  title: "Xuyuan Liu — AI Product Designer & AI Design Engineer",
   description:
-    "AI design engineer crafting digital products where design meets code — an oriental aesthetic with modern engineering.",
+    "AI product designer & AI design engineer crafting digital products where design meets code — an oriental aesthetic with modern engineering.",
   email: "xuan.ryu8@gmail.com",
   phone: "+1 (440) 581-3229",
   location: "New York, NY",
@@ -15,7 +17,7 @@ export const site = {
   },
   greeting: ["Welcome,", "欢迎,", "ようこそ。"],
   heroSub:
-    "AI Design Engineer.\nI design and build the structure around AI — for the people who use it, and the teams who ship it.",
+    "AI Product Designer · AI Design Engineer.\nI design and build the structure around AI — for the people who use it, and the teams who ship it.",
   brandCorner: {
     // bottom-left hero caption — credits the composition's source
     zh: "构图灵感源自《潇湘八景图》\nInspired by the Eight Views of Xiaoxiang",
@@ -24,7 +26,12 @@ export const site = {
   scrollHint: "Scroll down to explore",
   blackPage: {
     zh: "深 邃",
-    body: "AI is just the newest tool. The soul of the work never changes — it only comes through more vividly.",
+    body: "I give unclear ideas form.",
+  },
+  homeHow: {
+    feedText: "Bring me a question",
+    feedHint: "Three drops reveal how I work",
+    continueHint: "How I work is next — keep going",
   },
   workMethods: [
     {

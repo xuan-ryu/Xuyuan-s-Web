@@ -1,0 +1,19 @@
+.icue {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  color: var(--icue-text, rgba(5, 5, 5, 0.56));
+}
+
+.icue::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--icue-accent, currentColor);
+  flex: none;
+}

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { adjacent } from "@/data/projects";
+import { projectCatalog } from "@/data/project-catalog";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // Shared "next case" close for the case pages: label, title, and a cover
@@ -104,7 +104,7 @@ const CSS = `
 `;
 
 export function CaseNext({ slug }: { slug: string }) {
-  const { next, prev } = adjacent(slug);
+  const { next, prev } = projectCatalog.adjacent(slug);
   const target = next ?? prev;
   if (!target) return null;
   const label = next ? "Next case" : "Previous case";

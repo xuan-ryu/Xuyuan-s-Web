@@ -9,8 +9,7 @@ import {
   useRef,
   type CSSProperties,
 } from "react";
-import type Lenis from "lenis";
-import { subscribeLenis } from "@/lib/lenis-bus";
+import { acquireScrollLock, scrollTo } from "@/lib/scroll-behavior";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 gsap.registerPlugin(CustomEase);
@@ -157,7 +156,6 @@ export function Loader() {
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const broadcastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restoreBodyRef = useRef<(() => void) | null>(null);
-  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -167,14 +165,6 @@ export function Loader() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
-
-  useEffect(
-    () =>
-      subscribeLenis((lenis) => {
-        lenisRef.current = lenis;
-      }),
-    [],
-  );
 
   const unlockBody = useCallback(() => {
     restoreBodyRef.current?.();
@@ -188,8 +178,7 @@ export function Loader() {
     timersRef.current = [];
     hasShownThisLoad = true;
     introTlRef.current?.kill();
-    lenisRef.current?.scrollTo(0, { immediate: true, force: true });
-    window.scrollTo(0, 0);
+    scrollTo(0, { immediate: true, force: true });
 
     if (broadcastTimerRef.current) clearTimeout(broadcastTimerRef.current);
     broadcastTimerRef.current = setTimeout(() => {
@@ -206,8 +195,7 @@ export function Loader() {
     }
     const exit = gsap.timeline({
       onComplete: () => {
-        lenisRef.current?.scrollTo(0, { immediate: true, force: true });
-        window.scrollTo(0, 0);
+        scrollTo(0, { immediate: true, force: true });
         unlockBody();
         setGone(true);
       },
@@ -246,10 +234,8 @@ export function Loader() {
     const originalHtmlOverflow = document.documentElement.style.overflow;
     const originalHtmlOverscroll =
       document.documentElement.style.overscrollBehavior;
-    const lockedLenis = lenisRef.current;
-    lockedLenis?.stop();
-    lockedLenis?.scrollTo(0, { immediate: true, force: true });
-    window.scrollTo(0, 0);
+    const releaseScroll = acquireScrollLock();
+    scrollTo(0, { immediate: true, force: true });
     document.documentElement.style.overflow = "hidden";
     document.documentElement.style.overscrollBehavior = "none";
     document.body.style.overflow = "hidden";
@@ -261,7 +247,7 @@ export function Loader() {
       document.body.style.overflow = originalOverflow;
       document.body.style.touchAction = originalTouchAction;
       document.body.style.overscrollBehavior = originalOverscroll;
-      lockedLenis?.start();
+      releaseScroll();
     };
     return unlockBody;
   }, [unlockBody, shouldRun, gone]);
