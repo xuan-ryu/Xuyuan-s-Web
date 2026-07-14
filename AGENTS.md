@@ -33,6 +33,23 @@ For layout work, follow the Muller-Brockmann grid rules in the design skill and
 gutters, and baseline before placing content. Align elements to grid fields, not
 gutters.
 
+## Structure & comments gate (all agents — Claude Code and Codex)
+
+Before creating, splitting, or renaming any source file or agent-facing doc,
+and before writing or editing comments, read and follow:
+
+- `skills/xuyuan-portfolio-naming/SKILL.md` — four-layer structure (L0 axiom /
+  L1 device / L2 process / L3 diplomacy), the ≤200-line file rule,
+  module-prefix naming, planning-doc pagination (index + pages; always-loaded
+  docs stay ≤ ~1k tokens).
+- `skills/xuyuan-portfolio-comments/SKILL.md` — mandatory file-header
+  summaries, grep-able section banners for slice-reading, inline-comment
+  rules, shipped-CSS comment bans.
+
+Rationale: agents pay tokens per read (~1k lines ≈ 10k tokens). Names route
+for free, headers make files skippable, banners make the legacy giants
+sliceable.
+
 ## Case-page lessons (all agents — Claude Code and Codex)
 
 Hard-won fixing a case page a previous pass got wrong (2026-07-05). These bind

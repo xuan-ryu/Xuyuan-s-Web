@@ -44,8 +44,11 @@ holds migration-era leftovers (see the workspace `README.md` one level up).
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Dev server on `:3000` (check it isn't already running) |
-| `npm run check` | Lint + typecheck — the fast pre-flight |
+| `npm run check` | Lint + typecheck + size ratchet + leak check — the pre-flight |
 | `npm run lint` / `npm run typecheck` | Individually |
+| `npm run check:size` | File-size ratchet vs `scripts/file-size-baseline.json` (`--update` after intentional shrinks/splits) |
+| `npm run check:leaks` | Confidentiality scan: unsanitized `__html:`, Drive/Figma links, local paths, private denylist at `../leak-denylist.local.txt` (outside the repo; absent in CI = skipped) |
+| `npm run codemap` | Regenerate `docs/agents/codemap.md` — run after adding/splitting/renaming files |
 | `npm run build` | Production build — worktree only (rule 1) |
 | `npm run audit:screenshots` | Live-baseline vs `:3000` capture matrix → `audit-screenshots/` (gitignored) |
 

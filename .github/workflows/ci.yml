@@ -36,5 +36,11 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: File-size ratchet
+        run: npm run check:size
+
+      - name: Leak check
+        run: npm run check:leaks
+
       - name: Build
         run: npm run build

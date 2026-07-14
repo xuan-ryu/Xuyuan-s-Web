@@ -11,7 +11,10 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck",
+    "check": "npm run lint && npm run typecheck && npm run check:size && npm run check:leaks",
+    "check:size": "node scripts/check-file-size.mjs",
+    "check:leaks": "node scripts/check-leaks.mjs",
+    "codemap": "node scripts/gen-codemap.mjs",
     "audit:screenshots": "node scripts/capture-migration-matrix.mjs"
   },
   "dependencies": {
