@@ -1,399 +1,79 @@
 import { Fragment } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import type { CaseSection, Project } from "@/data/projects";
 import { CaseNext } from "@/components/case-next";
 import { PulseScroll } from "./pulse-scroll";
+import { PulsePartSwitch } from "./pulse-part-switch";
 import { PulseComponentBrowser } from "./pulse-component-browser";
 import { PulseCreativeBrief } from "./pulse-creative-brief";
-import { PulsePlaygroundDemo } from "./pulse-playground-demo";
 import { PulseTokenChips } from "./pulse-token-chips";
+import { Cta } from "./ui/cta";
 import { InteractiveCue } from "./ui/interactive-cue";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { stripCssComments } from "@/lib/css-sanitize";
+import { pulseForkCss } from "@/components/pulse-fork-styles";
+import { pulseAssemblyCss } from "@/components/pulse-assembly-styles";
+import {
+  SHOT_W,
+  SHOT_H,
+  acts,
+  meleeSources,
+  ramps,
+  typeScale,
+  spacingTicks,
+  tickerRows,
+  ciSteps,
+  proofTells,
+  gateSteps,
+  doctrineQuote,
+  fileQuote,
+} from "./pulse-content";
 
-// Pulse — "Studio Bloom" (owner direction, 2026-07-04): the one case page
-// that steps INSIDE its product's world. The ink/paper specimen document and
-// its scroll page-turn are retired (owner rejection); the page now sits on
-// Pulse's own stage — the #f4f7f7 neutral ground with soft cyan blooms,
-// glass bentos, white inner cards, ink chrome — and the "agent" feel comes
-// from motion and semantics, never from neon: a case map tracks the acts,
-// the generation-status ladder lights in sequence, counters count, the
-// monolith splits on scrub, a typed stream runs in the hero console. Pulse's
-// own written rules hold here too: no glow, no halo, color only with meaning.
-// This is an owner-sanctioned departure from the paper editorial ground —
-// scoped to this page only; site neutrals, the CTA contract, the type
-// ladder, the two-gap rhythm, and the ONE seal-red moment all still apply.
+// Pulse case page — L2 composer (white editorial, product-first).
 //
-// Grid, named first (Muller-Brockmann rule): container = the shared work
-// shell (max 1440, margins --work-gutter, 12 columns, gutters
-// --work-grid-gap). Standing rails: the case-map rail cols 1-2 (sticky,
-// desktop only); chapter content cols 3-12, itself a 10-column grid — copy
-// 1-7 (≤62ch), aside artifacts 7-11, insets/full 1-11. Hero: H1 cols 4-10,
-// lede 4-9, run console cols 10-12 rows 1-3. Vertical rhythm: one
-// --gap-section between chapters (half-padding each side), --gap-block
-// inside. Baseline 8px; all authored values even px (1px hairlines exempt;
-// product-frame recreations keep Pulse's own geometry, incl. its sanctioned
-// fully-rounded status pills — a product idiom, not a portfolio pill).
+// The page: hero (product frame + proof band) → overview → the FORK (two
+// door cards pick a reading track; both tracks render for no-JS/crawlers,
+// the client switch hides one — rail part labels switch too) → Part 1 ·
+// Product / Part 2 · Design engineering on the sticky case-map rail → the
+// Turn (always visible) → adjacent case. Copy comes verbatim and POSITIONALLY from
+// data/projects.ts (11 chapters — Part 1: 1.1/1.2/1.3, Part 2:
+// 2.1/2.2/2.2A/2.2B/2.3/2.4/2.4A/2.5 — plus moment); this file only
+// attaches evidence. Specimen data and
+// verified numbers live in pulse-content.ts (L0). One figure rule: each
+// claim gets its single strongest artifact — no restating a chapter's copy
+// as a diagram, no showing the hero shot twice (2026-07-14 lean pass).
+// Figures number per part like the chapter eyebrows (Fig. 1.n / Fig. 2.n;
+// the shared Turn figure is unnumbered) so neither reading track ever
+// shows a numbering jump.
 //
-// Copy: verbatim from data/projects.ts (context first, then the thesis —
-// product → look set the stage; melee → bet → wake-up → rescue → base →
-// skills → interface carry the AI-era story; the proof lands the
-// before/after; the Turn closes). This layout attaches evidence
-// positionally. Numbers were
-// re-verified against the Pulse repo's git record on 2026-07-04: the peak
-// file is 10,180 lines (rev-verified; the earlier 13,020 didn't survive
-// audit), 824 commits over five weeks with 308 structural, 62 components in
-// the handoff library, 1,905 net dead lines removed (commit-subject
-// verbatim). Confidentiality invariants: teammates anonymous, tools as
-// categories, no commit hashes, package identity generalized.
+// Grid: container = shared work shell (max 1440, --work-gutter, 12 cols,
+// --work-grid-gap). Rail cols 1-2 (sticky, desktop); chapters in cols 3-12
+// as a 10-col grid — copy 1-7 (≤62ch), asides 7-11, insets/full 1-11.
+// Baseline 8px; authored values even px (1px hairlines + measured product
+// recreations exempt; Pulse's fully-rounded pills are a product idiom).
 //
-// Choreography lives in <PulseScroll /> (GSAP + ScrollTrigger over the
-// Scroll Behaviour). The server markup is always the FINAL state — reduced motion
-// and no-JS read a finished page; motion only rewinds and replays it.
-// This file deliberately ships NO client JS of its own: server markup plus
-// one served CSS string (comments stripped at injection). The interactive
-// artifacts — component browser, creative brief, playground, token chips —
-// are separate client components imported above; don't inline them here.
-
-// ── Specimen data (traced to the Pulse system source) ──────────────────────
-
-// Type scale — tokens.css --type-page-display: 64px, --type-h2: 28px, --fs-5: 15px.
-const typeScale = [
-  { px: 64, size: 34, role: "page display" },
-  { px: 28, size: 19, role: "section" },
-  { px: 15, size: 12, role: "body" },
-];
-
-// 8-based spacing rhythm — tokens.css --space-2/4/6/7/9.
-const spacingTicks = [8, 16, 24, 32, 48];
-
-// Semantic lightness ramps — tokens.css: same 6 stops per family
-// (50/100 soft fills, 200 lines, 500 base, 600 text/dot, 700 emphasis).
-const ramps = [
-  {
-    role: "ready",
-    base: "#49e0f5",
-    stops: ["#f0fdff", "#e5fbff", "#b8f3fb", "#49e0f5", "#0ea5b8", "#0d7685"],
-  },
-  {
-    role: "positive",
-    base: "#43ba51",
-    stops: ["#eff9f1", "#d5f0da", "#abe2b3", "#43ba51", "#2e9d40", "#207d32"],
-  },
-  {
-    role: "scheduled",
-    base: "#3987f3",
-    stops: ["#eff5fe", "#d7e6fd", "#b0cdfa", "#3987f3", "#1f6fe0", "#1a57b0"],
-  },
-  {
-    role: "risk",
-    base: "#f19a08",
-    stops: ["#fef6e7", "#fce7be", "#f7ce84", "#f19a08", "#cc7f06", "#a1640b"],
-  },
-  {
-    role: "in progress",
-    base: "#6366f1",
-    stops: ["#f1f1fe", "#e2e3fc", "#c7c9f8", "#6366f1", "#4f46e5", "#4338ca"],
-  },
-  {
-    role: "decline",
-    base: "#ef4444",
-    stops: ["#fef2f2", "#fde4e4", "#f9c9c9", "#ef4444", "#dc2626", "#b91c1c"],
-  },
-];
-
-// Component inventory — all 62 names from the current Pulse registry.
-const inventory = [
-  "ActionCard",
-  "ActionRangeTabs",
-  "ActivityHeatmap",
-  "AIPanel",
-  "AnalyticsSubtabs",
-  "ApprovalChain",
-  "Button",
-  "ButtonDanger",
-  "ButtonGhost",
-  "ButtonPrimary",
-  "ButtonSecondary",
-  "CalendarPopover",
-  "CalendarPostBlock",
-  "Card",
-  "ChartShell",
-  "ComboChart",
-  "CommandSummary",
-  "ConfirmBar",
-  "DataList",
-  "DataTable",
-  "DateRangeControl",
-  "DonutChart",
-  "EmptyCard",
-  "ErrorCard",
-  "FeedbackState",
-  "Field",
-  "FunnelChart",
-  "GeoChart",
-  "Grid",
-  "HorizontalBarChart",
-  "Icon",
-  "IconButton",
-  "LineChart",
-  "MediaCard",
-  "MediaPreview",
-  "MetricBlock",
-  "MetricCard",
-  "MirroredBarChart",
-  "Modal",
-  "NodeGenerationMap",
-  "PageNavTabs",
-  "PieChart",
-  "PlatformBadge",
-  "PlatformPreview",
-  "Popover",
-  "PostChip",
-  "RadarChart",
-  "ReportCallout",
-  "ReportRangeTabs",
-  "ScoreGauge",
-  "SegmentedTabs",
-  "Sidebar",
-  "SignalCard",
-  "SignalRow",
-  "SignalSeverityTabs",
-  "SourceCitationRow",
-  "StatList",
-  "StatusPill",
-  "Timeline",
-  "TreemapChart",
-  "VerticalBarChart",
-  "WordCloud",
-];
-
-// The Create-with-AI flow — human checkpoints are the page's one seal-red
-// moment (the Turn's spine).
-const gateSteps = [
-  { label: "Goal", note: "a goal and an optional note", human: false },
-  { label: "Assets", note: "uploaded or picked from the brand vault", human: false },
-  { label: "Brief", note: "editable fields, budget shown", human: true },
-  { label: "Generate", note: "runs only after the brief is approved", human: false },
-  { label: "Review", note: "content gate signs off the creative", human: true },
-  { label: "Publish", note: "a person releases — always", human: true },
-];
-
-// Case map — seven editorial chapters. Supporting sections share their
-// parent chapter's data-act so the rail stays calm as the evidence expands.
-const acts = [
-  { id: "act-product", label: "Product" },
-  { id: "act-melee", label: "Fragmentation" },
-  { id: "act-bet", label: "Convergence" },
-  { id: "act-base", label: "System" },
-  { id: "act-skills", label: "Operating model" },
-  { id: "act-proof", label: "Proof" },
-  { id: "act-turn", label: "Reflection" },
-];
-
-// ── The melee (ch. 03): four prototypes with the same face and
-//    incompatible sources. The shared wireframe strip on top is the "one
-//    face"; under it, each card shows its source's characteristic UI idiom
-//    (canvas selection, inline-style soup, chat paste, photo composite) —
-//    tool categories drawn, not named (confidentiality: no brand list). ──
-const meleeSources = [
-  {
-    kind: "canvas",
-    made: "drawn in a design canvas",
-    trace: "frames only — no code at all",
-  },
-  {
-    kind: "builder",
-    made: "an AI page-builder export",
-    trace: "one file, styles inlined per node",
-  },
-  {
-    kind: "chat",
-    made: "pasted from a model chat",
-    trace: "runs, but write-only to humans",
-  },
-  {
-    kind: "image",
-    made: "composited from images",
-    trace: "screens as pictures — nothing wired",
-  },
-] as const;
-
-// ── The brand rules (ch. 02) — the written identity, four rules + the
-//    generation ladder in one card (the prose stays at label budget). ──
-const brandRules: Array<[string, string]> = [
-  ["surface", "neutral first — gray stage, soft cyan light"],
-  ["type", "one face for everything · tabular numerals"],
-  ["hierarchy", "size · spacing · tone — never bold"],
-  ["color", "only with meaning · red = falling data"],
-];
-
-// ── The tells (ch. 10) — how generated UI gives itself away, read against
-//    the campaign after-shot; each row names the tell and the base rule
-//    that forbids it (the copy makes the claim; this card is the checklist). ──
-const proofTells: Array<[string, string]> = [
-  ["a second voice", "one typeface · tabular numerals"],
-  ["decorative color", "six semantic ramps · color only with meaning"],
-  ["loud hierarchy", "size · spacing · tone — no bold, no border chrome"],
-  ["off-scale gaps", "8-based rhythm · every value on the token scale"],
-];
-
-// ── Commit stream (ch. 06) — commit-style subjects, paraphrased from the
-//    repo's real flavor; no hashes, no names. Two rows drift on scrub. ──
-const tickerRows: string[][] = [
-  [
-    "refac(css): purge dead legacy classes — DOM-verified",
-    "fix: restore hover states lost in migration",
-    "prettier: normalize every touched file",
-    "migrate: analytics onto shared tokens",
-    "split: home monolith into partials",
-    "refac(tokens): make card surfaces solid",
-    "verify: reconcile inventory and preview",
-  ],
-  [
-    "chore: repair the lint config",
-    "refac(campaign): build-time concat the bundles",
-    "fix: re-align layout drift against capture",
-    "rename: class names people can read",
-    "clean: cut dead code, not carry it",
-    "docs: write the rule where the AI loads it",
-    "ci: fail the pipeline on hand-edited output",
-  ],
-];
-
-// ── The skill card (ch. 08) — condensed from the real skill files. ──
-const skillRules = [
-  "compose from the component library before inventing page-local UI",
-  "tokens only — no raw hex, no off-scale spacing or type",
-  "every state ships: hover, focus, empty, loading, error",
-  "run the consistency check before any handoff",
-];
-
-// ── Four roles, one base (ch. 09) — the hub diagram's spokes. ──
-const hubRoles: Array<[string, string]> = [
-  ["design", "live preview + Figma boards"],
-  ["engineering", "typed package + contracts"],
-  ["ml", "editable data states"],
-  ["product", "one runnable flow"],
-];
-
-// ── CI guard checks (ch. 07) — the jobs that protect the canonical HTML
-//    library on every merge. The pipeline's later publish/pages jobs ship
-//    the SEPARATE npm package (ch. 09), so they're not shown here — the
-//    package hasn't been introduced yet at this point in the story. ──
-const ciSteps: Array<[string, string]> = [
-  ["verify", "inventory ↔ preview ↔ board"],
-  ["tokens", "drift advisory"],
-  ["generated", "hand-edit guard"],
-];
-
-// ── Build timeline (ch. 08 close), drawn as a commit spine. Notes at label
-//    budget; `mine: false` marks a teammate's / the team's milestone (the
-//    outlined nodes — attribution is part of the drawing). Five verified
-//    weeks, 2026-05-30 → 2026-07-04, 824 commits. ──
-const milestones = [
-  {
-    date: "Late May",
-    title: "Six ways of building, one deadline",
-    note: "the same product in six tools, a pitch about a week out",
-    mine: false,
-  },
-  {
-    date: "Late May",
-    title: "The file that forced the question",
-    note: "the shared home prototype swells into one monolithic file",
-    mine: true,
-  },
-  {
-    date: "Early June",
-    title: "A finished design, waiting on a foundation",
-    note: "a teammate's finished page sits idle — no system to land on",
-    mine: false,
-  },
-  {
-    date: "Mid-June",
-    title: "The boards become one portable file",
-    note: "the visual library rebuilt as a single self-contained page",
-    mine: true,
-  },
-  {
-    date: "Mid-June",
-    title: "HTML and CSS become the source of truth",
-    note: "the React copy demoted to a consumer of the canonical layer",
-    mine: true,
-  },
-  {
-    date: "Mid-June",
-    title: "The monolith becomes source, not blob",
-    note: "a build script splits it: 76 partials, 71 scripts, 22 sheets",
-    mine: true,
-  },
-  {
-    date: "Mid-June",
-    title: "Standards, written as commits",
-    note: "Prettier, lint, lighter assets, a CI token gate",
-    mine: true,
-  },
-  {
-    date: "Late June",
-    title: "The demos converge into one product",
-    note: "one static export, every page on the system's tokens",
-    mine: true,
-  },
-  {
-    date: "Late June",
-    title: "Wrapped for every consumer",
-    note: "a teammate publishes the typed React package; CI syncs the CSS in",
-    mine: false,
-  },
-  {
-    // the 1,905 figure keeps its precise home in the ch. 06 ticker stats —
-    // this milestone names the event, not the number
-    date: "Early July",
-    title: "The payoff: the dead lines go",
-    note: "drifted style copies collapse back to one source",
-    mine: true,
-  },
-];
-
-// Package plate — genericized: typed React wrappers on a private registry,
-// styles synced from the canonical CSS; nothing that identifies the package.
-const plateRows: Array<[string, string]> = [
-  ["package", "internal, typed React set"],
-  ["distribution", "private registry"],
-  ["authored", "typed JSX wrappers"],
-  ["peer", "react ≥ 18"],
-  ["styles", "synced from the canonical CSS"],
-];
-
-// Screenshots — captured from the project's static file:// surfaces at
-// 1440×1000 (onboarding is 1440×916: its top bar is cropped on purpose).
-const SHOT_W = 1440;
-const SHOT_H = 1000;
-
-// ── Microcopy set once here. ─────────────────────────────────────────────────
-// The publish guardrail — verbatim project rule, typeset once under ch. 01.
-const guardrail = "AI can draft and schedule. A person releases to publish.";
-const guardrailNote =
-  "The guardrail is independent of the gates, so turning approvals off never lets an agent publish on its own.";
-// Verbatim quotables, verified against the repo (2026-07-04):
-const doctrineQuote =
-  "Build the link that doesn’t exist, then delete the copies.";
-const fileQuote =
-  "Preserve file:// support because designers may open this export directly.";
+// One-typeface rule: everything Manrope + tabular numerals; real mono ONLY
+// for literal code (the commit ticker). Case accent = Pulse cyan
+// (--case-accent #49e0f5 marks, --case-detail #0d7685 text — the 500 stop
+// fails AA on the pale stage). ONE seal-red moment: the Turn's human gates.
+//
+// Choreography lives in <PulseScroll /> (scrubs + counters) and the
+// [data-fade] assembly CSS. SERVER MARKUP IS THE FINAL STATE — reduced
+// motion and no-JS read a finished page; motion only rewinds and replays.
+// This file ships NO client JS of its own; the interactive artifacts
+// (component browser, creative brief, token chips) are imported client
+// components — don't inline them here.
 
 /* ---- pulse css string ---- */
 // One served stylesheet for the whole page (dangerouslySetInnerHTML via
 // stripCssComments). Interior `── ` comments mark its own sections — grep
 // them to slice; never add TSX banners inside the literal.
 const pulseCss = `
-/* ── Pulse case page — Studio Bloom ──────────────────────────────────────
-   The page adopts Pulse's own stage: #f4f7f7 ground, soft cyan blooms,
-   glass bentos, white inner cards, ink chrome. Product values are scoped
-   as --pp-*; the page's case accent is Pulse's cyan family (--case-accent
-   #49e0f5 for marks, --case-detail #0d7685 for text — the 500 base fails
-   AA as text on light ground, so text always uses the 700 stop). */
+/* ── Pulse case page — white editorial on the product's pale stage ──────
+   Ground #f4f7f7 with faint cyan blooms; white cards, ink chrome, slate
+   shadows. Product values scoped as --pp-*; case accent = Pulse cyan
+   (--case-accent #49e0f5 for marks, --case-detail #0d7685 for text — the
+   500 base fails AA as text on light ground, so text uses the 700 stop). */
 .pulse-case-page {
   /* Pulse stage + surfaces */
   --pp-stage: #f4f7f7;
@@ -404,14 +84,17 @@ const pulseCss = `
   /* faintest label tier — deep enough for AA (≥4.5:1) on the #f4f7f7 stage;
      the earlier #8a8e95 measured ~3.1:1 and failed on every 10-11px label */
   --pp-text-4: #6b6f75;
-  --pp-line: rgba(29, 29, 31, 0.08);
-  --pp-line-strong: rgba(29, 29, 31, 0.16);
+  /* hairlines in the same cool slate as the shadows — one light source */
+  --pp-line: rgba(15, 23, 42, 0.08);
+  --pp-line-strong: rgba(15, 23, 42, 0.16);
   --pp-glass: rgba(255, 255, 255, 0.38);
   /* global elevation triad geometry (globals.css --shadow-card/--shadow-lift),
      kept in Pulse's cool slate tint with alphas a step calmer for the pale
-     stage — same physics, the page's own light */
+     stage — same physics, the page's own light. Media adds a third, deeper
+     tier: real product evidence floats above page furniture. */
   --pp-shadow-rest: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
   --pp-shadow-lift: 0 2px 6px rgba(15, 23, 42, 0.05), 0 16px 32px rgba(15, 23, 42, 0.07);
+  --pp-shadow-media: 0 2px 4px rgba(15, 23, 42, 0.04), 0 12px 28px rgba(15, 23, 42, 0.07), 0 36px 72px rgba(15, 23, 42, 0.07);
 
   /* Pulse semantics */
   --pp-cyan: #49e0f5;
@@ -443,7 +126,7 @@ const pulseCss = `
      the product literally aliases --font-mono to its sans and relies on
      tabular numerals). Every label/index/caption on this page renders in
      the text face; --pulse-mono exists so literal CODE artifacts (the
-     commit stream, the JSON payload editor) can opt back into real mono. */
+     commit stream) can opt back into real mono. */
   --pulse-mono: var(--font-text);
 
   position: relative;
@@ -512,7 +195,7 @@ const pulseCss = `
   to { transform: translate3d(-48px, 64px, 0); }
 }
 
-/* ── Hero: H1 + lede + meta + the run console ──────────────────────────── */
+/* ── Hero: H1 + lede + meta (product frame styled in the 2026 edit) ────── */
 .pulse-case-page .case-study-hero h1 {
   grid-column: 4 / 10;
   grid-row: 1;
@@ -530,164 +213,25 @@ const pulseCss = `
   grid-row: 2;
   max-width: 60ch;
 }
-.pulse-console {
-  grid-column: 10 / -1;
-  grid-row: 1 / span 3;
-  align-self: start;
-  box-sizing: border-box;
-  display: grid;
-  gap: 14px;
-  padding: 18px;
-  border: 1px solid var(--pp-line);
-  border-radius: 16px;
-  background: var(--pp-glass);
-  backdrop-filter: blur(var(--blur-scrim));
-  -webkit-backdrop-filter: blur(var(--blur-scrim));
-  box-shadow: var(--pp-shadow-lift);
-}
-.pulse-console-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--pulse-mono);
-  font-size: var(--text-micro);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pp-text-4);
-}
 .pulse-fig {
   font-style: normal;
   color: var(--case-detail);
   margin-right: 0.65em;
 }
-/* status pill — a Pulse product idiom (its pills stay fully rounded);
-   colors follow the generation ladder, flat fills, no glow */
-.pulse-pill {
-  font-family: var(--pulse-mono);
-  font-size: var(--text-micro);
-  letter-spacing: 0.04em;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--pp-line-strong);
-  background: #ffffff;
-  color: var(--pp-text-3);
-  white-space: nowrap;
-}
-.pulse-pill[data-state="queued"]     { background: #eef0f0; color: var(--pp-text-2); }
-.pulse-pill[data-state="scheduled"]  { background: var(--pp-blue-soft); color: var(--pp-blue-dark); border-color: var(--pp-blue-line); }
-.pulse-pill[data-state="generating"] { background: var(--pp-purple-soft); color: var(--pp-purple-dark); border-color: var(--pp-purple-line); }
-.pulse-pill[data-state="ready"]      { background: var(--pp-cyan-soft); color: var(--pp-cyan-dark); border-color: var(--pp-cyan-line); }
-.pulse-pill[data-state="live"]       { background: var(--pp-green-soft); color: var(--pp-green-dark); border-color: var(--pp-green-line); }
-.pulse-pill[data-state="attention"]  { background: var(--pp-amber-soft); color: var(--pp-amber-dark); border-color: var(--pp-amber-line); }
-.pulse-stream {
-  min-height: 18px;
-  font-family: var(--pulse-mono);
-  font-size: 12px;
-  color: var(--pp-cyan-dark);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .pulse-stream::after {
-    content: "▍";
-    animation: pulseCaret 1.1s steps(2, end) infinite;
-  }
-}
-@keyframes pulseCaret {
-  50% { opacity: 0; }
-}
-.pulse-console-ledger {
-  border-top: 1px solid var(--pp-line);
-}
-.pulse-console-ledger > div {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--pp-line);
-}
-.pulse-console-ledger strong {
-  font-family: var(--pulse-mono);
-  font-size: 22px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--pp-ink);
-}
-.pulse-console-ledger span {
-  font-family: var(--pulse-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: right;
-  color: var(--pp-text-4);
-}
-.pulse-ecg {
-  display: block;
-  width: 100%;
-  height: 48px;
-}
-.pulse-ecg path {
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-.pulse-ecg .pulse-ecg-base { stroke: rgba(29, 29, 31, 0.12); }
-.pulse-ecg .pulse-ecg-trace { stroke: var(--pp-cyan-600); }
-@media (prefers-reduced-motion: no-preference) {
-  .pulse-ecg .pulse-ecg-trace {
-    stroke: var(--pp-cyan);
-    stroke-dasharray: 110 620;
-    animation: pulseTrace 4.6s linear infinite;
-  }
-}
-@keyframes pulseTrace {
-  to { stroke-dashoffset: -730; }
-}
 
 /* ── Summary + figures ledger ───────────────────────────────────────────── */
 /* the shared summary slab is paper-white globally; on the Pulse stage it
-   reads as an accidental seam — sit it directly on the stage instead */
+   reads as an accidental seam — sit it directly on the stage instead.
+   Its rules are redrawn as background strokes inset by the gutter: the
+   real borders ran shell-edge to shell-edge, past the content column */
 .pulse-case-page .proj-summary {
-  background: transparent;
-  border-top-color: var(--pp-line-strong);
-  border-bottom-color: var(--pp-line-strong);
-}
-.pulse-ledger {
-  grid-column: 11 / -1;
-  align-self: start;
-  border-top: 1px solid var(--pp-line-strong);
-}
-.pulse-ledger > div {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--pp-line-strong);
-}
-.pulse-ledger strong {
-  font-family: var(--pulse-mono);
-  font-size: var(--text-title);
-  font-weight: 400;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--pp-ink);
-}
-.pulse-ledger span {
-  font-size: var(--text-label);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pp-text-4);
-  text-align: right;
-}
-.pulse-ledger-note {
-  grid-column: 1 / -1;
-  margin: 10px 0 0;
-  font-family: var(--pulse-mono);
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--pp-text-4);
+  background:
+    linear-gradient(var(--pp-line-strong), var(--pp-line-strong))
+      center top / calc(100% - 2 * var(--work-gutter)) 1px no-repeat,
+    linear-gradient(var(--pp-line-strong), var(--pp-line-strong))
+      center bottom / calc(100% - 2 * var(--work-gutter)) 1px no-repeat;
+  border-top: 0;
+  border-bottom: 0;
 }
 
 /* ── The acts: one shell, one persistent rail (cols 1-2), chapters in a
@@ -710,7 +254,7 @@ const pulseCss = `
   display: grid;
   grid-template-columns: repeat(10, minmax(0, 1fr));
   column-gap: var(--work-grid-gap);
-  row-gap: clamp(32px, 3.6vw, 48px);
+  row-gap: clamp(56px, 6.5vw, 96px); /* must exceed the 44px intra-section gap */
   padding: calc(var(--gap-section) / 2) 0;
 }
 /* rail anchor targets land below the fixed nav band (72px scrim + air) */
@@ -746,6 +290,33 @@ const pulseCss = `
   margin: 8px 0 0;
   padding: 0;
 }
+.pulse-rail-part {
+  display: block;
+  margin: 14px 0 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-text);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--case-detail);
+  transition: color 0.2s var(--ease-silk);
+}
+.pulse-rail-part:hover {
+  color: var(--pp-ink);
+}
+.pulse-rail-part:focus-visible {
+  outline: 2px solid var(--pp-cyan-600);
+  outline-offset: 2px;
+}
+.pulse-rail-part:first-child {
+  margin-top: 8px;
+}
+.pulse-rail-part + ol {
+  margin-top: 0;
+}
 .pulse-rail li {
   display: flex;
   align-items: baseline;
@@ -778,7 +349,7 @@ const pulseCss = `
 }
 .pulse-rail li i {
   font-style: normal;
-  width: 18px;
+  width: 24px;
   flex: none;
 }
 .pulse-rail li.is-done { color: var(--pp-text-3); }
@@ -791,11 +362,6 @@ const pulseCss = `
 .pulse-rail li.is-run::after {
   content: "●";
   margin-left: auto;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .pulse-rail li.is-run::after {
-    animation: pulseCaret 1.2s steps(2, end) infinite;
-  }
 }
 .pulse-chapter-head {
   grid-column: 1 / -1;
@@ -925,6 +491,17 @@ const pulseCss = `
 .pulse-shot img {
   display: block;
 }
+.pulse-shot-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--pp-line);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pp-text-4);
+}
 .pulse-shot-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -945,37 +522,155 @@ const pulseCss = `
   line-height: 1.5;
   color: var(--pp-text-3);
 }
-/* ── Ch. 01 — the product tour (owner call 2026-07-13: the three-up band
-   rendered each screen ~380px wide — unreadable in the chapter that IS
-   the product). Home leads full-width and WHOLE (it is the decision
-   surface the copy names); the Calendar recording and onboarding share a
-   pair row below. Still one figure, one caption. Pair cells crop with
-   object-fit: cover — the calendar recording is 1280×720 with ~34px
-   pillarbox bars each side (measured 2026-07-08), so the 4/3 center crop
-   removes the bars entirely. ── */
-.pulse-tour {
-  display: grid;
-  gap: var(--work-grid-gap);
-}
-.pulse-band-cell {
+/* ── Ch. 01 — the calendar recording, shown whole ────────────────────────
+   source is 1280×720 with ~34px pillarbox bars baked into each side
+   (measured 2026-07-08); the 1212/720 box + cover crops exactly the bars */
+.pulse-video-wide,
+.pulse-video-hd {
   position: relative;
-  aspect-ratio: 4 / 3;
 }
-.pulse-band-cell img,
-.pulse-band-cell video {
+.pulse-video-wide {
+  aspect-ratio: 1212 / 720;
+}
+/* full-frame 1920×1080 capture — no baked bars, no crop */
+.pulse-video-hd {
+  aspect-ratio: 1920 / 1080;
+}
+.pulse-video-wide video,
+.pulse-video-hd video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
-}
-.pulse-band-cell video {
   object-position: center;
 }
+
+/* ── Ch. 01 — the operating-loop map. The chain rides the pflow idiom on
+   grid row 3; Signal sits a row above and drops into the Strategy→Campaign
+   link (dashed = information from outside); the green return rail below is
+   the argument — the next cycle starts smarter. ── */
+.pulse-map .pflow-node,
+.pulse-map .pflow-line {
+  grid-row: 3;
+}
+.pulse-map .pflow-loop {
+  grid-row: 4;
+  grid-column: 3 / 10;
+}
+.pulse-map-signal {
+  grid-row: 1;
+  grid-column: 3 / 6;
+  justify-self: center;
+  box-sizing: border-box;
+  min-width: 132px;
+  padding: 8px 14px;
+  border: 1px dashed var(--pp-cyan-600);
+  border-radius: 10px;
+  background: var(--pp-canvas);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pp-ink);
+}
+.pulse-map-signal em {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--pp-text-3);
+}
+/* the fork: Signal lands on BOTH Strategy and Campaign (owner review) */
+.pulse-map-fork {
+  position: relative;
+  grid-row: 2;
+  grid-column: 3 / 6;
+  height: 20px;
+}
+.pulse-map-fork i {
+  position: absolute;
+  display: block;
+}
+.pulse-map-fork .is-stem {
+  left: 50%;
+  top: 0;
+  height: 8px;
+  border-left: 2px dashed var(--pp-cyan-600);
+}
+.pulse-map-fork .is-bar {
+  top: 8px;
+  left: 24%;
+  right: 24%;
+  border-top: 2px dashed var(--pp-cyan-600);
+}
+.pulse-map-fork .is-l {
+  left: 24%;
+  top: 8px;
+  height: 12px;
+  border-left: 2px dashed var(--pp-cyan-600);
+}
+.pulse-map-fork .is-r {
+  right: 24%;
+  top: 8px;
+  height: 12px;
+  border-left: 2px dashed var(--pp-cyan-600);
+}
+/* the return rail comes back UP into Strategy — the arrow says so */
+.pulse-map .pflow-loop {
+  position: relative;
+}
+.pulse-map .pflow-loop::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 8px solid var(--pp-green);
+}
+/* phone: the five-node chain stacks vertically; connectors turn upright */
 @media (max-width: 809px) {
-  .pulse-tour .pulse-shot-pair {
-    grid-template-columns: minmax(0, 1fr);
+  .pulse-map .pflow-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .pulse-map .pflow-node,
+  .pulse-map .pflow-line {
+    grid-row: auto;
+    grid-column: 1;
+  }
+  .pulse-map .pflow-line {
+    justify-self: center;
+    min-width: 0;
+    width: 2px;
+    height: 18px;
+  }
+  .pulse-map .pflow-line::before {
+    left: 50%;
+    top: -2px;
+    transform: translateX(-50%);
+  }
+  .pulse-map .pflow-line::after {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: -2px;
+    transform: translateX(-50%);
+  }
+  .pulse-map .pflow-loop {
+    display: none;
+  }
+  .pulse-map-signal {
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: stretch;
+    margin-bottom: 8px;
+  }
+  .pulse-map-fork {
+    display: none;
   }
 }
 .pulse-shot-label {
@@ -1207,32 +902,6 @@ const pulseCss = `
   }
 }
 
-/* ── Ch. 02 — the generation-status ladder ──────────────────────────────── */
-.pulse-ladder {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-.pulse-ladder-pill {
-  font-family: var(--pulse-mono);
-  font-size: var(--text-micro);
-  letter-spacing: 0.04em;
-  padding: 4px 12px;
-  border-radius: 999px; /* product idiom inside a product frame */
-  border: 1px solid var(--pp-line-strong);
-  background: transparent;
-  color: var(--pp-text-3);
-  transition: background 0.3s var(--ease-silk), color 0.3s var(--ease-silk),
-    border-color 0.3s var(--ease-silk), transform 0.3s var(--ease-silk);
-}
-.pulse-ladder-pill.is-on { transform: translateY(-2px); }
-.pulse-ladder-pill[data-state="queued"].is-on     { background: #eef0f0; color: var(--pp-text-2); }
-.pulse-ladder-pill[data-state="scheduled"].is-on  { background: var(--pp-blue-soft); color: var(--pp-blue-dark); border-color: var(--pp-blue-line); }
-.pulse-ladder-pill[data-state="generating"].is-on { background: var(--pp-purple-soft); color: var(--pp-purple-dark); border-color: var(--pp-purple-line); }
-.pulse-ladder-pill[data-state="ready"].is-on      { background: var(--pp-cyan-soft); color: var(--pp-cyan-dark); border-color: var(--pp-cyan-line); }
-.pulse-ladder-pill[data-state="live"].is-on       { background: var(--pp-green-soft); color: var(--pp-green-dark); border-color: var(--pp-green-line); }
-.pulse-ladder-pill[data-state="attention"].is-on  { background: var(--pp-amber-soft); color: var(--pp-amber-dark); border-color: var(--pp-amber-line); }
 
 /* ── Ch. 05 — the monolith splits ───────────────────────────────────────── */
 .pulse-monolith {
@@ -1357,8 +1026,8 @@ const pulseCss = `
   border: 1px solid var(--pp-line);
   border-radius: 8px;
   background: var(--pp-canvas);
-  /* literal code content — the one place real mono stays (with the JSON
-     editor); everything UI on this page is the text face */
+  /* literal code content — the one place real mono stays; everything
+     UI on this page is the text face */
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   white-space: nowrap;
@@ -1471,7 +1140,7 @@ const pulseCss = `
 }
 .pulse-ramp-stops {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(10, minmax(0, 1fr));
   height: 16px;
   overflow: hidden;
   border-radius: 3px;
@@ -1541,43 +1210,6 @@ const pulseCss = `
   font-style: normal;
   font-size: 10px;
   color: var(--pp-text-4);
-}
-.pulse-inv-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  border: 1px solid var(--pp-line);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--pp-canvas);
-  box-shadow: var(--pp-shadow-rest);
-}
-.pulse-inv-cell {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-  padding: 12px 14px;
-  border-right: 1px solid var(--pp-line);
-  border-bottom: 1px solid var(--pp-line);
-  transition: background 0.25s var(--ease-silk);
-}
-.pulse-inv-cell:nth-child(5n) { border-right: 0; }
-.pulse-inv-cell:nth-last-child(-n + 5) { border-bottom: 0; }
-.pulse-inv-cell i {
-  font-family: var(--pulse-mono);
-  font-style: normal;
-  font-size: var(--text-micro);
-  color: var(--pp-text-4);
-}
-.pulse-inv-cell span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: var(--text-meta);
-  color: rgba(29, 29, 31, 0.8);
-}
-.pulse-inv-cell:hover {
-  background: var(--pp-cyan-soft);
 }
 .pulse-chain-row {
   display: grid;
@@ -1669,155 +1301,6 @@ const pulseCss = `
   color: var(--pp-text-3);
 }
 
-/* ── Ch. 08 — skill card + build timeline ───────────────────────────────── */
-.pulse-truth-epigraph {
-  margin: 14px 0 2px;
-  font-size: var(--text-meta);
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--pp-ink);
-}
-.pulse-skill-rules {
-  display: grid;
-  gap: 8px;
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.pulse-skill-rules li {
-  position: relative;
-  padding-left: 18px;
-  font-family: var(--pulse-mono);
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--pp-text-2);
-}
-.pulse-skill-rules li::before {
-  content: "—";
-  position: absolute;
-  left: 0;
-  color: var(--case-detail);
-}
-/* the build timeline, drawn as one commit spine: a continuous cyan line,
-   filled nodes for my milestones, outlined nodes for a teammate's / the
-   team's — attribution is part of the drawing */
-.pulse-timeline {
-  position: relative;
-  max-width: 880px;
-  padding: 6px 0;
-}
-.pulse-timeline::before {
-  content: "";
-  position: absolute;
-  left: 131px;
-  top: 14px;
-  bottom: 14px;
-  width: 2px;
-  background: var(--pp-cyan-line);
-}
-.pulse-timeline-row {
-  position: relative;
-  display: grid;
-  grid-template-columns: 110px 44px minmax(0, 1fr);
-  align-items: baseline;
-  padding: 10px 0;
-}
-.pulse-timeline-row p {
-  margin: 0;
-}
-.pulse-timeline-date {
-  font-size: var(--text-micro);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-align: right;
-  white-space: nowrap;
-  color: var(--case-detail);
-}
-.pulse-timeline-node {
-  position: relative;
-  z-index: 1;
-  justify-self: center;
-  align-self: center;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--pp-cyan-600);
-}
-.pulse-timeline-row.is-team .pulse-timeline-node {
-  background: var(--pp-canvas);
-  border: 2px solid var(--pp-cyan-600);
-  width: 8px;
-  height: 8px;
-}
-.pulse-timeline-body {
-  min-width: 0;
-}
-.pulse-timeline-body strong {
-  display: block;
-  font-size: var(--text-meta);
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--pp-ink);
-}
-.pulse-timeline-body span {
-  display: block;
-  margin-top: 2px;
-  font-size: var(--text-label);
-  line-height: 1.5;
-  color: var(--pp-text-3);
-}
-.pulse-timeline-legend {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0 0 154px;
-  font-size: var(--text-micro);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--pp-text-4);
-}
-.pulse-timeline-legend i {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--pp-cyan-600);
-}
-.pulse-timeline-legend i.is-team {
-  width: 7px;
-  height: 7px;
-  background: var(--pp-canvas);
-  border: 2px solid var(--pp-cyan-600);
-  margin-left: 16px;
-}
-@media (max-width: 809px) {
-  .pulse-timeline::before {
-    left: 5px;
-  }
-  .pulse-timeline-row {
-    grid-template-columns: 12px minmax(0, 1fr);
-  }
-  .pulse-timeline-date {
-    display: none;
-  }
-  .pulse-timeline-node {
-    justify-self: start;
-  }
-  .pulse-timeline-body span em.pulse-timeline-when {
-    display: inline;
-  }
-  .pulse-timeline-legend {
-    margin-left: 24px;
-  }
-}
-.pulse-timeline-when {
-  font-style: normal;
-}
-@media (min-width: 810px) {
-  .pulse-timeline-when {
-    display: none;
-  }
-}
 
 /* ── Ch. 01 — product artifacts (brief, chat, guardrail) ────────────────── */
 .pulse-artifact {
@@ -1897,110 +1380,13 @@ const pulseCss = `
   color: #ffffff;
   white-space: nowrap;
 }
-.pulse-chat {
-  padding: clamp(18px, 1.6vw, 26px);
-  font-family: var(--font-text);
-  color: var(--pp-ink);
-}
-.pulse-chat-turn + .pulse-chat-turn {
-  margin-top: 16px;
-}
-.pulse-chat-turn:nth-child(2) { --d: 80ms; }
-.pulse-chat-turn:nth-child(3) { --d: 160ms; }
-.pulse-chat-assistant {
-  margin: 0;
-  max-width: 34ch;
-  font-size: 15px;
-  line-height: 1.5;
-}
-.pulse-chat-user {
-  display: flex;
-  justify-content: flex-end;
-}
-.pulse-chat-user span {
-  padding: 9px 14px;
-  border-radius: 16px 16px 4px 16px;
-  background: var(--pp-ink);
-  font-size: 15px;
-  line-height: 1.4;
-  color: #ffffff;
-}
-.pulse-chat-card {
-  padding: 12px 14px;
-  border: 1px solid var(--pp-line);
-  border-radius: 16px;
-  background: #ffffff;
-}
-.pulse-chat-card strong {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-}
-.pulse-chat-card i {
-  display: block;
-  height: 7px;
-  margin-top: 7px;
-  border-radius: 4px;
-  background: rgba(29, 29, 31, 0.09);
-}
-.pulse-chat-card i:nth-of-type(1) { width: 88%; }
-.pulse-chat-card i:nth-of-type(2) { width: 64%; }
-.pulse-chat-card i:nth-of-type(3) { width: 46%; }
-.pulse-chat-card > span {
-  display: inline-block;
-  margin-top: 11px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--pp-cyan-dark);
-}
-.pulse-chat-note {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0 0;
-  font-family: var(--pulse-mono);
-  font-size: 11px;
-  color: var(--pp-text-3);
-}
-.pulse-chat-note::before {
-  content: "";
-  width: 16px;
-  height: 1px;
-  flex: 0 0 auto;
-  background: rgba(29, 29, 31, 0.35);
-}
-.pulse-chat-note.is-right {
-  justify-content: flex-end;
-}
-.pulse-chat-note.is-right::before {
-  order: 2;
-}
-.pulse-guardrail {
-  margin-top: clamp(4px, 0.8vw, 10px);
-  padding-left: clamp(18px, 2vw, 28px);
-  border-left: 2px solid var(--pp-ink);
-}
-.pulse-guardrail-claim {
-  margin: 0;
-  max-width: 34ch;
-  font-family: var(--font-text);
-  font-size: var(--text-title);
-  font-weight: 500;
-  line-height: 1.32;
-  color: var(--pp-ink);
-}
-.pulse-guardrail-note {
-  margin: 12px 0 0;
-  max-width: 56ch;
-  font-size: var(--text-meta);
-  line-height: 1.55;
-  color: var(--pp-text-3);
-}
 
 /* ── The Turn — glass bento; the spine carries the one seal-red moment ──── */
 .pulse-turn-wrap {
-  /* lives inside the acts main — the shell/gutter come from .pulse-acts */
-  padding: calc(var(--gap-section) / 2) 0;
+  /* lives inside the acts main — the shell/gutter come from .pulse-acts.
+     Top rides a QUARTER gap: the glass card's own interior padding supplies
+     the rest of the air (the full half-gap read as a hole above the card) */
+  padding: calc(var(--gap-section) / 4) 0 calc(var(--gap-section) / 2);
 }
 .pulse-turn {
   box-sizing: border-box;
@@ -2034,19 +1420,6 @@ const pulseCss = `
   letter-spacing: 0;
   color: var(--pp-ink);
   text-wrap: balance;
-}
-.pulse-turn-film {
-  grid-column: 1 / -1;
-  margin-top: clamp(28px, 3.5vw, 48px);
-}
-.pulse-turn-film .pulse-card {
-  overflow: hidden;
-  padding: 0;
-}
-.pulse-turn-video {
-  display: block;
-  width: 100%;
-  height: auto;
 }
 .pulse-turn-copy {
   grid-column: 1 / 8;
@@ -2189,26 +1562,6 @@ const pulseCss = `
     grid-row: auto;
     max-width: 66ch;
   }
-  .pulse-console {
-    grid-column: 3 / -1;
-    grid-row: auto;
-    max-width: 480px;
-  }
-  .pulse-ledger {
-    grid-column: 3 / -1;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--work-grid-gap);
-  }
-  .pulse-ledger > div {
-    display: block;
-    padding: 12px 0 16px;
-  }
-  .pulse-ledger span {
-    display: block;
-    margin-top: 8px;
-    text-align: left;
-  }
   .pulse-acts {
     display: block;
   }
@@ -2240,28 +1593,13 @@ const pulseCss = `
   .pulse-chapter-claim {
     max-width: none;
   }
-  .pulse-inv-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .pulse-inv-cell:nth-child(5n) { border-right: 1px solid var(--pp-line); }
-  .pulse-inv-cell:nth-child(4n) { border-right: 0; }
-  .pulse-inv-cell:nth-last-child(-n + 5) { border-bottom: 1px solid var(--pp-line); }
-  .pulse-inv-cell:nth-last-child(-n + 4) { border-bottom: 0; }
 }
 
 /* ── Phone ──────────────────────────────────────────────────────────────── */
 @media (max-width: 809px) {
   .pulse-case-page .case-study-hero h1,
-  .pulse-case-page .case-hero-lede,
-  .pulse-console {
+  .pulse-case-page .case-hero-lede {
     grid-column: 1;
-  }
-  .pulse-console {
-    max-width: none;
-  }
-  .pulse-ledger {
-    grid-column: 1;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .pulse-chapter,
   .pulse-section {
@@ -2284,21 +1622,6 @@ const pulseCss = `
   }
   .pulse-ticker-chip {
     white-space: normal;
-  }
-  .pulse-inv-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .pulse-inv-cell:nth-child(4n),
-  .pulse-inv-cell:nth-child(5n) { border-right: 1px solid var(--pp-line); }
-  .pulse-inv-cell:nth-child(2n) { border-right: 0; }
-  .pulse-inv-cell:nth-last-child(-n + 4),
-  .pulse-inv-cell:nth-last-child(-n + 5) { border-bottom: 1px solid var(--pp-line); }
-  .pulse-inv-cell:nth-last-child(-n + 2) { border-bottom: 0; }
-  /* keep names on one line (mid-word breaks like "ButtonSeconda/ry" read
-     worse than an ellipsis) */
-  .pulse-inv-cell span {
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
   .pulse-chain-row,
   .pulse-chain-row.is-approvals {
@@ -2482,83 +1805,13 @@ const pulseCss = `
   line-height: 1;
   vertical-align: -4px;
 }
-/* the roles hub: one base bar, four stems, four role chips */
-.pflow-hub {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: var(--work-grid-gap);
-  row-gap: 0;
-  padding: 14px 0 4px;
-}
-.pflow-hub-bar {
-  grid-column: 1 / -1;
-  box-sizing: border-box;
-  padding: 14px 18px;
-  border: 1px solid var(--pp-cyan-line);
-  border-radius: 10px;
-  background: var(--pp-cyan-soft);
-  box-shadow: var(--pp-shadow-rest);
-  text-align: center;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--pp-ink);
-}
-.pflow-hub-stem {
-  justify-self: center;
-  width: 2px;
-  height: 22px;
-  background: var(--pp-cyan-600);
-  position: relative;
-}
-.pflow-hub-stem::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -2px;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--pp-canvas);
-  border: 2px solid var(--pp-cyan-600);
-}
-.pflow-hub-chip {
-  box-sizing: border-box;
-  min-width: 0;
-  padding: 10px 12px;
-  border: 1px solid var(--pp-line);
-  border-radius: 8px;
-  background: var(--pp-canvas);
-  box-shadow: var(--pp-shadow-rest);
-}
-.pflow-hub-chip strong {
-  display: block;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--pp-ink);
-}
-.pflow-hub-chip span {
-  display: block;
-  margin-top: 3px;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--pp-text-3);
-}
 @media (max-width: 809px) {
   .pflow-node { padding: 8px 10px; font-size: 13px; }
-  .pflow-hub {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .pflow-hub-stem { display: none; }
-  .pflow-hub-chip { margin-top: 10px; }
 }
 
 /* ── One-typeface support: the former mono labels hold their shape in the
    text face via weight + tabular numerals (placed last so it wins ties) ── */
 .pulse-spec-head,
-.pulse-console-head,
 .pulse-rail-head,
 .pulse-chapter-index,
 .pulse-fig,
@@ -2567,13 +1820,10 @@ const pulseCss = `
 .pulse-ticker-stats span,
 .pulse-spine-legend,
 .pulse-rail li i,
-.pulse-console-ledger strong,
 .pulse-ticker-stats strong,
 .pulse-kv-row em,
-.pulse-log-date,
 .pulse-ramp-row > em,
-.pulse-monolith-label strong,
-.pulse-ledger strong {
+.pulse-monolith-label strong {
   font-variant-numeric: tabular-nums;
 }
 .pulse-case-page .icue {
@@ -2581,162 +1831,7 @@ const pulseCss = `
   font-weight: 500;
 }
 
-/* ── Diagram assembly on arrival ─────────────────────────────────────────
-   Each figure carries data-fade; FadeReveal adds .is-visible on enter, so
-   the figure rises as a frame and ~220ms later its parts assemble in
-   reading order — nodes drop, connections draw toward their target, loops
-   sweep in, notes settle. One orchestrated reveal per diagram, then still
-   (no ambient loops). Motion-only: every hidden initial state lives inside
-   @media (prefers-reduced-motion: no-preference), so reduced motion — and
-   the forced-visible/no-JS fallback — shows the finished diagram. ── */
-@keyframes pAssembleDrop {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pAssembleDraw {
-  from { opacity: 0; transform: scaleX(0); }
-  to { opacity: 1; transform: scaleX(1); }
-}
-@keyframes pAssembleLoop {
-  from { opacity: 0; transform: scaleY(0.4); }
-  to { opacity: 1; transform: scaleY(1); }
-}
-@keyframes pAssembleGrow {
-  from { opacity: 0; transform: scaleY(0); }
-  to { opacity: 1; transform: scaleY(1); }
-}
-@keyframes pAssembleRise {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@media (prefers-reduced-motion: no-preference) {
-  /* pflow flow diagrams — stagger children by column position. Tuning
-     (2026-07-08 review): at reading speed the anchor figures arrived as
-     blank cards, so base delays sit ≤120ms and the staggers are ~40%
-     tighter; per-element durations stay ≥0.45s (the earlier "too fast reads
-     cheap" owner note holds — the sequence compresses, the moves don't).
-     Budget: every diagram finishes ≤1.1s after .is-visible lands. */
-  .pulse-case-page .pflow-grid > :nth-child(2) { --pd: 70ms; }
-  .pulse-case-page .pflow-grid > :nth-child(3) { --pd: 140ms; }
-  .pulse-case-page .pflow-grid > :nth-child(4) { --pd: 210ms; }
-  .pulse-case-page .pflow-grid > :nth-child(5) { --pd: 280ms; }
-  .pulse-case-page .pflow-grid > :nth-child(6) { --pd: 350ms; }
-  .pulse-case-page .pflow-grid > :nth-child(7) { --pd: 420ms; }
-  .pulse-case-page .pflow-lane:nth-child(2) { --ld: 200ms; }
-
-  .pulse-case-page figure[data-fade] .pflow-node,
-  .pulse-case-page figure[data-fade] .pflow-line,
-  .pulse-case-page figure[data-fade] .pflow-loop,
-  .pulse-case-page figure[data-fade] .pflow-note {
-    opacity: 0;
-  }
-  .pulse-case-page figure[data-fade] .pflow-node { transform: translateY(10px); }
-  .pulse-case-page figure[data-fade] .pflow-line {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  .pulse-case-page figure[data-fade] .pflow-loop {
-    transform: scaleY(0.4);
-    transform-origin: top;
-  }
-  .pulse-case-page figure[data-fade].is-visible .pflow-node {
-    animation: pAssembleDrop 0.58s var(--ease-spring) forwards;
-    animation-delay: calc(100ms + var(--ld, 0ms) + var(--pd, 0ms));
-  }
-  .pulse-case-page figure[data-fade].is-visible .pflow-line {
-    animation: pAssembleDraw 0.48s var(--ease-silk) forwards;
-    animation-delay: calc(120ms + var(--ld, 0ms) + var(--pd, 0ms));
-  }
-  .pulse-case-page figure[data-fade].is-visible .pflow-loop {
-    animation: pAssembleLoop 0.56s var(--ease-silk) forwards;
-    animation-delay: calc(440ms + var(--ld, 0ms));
-  }
-  .pulse-case-page figure[data-fade].is-visible .pflow-note {
-    animation: pAssembleDrop 0.45s var(--ease-silk) forwards;
-    animation-delay: calc(440ms + var(--ld, 0ms));
-  }
-
-  /* melee — the four source scenes rise in sequence */
-  .pulse-case-page figure[data-fade] .pulse-melee-cell { opacity: 0; }
-  .pulse-case-page .pulse-melee-cell:nth-child(1) { --cd: 0ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(2) { --cd: 90ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(3) { --cd: 180ms; }
-  .pulse-case-page .pulse-melee-cell:nth-child(4) { --cd: 270ms; }
-  .pulse-case-page figure[data-fade].is-visible .pulse-melee-cell {
-    animation: pAssembleRise 0.68s var(--ease-spring) forwards;
-    animation-delay: calc(100ms + var(--cd, 0ms));
-  }
-
-  /* build timeline — the commit spine grows as the rows stagger in */
-  .pulse-case-page figure[data-fade] .pulse-timeline::before {
-    transform: scaleY(0);
-    transform-origin: top;
-  }
-  .pulse-case-page figure[data-fade] .pulse-timeline-row,
-  .pulse-case-page figure[data-fade] .pulse-timeline-legend {
-    opacity: 0;
-  }
-  .pulse-case-page figure[data-fade].is-visible .pulse-timeline::before {
-    animation: pAssembleGrow 0.9s var(--ease-silk) forwards;
-    animation-delay: 100ms;
-  }
-  .pulse-case-page .pulse-timeline-row:nth-child(1) { --rd: 0ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(2) { --rd: 44ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(3) { --rd: 88ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(4) { --rd: 132ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(5) { --rd: 176ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(6) { --rd: 220ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(7) { --rd: 264ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(8) { --rd: 308ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(9) { --rd: 352ms; }
-  .pulse-case-page .pulse-timeline-row:nth-child(10) { --rd: 396ms; }
-  .pulse-case-page figure[data-fade].is-visible .pulse-timeline-row {
-    animation: pAssembleRise 0.55s var(--ease-silk) forwards;
-    animation-delay: calc(140ms + var(--rd, 0ms));
-  }
-  .pulse-case-page figure[data-fade].is-visible .pulse-timeline-legend {
-    animation: pAssembleDrop 0.45s var(--ease-silk) forwards;
-    animation-delay: 620ms;
-  }
-
-  /* roles hub — the base bar drops, stems extend down, chips rise */
-  .pulse-case-page figure[data-fade] .pflow-hub-bar { opacity: 0; transform: translateY(-8px); }
-  .pulse-case-page figure[data-fade] .pflow-hub-stem { transform: scaleY(0); transform-origin: top; }
-  .pulse-case-page figure[data-fade] .pflow-hub-chip { opacity: 0; transform: translateY(12px); }
-  .pulse-case-page figure[data-fade].is-visible .pflow-hub-bar {
-    animation: pAssembleDrop 0.58s var(--ease-spring) forwards;
-    animation-delay: 100ms;
-  }
-  .pulse-case-page figure[data-fade].is-visible .pflow-hub-stem {
-    animation: pAssembleGrow 0.48s var(--ease-silk) forwards;
-    animation-delay: 260ms;
-  }
-  .pulse-case-page figure[data-fade].is-visible .pflow-hub-chip {
-    animation: pAssembleRise 0.6s var(--ease-spring) forwards;
-    animation-delay: 420ms;
-  }
-
-  /* approval + CI chains — cells and links rise left to right */
-  .pulse-case-page figure[data-fade] .pulse-chain-cell,
-  .pulse-case-page figure[data-fade] .pulse-chain-link { opacity: 0; }
-  .pulse-case-page .pulse-chain-row > :nth-child(1) { --nd: 0ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(2) { --nd: 90ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(3) { --nd: 180ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(4) { --nd: 270ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(5) { --nd: 360ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(6) { --nd: 450ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(7) { --nd: 540ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(8) { --nd: 630ms; }
-  .pulse-case-page .pulse-chain-row > :nth-child(9) { --nd: 720ms; }
-  .pulse-case-page figure[data-fade].is-visible .pulse-chain-cell {
-    animation: pAssembleRise 0.6s var(--ease-spring) forwards;
-    animation-delay: calc(100ms + var(--nd, 0ms));
-  }
-  .pulse-case-page figure[data-fade].is-visible .pulse-chain-link {
-    animation: pAssembleDrop 0.5s var(--ease-silk) forwards;
-    animation-delay: calc(100ms + var(--nd, 0ms));
-  }
-}
+${pulseAssemblyCss}
 
 /* ── Reduced motion: render final state; kill scoped loops ──────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -2750,28 +1845,15 @@ const pulseCss = `
     opacity: 1;
     transform: none;
   }
-  .pulse-inv-cell,
-  .pulse-spec-chip span,
-  .pulse-ladder-pill {
+  .pulse-spec-chip span {
     transition: none;
   }
 }
 
-/* ── Outcome band — Pulse voice: one-typeface rule (mono → text face),
-   slate hairlines, ink numeral, cyan-700 eyebrow via --case-detail ── */
-.pulse-case-page .ob-band {
-  --ob-mono: var(--pulse-mono);
-  --ob-rule: var(--pp-line-strong);
-  --ob-body: var(--pp-text-2);
-  --ob-stat-ink: var(--pp-ink);
-}
 
 /* ── 2026 case-study edit: product-first, editorial, and quieter ───────── */
 .pulse-bloom {
   opacity: 0.5;
-  animation: none !important;
-}
-.pulse-rail li.is-run::after {
   animation: none !important;
 }
 .pulse-case-page .case-study-hero {
@@ -2882,6 +1964,9 @@ const pulseCss = `
   color: var(--pp-text-2);
 }
 .pulse-rail-card {
+  /* natural position drops to the part opener's own top offset — flush
+     against the acts seam the card's rule collided with the fork above */
+  margin-top: calc(var(--gap-section) / 2);
   padding: 12px 0;
   border: 0;
   border-top: 1px solid var(--pp-line-strong);
@@ -2904,12 +1989,14 @@ const pulseCss = `
   border-radius: 50%;
   background: var(--pp-cyan-600);
 }
+/* chapter boundaries ride the site's ONE section standard (half above,
+   half below); subchapters tuck closer to their parent */
 .pulse-chapter {
-  padding: clamp(96px, 10vw, 144px) 0;
+  padding: calc(var(--gap-section) / 2) 0;
 }
 .pulse-chapter.is-subchapter {
   padding-top: 48px;
-  padding-bottom: clamp(80px, 8vw, 112px);
+  padding-bottom: calc(var(--gap-section) / 2);
 }
 .pulse-chapter.is-subchapter .pulse-chapter-head {
   grid-column: 1 / 8;
@@ -2925,6 +2012,170 @@ const pulseCss = `
   max-width: 18em;
   font-size: clamp(48px, 5.4vw, 80px);
   letter-spacing: -0.025em;
+}
+/* part openers — the page's two acts (owner structure 2026-07-14) */
+.pulse-part {
+  padding: calc(var(--gap-section) / 2) 0 0;
+}
+.pulse-part-index {
+  margin: 0 0 12px;
+  font-size: var(--text-label);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--case-detail);
+}
+.pulse-part-claim {
+  margin: 0;
+  max-width: 22em;
+  font-family: var(--font-text);
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--pp-ink);
+  text-wrap: balance;
+}
+.pulse-part-pulse {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin-top: clamp(12px, 1.6vw, 24px);
+}
+.pulse-part-pulse path {
+  fill: none;
+  stroke: var(--pp-cyan-600);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+${pulseForkCss}
+/* end-of-track handoff — a station in the site's own next-stop idiom:
+   strong rule, eyebrow, display title, and the ONE real CTA slab */
+.pulse-next-part {
+  padding-bottom: calc(var(--gap-section) / 2);
+}
+.pulse-handoff {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--work-grid-gap);
+  row-gap: 8px;
+  align-items: center;
+  padding-top: clamp(24px, 2.6vw, 36px);
+  border-top: 1px solid var(--pp-line-strong);
+}
+.pulse-handoff-eyebrow {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--text-label);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--case-detail);
+}
+.pulse-handoff-title {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: clamp(30px, 3.2vw, 46px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--pp-ink);
+}
+.pulse-handoff-desc {
+  grid-column: 1;
+  margin: 0;
+  max-width: 52ch;
+  font-size: var(--text-meta);
+  line-height: 1.5;
+  color: var(--pp-text-3);
+}
+.pulse-handoff-cta {
+  grid-column: 2;
+  grid-row: 2 / span 2;
+  align-self: center;
+}
+@media (max-width: 809px) {
+  .pulse-handoff {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pulse-handoff-cta {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    margin-top: 8px;
+  }
+}
+/* view gating — the attribute exists only once the fork mounts (JS);
+   no-JS readers and crawlers get both tracks stacked. The rail keeps BOTH
+   part labels visible (they switch tracks); only the inactive chapter
+   list collapses. */
+.pulse-case-page[data-view="product"] .pulse-view[data-view-panel="system"],
+.pulse-case-page[data-view="system"] .pulse-view[data-view-panel="product"] {
+  display: none;
+}
+.pulse-case-page[data-view="product"] [data-rail] [data-view-panel="system"] ol,
+.pulse-case-page[data-view="system"] [data-rail] [data-view-panel="product"] ol {
+  display: none;
+}
+.pulse-case-page[data-view="product"] .pulse-next-part[data-view-panel="system"],
+.pulse-case-page[data-view="system"] .pulse-next-part[data-view-panel="product"] {
+  display: none;
+}
+
+/* ── 2026-07-14 · premium-SaaS finish pass ───────────────────────────────
+   Same physics, better glass. Product evidence floats on the deeper media
+   shadow tier; the hero frame carries the product's live-sync dot; the rail
+   behaves like the product's own nav (hover rows, the running act in a soft
+   cyan pill); selection is the product's cyan ring, not an ink border; the
+   Turn's glass gets a real edge. Pulse's own palette only; even px. */
+.pulse-hero-product {
+  box-shadow: var(--pp-shadow-media);
+}
+.pulse-hero-product-head span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.pulse-hero-product-head span:first-child::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pp-cyan-600);
+  box-shadow: 0 0 0 4px rgba(73, 224, 245, 0.16);
+}
+.pulse-shot,
+.pulse-artifact {
+  box-shadow: var(--pp-shadow-media);
+}
+.pulse-shot-head {
+  background: rgba(15, 23, 42, 0.02);
+}
+.pulse-section-copy h3 {
+  letter-spacing: -0.01em;
+}
+.pulse-rail li {
+  padding: 2px 0;
+}
+.pulse-rail li a {
+  padding: 4px 8px;
+  margin-left: -8px;
+  border-radius: 6px;
+  transition:
+    color 0.2s var(--ease-silk),
+    background-color 0.2s var(--ease-silk);
+}
+.pulse-rail li a:hover {
+  background: rgba(15, 23, 42, 0.04);
+}
+.pulse-rail li.is-run a {
+  background: var(--pp-cyan-soft);
+  color: var(--pp-cyan-dark);
+}
+.pulse-turn {
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    var(--pp-shadow-lift);
 }
 
 @media (max-width: 1079px) {
@@ -3031,6 +2282,11 @@ function ChapterHead({ number, title }: { number: string; title: string }) {
 // Lenis takes over native hash clicks for the smooth ride), so the rail is
 // navigation now — no aria-hidden.
 function RunRail() {
+  const groups: Array<[string | null, typeof acts, string | undefined]> = [
+    ["Part 1 · Product", acts.filter((a) => a.part === 1), "product"],
+    ["Part 2 · Design engineering", acts.filter((a) => a.part === 2), "system"],
+    [null, acts.filter((a) => a.part === 0), undefined],
+  ];
   return (
     <aside className="pulse-rail">
       <nav
@@ -3039,16 +2295,36 @@ function RunRail() {
         data-fade
       >
         <span className="pulse-rail-head">Case map</span>
-        <ol data-rail>
-          {acts.map((act, i) => (
-            <li key={act.id} className="is-done">
-              <a href={`#${act.id}`}>
-                <i aria-hidden="true">{String(i + 1).padStart(2, "0")}</i>
-                {act.label}
-              </a>
-            </li>
+        <div data-rail>
+          {groups.map(([label, list, panel]) => (
+            <div key={label ?? "coda"} data-view-panel={panel}>
+              {label && (
+                <button
+                  type="button"
+                  className="pulse-rail-part"
+                  data-rail-switch={panel}
+                >
+                  {label}
+                </button>
+              )}
+              <ol>
+                {list.map((act, i) => (
+                  <li key={act.id} className="is-done">
+                    <a href={`#${act.id}`}>
+                      {/* part-scoped index (1.1 … 2.5) matching the chapter
+                          eyebrows — a single reading track never jumps;
+                          the Reflection coda is unnumbered */}
+                      {act.part !== 0 && (
+                        <i aria-hidden="true">{`${act.part}.${i + 1}`}</i>
+                      )}
+                      {act.label}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
           ))}
-        </ol>
+        </div>
       </nav>
     </aside>
   );
@@ -3080,11 +2356,11 @@ export function PulseCaseLayout({ project }: { project: Project }) {
     ["Type", project.type],
     ["Teams", project.teams],
   ];
-  // Chapters from data/projects.ts — context first, then the thesis:
-  // product → look (Part 1, the product on its own terms), melee → bet →
-  // wake-up → rescue → base → skills → interface (Part 2, the AI-era
-  // story), proof (Part 3, the before/after).
-  const [product, look, melee, bet, wakeup, rescue, base, skills, iface, proof] =
+  // Chapters from data/projects.ts, positionally — Part 1: 1.1 Product /
+  // 1.2 My surfaces / 1.3 Design language; Part 2: 2.1 Fragmentation /
+  // 2.2 Convergence (+2.2A Map, 2.2B Rebuild) / 2.3 System /
+  // 2.4 Operating model (+2.4A Interfaces) / 2.5 Proof.
+  const [loop, surfaces, look, melee, bet, wakeup, rescue, base, skills, iface, proof] =
     project.chapters ?? [];
   const moment = project.moment;
 
@@ -3127,9 +2403,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             style={{ width: "100%", height: "auto" }}
           />
           <figcaption className="pulse-hero-proof">
-            <span><strong>6</strong> product surfaces</span>
-            <span><strong>62</strong> canonical components</span>
-            <span><strong>3</strong> system checks passing</span>
+            <span><strong data-count="6">6</strong> product surfaces</span>
+            <span><strong data-count="62">62</strong> canonical components</span>
+            <span><strong data-count="981">981</strong> commits, six tools to one system</span>
           </figcaption>
         </figure>
         <dl className="case-hero-meta" data-fade>
@@ -3156,67 +2432,163 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </div>
       </section>
 
-      {/* ── The case map: seven chapters, with supporting subchapters ── */}
+      {/* ── The fork: two doors into the case (client switch enhances) ── */}
+      <div className="pulse-fork" data-fade>
+        <PulsePartSwitch />
+      </div>
+
+      {/* ── The case map: two reading tracks on one sticky rail ── */}
       <div className="pulse-acts">
         <RunRail />
         <div className="pulse-acts-main">
 
-      {/* ── 01 · The product ── */}
-      {product && (
+      {/* ---- reading track: product ---- */}
+      <div className="pulse-view" id="pulse-view-product" data-view-panel="product">
+
+      {/* ── Part 1 · Product ── */}
+      <header className="pulse-part" data-fade>
+        <p className="pulse-part-index">Part 1 · Product</p>
+        <p className="pulse-part-claim">The marketing system Pulse runs for a brand.</p>
+        <svg
+          className="pulse-part-pulse"
+          viewBox="0 0 1200 40"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 20 H440 L452 20 460 4 472 36 482 12 490 20 H1200"
+            pathLength={1}
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      </header>
+
+      {/* ── 1.1 · Product ── */}
+      {loop && (
         <section className="case-chapter pulse-chapter" id="act-product" data-act="0">
-            <ChapterHead number={product.number} title={product.title} />
-            {product.sections[0] && (
+            <ChapterHead number={loop.number} title={loop.title} />
+            {loop.sections[0] && (
               <div className="pulse-section">
-                <SectionProse section={product.sections[0]} />
-                {/* the product tour (2026-07-13 owner call: three-up band was
-                    unreadable) — Home leads full-width and whole, the
-                    Calendar recording (owner recording, 2026-07-07) and
-                    onboarding pair up below; one figure, one caption */}
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-tour">
-                    <div className="pulse-shot">
-                      <Image
-                        src="/media/work/pulse/pulse-app-home.png"
-                        alt="Pulse app Home page: workspace sidebar for the demo brand, action-item KPI tiles, content queue, and signals feed"
-                        width={SHOT_W}
-                        height={SHOT_H}
-                        sizes="(max-width: 1080px) 100vw, 1120px"
-                        style={{ width: "100%", height: "auto" }}
-                      />
-                    </div>
-                    <div className="pulse-shot-pair">
-                      <div className="pulse-band-cell pulse-shot">
-                        <OffscreenVideo
-                          src="/media/work/pulse/calendar-run.mp4"
-                          poster="/media/work/pulse/calendar-run-poster.jpg"
-                          aria-label="Pulse Calendar walkthrough: day, week, month and list views with the schedule-health rail and scheduling queue"
-                        />
+                <SectionProse section={loop.sections[0]} />
+                {/* the anchor figure: the whole operating loop in one drawing —
+                    Signal drops in from outside, performance returns beneath */}
+                <figure className="pulse-section-inset" data-fade>
+                  <div className="pulse-card pulse-specpad">
+                    <header className="pulse-spec-head">
+                      <span>the operating loop &middot; one brand at a time</span>
+                    </header>
+                    <div
+                      className="pflow pulse-map"
+                      role="img"
+                      aria-label="Pulse's operating loop. Onboarding learns the brand; a ratified brand report becomes a 90-day strategy; campaigns turn strategy into briefs and content; the calendar schedules and publishes; analytics reads performance. Signal watches the market daily from outside, and performance returns beneath the chain — strategy and the next campaign absorb both."
+                    >
+                      <div
+                        className="pflow-grid"
+                        aria-hidden="true"
+                        style={{
+                          gridTemplateColumns:
+                            "minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr) 24px minmax(0, 1fr)",
+                        }}
+                      >
+                        <span className="pflow-node">
+                          Onboarding
+                          <em>learns the brand</em>
+                        </span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node is-cyan">
+                          Strategy
+                          <em>the 90-day contract</em>
+                        </span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node is-purple">
+                          Campaign
+                          <em>plan &middot; brief &middot; produce</em>
+                        </span>
+                        <span className="pflow-line is-cyan" />
+                        <span className="pflow-node">
+                          Calendar
+                          <em>schedule &middot; publish</em>
+                        </span>
+                        <span className="pflow-line is-green" />
+                        <span className="pflow-node is-green">
+                          Analytics
+                          <em>reads performance</em>
+                        </span>
+                        <span className="pflow-loop is-green" />
+                        <span className="pulse-map-signal">
+                          Signal
+                          <em>the market, daily</em>
+                        </span>
+                        <span className="pulse-map-fork" aria-hidden="true">
+                          <i className="is-stem" />
+                          <i className="is-bar" />
+                          <i className="is-l" />
+                          <i className="is-r" />
+                        </span>
                       </div>
-                      <div className="pulse-band-cell pulse-shot">
-                        <Image
-                          src="/media/work/pulse/pulse-app-onboarding.png"
-                          alt="Pulse brand onboarding: an editorial hero reading 'Your brand, decoded. Your channels, run.' above brand-URL and brand-guide inputs"
-                          width={SHOT_W}
-                          height={916}
-                          sizes="(max-width: 809px) 100vw, 560px"
-                        />
-                      </div>
+                      <p className="pflow-note is-green is-center" aria-hidden="true">
+                        <i>↺</i>performance returns &mdash; strategy and the
+                        next campaign absorb both
+                      </p>
                     </div>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 02</em>The product,
-                      toured &mdash; Home leads as the decision surface; the
-                      scheduling Calendar (recorded) and brand onboarding
-                      follow, every screen served from a file:// address
+                      <em className="pulse-fig">Fig. 1.1</em>The operating loop
+                      &mdash; Pulse learns a brand, runs its cycle, and starts
+                      the next one smarter
                     </span>
                   </figcaption>
                 </figure>
               </div>
             )}
-            {product.sections[1] && (
+            {loop.sections[1] && (
               <div className="pulse-section">
-                <SectionProse section={product.sections[1]} />
+                <SectionProse section={loop.sections[1]} />
+              </div>
+            )}
+        </section>
+      )}
+
+      {/* ── 1.2 · My surfaces ── */}
+      {surfaces && (
+        <section className="case-chapter pulse-chapter" id="act-surfaces" data-act="1">
+            <ChapterHead number={surfaces.number} title={surfaces.title} />
+            {surfaces.sections[0] && (
+              <div className="pulse-section">
+                <SectionProse section={surfaces.sections[0]} />
+              </div>
+            )}
+            {surfaces.sections[1] && (
+              <div className="pulse-section">
+                <SectionProse section={surfaces.sections[1]} />
+                {/* the hero shows Home still; the recording shows it deciding */}
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-shot">
+                    <div className="pulse-shot-head">
+                      <span>Pulse / Home</span>
+                      <span>The daily command deck</span>
+                    </div>
+                    <div className="pulse-video-hd">
+                      <OffscreenVideo
+                        src="/media/work/pulse/preview.mp4"
+                        aria-label="Pulse Home walkthrough: action items with one primary action each, the live content queue, and the prioritized signal feed"
+                      />
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 1.2</em>Home, recorded
+                      &mdash; the day&rsquo;s decisions above the brand&rsquo;s
+                      vital signs
+                    </span>
+                  </figcaption>
+                </figure>
+              </div>
+            )}
+            {surfaces.sections[2] && (
+              <div className="pulse-section">
+                <SectionProse section={surfaces.sections[2]} />
                 <div className="pulse-section-aside">
                   <figure data-fade>
                     <div className="pulse-artifact">
@@ -3224,147 +2596,75 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </div>
                     <figcaption className="pulse-fig-caption">
                       <span>
-                        <em className="pulse-fig">Fig. 03</em>The Creative
+                        <em className="pulse-fig">Fig. 1.3</em>The Creative
                         Brief &mdash; a person shapes the AI draft
                       </span>
                       <InteractiveCue>edit a field, then approve</InteractiveCue>
                     </figcaption>
                   </figure>
-                  <figure data-fade style={{ marginTop: 24 }}>
-                    <div className="pulse-artifact">
-                      <div className="pulse-chat">
-                        <div className="pulse-chat-turn">
-                          <p className="pulse-chat-assistant">
-                            Draft brief is ready &mdash; audience and tone come
-                            from your brand vault.
-                          </p>
-                          <p className="pulse-chat-note">
-                            assistant &middot; plain text, no bubble
-                          </p>
-                        </div>
-                        <div className="pulse-chat-turn">
-                          <div className="pulse-chat-user">
-                            <span>Tighten the key message.</span>
-                          </div>
-                          <p className="pulse-chat-note is-right">
-                            user &middot; ink bubble, right-aligned
-                          </p>
-                        </div>
-                        <div className="pulse-chat-turn">
-                          <div className="pulse-chat-card">
-                            <strong>Creative Brief</strong>
-                            <i aria-hidden="true" />
-                            <i aria-hidden="true" />
-                            <i aria-hidden="true" />
-                            <span>Open brief</span>
-                          </div>
-                          <p className="pulse-chat-note">
-                            rich content &middot; a card; inline controls stay
-                            flat
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <figcaption className="pulse-fig-caption">
-                      <span>
-                        <em className="pulse-fig">Fig. 04</em>Chat contract
-                        &mdash; the assistant follows the product component
-                        contract
-                      </span>
-                    </figcaption>
-                  </figure>
                 </div>
-              </div>
-            )}
-            {product.sections[2] && (
-              <div className="pulse-section">
-                <SectionProse section={product.sections[2]} />
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-chain-row is-approvals">
-                    <div className="pulse-chain-cell">
-                      <i>01</i>
-                      <strong>Reviewer</strong>
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-shot">
+                    <div className="pulse-shot-head">
+                      <span>Pulse / Campaign</span>
+                      <span>Strategy becomes production</span>
                     </div>
-                    <span className="pulse-chain-link">SLA 24h</span>
-                    <div className="pulse-chain-cell">
-                      <i>02</i>
-                      <strong>Brand admin</strong>
-                    </div>
-                    <span className="pulse-chain-link">SLA 24h</span>
-                    <div className="pulse-chain-cell">
-                      <i>03</i>
-                      <strong>Org owner</strong>
+                    <div className="pulse-video-wide">
+                      <OffscreenVideo
+                        src="/media/work/pulse/gate-flow.mp4"
+                        poster="/media/work/pulse/gate-flow-poster.jpg"
+                        aria-label="The Campaign flow recorded end to end: a plan is approved, a Creative Brief is reviewed, content generates per platform, a person reviews each post, and only then does it publish"
+                      />
                     </div>
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 05</em>Approval chain
-                      &mdash; reviewer to brand admin to org owner, a 24-hour
-                      SLA at each handoff
+                      <em className="pulse-fig">Fig. 1.4</em>The Campaign flow,
+                      recorded end to end &mdash; plan, brief, generation,
+                      review, publish; a person signs at every gate
                     </span>
                   </figcaption>
                 </figure>
-                <div className="pulse-guardrail pulse-section-inset" data-fade>
-                  <p className="pulse-guardrail-claim">{guardrail}</p>
-                  <p className="pulse-guardrail-note">{guardrailNote}</p>
-                </div>
+              </div>
+            )}
+            {surfaces.sections[3] && (
+              <div className="pulse-section">
+                <SectionProse section={surfaces.sections[3]} />
+                {/* recorded, whole, bars cropped */}
+                <figure className="pulse-section-full" data-fade>
+                  <div className="pulse-shot">
+                    <div className="pulse-shot-head">
+                      <span>Pulse / Calendar</span>
+                      <span>The control plane</span>
+                    </div>
+                    <div className="pulse-video-wide">
+                      <OffscreenVideo
+                        src="/media/work/pulse/calendar-run.mp4"
+                        poster="/media/work/pulse/calendar-run-poster.jpg"
+                        aria-label="Pulse Calendar walkthrough: day, week, month and list views with the schedule-health rail and scheduling queue"
+                      />
+                    </div>
+                  </div>
+                  <figcaption className="pulse-fig-caption">
+                    <span>
+                      <em className="pulse-fig">Fig. 1.5</em>Calendar as the
+                      control plane &mdash; approved work flows to schedule on
+                      its own; a person can still drag, hold, or reshuffle
+                    </span>
+                  </figcaption>
+                </figure>
               </div>
             )}
         </section>
       )}
 
-      {/* ── 02 · The look ── */}
+      {/* ── 1.3 · Design language ── */}
       {look && (
-        <section className="case-chapter pulse-chapter is-subchapter" id="act-look" data-act="0">
+        <section className="case-chapter pulse-chapter" id="act-look" data-act="2">
             <ChapterHead number={look.number} title={look.title} />
             {look.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={look.sections[0]} />
-                <figure className="pulse-section-aside" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>brand rules &middot; written day one</span>
-                    </header>
-                    <div className="pulse-kv">
-                      {brandRules.map(([rule, deal]) => (
-                        <div className="pulse-kv-row" key={rule}>
-                          <span>{rule}</span>
-                          <em>{deal}</em>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="pulse-ladder">
-                      <span className="pulse-ladder-pill is-on" data-state="queued">
-                        queued
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="scheduled">
-                        scheduled
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="generating">
-                        generating
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="ready">
-                        ready
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="live">
-                        published
-                      </span>
-                      <span className="pulse-ladder-pill is-on" data-state="attention">
-                        needs attention
-                      </span>
-                    </div>
-                    <p className="pulse-spec-foot">
-                      the generation ladder &mdash; each hue has one job; they
-                      light in order as you arrive
-                    </p>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 06</em>Few rules, firmly
-                      held &mdash; color appears only when it means something
-                    </span>
-                  </figcaption>
-                </figure>
                 <figure className="pulse-section-full" data-fade>
                   <div className="pulse-shot-pair">
                     <div className="pulse-shot">
@@ -3390,7 +2690,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 07</em>The accent study
+                      <em className="pulse-fig">Fig. 1.6</em>The accent study
                       &mdash; identical dashboards, candidate accents side by
                       side; then the cyan experiment on a full Home
                     </span>
@@ -3399,8 +2699,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                 <figure className="pulse-section-inset" data-fade>
                   <div className="pulse-shot">
                     <Image
-                      src="/media/work/pulse/foundations-color.png"
-                      alt="Pulse design-system foundations: the 'Neutral first, color with meaning' section with named swatches, status chips, and semantics rules"
+                      src="/media/work/pulse/foundations-rules.png"
+                      alt="Pulse design-system foundations: the 'Neutral first, color with meaning' section with named swatches, status chips, semantics rules, and the ten-stop lightness ramp"
                       width={SHOT_W}
                       height={SHOT_H}
                       sizes="(max-width: 1080px) 100vw, 1030px"
@@ -3409,7 +2709,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 08</em>The rules, written
+                      <em className="pulse-fig">Fig. 1.7</em>The rules, written
                       down &mdash; the foundations page every hue answers to
                     </span>
                   </figcaption>
@@ -3419,9 +2719,36 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 03 · The melee ── */}
+      </div>
+
+      {/* ---- reading track: design engineering ---- */}
+      <div className="pulse-view" id="pulse-view-system" data-view-panel="system">
+
+      {/* ── Part 2 · Design engineering ── */}
+      <header className="pulse-part" data-fade>
+        <p className="pulse-part-index">Part 2 · Design engineering</p>
+        <p className="pulse-part-claim">
+          The system I built so the team &mdash; and its AI &mdash; could keep
+          building Pulse.
+        </p>
+        {/* the system is the second heartbeat — a double beat on purpose */}
+        <svg
+          className="pulse-part-pulse"
+          viewBox="0 0 1200 40"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 20 H400 L412 20 420 6 430 34 438 16 446 20 H560 L572 20 580 4 592 36 602 12 610 20 H1200"
+            pathLength={1}
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      </header>
+
+      {/* ── 2.1 · Fragmentation ── */}
       {melee && (
-        <section className="case-chapter pulse-chapter" id="act-melee" data-act="1">
+        <section className="case-chapter pulse-chapter" id="act-melee" data-act="3">
             <ChapterHead number={melee.number} title={melee.title} />
             {melee.sections[0] && (
               <div className="pulse-section">
@@ -3482,7 +2809,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 09</em>Four prototypes,
+                      <em className="pulse-fig">Fig. 2.1</em>Four prototypes,
                       one face &mdash; and four sources that cannot be merged
                     </span>
                   </figcaption>
@@ -3492,9 +2819,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 04 · The bet ── */}
+      {/* ── 2.2 · Convergence ── */}
       {bet && (
-        <section className="case-chapter pulse-chapter" id="act-bet" data-act="2">
+        <section className="case-chapter pulse-chapter" id="act-bet" data-act="4">
             <ChapterHead number={bet.number} title={bet.title} />
             {bet.sections[0] && (
               <div className="pulse-section">
@@ -3549,7 +2876,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 10</em>The bet &mdash;
+                      <em className="pulse-fig">Fig. 2.2</em>The bet &mdash;
                       the style pass made six efforts rhyme; it was a look,
                       not a system
                     </span>
@@ -3560,9 +2887,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 05 · The wake-up ── */}
+      {/* ── 2.2A · The map ── */}
       {wakeup && (
-        <section className="case-chapter pulse-chapter is-subchapter" id="act-wakeup" data-act="2">
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-wakeup" data-act="4">
             <ChapterHead number={wakeup.number} title={wakeup.title} />
             {wakeup.sections[0] && (
               <div className="pulse-section">
@@ -3608,7 +2935,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 11</em>The wake-up file
+                      <em className="pulse-fig">Fig. 2.3</em>The wake-up file
                       against the shape that replaced it &mdash; scroll runs
                       the split
                     </span>
@@ -3660,7 +2987,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 12</em>Engineer my own
+                      <em className="pulse-fig">Fig. 2.4</em>Engineer my own
                       page, then ask engineering
                     </span>
                   </figcaption>
@@ -3670,63 +2997,13 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 06 · The rescue ── */}
+      {/* ── 2.2B · The rebuild ── */}
       {rescue && (
-        <section className="case-chapter pulse-chapter is-subchapter" id="act-rescue" data-act="2">
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-rescue" data-act="4">
             <ChapterHead number={rescue.number} title={rescue.title} />
             {rescue.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={rescue.sections[0]} />
-                <figure className="pulse-inset-medium" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>the rescue &middot; one pipeline</span>
-                    </header>
-                    <div
-                      className="pflow"
-                      role="img"
-                      aria-label="Four stages: unify the surface, engineer file by file, migrate toward one stack, merge into one app. Under the migrate stage a repair loop: AI broke hover states, animations, and layout in transit and produced dead code — every page was repaired by hand against its original."
-                    >
-                      <div
-                        className="pflow-grid"
-                        aria-hidden="true"
-                        style={{
-                          gridTemplateColumns:
-                            "minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr) 28px minmax(0, 1fr)",
-                        }}
-                      >
-                        <span className="pflow-node is-cyan">Unify</span>
-                        <span className="pflow-line is-cyan" />
-                        <span className="pflow-node is-purple">Engineer</span>
-                        <span className="pflow-line is-amber" />
-                        <span className="pflow-node is-amber">Migrate</span>
-                        <span className="pflow-line is-green" />
-                        <span className="pflow-node is-green">Merge</span>
-                        <span aria-hidden="true" />
-                        <span aria-hidden="true" />
-                        <span aria-hidden="true" />
-                        <span aria-hidden="true" />
-                        <span
-                          className="pflow-loop"
-                          style={{ gridColumn: "5 / 6" }}
-                        />
-                        <span aria-hidden="true" />
-                        <span aria-hidden="true" />
-                      </div>
-                      <p className="pflow-note is-amber is-center" aria-hidden="true">
-                        <i>↺</i>AI broke hover &middot; animation &middot;
-                        layout &middot; dead code &mdash; repaired by hand
-                        against the original
-                      </p>
-                    </div>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 13</em>AI carried the
-                      bulk; the fidelity was hand work
-                    </span>
-                  </figcaption>
-                </figure>
                 <figure className="pulse-section-full" data-fade>
                   {/* Activity counts stay here, in the evidence that explains
                       them, instead of competing with the product outcome. */}
@@ -3755,7 +3032,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 14</em>The commit stream,
+                      <em className="pulse-fig">Fig. 2.5</em>The commit stream,
                       paraphrased from the repo&rsquo;s own log &mdash; no
                       hashes, no names
                     </span>
@@ -3771,9 +3048,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 07 · The base ── */}
+      {/* ── 2.3 · System ── */}
       {base && (
-        <section className="case-chapter pulse-chapter" id="act-base" data-act="3">
+        <section className="case-chapter pulse-chapter" id="act-base" data-act="5">
             <ChapterHead number={base.number} title={base.title} />
             {base.sections[0] && (
               <div className="pulse-section">
@@ -3822,27 +3099,10 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 15</em>The canonical
+                      <em className="pulse-fig">Fig. 2.6</em>The canonical
                       token sheet &mdash; six ramps, one scale, one rhythm
                     </span>
                     <InteractiveCue>click / tap a chip to copy its hex</InteractiveCue>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-inv-grid">
-                    {inventory.map((name, i) => (
-                      <div className="pulse-inv-cell" key={name}>
-                        <i>{String(i + 1).padStart(2, "0")}</i>
-                        <span>{name}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 16</em>The full registry
-                      &mdash; 62 components, each its own folder over shared
-                      tokens
-                    </span>
                   </figcaption>
                 </figure>
                 <figure className="pulse-section-inset" data-fade>
@@ -3860,9 +3120,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 17</em>The CI guard checks
-                      &mdash; inventory, tokens, and hand-edits, reconciled on
-                      every merge
+                      <em className="pulse-fig">Fig. 2.7</em>The CI guard checks
+                      &mdash; inventory, tokens, hand-edits, and text contrast,
+                      reconciled on every merge
                     </span>
                   </figcaption>
                 </figure>
@@ -3890,9 +3150,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 08 · The skills ── */}
+      {/* ── 2.4 · Operating model ── */}
       {skills && (
-        <section className="case-chapter pulse-chapter" id="act-skills" data-act="4">
+        <section className="case-chapter pulse-chapter" id="act-skills" data-act="6">
             <ChapterHead number={skills.number} title={skills.title} />
             {skills.sections[0] && (
               <div className="pulse-section">
@@ -3953,34 +3213,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 18</em>The repetition
+                      <em className="pulse-fig">Fig. 2.8</em>The repetition
                       loop a skill deletes
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-aside" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>skill &middot; design-usage</span>
-                    </header>
-                    <p className="pulse-truth-epigraph">
-                      Loaded before the AI generates or edits a prototype
-                      &mdash; the system, written as procedure.
-                    </p>
-                    <ul className="pulse-skill-rules">
-                      {skillRules.map((rule) => (
-                        <li key={rule}>{rule}</li>
-                      ))}
-                    </ul>
-                    <p className="pulse-spec-foot">
-                      maintenance skills keep tokens, previews, and boards in
-                      sync
-                    </p>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 19</em>The rules, made
-                      loadable &mdash; on-system by construction, not by repair
                     </span>
                   </figcaption>
                 </figure>
@@ -4032,41 +3266,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 20</em>Harness control
+                      <em className="pulse-fig">Fig. 2.9</em>Harness control
                       &mdash; the feedback loop that stays
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-timeline">
-                    {milestones.map((m) => (
-                      <div
-                        className={`pulse-timeline-row${m.mine ? "" : " is-team"}`}
-                        key={m.title}
-                      >
-                        <span className="pulse-timeline-date">{m.date}</span>
-                        <i className="pulse-timeline-node" aria-hidden="true" />
-                        <div className="pulse-timeline-body">
-                          <strong>{m.title}</strong>
-                          <span>
-                            <em className="pulse-timeline-when">
-                              {m.date} &middot;{" "}
-                            </em>
-                            {m.note}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                    <p className="pulse-timeline-legend" aria-hidden="true">
-                      <i /> my work
-                      <i className="is-team" /> teammate / team
-                    </p>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 21</em>Build timeline
-                      &mdash; five weeks from melee to system, late May to
-                      early July 2026
                     </span>
                   </figcaption>
                 </figure>
@@ -4075,9 +3276,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 09 · The interface ── */}
+      {/* ── 2.4A · Interfaces ── */}
       {iface && (
-        <section className="case-chapter pulse-chapter is-subchapter" id="act-interface" data-act="4">
+        <section className="case-chapter pulse-chapter is-subchapter" id="act-interface" data-act="6">
             <ChapterHead number={iface.number} title={iface.title} />
             {iface.sections[0] && (
               <div className="pulse-section">
@@ -4086,7 +3287,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <PulseComponentBrowser />
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 22</em>The component
+                      <em className="pulse-fig">Fig. 2.10</em>The component
                       browser, rebuilt live &mdash; real components from the
                       Pulse registry; the shipped browser holds all 62
                     </span>
@@ -4108,7 +3309,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 23</em>The sliced Figma
+                      <em className="pulse-fig">Fig. 2.11</em>The sliced Figma
                       board &mdash; deliberately non-interactive, built to be
                       imported into design review
                     </span>
@@ -4119,47 +3320,6 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {iface.sections[1] && (
               <div className="pulse-section">
                 <SectionProse section={iface.sections[1]} />
-                <figure className="pulse-section-aside" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>React package &middot; manifest</span>
-                    </header>
-                    <div className="pulse-kv">
-                      {plateRows.map(([key, value]) => (
-                        <div className="pulse-kv-row" key={key}>
-                          <span>{key}</span>
-                          <em>{value}</em>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="pulse-spec-foot">
-                      versioned releases &middot; CI rebuilds from the design
-                      system
-                    </p>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 24</em>The package&rsquo;s
-                      plate &mdash; styles sync from the canonical CSS at build
-                      time
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-card">
-                    <PulsePlaygroundDemo />
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 25</em>The playground
-                      idea, live &mdash; feed a component data and watch it
-                      hold: empty, overflowing, broken
-                    </span>
-                    <InteractiveCue>
-                      edit the JSON &mdash; the tile answers
-                    </InteractiveCue>
-                  </figcaption>
-                </figure>
                 <figure className="pulse-section-inset" data-fade>
                   <div className="pulse-shot">
                     <Image
@@ -4173,51 +3333,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 26</em>The real
+                      <em className="pulse-fig">Fig. 2.12</em>The real
                       playground &mdash; the published AIPanel rendered live,
                       with per-component knobs and a JSON data editor
-                    </span>
-                  </figcaption>
-                </figure>
-                <figure className="pulse-section-inset" data-fade>
-                  <div className="pulse-card pulse-specpad">
-                    <header className="pulse-spec-head">
-                      <span>Four roles &middot; one base</span>
-                    </header>
-                    <div
-                      className="pflow-hub"
-                      role="img"
-                      aria-label="One base — the tokens and 62 components — read four ways: design reads the live preview and Figma boards, engineering reads the typed package and contracts, ML reads the editable data states, product reads one runnable flow."
-                    >
-                      <div className="pflow-hub-bar" aria-hidden="true">
-                        One base &mdash; tokens + 62 components
-                      </div>
-                      {hubRoles.map(([role]) => (
-                        <span
-                          className="pflow-hub-stem"
-                          key={`stem-${role}`}
-                          aria-hidden="true"
-                        />
-                      ))}
-                      {hubRoles.map(([role, reads]) => (
-                        <div
-                          className="pflow-hub-chip"
-                          key={role}
-                          aria-hidden="true"
-                        >
-                          <strong>{role}</strong>
-                          <span>{reads}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="pulse-spec-foot">
-                      integration stopped being a rescue
-                    </p>
-                  </div>
-                  <figcaption className="pulse-fig-caption">
-                    <span>
-                      <em className="pulse-fig">Fig. 27</em>The interface,
-                      read four ways
                     </span>
                   </figcaption>
                 </figure>
@@ -4226,9 +3344,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── 10 · The proof ── */}
+      {/* ── 2.5 · Proof ── */}
       {proof && (
-        <section className="case-chapter pulse-chapter" id="act-proof" data-act="5">
+        <section className="case-chapter pulse-chapter" id="act-proof" data-act="7">
             <ChapterHead number={proof.number} title={proof.title} />
             {proof.sections[0] && (
               <div className="pulse-section">
@@ -4256,7 +3374,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 28</em>The tells &mdash;
+                      <em className="pulse-fig">Fig. 2.13</em>The tells &mdash;
                       what gives generated UI away, and what forbids it here
                     </span>
                   </figcaption>
@@ -4307,7 +3425,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 29</em>Same brief, rebuilt
+                      <em className="pulse-fig">Fig. 2.14</em>Same brief, rebuilt
                       &mdash; a browse-first Campaign Library became a
                       decision-first Overview
                     </span>
@@ -4318,10 +3436,12 @@ export function PulseCaseLayout({ project }: { project: Project }) {
         </section>
       )}
 
-      {/* ── The Turn — reflective climax; the spine carries the page's one
-          seal-red moment (the human-gate stamps) ── */}
+      </div>
+
+      {/* ── The Turn — reflective climax, OUTSIDE the switch (it closes both
+          tracks); the spine carries the page's one seal-red moment ── */}
       {moment && (
-        <div className="pulse-turn-wrap" id="act-turn" data-act="6">
+        <div className="pulse-turn-wrap" id="act-turn" data-act="8">
           <section className="pulse-turn" aria-labelledby="pulse-turn-title">
             <p className="pulse-turn-eyebrow" data-fade>
               Reflection
@@ -4348,35 +3468,58 @@ export function PulseCaseLayout({ project }: { project: Project }) {
               ))}
             </div>
             <footer className="pulse-spine-caption" data-fade>
+              {/* unnumbered on purpose — the Turn closes BOTH tracks, so a
+                  sequential number would jump in one of them */}
               <span>
-                <em className="pulse-fig">Fig. 30</em>Create-with-AI &mdash;
-                where a person stays in the loop
+                <em className="pulse-fig">Create-with-AI</em>where a person
+                stays in the loop
               </span>
               <span className="pulse-spine-legend">
                 <i aria-hidden="true" /> ai step
                 <i className="is-stamp" aria-hidden="true" /> human gate
               </span>
             </footer>
-            <figure className="pulse-turn-film" data-fade>
-              <div className="pulse-card">
-                <OffscreenVideo
-                  src="/media/work/pulse/gate-flow.mp4"
-                  poster="/media/work/pulse/gate-flow-poster.jpg"
-                  className="pulse-turn-video"
-                  aria-label="Screen recording of the full gate flow: a campaign brief is reviewed and approved, content generates per platform, a person reviews each post, and only then does it publish — ending on live performance numbers"
-                />
-              </div>
-              <figcaption className="pulse-fig-caption">
-                <span>
-                  <em className="pulse-fig">Fig. 31</em>The gate, recorded
-                  &mdash; brief &middot; approve &middot; generate &middot;
-                  review &middot; publish, a person at every red step
-                </span>
-              </figcaption>
-            </figure>
           </section>
         </div>
       )}
+
+      {/* ── After the Reflection: the terminal station for each track — the
+          reader leaves the case's close and only THEN gets "what's next",
+          so the Reflection can never read as the other part's opening ── */}
+      <div className="pulse-next-part" data-view-panel="product" data-fade>
+        <div className="pulse-handoff">
+          <p className="pulse-handoff-eyebrow">Up next &middot; Part 2</p>
+          <p className="pulse-handoff-title">Design engineering</p>
+          <p className="pulse-handoff-desc">
+            How six prototypes became the system that keeps Pulse shipping.
+          </p>
+          <Cta
+            variant="solid"
+            large
+            className="pulse-handoff-cta"
+            data-rail-switch="system"
+          >
+            Read Part 2
+          </Cta>
+        </div>
+      </div>
+      <div className="pulse-next-part" data-view-panel="system" data-fade>
+        <div className="pulse-handoff">
+          <p className="pulse-handoff-eyebrow">Revisit &middot; Part 1</p>
+          <p className="pulse-handoff-title">Product</p>
+          <p className="pulse-handoff-desc">
+            The operating loop, and the three surfaces where it meets a person.
+          </p>
+          <Cta
+            variant="solid"
+            large
+            className="pulse-handoff-cta"
+            data-rail-switch="product"
+          >
+            Read Part 1
+          </Cta>
+        </div>
+      </div>
 
         </div>
       </div>

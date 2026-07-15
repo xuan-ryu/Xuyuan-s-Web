@@ -108,9 +108,9 @@ export const projects: Project[] = [
     coverClass: "cover-pulse",
     tags: ["Product Design", "Design Systems", "Design Engineering"],
     oneliner:
-      "Pulse is an AI marketing platform with a person at every gate. I designed its core product surfaces, then built the system that let a small team — and its AI tools — ship them as one coherent platform.",
+      "Pulse is an AI marketing operating system that learns a brand, runs its campaign cycle, and improves the next one. I designed Home, Campaign, and Calendar — where the cycle meets human judgment — then built the system that lets the team and its AI tools keep shipping Pulse as one product.",
     blurb:
-      "Pulse takes a brand team from strategic signal to published post without giving up human judgment. I joined to design Home, then took ownership of the system underneath the product: one runnable app, a canonical component library, AI-readable design rules, verified build contracts, and a release flow in which a person always makes the final decision.",
+      "Pulse — from the team behind Vicino — learns a brand into a model and a vault, contracts it into a 90-day strategy, turns strategy into campaigns and platform content, controls distribution through the calendar, and reads performance back into the next cycle, with signal arriving from the market daily. I owned the three surfaces where that cycle meets a person — Home, Campaign, Calendar — and the system underneath the product: one runnable app, a canonical component library, AI-readable design rules, verified build contracts, and a release flow in which a person always makes the final decision.",
     role: "Product Designer · Design Systems · Front-end",
     duration: "2025 – present",
     type: "Intern",
@@ -118,7 +118,7 @@ export const projects: Project[] = [
     // Overview = what Pulse is + the owner's scope, once. The belief lives in
     // the moment band; the acts carry the detail — no smearing.
     summary: [
-      "I joined with about a week to a pitch and one product scattered across six prototyping tools. My first assignment was Home, but a useful front door required understanding the whole product: Signal, Strategy, Campaigns, Calendar, Analytics, the assistant, and the human decisions connecting them.",
+      "I joined with about a week to a pitch and one product scattered across six prototyping tools. My surfaces were Home, Campaign, and Calendar — one path from daily decisions through production to distribution — and designing the front door meant understanding the whole loop behind it: the brand model, the 90-day strategy, the signals coming in, the performance flowing back, and the human decisions connecting them.",
       "That work expanded into a unified application runtime, 62 canonical components, AI-readable design skills, automated consistency checks, and a React distribution layer. The outcome was not just a cleaner prototype. It was a shared way for design, engineering, ML, product, and coding agents to keep building the same product.",
     ],
     // At-a-glance proof points. The case page keeps these facts in the hero
@@ -129,58 +129,90 @@ export const projects: Project[] = [
         "62 canonical components checked across source, docs, and preview",
         "AI-readable rules and CI keep new work aligned",
       ],
-      stat: { value: "3", label: "system checks passing" },
+      stat: { value: "4", label: "system checks passing" },
     },
     moment: {
-      title: "The deliverable was the system underneath the product",
+      title: "Pulse runs a system for every brand — I built the system that runs Pulse",
       body: [
-        "I started by shipping Home. The deeper work was turning incompatible prototypes into a shared product system: tokens instead of taste, components instead of copies, one runtime instead of parallel demos, and written rules the AI loads before it works.",
-        "One product decision stayed constant through every technical change: AI can draft and schedule, but a person releases to publish. The system made the team faster; the human gate kept that speed accountable.",
+        "Pulse’s promise to a client is a system that keeps running: learn the brand once, and every cycle after — strategy, campaigns, publishing, performance — leaves the next one smarter. The deeper work of this internship was giving Pulse the same property on the inside: tokens instead of taste, components instead of copies, one runtime instead of parallel demos, and written rules the AI loads before it works — so every review, like every campaign, raises the floor of whatever comes next.",
+        "One decision stayed constant through both loops: AI can draft, schedule, and learn, but a person releases to publish. The system made the team faster; the human gate kept that speed accountable.",
       ],
-      // The gate-flow recording renders in the layout's Turn (Fig. 30).
+      // The Campaign gate-flow recording renders in ch 1.2 (Fig. 1.4); the
+      // Turn closes on the gate spine (its figure is unnumbered — it ends
+      // both reading tracks).
     },
-    // Arc: product → fragmentation → convergence → system → operating model
-    // → proof. Engineering facts are verified against the live Pulse repo;
-    // activity counts stay out of the primary narrative because the system
-    // and product outcomes are the stronger evidence.
+    // TWO-PART arc (owner structure, 2026-07-14): Part 1 · Product (the
+    // operating loop, the owner's three surfaces and their design
+    // judgments, the design language) → Part 2 · Design engineering
+    // (fragmentation → convergence → system → operating model → proof).
+    // Engineering facts are verified against the live Pulse repo; activity
+    // counts stay out of the primary narrative because the system and
+    // product outcomes are the stronger evidence.
     // Confidentiality: teammates stay anonymous, tools are described as
     // categories (no brand list), no package identity, no commit hashes.
     // The pulse layout attaches its specimen figures to these positionally.
     chapters: [
       {
-        number: "01 · Product",
-        title: "A marketing studio with a person at every gate.",
+        number: "1.1 · Product",
+        title: "Learns the brand, runs the cycle, improves the next one.",
         sections: [
           {
             tags: "ZERO TO ONE · PRODUCT DESIGN",
-            heading: "One pipeline, drawn as a workspace",
+            heading: "One operating loop, drawn as a workspace",
             body: [
-              "Pulse is an AI marketing platform designed from a blank page, and its whole shape follows one pipeline: a strategic signal becomes direction, direction becomes campaigns, campaigns produce posts, the calendar runs them, and analytics reads the results. The design work was giving that loop a home a brand team can live in.",
-              "Each stage got a surface — Signal, Strategy, Campaigns, the production Studio, the Calendar, Analytics — with the assistant docked beside all of them, and Home in front as the decision surface: action items, the content queue, the day’s signals, not a wall of charts. The whole thing reads as a calm studio rather than a dashboard; a tool you live in all day has no business shouting at you.",
+              "Pulse is the next act of the team behind Vicino, the node-based video generation platform — an AI marketing operating system, not a content tool bolted onto a chat box. It learns a brand once, runs its campaign cycle, and makes each next cycle smarter than the last.",
             ],
           },
           {
-            tags: "CORE FLOW · CREATE WITH AI",
-            heading:
-              "A light brief, drafted by the AI, owned by the human",
+            tags: "THE LOOP · THREE BEATS",
+            heading: "Learn once, run, learn again",
             body: [
-              "A post starts inside its campaign. New Post, then Create with AI, and from there it is a conversation rather than a form: the user gives a goal and a few assets, Pulse reads the brand vault and the campaign, and a structured Creative Brief comes back as editable fields inside the chat. Only approval hands off to generation.",
-            ],
-          },
-          {
-            tags: "HUMAN IN THE LOOP · BY DESIGN",
-            // The publish-guardrail rule is set once by the pulse layout as the
-            // guardrail artifact below this section - not repeated here.
-            heading:
-              "Where the person sits is designed, not bolted on",
-            body: [
-              "The person’s place in that flow got the same attention as any screen. A plan gate signs off direction and spend before any credits burn; a content gate signs off the finished creative before it goes live; the chain — reviewer, brand admin, org owner — runs on SLA timers with an escalation that never auto-approves. That placement — early on spend, late on quality — is product design, not paperwork.",
+              "First, learn the brand. Onboarding studies the site, the accounts, the history, and whatever the team uploads, and builds the model everything else runs on — profile, voice, audience, competitors — plus the visual identity, moodboard, color tokens, and asset vault the AI later draws on to produce on-brand visuals and video. Ratified as a Brand Report, it becomes Strategy: a 90-day contract of bets, positioning, and guardrails, refreshed each quarter and corrected whenever the market or the numbers disagree with it.",
+              "Then, run the cycle. An approved campaign plan becomes a set of briefs; approved briefs unlock production; finished content returns for review before it enters the calendar. Calendar ships it on time and stays hand-adjustable, and analytics reads the results — then proposes changes to strategy, briefs, formats, and timing.",
+              "And never run blind. Signal watches the market daily — competitors, trends, risks, openings — and what it finds can spawn a new campaign direction or recalibrate the standing strategy. Performance flows back from inside. Strategy and the next campaign absorb both.",
             ],
           },
         ],
       },
       {
-        number: "01A · Design language",
+        number: "1.2 · My surfaces",
+        title: "Three pages where the cycle meets a person.",
+        sections: [
+          {
+            tags: "MY SCOPE · ONE PATH",
+            heading: "Decide, produce, distribute",
+            body: [
+              "Mine were Home, Campaign, and Calendar — three surfaces I designed and rebuilt into one path through the loop: decide, produce, distribute. The work started with a category teardown, not a blank canvas — how social suites, AI content tools, and content calendars handle the same jobs — and the pattern repeats across all of them: these tools optimize for showing everything and deciding nothing. That gap became the brief for all three pages. The rest of the product — Signal, Strategy, Analytics — appears here as those pages’ upstream and downstream.",
+            ],
+          },
+          {
+            tags: "HOME · THE DAILY COMMAND DECK",
+            heading: "Home decides what deserves today",
+            body: [
+              "Marketing tools in this category open on dashboards — chart walls, activity feeds, follower counts — because showing everything is easier than deciding anything. Home bets the opposite way: the first screen of an operating system should be the day’s decisions, not the brand’s vital signs. Its spec line is the whole brief in one sentence — “your live brand brief — what needs you today.”",
+              "The hierarchy is decided by blocking order, not by importance-in-general. Action items lead — posts to review, publish, or route, each card carrying the signal that explains why it matters and exactly one primary action. The content queue comes second, with a live state on every item: scheduled, draft, rendering, ready. Signals sit beside it sorted by priority — amber means act now. The KPI tiles exist, but they are subordinate to the queue, never the page’s opening statement. And the assistant is a persistent input docked at the bottom — “Message Pulse” starts work from anywhere — not a floating bubble that covers the work.",
+            ],
+          },
+          {
+            tags: "CAMPAIGN · STRATEGY BECOMES PRODUCTION",
+            heading: "Campaign places the person before and after the machine",
+            body: [
+              "AI content tools mostly start at a prompt box and end at a wall of drafts — generation first, judgment nowhere. Campaign is built as the reverse: it starts from the 90-day contract and refuses to generate anything a person hasn’t scoped. Three gates are real nodes in the build, not review theater — the plan is approved before direction or spend is committed, the brief before generation runs, the content before anything goes live.",
+              "The page itself is decision-first. Approvals and the production queue sit above the campaign list — waiting on decision, due soon, escalated, brand-safety flags — and production is legible by stage: briefs, generating, content review, schedule, publish. Pulse suggests new campaign directions from the week’s signals, but a suggestion arrives as a card you adopt or dismiss, never as work already done. Inside a campaign, Create with AI is a conversation — a goal and a few assets in, a structured Creative Brief back as editable fields, and only approval hands off to generation. Behind it all runs an org-shaped chain — reviewer, brand admin, org owner — on SLA timers with an escalation that never auto-approves. Early on spend, late on quality: that placement is product design, not paperwork.",
+            ],
+          },
+          {
+            tags: "CALENDAR · THE CONTROL PLANE",
+            heading: "Calendar balances the automatic and the hand",
+            body: [
+              "Content calendars in this category are grids you fill by hand — the calendar is where finished work goes to be arranged. Pulse’s Calendar was designed as something else: the control plane between production and publishing. Approved work flows into the schedule and ships on time without anyone pushing it, and a person can grab any of it back — drag a post to a better slot, hold a day, reshuffle a week.",
+              "The layout serves that one job. Day, three-day, week, month, and list views share a single spine, so replanning never means relearning the page. Schedule health sits beside the grid — drafts, scheduled, generating, ready, failed — making what will ship as visible as what shipped. The scheduling queue holds campaign-generated work with auto-slotting a person can override per item. Automation you can always interrupt is the difference between a scheduler you trust and one you babysit.",
+            ],
+          },
+        ],
+      },
+      {
+        number: "1.3 · Design language",
         title: "Quiet on purpose.",
         sections: [
           {
@@ -194,7 +226,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "02 · Fragmentation",
+        number: "2.1 · Fragmentation",
         title: "One product, six incompatible prototypes.",
         sections: [
           {
@@ -202,13 +234,13 @@ export const projects: Project[] = [
             heading:
               "Prototypes that only looked like one product",
             body: [
-              "The studio you just toured is five weeks downstream of a very different scene. When I picked up Pulse, everyone was iterating on the same product in a different tool: canvas frames, an AI page-builder, model-pasted HTML, screens composited from images. An early style pass kept the pages looking related, but nothing underneath matched. With a week left before the pitch we had to fold all of it into one flow, and that is where the lesson landed for me. Visual consistency is not system consistency.",
+              "The operating loop you just toured is six weeks downstream of a very different scene. When I picked up Pulse, everyone was iterating on the same product in a different tool: canvas frames, an AI page-builder, model-pasted HTML, screens composited from images. An early style pass kept the pages looking related, but nothing underneath matched. With a week left before the pitch we had to fold all of it into one flow, and that is where the lesson landed for me. Visual consistency is not system consistency.",
             ],
           },
         ],
       },
       {
-        number: "03 · Convergence",
+        number: "2.2 · Convergence",
         title: "From prototype fragments to one working product.",
         sections: [
           {
@@ -221,7 +253,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "03A · The map",
+        number: "2.2A · The map",
         title: "Home forced the whole system into view.",
         sections: [
           {
@@ -244,7 +276,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "03B · The rebuild",
+        number: "2.2B · The rebuild",
         title: "One app, built to receive real data.",
         sections: [
           {
@@ -266,7 +298,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "04 · System",
+        number: "2.3 · System",
         title: "The visual language became a canonical system.",
         sections: [
           {
@@ -274,7 +306,7 @@ export const projects: Project[] = [
             heading:
               "One canonical base, checked by machines",
             body: [
-              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps, a fixed type scale, an 8-based rhythm — beneath 62 standalone components, and every screen composes from those contracts before inventing anything page-local. The standard became commits rather than advice: formatting normalized the codebase, dead code came out, and dependency-free checks now enforce the contracts in CI.",
+              "The fix was a base everyone shares. The look was ratified into one canonical token sheet — six semantic ramps in ten graded stops, a fixed type scale, an 8-based rhythm — layered primitives, semantics, components, so a theme rebinds one band and every component follows. Beneath it sit 62 standalone components, and every screen composes from those contracts before inventing anything page-local. Home, Campaign, and Calendar were the first surfaces to compose from it. The standard became commits rather than advice: formatting normalized the codebase, dead code came out, and dependency-free checks enforce the contracts in CI — including a contrast gate that fails the build on unreadable text.",
             ],
           },
           {
@@ -288,7 +320,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "05 · Operating model",
+        number: "2.4 · Operating model",
         title: "The system became a way of working.",
         sections: [
           {
@@ -303,13 +335,13 @@ export const projects: Project[] = [
             tags: "LIVING RULES · COMPOUNDING QUALITY",
             heading: "The skill is a living document",
             body: [
-              "When a review catches a drift, the fix lands in the skill’s markdown, not in someone’s memory. I keep editing those files the way engineers keep tests green: each decision we settle — a token, a component pattern, a rule about states — gets written where the AI reads it before it works. That is what makes the generation quality compound: every edit raises the floor of everything produced after it.",
+              "When a review catches a drift, the fix lands in the skill’s markdown, not in someone’s memory. I keep editing those files the way engineers keep tests green: each decision we settle — a token, a component pattern, a rule about states — gets written where the AI reads it before it works. That is what makes the generation quality compound: every edit raises the floor of everything produced after it. The newest waves land the same way — a chart-color canon with its own dataviz skill, motion tiers, the accessibility gate — each written into the rules first, then swept through the app. And the latest system audit was simply the three skills, run end-to-end over the library they govern.",
             ],
           },
         ],
       },
       {
-        number: "05A · Interfaces",
+        number: "2.4A · Interfaces",
         title: "One source, several ways to use it.",
         sections: [
           {
@@ -331,7 +363,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        number: "06 · Proof",
+        number: "2.5 · Proof",
         title: "The same page before and after the system.",
         sections: [
           {

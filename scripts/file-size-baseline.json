@@ -1,5 +1,5 @@
 {
-  "app/about/page.tsx": 1259,
+  "app/about/page.tsx": 1261,
   "app/contact/page.tsx": 549,
   "app/design-system/page.tsx": 327,
   "app/work/page.tsx": 673,
@@ -18,10 +18,8 @@
   "components/nyma-interactives.tsx": 457,
   "components/nyma-phone.tsx": 536,
   "components/nyma-scroll.tsx": 350,
-  "components/pulse-case-layout.tsx": 4389,
+  "components/pulse-case-layout.tsx": 3532,
   "components/pulse-component-browser.tsx": 520,
-  "components/pulse-playground-demo.tsx": 369,
-  "components/pulse-scroll.tsx": 327,
   "components/roper-case-layout.tsx": 1401,
   "components/value-card.tsx": 318,
   "components/vicino-audience-viz.tsx": 330,
@@ -32,5 +30,5 @@
   "components/vicino-pipeline-viz.tsx": 380,
   "components/vicino-workflow-canvas.tsx": 710,
   "components/vrmb-poster-layout.tsx": 1176,
-  "data/projects.ts": 1111
+  "data/projects.ts": 1143
 }

@@ -24,15 +24,11 @@ import { subscribeScrollFrame } from "@/lib/scroll-behavior";
 // animation never reaches.
 //
 // Moments, in page order (all selectors, all optional — missing DOM no-ops):
-//   [data-stream]        hero console: typewriter line, once on mount
-//   [data-cycle]         hero console: status pill steps the generation
-//                        ladder once (queued → … → ready), then rests
 //   [data-count]         numerals count up from 0 on first enter (once)
 //   .pulse-monolith-fig  scrubbed: line-counter races to 10,180 while the
 //                        file bar grows; folder chips land as it splits
-//   .pulse-ladder        status pills light in sequence on first enter
 //   .pulse-ticker-row    commit stream: scrubbed horizontal drift
-//   .pulse-inv-cell      inventory: batched rise-in, tiny stagger
+//   [data-rail]          the case-map rail tracks the running act
 export function PulseScroll() {
   const pathname = usePathname();
 
@@ -45,7 +41,6 @@ export function PulseScroll() {
     let cancelled = false;
     let ctx: { revert: () => void } | null = null;
     let unsubscribeScroll: (() => void) | null = null;
-    const timers: number[] = [];
     // Enter-once moments run on IntersectionObserver, NOT ScrollTrigger:
     // under Lenis, ST enter-triggers can fire late/never on programmatic
     // jumps (the same landmine gsap-reveal.tsx documents). ST stays for
@@ -63,43 +58,6 @@ export function PulseScroll() {
       unsubscribeScroll = subscribeScrollFrame(ScrollTrigger.update);
 
       ctx = gsap.context(() => {
-        // ── hero console: typewriter stream (once, then the caret holds) ──
-        root.querySelectorAll<HTMLElement>("[data-stream]").forEach((el) => {
-          const full = el.dataset.stream ?? el.textContent ?? "";
-          const state = { n: 0 };
-          el.textContent = "";
-          gsap.to(state, {
-            n: full.length,
-            duration: Math.min(2.6, full.length * 0.045),
-            ease: "none",
-            delay: 0.5,
-            onUpdate: () => {
-              el.textContent = full.slice(0, Math.round(state.n));
-            },
-          });
-        });
-
-        // ── hero console: the status pill steps the generation ladder ──
-        root.querySelectorAll<HTMLElement>("[data-cycle]").forEach((el) => {
-          const steps = (el.dataset.cycle ?? "").split("|").filter(Boolean);
-          if (steps.length < 2) return;
-          const rest = el.textContent ?? steps[steps.length - 1];
-          const restState = el.dataset.state ?? "";
-          let i = 0;
-          const step = () => {
-            if (i < steps.length) {
-              const [state, label] = steps[i].split(":");
-              el.dataset.state = state;
-              el.textContent = label ?? state;
-              i += 1;
-              timers.push(window.setTimeout(step, 1200));
-            } else {
-              el.dataset.state = restState;
-              el.textContent = rest;
-            }
-          };
-          timers.push(window.setTimeout(step, 700));
-        });
 
         // ── numerals: count up from 0 on first enter (once, IO-driven) ──
         {
@@ -126,7 +84,10 @@ export function PulseScroll() {
                 });
               });
             },
-            { rootMargin: "0px 0px -10% 0px" },
+            // no bottom dead-band here: at 1280×720 the hero counters sit
+            // inside a -10% margin and read 0/0/0 until a ~140px scroll —
+            // a counter may start the moment its first pixel is visible
+            { rootMargin: "0px" },
           );
           root.querySelectorAll<HTMLElement>("[data-count]").forEach((el) => {
             const to = Number(el.dataset.count ?? "0");
@@ -192,34 +153,6 @@ export function PulseScroll() {
             }
           });
 
-        // ── generation ladder (act 03): pills light in sequence, once
-        //    (IO-driven) ──
-        {
-          const io = new IntersectionObserver(
-            (entries) => {
-              entries.forEach((entry) => {
-                if (!entry.isIntersecting) return;
-                const row = entry.target as HTMLElement;
-                io.unobserve(row);
-                row
-                  .querySelectorAll<HTMLElement>(".pulse-ladder-pill")
-                  .forEach((p, i) => {
-                    timers.push(
-                      window.setTimeout(() => p.classList.add("is-on"), 360 * i),
-                    );
-                  });
-              });
-            },
-            { rootMargin: "0px 0px -16% 0px" },
-          );
-          root.querySelectorAll<HTMLElement>(".pulse-ladder").forEach((row) => {
-            const pills = row.querySelectorAll<HTMLElement>(".pulse-ladder-pill");
-            if (!pills.length) return;
-            pills.forEach((p) => p.classList.remove("is-on"));
-            io.observe(row);
-          });
-          observers.push(io);
-        }
 
         // ── commit stream (act 05): scrubbed horizontal drift ──
         root
@@ -279,35 +212,6 @@ export function PulseScroll() {
           observers.push(io);
         }
 
-        // ── inventory (act 06): rise-in, once (IO-driven; index-staggered) ──
-        {
-          const cells = Array.from(
-            root.querySelectorAll<HTMLElement>(".pulse-inv-cell"),
-          );
-          if (cells.length) {
-            gsap.set(cells, { opacity: 0, y: 12 });
-            const io = new IntersectionObserver(
-              (entries) => {
-                entries.forEach((entry) => {
-                  if (!entry.isIntersecting) return;
-                  const el = entry.target as HTMLElement;
-                  io.unobserve(el);
-                  gsap.to(el, {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.5,
-                    delay: (cells.indexOf(el) % 5) * 0.04,
-                    ease: "power2.out",
-                    overwrite: true,
-                  });
-                });
-              },
-              { rootMargin: "0px 0px -6% 0px" },
-            );
-            cells.forEach((c) => io.observe(c));
-            observers.push(io);
-          }
-        }
       }, root);
 
       ScrollTrigger.refresh();
@@ -315,7 +219,6 @@ export function PulseScroll() {
 
     return () => {
       cancelled = true;
-      timers.forEach((t) => window.clearTimeout(t));
       observers.forEach((io) => io.disconnect());
       unsubscribeScroll?.();
       ctx?.revert();
