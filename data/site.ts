@@ -10,7 +10,7 @@ export const site = {
   email: "xuan.ryu8@gmail.com",
   phone: "+1 (440) 581-3229",
   location: "New York, NY",
-  resumeUrl: "/media/about/resume.pdf?v=0707",
+  resumeUrl: "/media/about/resume.pdf?v=0716d",
   socials: {
     linkedin: "https://www.linkedin.com/in/xuyuan-liu-0b589b252",
     instagram: "https://www.instagram.com/_xuan_liu_/",
