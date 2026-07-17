@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { subscribeScrollFrame } from "@/lib/scroll-behavior";
+import { attachStripDrag } from "./nyma-strip-drag";
 
 // Nyma case page — scroll choreography controller (renders null).
 //
@@ -26,7 +27,7 @@ import { subscribeScrollFrame } from "@/lib/scroll-behavior";
 //   [data-count]       numerals count up on first enter (once, IO)
 //   .ny-thread-fill    the thread stitches down the rail (scrub over .ny-acts)
 //   [data-rail] li     running chapter follows the viewport center band (IO)
-//   .ny-strip-track    moodboard table: horizontal scrub (≥769px only)
+//   .ny-strip / .nyf   scrollLeft scrub (≥769px) + grab-drag on one axis
 //   .ny-stack          the manual fans open on first enter (class, IO)
 //   [data-drift]       plate-wall columns drift vertically (scrub, ≥769px)
 //   .ny-pagescroll img the full-length mock scrolls inside its frame (scrub)
@@ -40,9 +41,8 @@ export function NymaScroll() {
     if (!root) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // motion is actually on: let the CSS clip the strip / pagescroll frames
-    // for the GSAP walks. Without this class (no-JS, reduced motion) those
-    // surfaces stay natively scrollable so their content is reachable.
+    // motion is on: CSS clips the pagescroll frame for its walk and arms
+    // the strip grab cursor; without this class everything hand-scrolls.
     root.classList.add("ny-motion");
 
     let cancelled = false;
@@ -50,6 +50,7 @@ export function NymaScroll() {
     let unsubscribeScroll: (() => void) | null = null;
     const timers: number[] = [];
     const observers: IntersectionObserver[] = [];
+    const detachDrag = attachStripDrag(root);
 
     (async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -213,21 +214,19 @@ export function NymaScroll() {
           }
         }
 
-        // ── moodboard table: horizontal scrub (desktop; touch gets native
-        //    overflow scroll via CSS) ──
+        // ── strips: scrollLeft scrub, desktop only — never a transform,
+        //    so hand input (wheel, scrollbar, grab-drag) keeps working ──
         const mm = gsap.matchMedia();
         mm.add("(min-width: 769px)", () => {
-          root.querySelectorAll<HTMLElement>(".ny-strip").forEach((strip) => {
-            const track = strip.querySelector<HTMLElement>(".ny-strip-track");
-            if (!track) return;
+          root.querySelectorAll<HTMLElement>(".ny-strip, .nyf").forEach((s) => {
             gsap.fromTo(
-              track,
-              { x: 0 },
+              s,
+              { scrollLeft: 0 },
               {
-                x: () => -Math.max(0, track.scrollWidth - strip.clientWidth),
+                scrollLeft: () => Math.max(0, s.scrollWidth - s.clientWidth),
                 ease: "none",
                 scrollTrigger: {
-                  trigger: strip,
+                  trigger: s,
                   start: "top 78%",
                   end: "bottom 6%",
                   scrub: 1,
@@ -339,6 +338,7 @@ export function NymaScroll() {
       cancelled = true;
       root.classList.remove("ny-motion");
       timers.forEach((t) => window.clearTimeout(t));
+      detachDrag();
       observers.forEach((io) => io.disconnect());
       unsubscribeScroll?.();
       ctx?.revert();

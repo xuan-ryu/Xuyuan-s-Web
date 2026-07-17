@@ -8,6 +8,8 @@ import {
   NymaWardrobes,
 } from "./nyma-interactives";
 import { NymaDrafts } from "./nyma-drafts";
+import { NymaFlowScreens } from "./nyma-flow-screens";
+import { nymaFlowCss } from "./nyma-flow-styles";
 import { NymaPhone } from "./nyma-phone";
 import { NymaSystemBoard } from "./nyma-system-board";
 import { InteractiveCue } from "./ui/interactive-cue";
@@ -757,25 +759,21 @@ const nymaCss = `
 }
 
 /* the moodboard table — a long desk the page scrolls sideways.
-   Hand-scrollable by default so no-JS and reduced-motion still reach all
-   five boards; the GSAP walk clips it only once motion is actually running
-   (.ny-motion is set by NymaScroll after its reduced-motion gate). */
+   Always a REAL scroll surface: the desktop walk scrubs scrollLeft (see
+   NymaScroll), so wheel / scrollbar / grab-drag keep working for close
+   inspection; no-JS and reduced-motion simply hand-scroll it. */
 .ny-strip {
   position: relative;
   overflow-x: auto;
+  scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
-}
-@media (min-width: 769px) {
-  .ny-motion .ny-strip {
-    overflow: hidden;
-  }
 }
 .ny-strip-track {
   display: flex;
   align-items: flex-start;
   gap: clamp(16px, 2vw, 28px);
   width: max-content;
-  will-change: transform;
+  padding-bottom: 12px;
 }
 .ny-strip-track .ny-plate {
   flex: none;
@@ -2255,32 +2253,8 @@ const nymaCss = `
   color: var(--ny-text-4);
 }
 
-/* ---- pl.16 canvas + pl.17 prototype row ---- */
-/* the canvas takes the copy columns (a small proof plate, not a reading
-   surface) and centers against the taller phone in the aside columns */
-.ny-protorow {
-  align-items: center;
-}
-.ny-canvas-fig {
-  grid-column: 1 / 7;
-  min-width: 0;
-}
-/* bottom-anchored cover crop: the box is 64 image-px shorter than the
-   asset, so the baked-in toggle strip at the top is cut while the
-   Onboarding row label keeps its clearance */
-.ny-canvas-crop {
-  position: relative;
-  aspect-ratio: 1440 / 1336;
-  overflow: hidden;
-}
-.ny-canvas-crop img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 100%;
-}
+/* ---- pl.16 flow strip + pl.17 prototype ---- */
+/* full-width strip, then the phone centered — rules in nyma-flow-styles */
 
 /* ── Ch 6 · phones ─────────────────────────────────────────────────────── */
 .ny-phones {
@@ -2386,7 +2360,6 @@ const nymaCss = `
   }
   .ny-aside,
   .ny-fates,
-  .ny-canvas-fig,
   .ny-competitive {
     grid-column: 1 / -1;
   }
@@ -3151,7 +3124,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
     <article className="case-study-page nyma-case-page" data-has-cover="false">
       <style
         dangerouslySetInnerHTML={{
-          __html: stripCssComments(nymaCss),
+          __html: stripCssComments(nymaCss + nymaFlowCss),
         }}
       />
       <NymaScroll />
@@ -3336,8 +3309,11 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </p>
               </div>
 
-              <figure className="ny-strip" data-fade>
-                <div className="ny-strip-track">
+              <figure data-fade>
+                {/* the scroller holds only the track — captions must not
+                    ride the scroll surface */}
+                <div className="ny-strip">
+                  <div className="ny-strip-track">
                   <div className="ny-plate">
                     <Image
                       src="/media/work/nyma/moodboard-a.png"
@@ -3383,6 +3359,7 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                       sizes="50vw"
                     />
                   </div>
+                  </div>
                 </div>
                 <div className="ny-strip-foot">
                   <Caption pl="03">
@@ -3390,7 +3367,8 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                   </Caption>
                   <InteractiveCue>
                     <span className="ny-cue-scrub">
-                      keep scrolling — the table slides past
+                      keep scrolling — the table slides past; grab it any
+                      time to look closer
                     </span>
                     <span className="ny-cue-hand">
                       scroll the table sideways — it slides past
@@ -3842,43 +3820,46 @@ export function NymaCaseLayout({ project }: { project: Project }) {
                 </figure>
               </div>
 
-              {/* ---- pl.16 canvas + pl.17 prototype, one row ---- */}
-              {/* the assembled flows (small proof plate, centered against
-                  its taller neighbour) beside the working commerce
-                  prototype (owner 2026-07-08: "复现成可交互的 prototype，
-                  带手机 frame 的放在网页上") — canvas reads first, the
-                  interactive is the payoff */}
-              <div className="ny-section ny-protorow">
-                <figure className="ny-canvas-fig" data-fade>
-                  <div className="ny-plate ny-canvas-crop">
-                    <Image
-                      src="/media/work/nyma/claude-mobile.png"
-                      width={1440}
-                      height={1400}
-                      alt="The mobile prototype canvas: onboarding and core flows laid out as connected screens the team can build against."
-                      sizes="(max-width: 1080px) 100vw, 632px"
-                    />
-                  </div>
+              {/* ---- pl.16 flow strip, full width ---- */}
+              {/* the canvas's onboarding row rebuilt as coded screens on a
+                  walking strip — same control grammar as the moodboard
+                  table: the page walks it, the hand can always take over */}
+              <figure className="ny-full" data-fade>
+                <NymaFlowScreens />
+                <div className="ny-strip-foot">
                   <Caption pl="16">
-                    the mobile flows, assembled on one canvas for the team to
-                    build against
+                    the onboarding flow from the team canvas, rebuilt live —
+                    copy, fields, and casing as shipped
                   </Caption>
-                </figure>
-                <figure className="ny-aside" data-fade>
-                  <NymaPhone />
-                  <div className="nyp-foot">
-                    <Caption pl="17">
-                      auctions · bag · saved — the commerce spine, rebuilt as
-                      a working prototype; every interface fact from the
-                      shipped mobile design
-                    </Caption>
-                    <InteractiveCue>
-                      click through the screens — the lots, bag, and totals
-                      respond
-                    </InteractiveCue>
-                  </div>
-                </figure>
-              </div>
+                  <InteractiveCue>
+                    <span className="ny-cue-scrub">
+                      keep scrolling — the flow walks past; grab it any time
+                      to look closer
+                    </span>
+                    <span className="ny-cue-hand">
+                      drag the row sideways — splash to sign-in
+                    </span>
+                  </InteractiveCue>
+                </div>
+              </figure>
+
+              {/* ---- pl.17 prototype, the centered payoff ---- */}
+              {/* (owner 2026-07-08: "复现成可交互的 prototype，带手机
+                  frame 的放在网页上") */}
+              <figure className="ny-proto-solo" data-fade>
+                <NymaPhone />
+                <div className="nyp-foot">
+                  <Caption pl="17">
+                    auctions · bag · saved — the commerce spine, rebuilt as
+                    a working prototype; every interface fact from the
+                    shipped mobile design
+                  </Caption>
+                  <InteractiveCue>
+                    click through the screens — the lots, bag, and totals
+                    respond
+                  </InteractiveCue>
+                </div>
+              </figure>
             </section>
           )}
 
