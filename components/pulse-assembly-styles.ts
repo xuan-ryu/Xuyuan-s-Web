@@ -37,6 +37,8 @@ export const pulseAssemblyCss = `
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulseTraceDraw { to { stroke-dashoffset: 0; } }
+/* to-only: animates from the element's own initial state (ghost → full) */
+@keyframes pAssembleFocus { to { opacity: 1; } }
 @media (prefers-reduced-motion: no-preference) {
   /* pflow flow diagrams — stagger children by column position. Tuning
      (2026-07-08 review): at reading speed the anchor figures arrived as
@@ -105,30 +107,51 @@ export const pulseAssemblyCss = `
     animation-delay: 200ms;
   }
 
-  /* operating-loop map — 11 children ride a compressed stagger so the
-     whole assembly still lands inside the ~1.1s budget; Signal drops last
-     (outside information arrives after the chain exists) */
-  .pulse-map .pflow-grid > :nth-child(2) { --pd: 45ms; }
-  .pulse-map .pflow-grid > :nth-child(3) { --pd: 90ms; }
-  .pulse-map .pflow-grid > :nth-child(4) { --pd: 135ms; }
-  .pulse-map .pflow-grid > :nth-child(5) { --pd: 180ms; }
-  .pulse-map .pflow-grid > :nth-child(6) { --pd: 225ms; }
-  .pulse-map .pflow-grid > :nth-child(7) { --pd: 270ms; }
-  .pulse-map .pflow-grid > :nth-child(8) { --pd: 315ms; }
-  .pulse-map .pflow-grid > :nth-child(9) { --pd: 360ms; }
-  .pulse-case-page figure[data-fade] .pulse-map-signal { opacity: 0; }
+  /* operating-loop map — the STRUCTURE is visible from the first frame
+     (2026-07-15 review, twice: at fast scroll a hidden initial state read
+     as one node and blank space). Children wait as a 30% ghost with no
+     transforms, then a left-to-right focus wave lifts them to full within
+     ~500ms; Signal still lands last (outside information arrives after
+     the chain exists). */
+  .pulse-map .pflow-grid > :nth-child(2) { --pd: 25ms; }
+  .pulse-map .pflow-grid > :nth-child(3) { --pd: 50ms; }
+  .pulse-map .pflow-grid > :nth-child(4) { --pd: 75ms; }
+  .pulse-map .pflow-grid > :nth-child(5) { --pd: 100ms; }
+  .pulse-map .pflow-grid > :nth-child(6) { --pd: 125ms; }
+  .pulse-map .pflow-grid > :nth-child(7) { --pd: 150ms; }
+  .pulse-map .pflow-grid > :nth-child(8) { --pd: 175ms; }
+  .pulse-map .pflow-grid > :nth-child(9) { --pd: 200ms; }
+  .pulse-case-page figure[data-fade] .pulse-map .pflow-node,
+  .pulse-case-page figure[data-fade] .pulse-map .pflow-line,
+  .pulse-case-page figure[data-fade] .pulse-map .pflow-loop,
+  .pulse-case-page figure[data-fade] .pulse-map .pflow-note,
+  .pulse-case-page figure[data-fade] .pulse-map-signal,
   .pulse-case-page figure[data-fade] .pulse-map-fork {
-    opacity: 0;
-    transform: scaleY(0);
-    transform-origin: top;
+    opacity: 0.3;
+    transform: none;
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-map .pflow-node {
+    animation-name: pAssembleFocus;
+    animation-duration: 0.4s;
+    animation-delay: calc(40ms + var(--pd, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-map .pflow-line {
+    animation-name: pAssembleFocus;
+    animation-duration: 0.35s;
+    animation-delay: calc(60ms + var(--pd, 0ms));
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-map .pflow-loop,
+  .pulse-case-page figure[data-fade].is-visible .pulse-map .pflow-note {
+    animation-name: pAssembleFocus;
+    animation-delay: 280ms;
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-map-signal {
-    animation: pAssembleDrop 0.5s var(--ease-spring) forwards;
-    animation-delay: 420ms;
+    animation: pAssembleFocus 0.4s var(--ease-spring) forwards;
+    animation-delay: 240ms;
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-map-fork {
-    animation: pAssembleGrow 0.4s var(--ease-silk) forwards;
-    animation-delay: 500ms;
+    animation: pAssembleFocus 0.35s var(--ease-silk) forwards;
+    animation-delay: 300ms;
   }
 
   /* approval + CI chains — cells and links rise left to right */
@@ -150,6 +173,22 @@ export const pulseAssemblyCss = `
   .pulse-case-page figure[data-fade].is-visible .pulse-chain-link {
     animation: pAssembleDrop 0.5s var(--ease-silk) forwards;
     animation-delay: calc(100ms + var(--nd, 0ms));
+  }
+  /* …then each check's pass mark lands right after its cell settles */
+  .pulse-case-page figure[data-fade] .pulse-chain-cell::after { opacity: 0; }
+  .pulse-case-page figure[data-fade].is-visible .pulse-chain-cell::after {
+    animation: pAssembleFocus 0.3s var(--ease-silk) forwards;
+    animation-delay: calc(560ms + var(--nd, 0ms));
+  }
+
+  /* before/after pairs — the comparison assembles in reading order */
+  .pulse-case-page figure[data-fade] .pulse-shot-labeled { opacity: 0; }
+  .pulse-case-page figure[data-fade].is-visible .pulse-shot-labeled {
+    animation: pAssembleRise 0.55s var(--ease-spring) forwards;
+    animation-delay: 120ms;
+  }
+  .pulse-case-page figure[data-fade].is-visible .pulse-shot-labeled:nth-child(2) {
+    animation-delay: 300ms;
   }
 
   /* token sheet — labels wait in place while the six ramp bands draw in
@@ -183,7 +222,17 @@ export const pulseAssemblyCss = `
   }
   .pulse-case-page figure[data-fade].is-visible .pulse-spec-ruler {
     animation: pAssembleDrop 0.5s var(--ease-silk) forwards;
-    animation-delay: 640ms;
+    animation-delay: 560ms;
+  }
+  /* …and the 8-base ticks land on the beat, left to right */
+  .pulse-case-page figure[data-fade] .pulse-spec-ruler-track i { opacity: 0; }
+  .pulse-case-page .pulse-spec-ruler-track i:nth-child(2) { --sd: 50ms; }
+  .pulse-case-page .pulse-spec-ruler-track i:nth-child(3) { --sd: 100ms; }
+  .pulse-case-page .pulse-spec-ruler-track i:nth-child(4) { --sd: 150ms; }
+  .pulse-case-page .pulse-spec-ruler-track i:nth-child(5) { --sd: 200ms; }
+  .pulse-case-page figure[data-fade].is-visible .pulse-spec-ruler-track i {
+    animation: pAssembleFocus 0.3s var(--ease-silk) forwards;
+    animation-delay: calc(640ms + var(--sd, 0ms));
   }
 
   /* kv cards (the generated-UI tells) — rows land one accusation at a time */

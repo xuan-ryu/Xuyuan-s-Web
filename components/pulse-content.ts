@@ -88,10 +88,11 @@ export const ramps = [
 ];
 
 // Type scale — tokens.css --type-page-display: 64px, --type-h2: 28px, --fs-5: 15px.
+// `size` is the specimen render size on the wide token-sheet board.
 export const typeScale = [
-  { px: 64, size: 34, role: "page display" },
-  { px: 28, size: 19, role: "section" },
-  { px: 15, size: 12, role: "body" },
+  { px: 64, size: 52, role: "page display" },
+  { px: 28, size: 28, role: "section" },
+  { px: 15, size: 16, role: "body" },
 ];
 
 // 8-based spacing rhythm — tokens.css --space-2/4/6/7/9.
@@ -130,6 +131,54 @@ export const ciSteps: Array<[string, string]> = [
   ["tokens", "drift advisory"],
   ["generated", "hand-edit guard"],
   ["contrast", "AA gate on text pairs"],
+];
+
+/* ---- the system sweep: before/after pairs (2.4 living rules) ---- */
+// Pages the newest waves rewrote, captured from the repo's own surfaces —
+// reference/prototypes = before, the current app = after; sidebars and the
+// assistant dock are cropped out of frame (naming stays out of shot).
+export const sweepPairs = [
+  {
+    fig: "2.10",
+    caption: "Analytics — the chart canon applied to an existing report",
+    before: {
+      src: "/media/work/pulse/analytics-before.png",
+      alt: "The early Analytics report: serif display heading, warm paper ground, green sparklines, and platform bars each in a different color",
+      label: "Before · one-off visual rules",
+      note: "serif display · decorative color · off-system charts",
+      w: 1220,
+      h: 900,
+    },
+    after: {
+      src: "/media/work/pulse/analytics-after.png",
+      alt: "Analytics rebuilt on the system: one typeface, cyan mono-hue charts, tokenized surfaces, and the same weekly report structure",
+      label: "After · the semantic system applied",
+      note: "one voice · mono-cyan charts · tokenized surfaces",
+      w: 1220,
+      h: 900,
+    },
+  },
+  {
+    fig: "2.11",
+    caption:
+      "Signal — one-off colors and controls replaced by the semantic system",
+    before: {
+      src: "/media/work/pulse/signal-before.png",
+      alt: "The early Signal feed: pill-shaped tabs, a pink alert banner, and status chips in one-off colors",
+      label: "Before · one-off visual rules",
+      note: "pink alert · bespoke pills · one-off chips",
+      w: 1190,
+      h: 878,
+    },
+    after: {
+      src: "/media/work/pulse/signal-after.png",
+      alt: "Signal on the system: the alert banner in semantic amber, tokenized segmented controls, and status chips on the compact scale",
+      label: "After · the semantic system applied",
+      note: "amber = risk · tokenized controls · one chip scale",
+      w: 1220,
+      h: 900,
+    },
+  },
 ];
 
 /* ---- proof: the generated-UI tells ---- */

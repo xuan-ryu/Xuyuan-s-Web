@@ -108,7 +108,7 @@ export const projects: Project[] = [
     coverClass: "cover-pulse",
     tags: ["Product Design", "Design Systems", "Design Engineering"],
     oneliner:
-      "Pulse is an AI marketing operating system that learns a brand, runs its campaign cycle, and improves the next one. I designed Home, Campaign, and Calendar — where the cycle meets human judgment — then built the system that lets the team and its AI tools keep shipping Pulse as one product.",
+      "Pulse is an AI marketing operating system. I designed Home, Campaign, and Calendar — where its campaign cycle meets human judgment — and built the system that keeps the team, and its AI, shipping one product.",
     blurb:
       "Pulse — from the team behind Vicino — learns a brand into a model and a vault, contracts it into a 90-day strategy, turns strategy into campaigns and platform content, controls distribution through the calendar, and reads performance back into the next cycle, with signal arriving from the market daily. I owned the three surfaces where that cycle meets a person — Home, Campaign, Calendar — and the system underneath the product: one runnable app, a canonical component library, AI-readable design rules, verified build contracts, and a release flow in which a person always makes the final decision.",
     role: "Product Designer · Design Systems · Front-end",
@@ -118,7 +118,7 @@ export const projects: Project[] = [
     // Overview = what Pulse is + the owner's scope, once. The belief lives in
     // the moment band; the acts carry the detail — no smearing.
     summary: [
-      "I joined with about a week to a pitch and one product scattered across six prototyping tools. My surfaces were Home, Campaign, and Calendar — one path from daily decisions through production to distribution — and designing the front door meant understanding the whole loop behind it: the brand model, the 90-day strategy, the signals coming in, the performance flowing back, and the human decisions connecting them.",
+      "I joined with about a week to a pitch and one product scattered across six prototyping tools. Designing its front door meant understanding the whole loop behind it: the brand model, the 90-day strategy, the signals coming in, the performance flowing back, and the human decisions connecting them.",
       "That work expanded into a unified application runtime, 62 canonical components, AI-readable design skills, automated consistency checks, and a React distribution layer. The outcome was not just a cleaner prototype. It was a shared way for design, engineering, ML, product, and coding agents to keep building the same product.",
     ],
     // At-a-glance proof points. The case page keeps these facts in the hero
@@ -160,16 +160,16 @@ export const projects: Project[] = [
             tags: "ZERO TO ONE · PRODUCT DESIGN",
             heading: "One operating loop, drawn as a workspace",
             body: [
-              "Pulse is the next act of the team behind Vicino, the node-based video generation platform — an AI marketing operating system, not a content tool bolted onto a chat box. It learns a brand once, runs its campaign cycle, and makes each next cycle smarter than the last.",
+              "Pulse is the next act of the team behind Vicino, the node-based video generation platform — an AI marketing operating system, not a content tool bolted onto a chat box. The whole product is one loop, and the map below is how it runs.",
             ],
           },
           {
             tags: "THE LOOP · THREE BEATS",
             heading: "Learn once, run, learn again",
             body: [
-              "First, learn the brand. Onboarding studies the site, the accounts, the history, and whatever the team uploads, and builds the model everything else runs on — profile, voice, audience, competitors — plus the visual identity, moodboard, color tokens, and asset vault the AI later draws on to produce on-brand visuals and video. Ratified as a Brand Report, it becomes Strategy: a 90-day contract of bets, positioning, and guardrails, refreshed each quarter and corrected whenever the market or the numbers disagree with it.",
-              "Then, run the cycle. An approved campaign plan becomes a set of briefs; approved briefs unlock production; finished content returns for review before it enters the calendar. Calendar ships it on time and stays hand-adjustable, and analytics reads the results — then proposes changes to strategy, briefs, formats, and timing.",
-              "And never run blind. Signal watches the market daily — competitors, trends, risks, openings — and what it finds can spawn a new campaign direction or recalibrate the standing strategy. Performance flows back from inside. Strategy and the next campaign absorb both.",
+              "First, learn the brand. Onboarding builds the model everything else runs on — profile, voice, audience, competitors — plus the visual identity, moodboard, color tokens, and asset vault the AI later draws on to produce on-brand visuals and video. Ratified as a Brand Report, it becomes Strategy: a 90-day contract of bets, positioning, and guardrails, corrected whenever the market or the numbers disagree with it.",
+              "Then, run the cycle. An approved campaign plan becomes a set of briefs; approved briefs unlock production; finished content returns for review before it enters the calendar. Calendar ships it on time, and analytics reads the results back into strategy, briefs, formats, and timing.",
+              "And never run blind. Signal watches the market daily — competitors, trends, risks, openings — and what it finds can spawn a campaign or recalibrate the standing strategy. Performance flows back from inside; strategy and the next campaign absorb both.",
             ],
           },
         ],
@@ -182,31 +182,31 @@ export const projects: Project[] = [
             tags: "MY SCOPE · ONE PATH",
             heading: "Decide, produce, distribute",
             body: [
-              "Mine were Home, Campaign, and Calendar — three surfaces I designed and rebuilt into one path through the loop: decide, produce, distribute. The work started with a category teardown, not a blank canvas — how social suites, AI content tools, and content calendars handle the same jobs — and the pattern repeats across all of them: these tools optimize for showing everything and deciding nothing. That gap became the brief for all three pages. The rest of the product — Signal, Strategy, Analytics — appears here as those pages’ upstream and downstream.",
+              "I owned the design and rebuild of Home, Campaign, and Calendar — one path through the loop: decide, produce, distribute. The work started with a category teardown, not a blank canvas — how social suites, AI content tools, and content calendars handle the same jobs — and one pattern repeats across all of them: they optimize for showing everything and deciding nothing. That gap became the brief for all three pages. The rest of the product — Signal, Strategy, Analytics — appears here as their upstream and downstream.",
             ],
           },
           {
             tags: "HOME · THE DAILY COMMAND DECK",
             heading: "Home decides what deserves today",
             body: [
-              "Marketing tools in this category open on dashboards — chart walls, activity feeds, follower counts — because showing everything is easier than deciding anything. Home bets the opposite way: the first screen of an operating system should be the day’s decisions, not the brand’s vital signs. Its spec line is the whole brief in one sentence — “your live brand brief — what needs you today.”",
-              "The hierarchy is decided by blocking order, not by importance-in-general. Action items lead — posts to review, publish, or route, each card carrying the signal that explains why it matters and exactly one primary action. The content queue comes second, with a live state on every item: scheduled, draft, rendering, ready. Signals sit beside it sorted by priority — amber means act now. The KPI tiles exist, but they are subordinate to the queue, never the page’s opening statement. And the assistant is a persistent input docked at the bottom — “Message Pulse” starts work from anywhere — not a floating bubble that covers the work.",
+              "Marketing tools in this category open on dashboards — chart walls, activity feeds, follower counts — because showing everything is easier than deciding anything. Home bets the opposite way: the first screen of an operating system is the day’s decisions, not the brand’s vital signs — “your live brand brief — what needs you today.”",
+              "Three decisions carry the page. Action items lead, each card pairing the signal that explains why it matters with exactly one primary action. The content queue runs second, a live state on every item — scheduled, draft, rendering, ready. And the assistant is a persistent input docked at the bottom — “Message Pulse” starts work from anywhere — never a floating bubble that covers the work.",
             ],
           },
           {
             tags: "CAMPAIGN · STRATEGY BECOMES PRODUCTION",
             heading: "Campaign places the person before and after the machine",
             body: [
-              "AI content tools mostly start at a prompt box and end at a wall of drafts — generation first, judgment nowhere. Campaign is built as the reverse: it starts from the 90-day contract and refuses to generate anything a person hasn’t scoped. Three gates are real nodes in the build, not review theater — the plan is approved before direction or spend is committed, the brief before generation runs, the content before anything goes live.",
-              "The page itself is decision-first. Approvals and the production queue sit above the campaign list — waiting on decision, due soon, escalated, brand-safety flags — and production is legible by stage: briefs, generating, content review, schedule, publish. Pulse suggests new campaign directions from the week’s signals, but a suggestion arrives as a card you adopt or dismiss, never as work already done. Inside a campaign, Create with AI is a conversation — a goal and a few assets in, a structured Creative Brief back as editable fields, and only approval hands off to generation. Behind it all runs an org-shaped chain — reviewer, brand admin, org owner — on SLA timers with an escalation that never auto-approves. Early on spend, late on quality: that placement is product design, not paperwork.",
+              "AI content tools mostly start at a prompt box and end at a wall of drafts — generation first, judgment nowhere. Campaign is built as the reverse: it starts from the 90-day contract and refuses to generate anything a person hasn’t scoped, through three gates that are real nodes in the build — the plan before spend, the brief before generation, the content before anything goes live.",
+              "The page itself is decision-first. Approvals and the production queue sit above the campaign list, and production is legible by stage: briefs, generating, content review, schedule, publish. Pulse suggests directions from the week’s signals, but a suggestion arrives as a card you adopt or dismiss — never as work already done — and Create with AI returns a structured Creative Brief as editable fields, where only approval hands off to generation. Early on spend, late on quality: that placement is product design, not paperwork.",
             ],
           },
           {
             tags: "CALENDAR · THE CONTROL PLANE",
             heading: "Calendar balances the automatic and the hand",
             body: [
-              "Content calendars in this category are grids you fill by hand — the calendar is where finished work goes to be arranged. Pulse’s Calendar was designed as something else: the control plane between production and publishing. Approved work flows into the schedule and ships on time without anyone pushing it, and a person can grab any of it back — drag a post to a better slot, hold a day, reshuffle a week.",
-              "The layout serves that one job. Day, three-day, week, month, and list views share a single spine, so replanning never means relearning the page. Schedule health sits beside the grid — drafts, scheduled, generating, ready, failed — making what will ship as visible as what shipped. The scheduling queue holds campaign-generated work with auto-slotting a person can override per item. Automation you can always interrupt is the difference between a scheduler you trust and one you babysit.",
+              "Content calendars in this category are grids you fill by hand — where finished work goes to be arranged. Pulse’s Calendar is the control plane between production and publishing: approved work flows into the schedule and ships on time without anyone pushing it, and a person can grab any of it back — drag a post to a better slot, hold a day, reshuffle a week.",
+              "Day through month views share a single spine, so replanning never means relearning the page. Schedule health sits beside the grid, making what will ship as visible as what shipped, and auto-slotting can be overridden per item. Automation you can always interrupt is the difference between a scheduler you trust and one you babysit.",
             ],
           },
         ],

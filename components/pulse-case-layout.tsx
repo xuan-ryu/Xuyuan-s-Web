@@ -7,23 +7,26 @@ import { PulsePartSwitch } from "./pulse-part-switch";
 import { PulseComponentBrowser } from "./pulse-component-browser";
 import { PulseCreativeBrief } from "./pulse-creative-brief";
 import { PulseTokenChips } from "./pulse-token-chips";
+import { PulseRampBoard } from "./pulse-ramp-board";
 import { Cta } from "./ui/cta";
 import { InteractiveCue } from "./ui/interactive-cue";
+import { PulseShotPair } from "./pulse-shot-pair";
 import { OffscreenVideo } from "./ui/offscreen-video";
 import { stripCssComments } from "@/lib/css-sanitize";
 import { pulseForkCss } from "@/components/pulse-fork-styles";
 import { pulseAssemblyCss } from "@/components/pulse-assembly-styles";
+import { pulseSpecCss } from "@/components/pulse-spec-styles";
 import {
   SHOT_W,
   SHOT_H,
   acts,
   meleeSources,
-  ramps,
   typeScale,
   spacingTicks,
   tickerRows,
   ciSteps,
   proofTells,
+  sweepPairs,
   gateSteps,
   doctrineQuote,
   fileQuote,
@@ -119,7 +122,8 @@ const pulseCss = `
 
   /* Case accent contract (owner rule 2026-07-05) */
   --case-accent: #49e0f5;
-  --case-detail: var(--pp-cyan-dark);
+  /* half-stop below cyan-700: AA passed but eyebrows/captions read faint */
+  --case-detail: #0b6170;
   --icue-accent: var(--case-accent);
 
   /* One typeface (owner 字体统一 rule, 2026-07-04 + Pulse's own doctrine:
@@ -694,7 +698,8 @@ const pulseCss = `
   gap: 10px;
   align-content: start;
   padding: 14px;
-  border: 1px solid var(--pp-line);
+  /* line-strong: the row must scan as FOUR sources, not one white slab */
+  border: 1px solid var(--pp-line-strong);
   border-radius: 12px;
   background: var(--pp-canvas);
   box-shadow: var(--pp-shadow-rest);
@@ -1095,132 +1100,17 @@ const pulseCss = `
   color: var(--pp-text-4);
 }
 
-/* ── Ch. 07 — token sheet, ramps, inventory, CI chain ───────────────────── */
-.pulse-spec-chips {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-.pulse-spec-chip i {
-  display: block;
-  height: 26px;
-  border: 1px solid rgba(29, 29, 31, 0.1);
-  border-radius: var(--radius-thumb);
-}
-.pulse-spec-chip span {
-  display: block;
-  margin-top: 5px;
-  font-family: var(--pulse-mono);
-  font-size: 10px;
-  color: var(--pp-text-4);
-  transition: color 0.25s var(--ease-silk);
-}
-.pulse-spec-chip:hover span {
-  color: var(--pp-ink);
-}
-.pulse-ramps {
-  display: grid;
-  row-gap: 10px;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--pp-line);
-}
-.pulse-ramp-row {
-  display: grid;
-  grid-template-columns: minmax(70px, auto) minmax(0, 1fr) minmax(52px, auto);
-  align-items: center;
-  column-gap: 12px;
-}
-.pulse-ramp-row > span {
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--pp-text-4);
-}
-.pulse-ramp-stops {
-  display: grid;
-  grid-template-columns: repeat(10, minmax(0, 1fr));
-  height: 16px;
-  overflow: hidden;
-  border-radius: 3px;
-}
-.pulse-ramp-stops i {
-  display: block;
-  height: 100%;
-}
-.pulse-ramp-row > em {
-  font-family: var(--pulse-mono);
-  font-style: normal;
-  font-size: 10px;
-  text-align: right;
-  color: var(--pp-text-4);
-}
-.pulse-spec-type {
-  margin-top: 16px;
-  border-top: 1px solid var(--pp-line);
-}
-.pulse-spec-type-row {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--pp-line);
-}
-.pulse-spec-type-row strong {
-  font-family: var(--font-text);
-  font-weight: 600;
-  line-height: 1;
-  color: var(--pp-ink);
-}
-.pulse-spec-type-row span {
-  font-family: var(--pulse-mono);
-  font-size: var(--text-micro);
-  color: var(--pp-text-4);
-}
-.pulse-spec-ruler {
-  margin-top: 16px;
-}
-.pulse-spec-ruler-label {
-  font-family: var(--pulse-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--pp-text-4);
-}
-.pulse-spec-ruler-track {
-  position: relative;
-  height: 26px;
-  margin-top: 8px;
-  border-top: 1px solid rgba(29, 29, 31, 0.38);
-}
-.pulse-spec-ruler-track i {
-  position: absolute;
-  top: -1px;
-  width: 1px;
-  height: 7px;
-  background: rgba(29, 29, 31, 0.38);
-}
-.pulse-spec-ruler-track i em {
-  position: absolute;
-  top: 9px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--pulse-mono);
-  font-style: normal;
-  font-size: 10px;
-  color: var(--pp-text-4);
-}
+${pulseSpecCss}
+/* ── Ch. 07 — approval + CI chains ──────────────────────────────────────── */
 .pulse-chain-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr;
   align-items: center;
   column-gap: 0;
 }
-.pulse-chain-row.is-approvals {
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-}
+.pulse-chain-row.is-approvals { grid-template-columns: 1fr auto 1fr auto 1fr; }
 .pulse-chain-cell {
+  position: relative;
   display: grid;
   gap: 6px;
   min-width: 0;
@@ -1229,6 +1119,15 @@ const pulseCss = `
   border-radius: 12px;
   background: var(--pp-canvas);
   box-shadow: var(--pp-shadow-rest);
+}
+/* every check carries its pass mark — the merge state the chain protects */
+.pulse-chain-cell::after {
+  content: "✓";
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 11px;
+  color: var(--pp-green-dark);
 }
 .pulse-chain-cell i {
   font-family: var(--pulse-mono);
@@ -1268,15 +1167,9 @@ const pulseCss = `
 }
 /* unlabeled links (the CI chain) draw one continuous line — the labeled
    two-dash form only exists to hold a word in its gap */
-.pulse-chain-link:empty {
-  gap: 0;
-}
-.pulse-chain-link:empty::before {
-  width: clamp(20px, 2.4vw, 40px);
-}
-.pulse-chain-link:empty::after {
-  display: none;
-}
+.pulse-chain-link:empty { gap: 0; }
+.pulse-chain-link:empty::before { width: clamp(20px, 2.4vw, 40px); }
+.pulse-chain-link:empty::after { display: none; }
 
 /* ── Quote artifacts — the rule is the case detail ──────────────────────── */
 .pulse-doc-quote {
@@ -1852,10 +1745,7 @@ ${pulseAssemblyCss}
 
 
 /* ── 2026 case-study edit: product-first, editorial, and quieter ───────── */
-.pulse-bloom {
-  opacity: 0.5;
-  animation: none !important;
-}
+.pulse-bloom { opacity: 0.5; animation: none !important; }
 .pulse-case-page .case-study-hero {
   min-height: min(900px, 100dvh);
   padding: clamp(112px, 10vw, 152px) var(--work-gutter)
@@ -1945,15 +1835,17 @@ ${pulseAssemblyCss}
   color: var(--pp-ink);
 }
 .pulse-case-page .proj-summary {
-  padding: clamp(80px, 8vw, 120px) var(--work-gutter);
+  padding: clamp(72px, 7vw, 104px) var(--work-gutter);
   row-gap: 32px;
 }
 .pulse-case-page .proj-summary h2 {
   grid-column: 1 / 6;
   max-width: 12ch;
   font-family: var(--font-text);
+  font-size: clamp(42px, 5.6vw, 68px); /* -15% display-3: overview, not chapter */
   font-weight: 500;
   letter-spacing: -0.02em;
+  margin-bottom: 0;
 }
 .pulse-case-page .proj-summary-copy {
   grid-column: 7 / -1;
@@ -2010,7 +1902,7 @@ ${pulseAssemblyCss}
 }
 .pulse-chapter-claim {
   max-width: 18em;
-  font-size: clamp(48px, 5.4vw, 80px);
+  font-size: clamp(44px, 4.9vw, 72px);
   letter-spacing: -0.025em;
 }
 /* part openers — the page's two acts (owner structure 2026-07-14) */
@@ -2403,9 +2295,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             style={{ width: "100%", height: "auto" }}
           />
           <figcaption className="pulse-hero-proof">
-            <span><strong data-count="6">6</strong> product surfaces</span>
+            <span><strong data-count="3">3</strong> surfaces designed &amp; rebuilt</span>
             <span><strong data-count="62">62</strong> canonical components</span>
-            <span><strong data-count="981">981</strong> commits, six tools to one system</span>
+            <span><strong data-count="6">6</strong> tools to one system</span>
           </figcaption>
         </figure>
         <dl className="case-hero-meta" data-fade>
@@ -2448,7 +2340,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
       {/* ── Part 1 · Product ── */}
       <header className="pulse-part" data-fade>
         <p className="pulse-part-index">Part 1 · Product</p>
-        <p className="pulse-part-claim">The marketing system Pulse runs for a brand.</p>
+        <p className="pulse-part-claim">A closed loop from brand model to next campaign.</p>
         <svg
           className="pulse-part-pulse"
           viewBox="0 0 1200 40"
@@ -2579,8 +2471,8 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <figcaption className="pulse-fig-caption">
                     <span>
                       <em className="pulse-fig">Fig. 1.2</em>Home, recorded
-                      &mdash; the day&rsquo;s decisions above the brand&rsquo;s
-                      vital signs
+                      &mdash; decisions above vital signs: KPI tiles stay
+                      subordinate to the queue, amber means act now
                     </span>
                   </figcaption>
                 </figure>
@@ -2619,9 +2511,9 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 1.4</em>The Campaign flow,
-                      recorded end to end &mdash; plan, brief, generation,
-                      review, publish; a person signs at every gate
+                      <em className="pulse-fig">Fig. 1.4</em>The Campaign flow
+                      &mdash; an org chain (reviewer, brand admin, org owner)
+                      signs on SLA timers and never auto-approves
                     </span>
                   </figcaption>
                 </figure>
@@ -3055,45 +2947,39 @@ export function PulseCaseLayout({ project }: { project: Project }) {
             {base.sections[0] && (
               <div className="pulse-section">
                 <SectionProse section={base.sections[0]} />
-                <figure className="pulse-section-aside" data-fade>
+                <figure className="pulse-section-inset" data-fade>
                   <div className="pulse-card pulse-specpad">
                     <header className="pulse-spec-head">
                       <span>Pulse &middot; token sheet</span>
                     </header>
-                    <PulseTokenChips />
-                    <div className="pulse-ramps">
-                      {ramps.map((ramp) => (
-                        <div className="pulse-ramp-row" key={ramp.role}>
-                          <span>{ramp.role}</span>
-                          <div className="pulse-ramp-stops" aria-hidden="true">
-                            {ramp.stops.map((hex) => (
-                              <i key={hex} style={{ background: hex }} />
+                    <div className="pulse-tokensheet">
+                      <div>
+                        <PulseTokenChips />
+                        <PulseRampBoard />
+                      </div>
+                      <div>
+                        <div className="pulse-spec-type">
+                          {typeScale.map((row) => (
+                            <div className="pulse-spec-type-row" key={row.px}>
+                              <strong style={{ fontSize: row.size }}>Aa</strong>
+                              <span>
+                                {row.px} &middot; {row.role}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="pulse-spec-ruler">
+                          <span className="pulse-spec-ruler-label">
+                            spacing &middot; 8-base
+                          </span>
+                          <div className="pulse-spec-ruler-track" aria-hidden="true">
+                            {spacingTicks.map((v) => (
+                              <i key={v} style={{ left: `${(v / 48) * 96}%` }}>
+                                <em>{v}</em>
+                              </i>
                             ))}
                           </div>
-                          <em>{ramp.base}</em>
                         </div>
-                      ))}
-                    </div>
-                    <div className="pulse-spec-type">
-                      {typeScale.map((row) => (
-                        <div className="pulse-spec-type-row" key={row.px}>
-                          <strong style={{ fontSize: row.size }}>Aa</strong>
-                          <span>
-                            {row.px} &middot; {row.role}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="pulse-spec-ruler">
-                      <span className="pulse-spec-ruler-label">
-                        spacing &middot; 8-base
-                      </span>
-                      <div className="pulse-spec-ruler-track" aria-hidden="true">
-                        {spacingTicks.map((v) => (
-                          <i key={v} style={{ left: `${(v / 48) * 96}%` }}>
-                            <em>{v}</em>
-                          </i>
-                        ))}
                       </div>
                     </div>
                   </div>
@@ -3102,7 +2988,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                       <em className="pulse-fig">Fig. 2.6</em>The canonical
                       token sheet &mdash; six ramps, one scale, one rhythm
                     </span>
-                    <InteractiveCue>click / tap a chip to copy its hex</InteractiveCue>
+                    <InteractiveCue>click / tap any chip or ramp stop to copy its hex</InteractiveCue>
                   </figcaption>
                 </figure>
                 <figure className="pulse-section-inset" data-fade>
@@ -3271,6 +3157,22 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                     </span>
                   </figcaption>
                 </figure>
+                {/* the newest waves, evidenced page by page — pulse-content sweepPairs */}
+                <div className="pulse-sweep-head" data-fade>
+                  <p className="pulse-section-tags">The system sweep</p>
+                  <p>The same rules, applied to two existing product surfaces.</p>
+                </div>
+                {sweepPairs.map((pair) => (
+                  <figure className="pulse-section-full" data-fade key={pair.fig}>
+                    <PulseShotPair before={pair.before} after={pair.after} />
+                    <figcaption className="pulse-fig-caption">
+                      <span>
+                        <em className="pulse-fig">Fig. {pair.fig}</em>
+                        {pair.caption}
+                      </span>
+                    </figcaption>
+                  </figure>
+                ))}
               </div>
             )}
         </section>
@@ -3287,7 +3189,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   <PulseComponentBrowser />
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 2.10</em>The component
+                      <em className="pulse-fig">Fig. 2.12</em>The component
                       browser, rebuilt live &mdash; real components from the
                       Pulse registry; the shipped browser holds all 62
                     </span>
@@ -3309,7 +3211,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 2.11</em>The sliced Figma
+                      <em className="pulse-fig">Fig. 2.13</em>The sliced Figma
                       board &mdash; deliberately non-interactive, built to be
                       imported into design review
                     </span>
@@ -3333,7 +3235,7 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 2.12</em>The real
+                      <em className="pulse-fig">Fig. 2.14</em>The real
                       playground &mdash; the published AIPanel rendered live,
                       with per-component knobs and a JSON data editor
                     </span>
@@ -3374,58 +3276,30 @@ export function PulseCaseLayout({ project }: { project: Project }) {
                   </div>
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 2.13</em>The tells &mdash;
+                      <em className="pulse-fig">Fig. 2.15</em>The tells &mdash;
                       what gives generated UI away, and what forbids it here
                     </span>
                   </figcaption>
                 </figure>
-                {/* before/after + the build annotation, one card (2026-07-08
-                    review: the separate intake/base flow figure re-told this
-                    pair) — each column carries its own build facts */}
+                {/* each column carries its own build facts (2026-07-08 review) */}
                 <figure className="pulse-section-full" data-fade>
-                  <div className="pulse-shot-pair">
-                    <div className="pulse-shot-labeled">
-                      <span className="pulse-shot-label is-before">
-                        Before &middot; the teammate&rsquo;s vibe-code
-                      </span>
-                      <div className="pulse-shot">
-                        <Image
-                          src="/media/work/pulse/campaign-before.png"
-                          alt="The rough campaign prototype: a flat Campaign Library — a KPI strip, filter tabs, search, and a scroll of campaign cards, with the assistant collapsed to a chat pill"
-                          width={SHOT_W}
-                          height={SHOT_H}
-                          sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 560px"
-                          style={{ width: "100%", height: "auto" }}
-                        />
-                      </div>
-                      <p className="pulse-shot-note">
-                        one 4,000-line HTML file &middot; styles inline
-                        &middot; images as base64 &middot; no system
-                      </p>
-                    </div>
-                    <div className="pulse-shot-labeled">
-                      <span className="pulse-shot-label is-after">
-                        After &middot; rebuilt on the base
-                      </span>
-                      <div className="pulse-shot">
-                        <Image
-                          src="/media/work/pulse/campaign-after.png"
-                          alt="The rebuilt campaign page: a decision-first Overview with an approvals card, a segmented production queue, and a Pulse-suggests rail of signal-driven campaign directions"
-                          width={SHOT_W}
-                          height={SHOT_H}
-                          sizes="(max-width: 809px) 100vw, (max-width: 1080px) 50vw, 560px"
-                          style={{ width: "100%", height: "auto" }}
-                        />
-                      </div>
-                      <p className="pulse-shot-note">
-                        shared tokens &middot; 10 CSS + 15 JS modules &middot;
-                        3 DS components &middot; 207 commits, ~2.5 weeks
-                      </p>
-                    </div>
-                  </div>
+                  <PulseShotPair
+                    before={{
+                      src: "/media/work/pulse/campaign-before.png",
+                      alt: "The rough campaign prototype: a flat Campaign Library — a KPI strip, filter tabs, search, and a scroll of campaign cards, with the assistant collapsed to a chat pill",
+                      label: "Before · the teammate’s vibe-code",
+                      note: "one 4,000-line HTML file · styles inline · images as base64 · no system",
+                    }}
+                    after={{
+                      src: "/media/work/pulse/campaign-after.png",
+                      alt: "The rebuilt campaign page: a decision-first Overview with an approvals card, a segmented production queue, and a Pulse-suggests rail of signal-driven campaign directions",
+                      label: "After · rebuilt on the base",
+                      note: "shared tokens · 10 CSS + 15 JS modules · 3 DS components · 207 commits, ~2.5 weeks",
+                    }}
+                  />
                   <figcaption className="pulse-fig-caption">
                     <span>
-                      <em className="pulse-fig">Fig. 2.14</em>Same brief, rebuilt
+                      <em className="pulse-fig">Fig. 2.16</em>Same brief, rebuilt
                       &mdash; a browse-first Campaign Library became a
                       decision-first Overview
                     </span>
