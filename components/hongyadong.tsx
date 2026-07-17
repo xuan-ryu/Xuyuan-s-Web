@@ -420,6 +420,13 @@ const factsRef = useRef<HTMLParagraphElement>(null)
                 // particle band and needed more base contrast in both phases
                 mixColor([0, 0, 0, 0.66], [255, 255, 255, 0.86], textT)
             )
+            setStyleIfChanged(
+                factsRef.current,
+                "color",
+                // metadata row rides the same ink→white mix as the copy above
+                // it; without this it stays ink and vanishes on the lit night
+                mixColor([0, 0, 0, 0.44], [255, 255, 255, 0.62], textT)
+            )
             signatureRef.current?.classList.toggle("is-visible", signatureReady)
             signatureNoteRef.current?.classList.toggle("is-visible", signatureReady)
         }
@@ -1004,13 +1011,31 @@ const factsRef = useRef<HTMLParagraphElement>(null)
         /* ---- pointer + resize handlers ---- */
         const handlePointerMove = (event: MouseEvent) => {
             if (!TIER_CFG[tier].hoverOn || reducedMotion) return
-            mouseX = event.clientX
-            mouseY = event.clientY
+            // canvas-local mapping per event: while the sticky stage is pinned
+            // rect.top is 0 and this is a no-op, but once the stage un-pins the
+            // client coords drift off the canvas by the offset and the push
+            // bubble lands away from the cursor
+            const rect = canvasEl.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+            // re-entry from the parked sentinel: snap the smoothed point to
+            // the cursor — easing across from the stale/parked position slides
+            // a phantom push bubble through the field on the way in
+            if (mouseX === -9999) {
+                smoothMX = x
+                smoothMY = y
+            }
+            mouseX = x
+            mouseY = y
         }
 
         const handlePointerLeave = () => {
             mouseX = -9999
             mouseY = -9999
+            // snap, don't ease: smoothing toward the sentinel would sweep the
+            // push bubble across the whole canvas on its way out
+            smoothMX = -9999
+            smoothMY = -9999
         }
 
         const handleResize = () => {
@@ -1041,7 +1066,12 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             }
         }
 
-        const handleVisibility = () => updateRunState()
+        const handleVisibility = () => {
+            // a hidden tab delivers no mouseleave — park the pointer before
+            // pausing so the resume frame doesn't revive a stale push bubble
+            if (document.hidden) handlePointerLeave()
+            updateRunState()
+        }
 
         const viewObserver =
             typeof IntersectionObserver !== "undefined"
@@ -1063,7 +1093,16 @@ const factsRef = useRef<HTMLParagraphElement>(null)
         window.addEventListener("touchstart", handlePointerLeave, {
             passive: true,
         })
-        window.addEventListener("mouseleave", handlePointerLeave)
+        // mouseleave does not bubble, so a window-level listener NEVER fires —
+        // the push bubble froze wherever the pointer exited the browser. The
+        // <html> element does receive it when the pointer leaves the viewport.
+        document.documentElement.addEventListener(
+            "mouseleave",
+            handlePointerLeave
+        )
+        // focus theft (alt-tab, screenshot overlays) stops the event stream
+        // WITHOUT any leave event — park the pointer on blur too
+        window.addEventListener("blur", handlePointerLeave)
         window.addEventListener("touchend", handlePointerLeave)
         document.addEventListener("visibilitychange", handleVisibility)
 
@@ -1109,7 +1148,11 @@ const factsRef = useRef<HTMLParagraphElement>(null)
             window.removeEventListener("scroll", syncProgress)
             window.removeEventListener("mousemove", handlePointerMove)
             window.removeEventListener("touchstart", handlePointerLeave)
-            window.removeEventListener("mouseleave", handlePointerLeave)
+            document.documentElement.removeEventListener(
+                "mouseleave",
+                handlePointerLeave
+            )
+            window.removeEventListener("blur", handlePointerLeave)
             window.removeEventListener("touchend", handlePointerLeave)
             document.removeEventListener("visibilitychange", handleVisibility)
             viewObserver?.disconnect()

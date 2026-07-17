@@ -858,7 +858,17 @@ export default function DigitalLandscape(props: Props) {
             window.addEventListener("mousemove", handleMouseMove, {
                 passive: true,
             })
-            window.addEventListener("mouseleave", handleMouseLeave, {
+            // mouseleave does not bubble — on window it NEVER fires, freezing
+            // the spotlight wherever the pointer exited the browser. <html>
+            // does receive it when the pointer leaves the viewport.
+            document.documentElement.addEventListener(
+                "mouseleave",
+                handleMouseLeave,
+                { passive: true }
+            )
+            // focus theft (alt-tab, screenshot overlays) stops the event
+            // stream without a leave — park the spotlight on blur too
+            window.addEventListener("blur", handleMouseLeave, {
                 passive: true,
             })
         }
@@ -910,9 +920,22 @@ export default function DigitalLandscape(props: Props) {
             return 0
         }
 
-        // The night card sits at a fixed doc position: spacer(136vh−911px)
-        // + card top within the zone (2152px−136vh) — the vh terms cancel.
-        const PAGE2_DOC_TOP = 1241
+        // The night card's doc position is MEASURED (offsetTop chain — the
+        // moonPin translate never affects offsetTop). Desktop resolves to the
+        // old 1241 constant (spacer 136vh−911px + card top 2152px−136vh — the
+        // vh terms cancel), but the ≤768px pacing overrides (22vh spacer,
+        // fixed-height zone) put the card elsewhere, and the constant left the
+        // phone pin/reveal anchored to a position the card wasn't at.
+        const getCardDocTop = () => {
+            let el: HTMLElement | null = blackPageRef.current
+            if (!el) return 1241
+            let y = 0
+            while (el) {
+                y += el.offsetTop
+                el = el.offsetParent as HTMLElement | null
+            }
+            return y
+        }
 
         // Mobile bg-image fallback only: the fixed night overlay (z0) sits
         // BEHIND the opaque hero image (wrapper z1), so it can never darken
@@ -958,15 +981,27 @@ export default function DigitalLandscape(props: Props) {
             const blackPageEl = blackPageRef.current
             const roofTop = getRoofTop()
 
-            // page2: fade in profile once stars are mostly formed. Pushed later
-            // (590 → 850) for a longer night-sky pause after the dust dispersal,
-            // and a slower fade (350 → 540) so the avatar eases in instead of
-            // snapping on.
+            const cardDocTop = getCardDocTop()
+            // page2: fade in profile once stars are mostly formed. Desktop:
+            // pushed later (590 → 850) for a longer night-sky pause after the
+            // dust dispersal, and a slower fade (350 → 540) so the avatar
+            // eases in instead of snapping on. Phones anchor to the card's
+            // MEASURED position instead: the ≤768px pacing compression moved
+            // the roof so close that the desktop start (winH*0.28 + 850) began
+            // AFTER the roof-driven text fade-out — the copy could never reach
+            // full opacity (owner report 2026-07-16). Start as soon as the
+            // hero copy has floated out (0.95 progress) and the card body is
+            // in the lower half of the viewport.
+            const phonePacing = winWidth <= 768
+            const p2RevealStart = phonePacing
+                ? Math.max(winHeight * 0.95, cardDocTop - winHeight * 0.42)
+                : winHeight * 0.28 + 850
+            const p2RevealDur = phonePacing ? 300 : 540
             const p2Reveal = Math.max(
                 0,
                 Math.min(
                     1,
-                    (currentScrollY - (winHeight * 0.28 + 850)) / 540
+                    (currentScrollY - p2RevealStart) / p2RevealDur
                 )
             )
             // safety fade once the card is fully behind the roof wall
@@ -986,9 +1021,9 @@ export default function DigitalLandscape(props: Props) {
             const pinShift = winHeight > 850 ? 110 : 30
             const moonPin = clampF(
                 currentScrollY -
-                    (PAGE2_DOC_TOP - winHeight * 0.12 - pinShift),
+                    (cardDocTop - winHeight * 0.12 - pinShift),
                 0,
-                Math.max(0, roofTop + 500 - PAGE2_DOC_TOP)
+                Math.max(0, roofTop + 500 - cardDocTop)
             )
             if (blackPageEl) {
                 setInlineStyle(
@@ -1343,7 +1378,11 @@ export default function DigitalLandscape(props: Props) {
                 pollIO?.disconnect()
                 if (enableMouseSpotlight) {
                     window.removeEventListener("mousemove", handleMouseMove)
-                    window.removeEventListener("mouseleave", handleMouseLeave)
+                    document.documentElement.removeEventListener(
+                        "mouseleave",
+                        handleMouseLeave
+                    )
+                    window.removeEventListener("blur", handleMouseLeave)
                 }
                 window.removeEventListener("loaderFinished", onLoaderDone)
                 window.removeEventListener("loaderFinished", revealAfterLoader)
@@ -2495,7 +2534,11 @@ export default function DigitalLandscape(props: Props) {
             pollIO?.disconnect()
             if (enableMouseSpotlight) {
                 window.removeEventListener("mousemove", handleMouseMove)
-                window.removeEventListener("mouseleave", handleMouseLeave)
+                document.documentElement.removeEventListener(
+                    "mouseleave",
+                    handleMouseLeave
+                )
+                window.removeEventListener("blur", handleMouseLeave)
             }
             window.removeEventListener("loaderFinished", onLoaderDone)
             window.removeEventListener("resize", handleResize)
@@ -2851,11 +2894,15 @@ export default function DigitalLandscape(props: Props) {
               .framer-xy-hero { max-width: 86vw !important; }
               /* mobile pacing (2026-07-10 owner pass): the live-measured zone
                  (1662) made the visitor scroll ~4 screens of prelude before
-                 any work showed. 1150 keeps the intro-card pin readable
-                 (~300px of pinned travel) but hands the saved screen to
-                 Selected Work. Desktop keeps the measured flow. */
+                 any work showed. Desktop keeps the measured flow.
+                 2026-07-16: 1320px left only ~330px between the card and the
+                 roof — the rising roofline was covering the copy before its
+                 reveal finished (with the JS fade-out anchored to the roof,
+                 the text never reached full opacity). 1680px restores a
+                 readable night hold; the reveal itself now also starts
+                 earlier (measured card position, see handleScroll). */
               .hero-spacer { height: 22vh !important; }
-              .profile-zone { height: 1320px !important; }
+              .profile-zone { height: 1680px !important; }
               /* the wrapper's desktop min-height (300vh − 911px) scales with
                  VIEWPORT HEIGHT and swallowed the compressed flow on tall
                  phones — a 1430px-tall screen got a 3379px prelude again

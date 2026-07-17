@@ -39,6 +39,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Project } from "@/data/projects";
 import { Cta } from "@/components/ui/cta";
 import { FgLotusLayer, LOTUS_PADS } from "@/components/fg-lotus-layer";
+import { useFgWindowSync } from "@/components/fg-window-sync";
 import { scrollTo, subscribeScrollFrame } from "@/lib/scroll-behavior";
 import { stripCssComments } from "@/lib/css-sanitize";
 
@@ -151,21 +152,28 @@ export function FeaturedGate({
   };
 
   /* ---- seal-red tick effect ---- */
-  // ── seal-red tick: slide to the active row's number (re-measure after the
-  //    accordion settles — collapsing rows above shift the target) ──
+  // ── seal-red tick: aim at the active number's SETTLED position (sum the
+  //    rows above at their collapsed heights, i.e. row minus in-flight
+  //    detail). Measuring its live position aimed at a stale target — the
+  //    still-collapsing detail above made the tick dip low, then hop back. ──
   useEffect(() => {
     const measure = () => {
-      const listEl = listRef.current;
-      const numEl =
-        rowRefs.current[active]?.querySelector<HTMLElement>(".fg-row-num");
-      if (!listEl || !numEl) return;
-      setTickY(
-        numEl.getBoundingClientRect().top -
-          listEl.getBoundingClientRect().top +
-          2,
-      );
+      const rowEl = rowRefs.current[active];
+      const numEl = rowEl?.querySelector<HTMLElement>(".fg-row-num");
+      if (!rowEl || !numEl) return;
+      let y = 0;
+      for (const above of rowRefs.current.slice(0, active)) {
+        const detail = above?.querySelector<HTMLElement>(".fg-row-detail");
+        if (!above || !detail) continue;
+        y +=
+          above.getBoundingClientRect().height -
+          detail.getBoundingClientRect().height;
+      }
+      const rowTop = rowEl.getBoundingClientRect().top;
+      setTickY(y + numEl.getBoundingClientRect().top - rowTop + 2);
     };
     measure();
+    // safety net: idempotent re-measure once the accordion has settled
     const settle = window.setTimeout(measure, 660);
     window.addEventListener("resize", measure);
     return () => {
@@ -175,26 +183,10 @@ export function FeaturedGate({
   }, [active]);
 
   /* ---- window height sync effect ---- */
-  // Keep the preview window locked to the full height of the editorial index.
-  // The detail well below is fixed-height, so project changes no longer feed
-  // a different measurement back into the centred section layout.
-  useEffect(() => {
-    const listEl = listRef.current;
-    const gateEl = gateRef.current;
-    if (!listEl || !gateEl) return;
-
-    const syncWindowToList = () => {
-      const listHeight = Math.ceil(listEl.getBoundingClientRect().height / 2) * 2;
-      const windowWidth = Math.round((listHeight * 1.5) / 2) * 2;
-      gateEl.style.setProperty("--fg-list-height", `${listHeight}px`);
-      gateEl.style.setProperty("--fg-window-width", `${windowWidth}px`);
-    };
-
-    syncWindowToList();
-    const observer = new ResizeObserver(syncWindowToList);
-    observer.observe(listEl);
-    return () => observer.disconnect();
-  }, []);
+  // Freeze the index at its settled height and size the window from it —
+  // interrupted accordion transitions otherwise jitter the whole composition
+  // (the why + mechanics live in fg-window-sync.ts).
+  useFgWindowSync(listRef, gateRef);
 
   /* ---- lotus layer mount effect ---- */
   // ── mount/unmount the lotus layer with the same media boundary as the pin ──
@@ -516,6 +508,31 @@ export function FeaturedGate({
     // lotusOn: rebuild once the lotus layer's DOM is mounted (or gone)
   }, [lotusOn]);
 
+  /* ---- stacked-layout tap-to-browse effect ---- */
+  // ── on the stacked layout (≤900px, no hover) a row tap BROWSES the
+  //    accordion; only the View Project label (and the window above)
+  //    navigate. Without this, tapping any title navigated immediately and
+  //    the index could never be walked on touch (owner report 2026-07-16).
+  //    The guard must run at WINDOW capture: PageTransition intercepts link
+  //    clicks at document capture and commits the ink curtain before any
+  //    React-level onClick could preventDefault — window capture fires
+  //    first, and both PageTransition and next/link honor defaultPrevented. ──
+  useEffect(() => {
+    const onTapCapture = (e: MouseEvent) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+        return; // real link gestures (new tab etc.) stay link gestures
+      if (!window.matchMedia("(max-width: 900px)").matches) return;
+      const el = e.target as HTMLElement | null;
+      const link = el?.closest?.<HTMLElement>(".fg-row-link");
+      if (!link || el?.closest(".fg-row-cta")) return;
+      e.preventDefault();
+      const idx = Number(link.dataset.fgIndex);
+      if (Number.isFinite(idx)) pick(idx);
+    };
+    window.addEventListener("click", onTapCapture, true);
+    return () => window.removeEventListener("click", onTapCapture, true);
+  }, []);
+
   /* ---- entrance reveal effect ---- */
   // ── entrance: arm once when the section approaches; state-driven so no
   //    re-render or HMR can un-reveal the rows ──
@@ -614,6 +631,7 @@ export function FeaturedGate({
                     style={{ ["--row-i" as string]: i }}
                     onMouseEnter={() => pick(i)}
                     onFocus={() => pick(i)}
+                    data-fg-index={i}
                     aria-label={`${p.title} — ${p.tags.join(", ")}`}
                   >
                     <span className="fg-row-head">
@@ -869,7 +887,9 @@ export function FeaturedGate({
           transition: grid-template-rows 0.6s var(--ease-silk),
                       opacity 0.5s ease;
         }
-        .fg-row.is-active .fg-row-detail { grid-template-rows: 156px; opacity: 1; }
+        /* 168px: tallest measured detail content (two-line tag rows reach
+           167px at 1536) — 156px was clipping the second tag line */
+        .fg-row.is-active .fg-row-detail { grid-template-rows: 168px; opacity: 1; }
         .fg-row-detail-in { min-height: 0; overflow: hidden; padding-top: 14px; }
         .fg-row-desc {
           display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
