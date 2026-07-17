@@ -738,10 +738,12 @@ export default function InkKoiEcosystem(props: Props) {
                 this.fatTarget = 0.92
                 const elongation = 1 + Math.max(0, this.baseScale - 0.7) * 0.08
                 this.segLength = 6.2 * this.baseScale * elongation
+                // 俯视鱼形：楔形吻部 → 肩部(前1/3)最宽 → 后段长收 → 细尾柄。
+                // 原轮廓中段最宽且首尾同钝，读作"白拖鞋"而不是鱼。
                 this.baseProfile = [
-                    7.2, 10.1, 13.2, 16.6, 19.2, 21.0, 22.4, 23.3, 23.9, 24.3,
-                    24.7, 24.9, 24.8, 24.2, 23.0, 21.2, 19.0, 16.7, 14.6, 12.7,
-                    11.0, 9.5, 8.2, 7.1,
+                    4.4, 8.2, 12.4, 16.2, 19.4, 21.8, 23.2, 24.0, 24.2, 23.9,
+                    23.2, 22.2, 20.9, 19.4, 17.7, 15.9, 14.0, 12.1, 10.2, 8.4,
+                    6.8, 5.4, 4.2, 3.2,
                 ]
                 const slimMult = Math.min(0.96, 0.82 + this.baseScale * 0.18)
                 this.baseRadii = this.baseProfile.map(
@@ -886,12 +888,15 @@ export default function InkKoiEcosystem(props: Props) {
                     const bodyCurve = Math.sin(Math.PI * bodyT),
                         bellyCurve = Math.sin(Math.PI * bellyT)
                     const headKeep = clamp((t - 0.1) / 0.22, 0, 1)
+                    // 尾柄隔离肥胖：后 40% 渐次不吃 fat，胖鱼胖在肚子不是尾巴
+                    const tailKeep = 1 - clamp((t - 0.58) / 0.42, 0, 1) * 0.85
                     const fatInfluence = 0.25 + 0.75 * headKeep
                     return (
                         r *
                         (1 +
                             (f - 1) *
                                 (0.42 + 0.18 * bodyCurve + 0.42 * bellyCurve) *
+                                tailKeep *
                                 (0.98 + fatInfluence * 0.02))
                     )
                 })
@@ -1269,9 +1274,39 @@ export default function InkKoiEcosystem(props: Props) {
             draw() {
                 this.drawFins()
                 this.drawBody()
+                this.drawGillLine()
                 this.drawDorsalFin()
                 this.drawCaudalFin()
                 this.drawEye()
+            }
+
+            drawGillLine() {
+                // 鳃盖弧线：俯视时头与躯干的分界提示，两侧各一道后弯短弧
+                if (qualityTier === 0) return
+                const seg = this.segments[3]
+                const r = (this.radii[3] || 8 * this.scale) * 0.92
+                ctx.save()
+                ctx.strokeStyle = this.colors.inkEdge
+                ctx.globalAlpha = 1
+                ctx.lineWidth = 1.1 * this.scale
+                ctx.lineCap = "round"
+                const bx = Math.cos(seg.angle),
+                    by = Math.sin(seg.angle)
+                for (const dir of [1, -1]) {
+                    const a = seg.angle + (Math.PI / 2) * dir
+                    const nx = Math.cos(a),
+                        ny = Math.sin(a)
+                    ctx.beginPath()
+                    ctx.moveTo(seg.x + nx * r * 0.15, seg.y + ny * r * 0.15)
+                    ctx.quadraticCurveTo(
+                        seg.x + nx * r * 0.62 - bx * r * 0.1,
+                        seg.y + ny * r * 0.62 - by * r * 0.1,
+                        seg.x + nx * r * 0.95 - bx * r * 0.55,
+                        seg.y + ny * r * 0.95 - by * r * 0.55
+                    )
+                    ctx.stroke()
+                }
+                ctx.restore()
             }
 
             // Build body outline points once per frame (called from update())
@@ -1371,13 +1406,25 @@ drawBody() {
             }
 
             drawOrganicSpot(seg: any, sizeMult: number, seed: number) {
+                // 斑块沿脊线拉长（绯盘顺着背脊铺开）——原来的三片大角度
+                // 交叉椭圆会并成横向的"花瓣/爱心"，很不像鱼身花纹
                 const baseSize = 13 * this.scale * sizeMult
+                const ca = Math.cos(seg.angle),
+                    sa = Math.sin(seg.angle)
                 ctx.beginPath()
-                ctx.ellipse(seg.x, seg.y, baseSize, baseSize * 0.72, seg.angle, 0, TWO_PI)
+                ctx.ellipse(seg.x, seg.y, baseSize * 1.1, baseSize * 0.78, seg.angle, 0, TWO_PI)
                 if (qualityTier > 0) {
-                    const rr = (o: number) => Math.sin(seed + o) * baseSize * 0.36
-                    ctx.ellipse(seg.x + rr(1), seg.y + rr(2), baseSize * 0.85, baseSize * 1.1, seg.angle + 0.35, 0, TWO_PI)
-                    ctx.ellipse(seg.x + rr(3), seg.y + rr(4), baseSize * 1.05, baseSize * 0.62, seg.angle - 0.55, 0, TWO_PI)
+                    const j = (o: number) => Math.sin(seed + o) * baseSize * 0.22
+                    ctx.ellipse(
+                        seg.x + ca * baseSize * 0.85 + sa * j(1),
+                        seg.y + sa * baseSize * 0.85 - ca * j(1),
+                        baseSize * 0.82, baseSize * 0.6,
+                        seg.angle + Math.sin(seed) * 0.22, 0, TWO_PI)
+                    ctx.ellipse(
+                        seg.x - ca * baseSize * 0.8 + sa * j(3),
+                        seg.y - sa * baseSize * 0.8 - ca * j(3),
+                        baseSize * 0.75, baseSize * 0.55,
+                        seg.angle - Math.sin(seed * 1.3) * 0.2, 0, TWO_PI)
                 }
                 ctx.fill()
             }
@@ -1407,10 +1454,12 @@ drawBody() {
                 const amp = this.finSwayAmp(),
                     t = this.swimCycle,
                     ph = this.finPhase
-                this.drawPectoralFin(this.segments[6], true, amp, ph, t)
-                this.drawPectoralFin(this.segments[6], false, amp, ph, t)
-                this.drawPelvicFin(this.segments[13], true, amp, ph, t)
-                this.drawPelvicFin(this.segments[13], false, amp, ph, t)
+                // 胸鳍长在鳃后（约 17% 体长）——原先在 25% 处像身体中段
+                // 长出两片"肩膀"；腹鳍随之前移保持比例
+                this.drawPectoralFin(this.segments[4], true, amp, ph, t)
+                this.drawPectoralFin(this.segments[4], false, amp, ph, t)
+                this.drawPelvicFin(this.segments[12], true, amp, ph, t)
+                this.drawPelvicFin(this.segments[12], false, amp, ph, t)
                 ctx.restore()
             }
 
@@ -1421,11 +1470,11 @@ drawBody() {
                 ph: number,
                 t: number
             ) {
-                const len = 48 * this.scale * (1 + (this.fat - 1.25) * 0.65),
+                const len = 38 * this.scale * (1 + (this.fat - 1.25) * 0.65),
                     dir = isRight ? 1 : -1
                 const angle =
                     seg.angle +
-                    Math.PI * 0.75 * dir +
+                    Math.PI * 0.72 * dir +
                     Math.sin(t * 1.2 + ph) * amp * dir
                 const rootX = seg.x,
                     rootY = seg.y
@@ -1519,102 +1568,112 @@ drawBody() {
             }
 
             drawDorsalFin() {
-                const S0 = 6,
-                    S1 = 16,
+                // 俯视角：背鳍读作贴着脊线的窄脊 + 一条脊线，
+                // 不是伸向一侧的翼片（原实现把它画在鱼体左侧，破坏俯视感）
+                const S0 = 8,
+                    S1 = 19,
                     n = S1 - S0,
                     t = this.swimCycle
                 const sway =
                     Math.sin(t * 0.95 + this.finPhase) *
                     this.finSwayAmp() *
-                    0.42
-                const maxH = (18 - Math.max(0, this.fat - 1.0) * 3) * this.scale
-                const hPro = [
-                    0, 0.45, 0.8, 1.0, 0.95, 0.82, 0.65, 0.48, 0.28, 0.1, 0,
+                    0.3
+                const wPro = [
+                    0, 0.35, 0.7, 1.0, 0.95, 0.8, 0.65, 0.5, 0.35, 0.2, 0.08, 0,
                 ]
-                const bx: number[] = [],
-                    by: number[] = [],
-                    rx: number[] = [],
-                    ry: number[] = []
-                for (let i = 0; i <= n; i++) {
-                    const seg = this.segments[S0 + i],
-                        h = maxH * hPro[i],
-                        upA = seg.angle - Math.PI / 2 + sway * hPro[i]
-                    bx.push(seg.x)
-                    by.push(seg.y)
-                    rx.push(seg.x + Math.cos(upA) * h)
-                    ry.push(seg.y + Math.sin(upA) * h)
-                }
+                const maxW = 2.6 * this.scale
                 ctx.save()
                 ctx.fillStyle = this.colors.fin
-                ctx.strokeStyle = this.colors.finEdge
-                ctx.lineWidth = 0.9 * this.scale
-                ctx.globalAlpha = 0.6
-                ctx.lineJoin = "round"
-                ctx.lineCap = "round"
+                ctx.globalAlpha = 0.5
                 ctx.beginPath()
-                ctx.moveTo(bx[0], by[0])
-                ctx.lineTo((rx[0] + rx[1]) * 0.5, (ry[0] + ry[1]) * 0.5)
-                for (let i = 1; i < n; i++)
-                    ctx.quadraticCurveTo(
-                        rx[i],
-                        ry[i],
-                        (rx[i] + rx[i + 1]) * 0.5,
-                        (ry[i] + ry[i + 1]) * 0.5
+                for (let i = 0; i <= n; i++) {
+                    const seg = this.segments[S0 + i],
+                        w = maxW * wPro[i],
+                        a = seg.angle + Math.PI / 2 + sway * wPro[i] * 0.4
+                    const x = seg.x + Math.cos(a) * w,
+                        y = seg.y + Math.sin(a) * w
+                    if (i === 0) ctx.moveTo(x, y)
+                    else ctx.lineTo(x, y)
+                }
+                for (let i = n; i >= 0; i--) {
+                    const seg = this.segments[S0 + i],
+                        w = maxW * wPro[i],
+                        a = seg.angle - Math.PI / 2 - sway * wPro[i] * 0.4
+                    ctx.lineTo(
+                        seg.x + Math.cos(a) * w,
+                        seg.y + Math.sin(a) * w
                     )
-                ctx.lineTo(rx[n], ry[n])
-                for (let i = n - 1; i >= 0; i--) ctx.lineTo(bx[i], by[i])
+                }
                 ctx.closePath()
                 ctx.fill()
-                ctx.stroke()
+                // 脊线 hairline — 俯视鱼背中线
                 if (qualityTier > 0) {
-                    ctx.save()
-                    ctx.globalAlpha = 0.2
-                    ctx.lineWidth = 0.72 * this.scale
+                    ctx.globalAlpha = 0.5
+                    ctx.strokeStyle = this.colors.inkEdge
+                    ctx.lineWidth = 0.8 * this.scale
+                    ctx.lineCap = "round"
                     ctx.beginPath()
-                    for (let i = 1; i < n; i++) {
-                        if (hPro[i] > 0.12) {
-                            ctx.moveTo(bx[i], by[i])
-                            ctx.lineTo(rx[i], ry[i])
-                        }
+                    for (let i = 0; i <= n; i++) {
+                        const seg = this.segments[S0 + i]
+                        if (i === 0) ctx.moveTo(seg.x, seg.y)
+                        else ctx.lineTo(seg.x, seg.y)
                     }
                     ctx.stroke()
-                    ctx.restore()
                 }
                 ctx.restore()
             }
 
             drawCaudalFin() {
+                // 分叉的长尾鳍：两叶 + 后缘内凹的叉口，尾梢滞后甩动。
+                // 原实现是一小片近似三角的"靴子"，是最破坏鱼形的部件。
                 const tail = this.segments[this.numSegments - 1],
                     ped = this.segments[this.numSegments - 2]
-                const len = 38 * this.scale,
-                    wave = Math.sin(this.swimCycle - 1.0) * 0.08,
-                    angle = tail.angle + Math.PI - wave
+                const len = 52 * this.scale,
+                    wave =
+                        Math.sin(this.swimCycle - 1.6) *
+                        (0.12 + this.finSwayAmp() * 0.3),
+                    angle = tail.angle + Math.PI + wave
                 const ax = (tail.x + ped.x) * 0.5,
                     ay = (tail.y + ped.y) * 0.5
                 ctx.save()
                 ctx.fillStyle = this.colors.fin
                 ctx.strokeStyle = this.colors.finEdge
-                ctx.lineWidth = 1.35 * this.scale
+                ctx.lineWidth = 1.1 * this.scale
+                ctx.lineJoin = "round"
                 const spread =
-                    0.85 +
-                    Math.sin(this.swimCycle * 1.05 + this.finPhase) * 0.04
+                    0.5 +
+                    Math.sin(this.swimCycle * 1.05 + this.finPhase) * 0.07
+                const lobeA = angle - spread * 0.55,
+                    lobeB = angle + spread * 0.55
+                const tipAX = ax + Math.cos(lobeA) * len,
+                    tipAY = ay + Math.sin(lobeA) * len
+                const tipBX = ax + Math.cos(lobeB) * len * 0.96,
+                    tipBY = ay + Math.sin(lobeB) * len * 0.96
+                const notchX = ax + Math.cos(angle) * len * 0.52,
+                    notchY = ay + Math.sin(angle) * len * 0.52
                 ctx.beginPath()
                 ctx.moveTo(ax, ay)
                 ctx.quadraticCurveTo(
-                    ax + Math.cos(angle - 0.85 * spread) * len * 0.88,
-                    ay + Math.sin(angle - 0.85 * spread) * len * 0.88,
-                    ax + Math.cos(angle - 0.25 * spread) * len,
-                    ay + Math.sin(angle - 0.25 * spread) * len
+                    ax + Math.cos(angle - spread * 1.05) * len * 0.55,
+                    ay + Math.sin(angle - spread * 1.05) * len * 0.55,
+                    tipAX,
+                    tipAY
                 )
                 ctx.quadraticCurveTo(
-                    ax + Math.cos(angle) * len * 0.78,
-                    ay + Math.sin(angle) * len * 0.78,
-                    ax + Math.cos(angle + 0.25 * spread) * len,
-                    ay + Math.sin(angle + 0.25 * spread) * len
+                    ax + Math.cos(angle - spread * 0.22) * len * 0.72,
+                    ay + Math.sin(angle - spread * 0.22) * len * 0.72,
+                    notchX,
+                    notchY
                 )
                 ctx.quadraticCurveTo(
-                    ax + Math.cos(angle + 0.85 * spread) * len * 0.88,
-                    ay + Math.sin(angle + 0.85 * spread) * len * 0.88,
+                    ax + Math.cos(angle + spread * 0.22) * len * 0.72,
+                    ay + Math.sin(angle + spread * 0.22) * len * 0.72,
+                    tipBX,
+                    tipBY
+                )
+                ctx.quadraticCurveTo(
+                    ax + Math.cos(angle + spread * 1.05) * len * 0.55,
+                    ay + Math.sin(angle + spread * 1.05) * len * 0.55,
                     ax,
                     ay
                 )
@@ -1627,8 +1686,14 @@ drawBody() {
                 ctx.lineWidth = 0.9 * this.scale
                 ctx.beginPath()
                 for (let i = 0; i < 7; i++) {
-                    const a = angle + ((i / 6) * 0.9 - 0.45) * 0.75,
-                        l = len * (0.78 + Math.sin(this.swimCycle + i) * 0.015)
+                    const k = i / 6,
+                        a = lobeA + (lobeB - lobeA) * k,
+                        // 叉尾：两叶的鳍条长，叉口处的短
+                        l =
+                            len *
+                            (0.55 +
+                                Math.abs(k - 0.5) * 0.9 +
+                                Math.sin(this.swimCycle + i) * 0.015)
                     ctx.moveTo(ax, ay)
                     ctx.lineTo(ax + Math.cos(a) * l, ay + Math.sin(a) * l)
                 }
@@ -1638,32 +1703,34 @@ drawBody() {
             }
 
             drawEye() {
+                // 俯视：一对眼睛对称嵌在头部两侧（单只偏置的眼读不出朝向）
                 const head = this.segments[2]
-                const ex =
-                    head.x +
-                    Math.cos(head.angle) * 6 * this.scale +
-                    Math.cos(head.angle + Math.PI / 2) * 4 * this.scale
-                const ey =
-                    head.y +
-                    Math.sin(head.angle) * 6 * this.scale +
-                    Math.sin(head.angle + Math.PI / 2) * 4 * this.scale
+                const fx = Math.cos(head.angle),
+                    fy = Math.sin(head.angle)
+                const px = Math.cos(head.angle + Math.PI / 2),
+                    py = Math.sin(head.angle + Math.PI / 2)
+                const side = (this.radii[2] || 8 * this.scale) * 0.68
+                const ahead = 1.6 * this.scale
                 ctx.save()
                 ctx.globalCompositeOperation = "source-over"
-                ctx.fillStyle = "rgba(10, 12, 14, 0.42)"
-                ctx.beginPath()
-                ctx.arc(ex, ey, 1.7 * this.scale, 0, TWO_PI)
-                ctx.fill()
-                ctx.globalCompositeOperation = "screen"
-                ctx.fillStyle = "rgba(255,255,255,0.12)"
-                ctx.beginPath()
-                ctx.arc(
-                    ex - 0.8 * this.scale,
-                    ey - 0.7 * this.scale,
-                    0.9 * this.scale,
-                    0,
-                    TWO_PI
-                )
-                ctx.fill()
+                for (const dir of [1, -1]) {
+                    const ex = head.x + fx * ahead + px * side * dir
+                    const ey = head.y + fy * ahead + py * side * dir
+                    ctx.fillStyle = "rgba(8, 10, 12, 0.6)"
+                    ctx.beginPath()
+                    ctx.arc(ex, ey, 1.5 * this.scale, 0, TWO_PI)
+                    ctx.fill()
+                    ctx.fillStyle = "rgba(255,255,255,0.22)"
+                    ctx.beginPath()
+                    ctx.arc(
+                        ex - 0.5 * this.scale,
+                        ey - 0.5 * this.scale,
+                        0.55 * this.scale,
+                        0,
+                        TWO_PI
+                    )
+                    ctx.fill()
+                }
                 ctx.restore()
             }
         }
@@ -2187,8 +2254,11 @@ drawBody() {
             }
             @media (max-width: 740px) {
               /* phone: the pond band can grow to host the How-I-Work stack —
-                 keep the tip anchored in the top water area */
-              #hero-ui { top: min(50%, 380px); }
+                 keep the tip anchored in the top water area. 220px centres it
+                 in the 320px strip of open water above the stack (the strip
+                 was 460px when this said 380px — the 2026-07-10 pacing pass
+                 shrank it and the chip sat on the How-I-Work title). */
+              #hero-ui { top: min(50%, 220px); }
             }
 
             #scroll-tip {
