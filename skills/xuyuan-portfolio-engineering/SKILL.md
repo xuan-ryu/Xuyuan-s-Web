@@ -211,6 +211,25 @@ FrogHire triage/affinity):
   the SOURCE plus a served-DOM `curl | grep`, never off a possibly-stale
   screenshot ("Hydration" in the DOM is usually just `suppressHydrationWarning`,
   not an error).
+- **PageTransition intercepts link clicks at document CAPTURE** — it commits
+  the ink curtain (and a delayed `router.push`) before any React-level
+  `onClick` runs, so a component's `e.preventDefault()` cannot stop a link
+  tap (the fg row tap still navigated ~1s later via pushState). To make an
+  in-page anchor click browse instead of navigate, preventDefault in a native
+  listener on **window, capture phase** — window capture fires before
+  document capture, and both PageTransition and next/link honor
+  `defaultPrevented`. See featured-gate's tap-to-browse effect.
+- **`mouseleave` on `window` NEVER fires** (it doesn't bubble) — pointer-reset
+  handlers attached there silently dead-code, freezing hover effects wherever
+  the pointer exited (hongyadong push bubble, hero-scene spotlight). Attach to
+  `document.documentElement`, AND reset on `window` `blur` +
+  `visibilitychange`-hidden too: focus theft (alt-tab, screenshot overlays)
+  stops the mouse event stream without any leave event.
+- **A CSS `filter` inside a `transition` ghosts on Chromium** — each hover
+  promotes/demotes the element's compositor layer and the demotion can leave
+  stale colored tile slivers painted outside the box (about tools wall).
+  Keep filters STATIC and crossfade two copies with `opacity` (+ `transform`)
+  instead; permanent `will-change` promotion also ghosted (tried 2026-07-07).
 - **Probe media before styling it.** Get real dimensions (a throwaway
   Playwright page reading `video.videoWidth/videoHeight`, or a PNG-header
   parse) before picking `aspect-ratio`/`object-position`. Recordings often

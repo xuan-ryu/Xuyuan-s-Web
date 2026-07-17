@@ -7,7 +7,7 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 
 ## app/
 
-- `app/about/page.tsx` · L3 · 1259 ⚠ — About page — server component for the /about route: Hongyadong hero, then
+- `app/about/page.tsx` · L3 · 1261 ⚠ — About page — server component for the /about route: Hongyadong hero, then
 - `app/contact/page.tsx` · L3 · 549 ⚠ — "Correspondence: the letter sheet" — the contact page composed as a letter:
 - `app/design-system/page.tsx` · L3 · 327 ⚠ — mirrors the --text-* ladder in app/globals.css @theme — keep in sync
 - `app/globals.css` · L3 · 4637 ⚠ — Self-hosted fonts + all media now live under public/media (see repo layout).
@@ -30,8 +30,9 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/cloud-futures-scroll.tsx` · L2 · 210 — Scroll spine for the Cloud Support Futures page: the fixed case rail
 - `components/contact-form.tsx` · · · 174 — (no header comment)
 - `components/fade-reveal.tsx` · L3 · 60 — One observer pass for both reveal vocabularies:
-- `components/featured-gate.tsx` · L3 · 1102 ⚠ — Garden Window — an editorial index whose preview fills a wide opening
+- `components/featured-gate.tsx` · L3 · 1096 ⚠ — Garden Window — an editorial index whose preview fills a wide opening
 - `components/fg-lotus-layer.tsx` · L1 · 393 ⚠ — ONE lotus arrangement, shared by the moon-gate crossing and the koi pond's
+- `components/fg-window-sync.ts` · · · 53 — useFgWindowSync — locks the Selected Work index (.fg-list) to its settled
 - `components/footer.tsx` · · · 63 — Full-bleed ink colophon on the site grid: a mono eyebrow + the email as the
 - `components/froghire-affinity-map.tsx` · L1 · 245 — Chapter 1, S4 figure: the six real complaints from the FrogHire bug log
 - `components/froghire-case-layout.tsx` · L2 · 1650 ⚠ — FrogHire.ai — the triage ledger.
@@ -47,19 +48,28 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/koi-pond-lazy.tsx` · L1 · 10 — Code-split the heavy WebGL koi scene out of the home page's initial bundle.
 - `components/koi-pond.tsx` · · · 2383 ⚠ — Home hero — the ink koi pond: a self-contained 2D-canvas island rendering
 - `components/loader.tsx` · L3 · 419 ⚠ — module-scope: survives client-side route changes / tab switches, but
-- `components/nyma-case-layout.tsx` · L2 · 3917 ⚠ — Nyma — "The Archive Thread". The one case page that steps inside Nyma's
+- `components/nyma-case-layout.tsx` · L2 · 3898 ⚠ — Nyma — "The Archive Thread". The one case page that steps inside Nyma's
 - `components/nyma-drafts.tsx` · L1 · 58 — Nyma case page — the two AI drafts as papers on a desk (L1 interactive).
+- `components/nyma-flow-screens.tsx` · · · 219 — Nyma case page — the onboarding flow strip (Pl. 16).
+- `components/nyma-flow-styles.ts` · · · 288 — Nyma case page — scoped CSS for the onboarding flow strip (L0 string;
 - `components/nyma-interactives.tsx` · L1 · 457 ⚠ — Nyma case page — the two hands-on specimens. Styles live in the page's
 - `components/nyma-phone.tsx` · L1 · 536 ⚠ — Nyma case page — the mobile commerce prototype (Pl. 16).
 - `components/nyma-scroll.tsx` · L2 · 350 ⚠ — Nyma case page — scroll choreography controller (renders null).
+- `components/nyma-strip-drag.ts` · · · 50 — Nyma case page — mouse grab-drag panning for the horizontal strips
 - `components/nyma-system-board.tsx` · L1 · 48 — Nyma case page — THE codified design-system page, rendered live (L1
 - `components/page-transition.tsx` · · · 192 — Ink-curtain route transition, ported from the live site: the veil rises
 - `components/poster-layout.tsx` · · · 152 — Mirrors the Framer "poster" template (hunger1942, vr-education): centered
-- `components/pulse-case-layout.tsx` · L2 · 4389 ⚠ — Pulse — "Studio Bloom" (owner direction, 2026-07-04): the one case page
+- `components/pulse-assembly-styles.ts` · · · 249 — Pulse case page — diagram-assembly styles (L0, css string).
+- `components/pulse-case-layout.tsx` · L2 · 3406 ⚠ — Pulse case page — L2 composer (white editorial, product-first).
 - `components/pulse-component-browser.tsx` · L1 · 520 ⚠ — ── The live component browser (Fig. 10), recreated as a real interactive
+- `components/pulse-content.ts` · · · 210 — Pulse case page — L0 specimen data: everything the layout draws but does
 - `components/pulse-creative-brief.tsx` · L1 · 204 — ── The Creative Brief (Fig. 19), made genuinely editable — the caption
-- `components/pulse-playground-demo.tsx` · L1 · 369 ⚠ — Pulse playground demo — the npm package's data-testing story, live on the
-- `components/pulse-scroll.tsx` · L2 · 327 ⚠ — Pulse case page — scroll choreography controller (renders null).
+- `components/pulse-fork-styles.ts` · · · 177 — Pulse case page — fork styles (L0, css string).
+- `components/pulse-part-switch.tsx` · · · 154 — Pulse case page — the fork: two doors into the case (L1, client).
+- `components/pulse-ramp-board.tsx` · L1 · 83 — ── The six semantic ramps, made copyable stop by stop (L1, client).
+- `components/pulse-scroll.tsx` · L2 · 230 — Pulse case page — scroll choreography controller (renders null).
+- `components/pulse-shot-pair.tsx` · · · 45 — Pulse case page — labeled before/after evidence pair (L1, server).
+- `components/pulse-spec-styles.ts` · · · 158 — Pulse case page — token-sheet styles (L0, css string).
 - `components/pulse-token-chips.tsx` · L1 · 87 — ── The hero token chips (Fig. 01), made copyable — a design system's tokens
 - `components/roof-transition.tsx` · · · 96 — Live composition: two roof artworks, each rendered twice. The pieces drift
 - `components/roper-case-layout.tsx` · L2 · 1401 ⚠ — "The Ledger and the Weathervane" — Roper Center's bespoke case layout
@@ -95,9 +105,9 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 
 ## data/
 
-- `data/about.ts` · L0 · 176 — About-page content transcribed verbatim from the Framer export
+- `data/about.ts` · L0 · 185 — About-page content — the single source for /about copy. The narrative runs
 - `data/project-catalog.ts` · L0 · 82 — (no header comment)
-- `data/projects.ts` · L0 · 1111 ⚠ — Project data transcribed verbatim from the Framer export
+- `data/projects.ts` · L0 · 1143 ⚠ — Project data transcribed verbatim from the Framer export
 - `data/site.ts` · L0 · 56 — NBSP inside "AI product" keeps it together so the black-page title breaks as
 
 ## lib/
