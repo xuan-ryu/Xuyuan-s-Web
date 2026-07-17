@@ -16,8 +16,7 @@ export const site = {
     instagram: "https://www.instagram.com/_xuan_liu_/",
   },
   greeting: ["Welcome,", "欢迎,", "ようこそ。"],
-  heroSub:
-    "AI Product Designer · AI Design Engineer.\nI design and build the structure around AI — for the people who use it, and the teams who ship it.",
+  heroSub: "AI Product Designer · AI Design Engineer.",
   brandCorner: {
     // bottom-left hero caption — credits the composition's source
     zh: "构图灵感源自《潇湘八景图》\nInspired by the Eight Views of Xiaoxiang",

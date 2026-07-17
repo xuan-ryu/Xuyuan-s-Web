@@ -159,7 +159,24 @@ export default function About() {
                     style={{ "--tool-index": i } as CSSProperties}
                   >
                     <span className="abf-tool-icon">
-                      <Image src={tool.src} alt="" fill sizes="72px" />
+                      {/* rest/lit copies crossfaded by OPACITY — a filter
+                          TRANSITION makes Chromium promote/demote each icon's
+                          layer per hover, and the demotion left stale colored
+                          tile slivers painted above the box after unhover */}
+                      <Image
+                        src={tool.src}
+                        alt=""
+                        fill
+                        sizes="72px"
+                        className="abf-tool-img-rest"
+                      />
+                      <Image
+                        src={tool.src}
+                        alt=""
+                        fill
+                        sizes="72px"
+                        className="abf-tool-img-lit"
+                      />
                     </span>
                     <i className="abf-tool-name">{tool.name}</i>
                   </span>
@@ -345,7 +362,7 @@ export default function About() {
       <section className="section about-habits abf-habits">
         <div className="container">
           <h2 className="about-habits-title abf-t" data-fade>
-            My Habits
+            Off Hours
           </h2>
           <div className="abf-rule" aria-hidden="true" />
           <div className="about-habits-grid">
@@ -661,7 +678,8 @@ h2.about-habits-title.abf-t,
   padding-bottom: 18px;
   opacity: 0;
   transform: translateY(18px);
-  will-change: transform, opacity;
+  /* no will-change: 20 permanent layers made Chromium ghost stale tiles of
+     the dark wordmarks above icons after hover; entrance self-promotes */
 }
 .abf-tool-index.is-visible .abf-tool {
   animation: abfToolLogoIn 0.72s var(--ease-silk) forwards;
@@ -671,12 +689,21 @@ h2.about-habits-title.abf-t,
   position: relative;
   width: clamp(44px, 4.6vw, 64px);
   aspect-ratio: 1;
-  filter: grayscale(0.9) opacity(0.62);
   transform: translateY(6px);
-  transition: filter 0.35s var(--ease-silk), transform 0.35s var(--ease-silk);
+  transition: transform 0.35s var(--ease-silk);
 }
 .abf-tool-icon img {
   object-fit: contain;
+}
+/* the grayscale filter is STATIC (rest copy only) — with no filter in any
+   transition, hover never promotes/demotes a filtered layer, which is what
+   left stale colored slivers above the icons */
+.abf-tool-img-rest {
+  filter: grayscale(0.9) opacity(0.62);
+}
+.abf-tool-img-lit {
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-silk);
 }
 .abf-tool-name {
   position: absolute;
@@ -693,8 +720,11 @@ h2.about-habits-title.abf-t,
 }
 .abf-tool:hover .abf-tool-icon,
 .abf-tool:focus-visible .abf-tool-icon {
-  filter: none;
   transform: translateY(-4px);
+}
+.abf-tool:hover .abf-tool-img-lit,
+.abf-tool:focus-visible .abf-tool-img-lit {
+  opacity: 1;
 }
 .abf-tool:hover .abf-tool-name,
 .abf-tool:focus-visible .abf-tool-name {
@@ -703,7 +733,8 @@ h2.about-habits-title.abf-t,
 }
 /* touch: no hover — icons stay lit and names read statically */
 @media (hover: none) {
-  .abf-tool-icon { filter: none; transform: none; }
+  .abf-tool-icon { transform: none; }
+  .abf-tool-img-lit { opacity: 1; }
   .abf-tool-name { opacity: 1; transform: none; }
   .abf-tool { padding-bottom: 20px; }
 }

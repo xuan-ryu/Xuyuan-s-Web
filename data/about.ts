@@ -1,21 +1,29 @@
-// About-page content transcribed verbatim from the Framer export
-// (export-.../about/index.html); section order and media mapping follow the
-// live site DOM (audit-screenshots/outline-about.txt).
+// About-page content — the single source for /about copy. The narrative runs
+// one spine: Chongqing (why people-tech friction matters) → CS→HCI (friction
+// is not fate) → What AI Made Me Notice (lower crossing costs; structure over
+// speed) → Before It Answers (qiàhǎo: judgment before generation) → How I
+// Work (diagnose / prototype / structure + 心技体). Section order and media
+// mapping still follow the live-site DOM (audit-screenshots/outline-about.txt);
+// rendering contracts (pull-line = verbatim sentence of the essay's final
+// paragraph, 恰好 brush block after shutter ¶3) live in app/about/page.tsx.
 
 
 export const about = {
   heading: "About Me.",
   heroIntro:
-    "I'm an AI product designer and design engineer who likes making messy ideas behave: interfaces, prototypes, design systems, and the rules that help teams keep building after the first demo.",
-  hometown: "My Hometown, Chongqing, China — A City Grounded in Its People.",
+    "I'm an AI product designer and design engineer. I care about the friction between people and technology — the kind that is hard to name but easy to feel — and I like turning it into problems that can be seen, tested, and solved.",
+  hometown:
+    "Chongqing, China — my hometown, a city where people live close and look out for one another.",
   koan: {
     zh: "好雪片々，不落别處",
     en: "Good snow, flake by flake, falls only here.",
-    caption: "— Zen kōan on full presence",
+    caption: "— Layman Pang, Blue Cliff Record, Case 42",
   },
   bio: [
-    "Hi, I’m Xuyuan Liu, an AI product designer and design engineer based in New York, by way of Cornell.",
-    "My work sits between product, interface, and code. I still start from a human question, but more and more I find myself asking a systems question too: what should stay consistent after the first version works?",
+    "Hi, I’m Xuyuan Liu, based in New York. I studied computer science as an undergraduate, then HCI at Cornell — not because I already saw myself becoming a product designer, just less and less satisfied with making technology merely run.",
+    "I grew up in Chongqing. Life there is built on the relationships between people: everyone lives close, and noticing whether someone else is comfortable comes naturally. It took me a while to see that the same habit shapes how I look at technology.",
+    "Computer science showed me what systems can do — and the distance between capability and experience. Plenty of software is powerful, yet leaves the people using it confused, frustrated, even wondering whether they are just not smart enough.",
+    "I have never quite believed that this friction has to be accepted. What draws me to design is that it can rearrange the relationship between people and technology, and solve a real need in a way that works, feels natural, and is beautiful in its form.",
   ],
   resumeNote:
     "My Resume Tells You What I've Done. This Is How I Think While Building It.",
@@ -23,17 +31,17 @@ export const about = {
   whatChanged: {
     title: "What AI Made Me Notice",
     body: [
-      "At first, AI mostly felt like speed. A page could appear quickly. An interaction that was only a feeling in my head could become something I could click a few minutes later.",
-      "That helped, especially when an idea was still fragile. But the more I used it, the less I was impressed by speed alone. The work came out fast, sometimes faster than I had time to understand it.",
-      "A screen would look finished, but underneath it I would still have questions. Why is this state here? Can this component survive another page? If someone else picks it up tomorrow, will they know what to do?",
-      "AI made me think harder about systems, frameworks, and design principles. What should be fixed before generation starts? What can stay open? What is a product rule, and what is only a nice-looking moment?",
-      "Pulse made that question concrete. We had plenty of pages, made in different tools and different styles of code. They looked like the same product, but they did not share the same skeleton.",
-      "So the work became less about making one more page and more about building the order underneath: tokens, components, state rules, handoff surfaces, checks, and the rules AI should read before it makes anything new.",
-      "That is where design started to feel more serious to me. Not every decision should be remade from taste. Some things need principles: what can change, what should hold, where the machine can run, and where a person has to stop and judge.",
+      "AI did not change why I design. It changed how far I can take it.",
+      "In school I was told to be cautious with AI; almost overnight, real projects expected me to use it responsibly. I came to see that understanding the fundamentals and using AI were never an either-or choice.",
+      "Computer science taught me the boundaries of systems; product and design taught me what people need. AI lets me move between the two faster, turning an idea I cannot quite say yet into something a team can examine together.",
+      "It did not merge product, design, and engineering into one job, but it lowered the cost of crossing between them. Product can prototype earlier; design can carry an interaction into the real build; engineering can see concrete intent before the work starts.",
+      "A page can look finished while my questions are not. Why is this state here? Will this component survive the next page? If someone else picks it up tomorrow, will they know what to do?",
+      "Pulse made those questions concrete. Facing prototypes from different tools and different styles of code, the work was not to generate one more page — it was to settle them into shared tokens, components, states, and checks, so people and AI could keep building on the same ground.",
+      "AI gives me more chances to try answers; it does not decide which answer is right. A good decision should not be remade from taste every time. The faster answers arrive, the more it matters to know what should hold, what can change, and where a person has to stop and judge.",
     ],
     // pull-line for the essay column: a verbatim sentence from the final
     // paragraph, lifted mid-column so the seven-paragraph read skims
-    pull: "Not every decision should be remade from taste.",
+    pull: "A good decision should not be remade from taste every time.",
     closing: "Fast Is Useful. Structure Is What Lets It Last.",
     // the tools wall, restored (owner 2026-07-07: the icons were good) —
     // now each carries a name for the hover slide-reveal; render treatment
@@ -65,11 +73,12 @@ export const about = {
   shutter: {
     title: "Before It Answers",
     body: [
-      "I still like film, not because old tools are automatically better, but because film asks you to decide before the shutter closes.",
-      "That habit has followed me into AI work. Before the system answers, I want to know what it is answering for, what it is allowed to assume, and who gets to say whether the result is right.",
-      "My friends and I have a \"Zen\" phrase for the kind of moment we're after: 恰好, QiaHao. Not perfect; not excessive; right.",
-      "I want AI products to have that same feeling. Enough help to move the work forward. Enough structure to keep the person in charge.",
-      "A hundred prototypes before lunch can be useful. I care more about what happens after lunch: whether one of them can hold real data, real users, and real responsibility.",
+      "I still like film, not because old tools are automatically better, but because film asks you to decide before the shutter closes. What belongs in the frame and what can be let go has to be clear before the result exists.",
+      "For a photograph in the snow, I can prepare the camera, choose the composition, find the spot, and wait for the light. I cannot order the snow to fall. And when the moment does come, I still have to recognize it in time — and reach the place before the snow melts.",
+      "My friends and I have a word for that kind of moment: 恰好, qiàhǎo. Not perfection, not everything pushed to its maximum — every condition that matters is present, and nothing pulls against the rest. Not a little less, not a little more. Right.",
+      "Qiàhǎo has chance in it, but it cannot run on chance alone. Preparation does not guarantee the moment will come; it means that when it comes, you can see it, catch it, and know why the shutter should close now.",
+      "Design works the same way. A clear need, enough taste, prototypes you can test, a stable design system, an implementation that can ship — these are conditions prepared in advance. AI lets me see more possibilities sooner, but more possibilities do not assemble themselves into the right answer.",
+      "A hundred prototypes before lunch can be useful. I care more about what happens after lunch: whether one of them can hold real data, real users, and real responsibility. Generation can be fast. Judgment still has to happen before it answers.",
     ],
     video: `/media/about/kyoto-reel.mp4`,
     // first frame of the reel, extracted with ffmpeg — paints the figure
@@ -81,13 +90,13 @@ export const about = {
   howIWork: {
     title: "How I Work",
     body: [
-      "Thinking and making have never quite lived in separate rooms for me. If an idea cannot be made, I usually do not understand it yet. Building is where the thought starts telling the truth.",
-      "I usually move in three steps. First, diagnose what is actually stuck: the unclear state, the awkward handoff, the step everyone works around but nobody names.",
-      "Then I prototype. A working surface gives a team something to react to while the direction is still cheap to change.",
-      "Then I structure what worked. If a decision is good, I do not want it to depend on me remembering it next time. It should become a token, a component, a workflow, a check, or a rule the AI reads before it starts.",
-      "There's a phrase from the dōjō — 心・技・体, mind, technique, body. I understand it very practically. Under pressure, taste is not enough. You need patterns your hands can repeat and responsibility when a call was wrong.",
-      "That is why I like this direction. AI rewards people who can move between ambiguity and implementation: read the product, shape the interaction, write the front end, inspect the output, then turn the lesson into a system.",
-      "I do not want AI to feel like a magic button pasted onto a page. I want it to feel like a good workspace: helpful, clear, and honest about where the human decision lives.",
+      "Thinking and making have never quite lived in separate rooms for me. If an idea cannot be built yet, I usually do not understand it yet. Making is not the execution that follows thought; it is where an idea starts showing its real shape.",
+      "I work in three moves: diagnose, prototype, structure.",
+      "Diagnose first. I look for where things are actually stuck: the unclear state, the awkward handoff, the step everyone works around but nobody names. What a request asks for on the surface is not always what matters; I care more about why it appeared, and who is carrying the friction.",
+      "Then prototype. I like putting a working surface up early, because a team reacts more honestly to something real than to a perfect spec. While the direction is still cheap to change, mistakes should arrive as early as possible.",
+      "Then structure. When a decision proves right, it should move into a component, a workflow, a design system, or a check — and stop depending on someone remembering it next time.",
+      "There is a phrase from the dōjō — 心・技・体, mind, technique, body. Mind is understanding the problem and the people inside it. Technique is trained judgment, taste, and craft. Body is the decision entering real use, until it feels natural and reliable in someone's hands. Missing any one of them, the answer is not complete — and when a call turns out wrong, someone has to answer for it.",
+      "I do not want AI to feel like a magic button pasted onto a page. I want it to feel like a good workspace: helping people explore more possibilities, shortening the distance between idea and implementation, and honest about where the final judgment still lives.",
     ],
     caption: "心・技・体 / mind, technique, body / Aikido · Kendo · Iaido",
   },
