@@ -1,10 +1,14 @@
 import type { MetadataRoute } from "next";
 
-// /design-system is an internal working surface — routable, but not for
-// crawlers or the sitemap.
+// Internal working and encrypted private surfaces remain routable, but are
+// excluded from crawlers and the sitemap.
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: "/design-system" },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/design-system", "/private/"],
+    },
     sitemap: "https://xuyuanliu.com/sitemap.xml",
   };
 }

@@ -181,4 +181,12 @@ export const about = {
       sub: "Jazz & Techno & City-pop",
     },
   ],
+
+  travelJournal: {
+    eyebrow: "Private field notes",
+    title: "A field guide for the road.",
+    body: "Routes, reservations, and small discoveries — kept as a private working notebook.",
+    cta: "Open travel notes",
+    href: "/private/hawaii",
+  },
 } as const;

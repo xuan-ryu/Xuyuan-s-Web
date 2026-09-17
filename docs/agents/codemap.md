@@ -7,14 +7,15 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 
 ## app/
 
-- `app/about/page.tsx` · L3 · 1261 ⚠ — About page — server component for the /about route: Hongyadong hero, then
+- `app/about/page.tsx` · L3 · 1290 ⚠ — About page — server component for the /about route: Hongyadong hero, then
 - `app/contact/page.tsx` · L3 · 549 ⚠ — "Correspondence: the letter sheet" — the contact page composed as a letter:
 - `app/design-system/page.tsx` · L3 · 327 ⚠ — mirrors the --text-* ladder in app/globals.css @theme — keep in sync
 - `app/globals.css` · L3 · 4637 ⚠ — Self-hosted fonts + all media now live under public/media (see repo layout).
 - `app/layout.tsx` · L3 · 111 — (no header comment)
 - `app/not-found.tsx` · L3 · 21 — Uses the semantic system (label atom + Cta) rather than Tailwind utilities —
 - `app/page.tsx` · L3 · 79 — (no header comment)
-- `app/robots.ts` · L3 · 11 — /design-system is an internal working surface — routable, but not for
+- `app/private/hawaii/page.tsx` · L3 · 16 — Private travel record — L3 route wiring. Search engines are explicitly
+- `app/robots.ts` · L3 · 15 — Internal working and encrypted private surfaces remain routable, but are
 - `app/sitemap.ts` · L3 · 18 — (no header comment)
 - `app/work/[slug]/page.tsx` · L3 · 64 — Case Layout is an explicit Project choice. The exhaustive registry keeps
 - `app/work/page.tsx` · L3 · 673 ⚠ — /work — 检索, the printed catalogue index.
@@ -22,6 +23,8 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 ## components/
 
 - `components/about-dark-pin.tsx` · · · 45 — Bottom-pin offset for the About dark→activities cover. The dark band is
+- `components/about-travel-note.module.css` · · · 62 — (no header comment)
+- `components/about-travel-note.tsx` · · · 31 — About page — a quiet L1 note linking the personal Off Hours material to
 - `components/case-next.tsx` · L3 · 137 — Shared "next case" close for the case pages: label, title, and a cover
 - `components/case-study-layout.tsx` · · · 153 — Mirrors the Framer "case study" template (vicino-ai, froghire-ai,
 - `components/chunk-guard.tsx` · · · 65 — Deploy-skew guard. Every deploy invalidates the previous build's hashed
@@ -30,7 +33,7 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/cloud-futures-scroll.tsx` · L2 · 210 — Scroll spine for the Cloud Support Futures page: the fixed case rail
 - `components/contact-form.tsx` · · · 174 — (no header comment)
 - `components/fade-reveal.tsx` · L3 · 60 — One observer pass for both reveal vocabularies:
-- `components/featured-gate.tsx` · L3 · 1096 ⚠ — Garden Window — an editorial index whose preview fills a wide opening
+- `components/featured-gate.tsx` · L3 · 1122 ⚠ — Garden Window — an editorial index whose preview fills a wide opening
 - `components/fg-lotus-layer.tsx` · L1 · 393 ⚠ — ONE lotus arrangement, shared by the moon-gate crossing and the koi pond's
 - `components/fg-window-sync.ts` · · · 53 — useFgWindowSync — locks the Selected Work index (.fg-list) to its settled
 - `components/footer.tsx` · · · 63 — Full-bleed ink colophon on the site grid: a mono eyebrow + the email as the
@@ -39,14 +42,14 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/froghire-trade-ledger.tsx` · · · 171 — The Trade Ledger closes Chapter 2 and is the SOLE teller of the four
 - `components/gsap-reveal.tsx` · · · 88 — GSAP-powered masked text reveal (RevealText markup:
 - `components/header.tsx` · L3 · 280 — 40px: past this the top scrim (globals .content-nav::before) fades in
-- `components/hero-scene.tsx` · · · 3252 ⚠ — Home hero — the full-page ink-mountain WebGL scene plus the night "page 2"
-- `components/hongyadong.tsx` · · · 1755 ⚠ — Home intro — the Hongyadong night-scene stage: a sticky 100vh canvas
+- `components/hero-scene.tsx` · · · 3299 ⚠ — Home hero — the full-page ink-mountain WebGL scene plus the night "page 2"
+- `components/hongyadong.tsx` · · · 1798 ⚠ — Home intro — the Hongyadong night-scene stage: a sticky 100vh canvas
 - `components/how-decor-parallax.tsx` · · · 50 — Live How-I-Work decor drift (measured at 1440x1000): the black screen and
 - `components/hunger-loupe-frame.tsx` · · · 111 — pre-compressed background for the loupe (native-width JPEG, not the
 - `components/hunger-poster-layout.tsx` · L2 · 1070 ⚠ — "The 1942 Edition" (spec-hunger1942): the project printed its own broadsheet,
 - `components/koi-how-overlay.tsx` · L1 · 450 ⚠ — Reveal immediately (lite-scenes mode: there is no pond to feed).
 - `components/koi-pond-lazy.tsx` · L1 · 10 — Code-split the heavy WebGL koi scene out of the home page's initial bundle.
-- `components/koi-pond.tsx` · · · 2383 ⚠ — Home hero — the ink koi pond: a self-contained 2D-canvas island rendering
+- `components/koi-pond.tsx` · · · 2453 ⚠ — Home hero — the ink koi pond: a self-contained 2D-canvas island rendering
 - `components/loader.tsx` · L3 · 419 ⚠ — module-scope: survives client-side route changes / tab switches, but
 - `components/nyma-case-layout.tsx` · L2 · 3898 ⚠ — Nyma — "The Archive Thread". The one case page that steps inside Nyma's
 - `components/nyma-drafts.tsx` · L1 · 58 — Nyma case page — the two AI drafts as papers on a desk (L1 interactive).
@@ -78,6 +81,8 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/roper-poll-data.ts` · · · 32 — The prototype's own sample question — the ONE shared constant that feeds
 - `components/smooth-scroll.tsx` · L2 · 60 — The original Framer site ships Lenis smooth scrolling — the inertia is a
 - `components/text-reveal.tsx` · · · 66 — (no header comment)
+- `components/travel-unlock.module.css` · · · 168 — Private travel gate — a 12-column paper editorial lock screen that becomes
+- `components/travel-unlock.tsx` · · · 156 — Private travel record — L1 client gate. The itinerary ships only as an
 - `components/value-card.tsx` · · · 318 ⚠ — When false the card is purely informational: no pointer tilt/scale/press,
 - `components/vicino-audience-viz.tsx` · L1 · 330 ⚠ — Station-02 visualization: who actually uses the product, and why the real gap
 - `components/vicino-case-layout.tsx` · L2 · 3548 ⚠ — Vicino case page — server-rendered layout (case-layout family).
@@ -105,10 +110,10 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 
 ## data/
 
-- `data/about.ts` · L0 · 185 — About-page content — the single source for /about copy. The narrative runs
+- `data/about.ts` · L0 · 193 — About-page content — the single source for /about copy. The narrative runs
 - `data/project-catalog.ts` · L0 · 82 — (no header comment)
 - `data/projects.ts` · L0 · 1143 ⚠ — Project data transcribed verbatim from the Framer export
-- `data/site.ts` · L0 · 56 — NBSP inside "AI product" keeps it together so the black-page title breaks as
+- `data/site.ts` · L0 · 55 — NBSP inside "AI product" keeps it together so the black-page title breaks as
 
 ## lib/
 

@@ -8,6 +8,7 @@ import { InteractiveCue } from "@/components/ui/interactive-cue";
 import { OffscreenVideo } from "@/components/ui/offscreen-video";
 import HongyadongScene from "@/components/hongyadong";
 import { AboutDarkPin } from "@/components/about-dark-pin";
+import { AboutTravelNote } from "@/components/about-travel-note";
 import { stripCssComments } from "@/lib/css-sanitize";
 
 // About page — server component for the /about route: Hongyadong hero, then
@@ -332,7 +333,6 @@ export default function About() {
         </div>
       </div>
 
-      {/* ---- voices ---- */}
       {/* ── Rebate — voices ── */}
       <section className="section about-testimonials abf-voices">
         <div className="abf-vshell">
@@ -357,7 +357,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---- habits ---- */}
       {/* ── Rebate — habits contact strip ── */}
       <section className="section about-habits abf-habits">
         <div className="container">
@@ -379,6 +378,7 @@ export default function About() {
               </figure>
             ))}
           </div>
+          <AboutTravelNote />
         </div>
       </section>
       {/* ---- dark pin mount ---- */}

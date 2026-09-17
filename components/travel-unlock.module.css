@@ -1,0 +1,170 @@
+/* Private travel gate — a 12-column paper editorial lock screen that becomes
+   a framed reader after local decryption; phone layouts collapse to 4 columns. */
+
+.page {
+  min-height: 100svh;
+  padding: clamp(112px, 12vw, 168px) var(--space-6) var(--space-12);
+  background: var(--paper-warm);
+  color: var(--ink-950);
+}
+
+.shell {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(20px, 2.4vw, 36px);
+  align-items: start;
+}
+
+.intro {
+  grid-column: 2 / span 5;
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--accent-gold);
+}
+
+.title {
+  max-width: 8ch;
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: var(--text-display-2);
+  font-weight: 300;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.lede {
+  max-width: 46ch;
+  margin: var(--space-6) 0 0;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  color: var(--color-muted);
+}
+
+.form {
+  grid-column: 8 / span 4;
+  padding-top: var(--space-9);
+  border-top: 1px solid var(--rule);
+}
+
+.label {
+  display: block;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink-950);
+  font: inherit;
+}
+
+.input:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.status {
+  min-height: 1.6em;
+  margin: var(--space-3) 0 var(--space-5);
+  font-size: var(--text-meta);
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.error {
+  color: var(--seal-red);
+}
+
+.privacy {
+  margin: var(--space-8) 0 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  line-height: 1.6;
+  color: var(--stone);
+}
+
+.reader {
+  width: min(1440px, calc(100% - 32px));
+  margin: 88px auto var(--space-8);
+}
+
+.readerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding-right: var(--space-11);
+  margin-bottom: var(--space-4);
+}
+
+.readerLabel {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.frame {
+  display: block;
+  width: 100%;
+  height: calc(100dvh - 152px);
+  min-height: 480px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-media);
+  background: var(--paper);
+}
+
+@media (max-width: 809.98px) {
+  .page {
+    padding: 104px var(--space-5) var(--space-10);
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: var(--gap-block);
+  }
+
+  .intro,
+  .form {
+    grid-column: 1 / -1;
+  }
+
+  .form {
+    padding-top: var(--space-7);
+  }
+
+  .reader {
+    width: calc(100% - 16px);
+    margin-top: 80px;
+  }
+
+  .frame {
+    height: calc(100dvh - 136px);
+    min-height: 480px;
+    border-radius: var(--radius-thumb);
+  }
+}
