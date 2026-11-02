@@ -27,11 +27,6 @@ export const site = {
     workOpen: "Open case",
     methodTitle: "How I Work",
   },
-  hero: {
-    line1: "XUYUAN",
-    line2: "LIU",
-    tag: "Portfolio · Glass landscape after the Eight Views of Xiaoxiang",
-  },
   heroSub: "AI Product Designer · AI Design Engineer.",
   brandCorner: {
     // bottom-left hero caption — credits the composition's source
