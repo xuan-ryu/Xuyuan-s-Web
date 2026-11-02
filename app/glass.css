@@ -1,0 +1,69 @@
+/* Glass material system — the shared surface language of the 2026 redesign.
+   Tokens first, then the two primitives (.glass-panel, .glass-chip). Pages
+   compose these; they do not hand-roll backdrop-filter recipes. */
+
+:root {
+  --glass-tint: rgba(255, 255, 255, 0.34);
+  --glass-tint-strong: rgba(255, 255, 255, 0.52);
+  --glass-tint-dark: rgba(18, 19, 22, 0.42);
+  --glass-line: rgba(255, 255, 255, 0.62);
+  --glass-line-dark: rgba(255, 255, 255, 0.14);
+  --glass-blur: 18px;
+  --glass-saturate: 150%;
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18);
+  --glass-lift: 0 18px 40px -18px rgba(22, 23, 26, 0.28),
+    0 2px 6px rgba(22, 23, 26, 0.06);
+  --glass-radius: 20px;
+  --glass-radius-sm: 12px;
+}
+
+.glass-panel,
+.glass-chip {
+  background: var(--glass-tint);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--glass-edge), var(--glass-lift);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}
+
+.glass-panel {
+  border-radius: var(--glass-radius);
+  padding: 24px 28px;
+}
+
+.glass-chip {
+  border-radius: var(--glass-radius-sm);
+  padding: 10px 16px;
+}
+
+/* dark context: same recipe, ink tint */
+[data-glass="dark"] .glass-panel,
+[data-glass="dark"] .glass-chip,
+.glass-panel[data-glass="dark"],
+.glass-chip[data-glass="dark"] {
+  background: var(--glass-tint-dark);
+  border-color: var(--glass-line-dark);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), var(--glass-lift);
+}
+
+/* no backdrop-filter support: fall back to a solid frosted tone */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-panel,
+  .glass-chip {
+    background: var(--glass-tint-strong);
+  }
+}
+
+/* visionOS-style window: brighter frost, larger radius, soft drop into the
+   room. Used for the homepage stage panels. */
+.glass-window {
+  position: relative;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 24px 60px -24px rgba(40, 42, 50, 0.32), 0 2px 8px rgba(40, 42, 50, 0.06);
+  -webkit-backdrop-filter: blur(32px) saturate(170%);
+  backdrop-filter: blur(32px) saturate(170%);
+}

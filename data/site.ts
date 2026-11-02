@@ -16,6 +16,22 @@ export const site = {
     instagram: "https://www.instagram.com/_xuan_liu_/",
   },
   greeting: ["Welcome,", "欢迎,", "ようこそ。"],
+  home: {
+    heroName: ["Xuyuan", "Liu"],
+    heroKicker: "Portfolio · 2026",
+    decodeHint: "Keep scrolling — the still decodes into space",
+    introEyebrow: "About",
+    introCta: "More about me",
+    workTitle: "Selected Work",
+    workAll: "All work",
+    workOpen: "Open case",
+    methodTitle: "How I Work",
+  },
+  hero: {
+    line1: "XUYUAN",
+    line2: "LIU",
+    tag: "Portfolio · Glass landscape after the Eight Views of Xiaoxiang",
+  },
   heroSub: "AI Product Designer · AI Design Engineer.",
   brandCorner: {
     // bottom-left hero caption — credits the composition's source
