@@ -11,6 +11,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { site } from "@/data/site";
 import "./globals.css";
+import "./glass.css";
 
 export const metadata: Metadata = {
   title: { default: site.title, template: "%s — XUYUAN" },

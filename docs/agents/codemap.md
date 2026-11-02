@@ -10,10 +10,12 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `app/about/page.tsx` · L3 · 1290 ⚠ — About page — server component for the /about route: Hongyadong hero, then
 - `app/contact/page.tsx` · L3 · 549 ⚠ — "Correspondence: the letter sheet" — the contact page composed as a letter:
 - `app/design-system/page.tsx` · L3 · 327 ⚠ — mirrors the --text-* ladder in app/globals.css @theme — keep in sync
+- `app/glass.css` · L3 · 70 — Glass material system — the shared surface language of the 2026 redesign.
 - `app/globals.css` · L3 · 4637 ⚠ — Self-hosted fonts + all media now live under public/media (see repo layout).
-- `app/layout.tsx` · L3 · 111 — (no header comment)
+- `app/home-stage.css` · L3 · 349 ⚠ — Home stage — fixed ikebana canvas + four shot sections.
+- `app/layout.tsx` · L3 · 112 — (no header comment)
 - `app/not-found.tsx` · L3 · 21 — Uses the semantic system (label atom + Cta) rather than Tailwind utilities —
-- `app/page.tsx` · L3 · 79 — (no header comment)
+- `app/page.tsx` · L3 · 13 — (no header comment)
 - `app/private/hawaii/page.tsx` · L3 · 16 — Private travel record — L3 route wiring. Search engines are explicitly
 - `app/robots.ts` · L3 · 15 — Internal working and encrypted private surfaces remain routable, but are
 - `app/sitemap.ts` · L3 · 18 — (no header comment)
@@ -43,6 +45,18 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/gsap-reveal.tsx` · · · 88 — GSAP-powered masked text reveal (RevealText markup:
 - `components/header.tsx` · L3 · 280 — 40px: past this the top scrim (globals .content-nav::before) fades in
 - `components/hero-scene.tsx` · · · 3299 ⚠ — Home hero — the full-page ink-mountain WebGL scene plus the night "page 2"
+- `components/home-decode-pass.ts` · · · 97 — Home stage — L1 decode compositor: blends the photo pass into the room pass.
+- `components/home-hero.tsx` · · · 27 — Home stage — L1 hero section: the opening still + the decode runway.
+- `components/home-ikebana-parts.ts` · · · 87 — Home stage — L1 geometry builders for the placeholder ikebana.
+- `components/home-ikebana.ts` · · · 115 — Home stage — L1 ikebana assembly: vase + three lines (shin / soe / hikae),
+- `components/home-intro.tsx` · · · 32 — Home stage — L1 intro section: a visionOS-style glass window beside the
+- `components/home-method.tsx` · · · 26 — Home stage — L1 method section: three glass panels under the low-angle shot
+- `components/home-stage-scene.tsx` · · · 173 — Home stage — L1 WebGL island: the fixed ikebana stage behind the homepage.
+- `components/home-stage-scroll.ts` · · · 54 — Home stage — L1 scroll reader: turns section positions into a camera pose
+- `components/home-stage-sets.ts` · · · 91 — Home stage — L1 sets: the two worlds the ikebana is rendered into.
+- `components/home-stage-tokens.ts` · · · 70 — Home stage — L0 tokens for the ikebana scene (pure data, no logic).
+- `components/home-stage.tsx` · · · 27 — Home stage — L2 composer: one fixed WebGL stage under four camera shots.
+- `components/home-work.tsx` · · · 44 — Home stage — L1 selected-work section: featured projects as glass cards
 - `components/hongyadong.tsx` · · · 1798 ⚠ — Home intro — the Hongyadong night-scene stage: a sticky 100vh canvas
 - `components/how-decor-parallax.tsx` · · · 50 — Live How-I-Work decor drift (measured at 1440x1000): the black screen and
 - `components/hunger-loupe-frame.tsx` · · · 111 — pre-compressed background for the loupe (native-width JPEG, not the
@@ -81,8 +95,8 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `components/roper-poll-data.ts` · · · 32 — The prototype's own sample question — the ONE shared constant that feeds
 - `components/smooth-scroll.tsx` · L2 · 60 — The original Framer site ships Lenis smooth scrolling — the inertia is a
 - `components/text-reveal.tsx` · · · 66 — (no header comment)
-- `components/travel-unlock.module.css` · · · 168 — Private travel gate — a 12-column paper editorial lock screen that becomes
-- `components/travel-unlock.tsx` · · · 156 — Private travel record — L1 client gate. The itinerary ships only as an
+- `components/travel-unlock.module.css` · · · 171 — Private travel gate — a 12-column paper editorial lock screen that becomes
+- `components/travel-unlock.tsx` · · · 157 — Private travel record — L1 client gate. The itinerary ships only as an
 - `components/value-card.tsx` · · · 318 ⚠ — When false the card is purely informational: no pointer tilt/scale/press,
 - `components/vicino-audience-viz.tsx` · L1 · 330 ⚠ — Station-02 visualization: who actually uses the product, and why the real gap
 - `components/vicino-case-layout.tsx` · L2 · 3548 ⚠ — Vicino case page — server-rendered layout (case-layout family).
@@ -113,7 +127,7 @@ summary. Regenerate: `npm run codemap`. Do not edit by hand.
 - `data/about.ts` · L0 · 193 — About-page content — the single source for /about copy. The narrative runs
 - `data/project-catalog.ts` · L0 · 82 — (no header comment)
 - `data/projects.ts` · L0 · 1143 ⚠ — Project data transcribed verbatim from the Framer export
-- `data/site.ts` · L0 · 55 — NBSP inside "AI product" keeps it together so the black-page title breaks as
+- `data/site.ts` · L0 · 71 — NBSP inside "AI product" keeps it together so the black-page title breaks as
 
 ## lib/
 
